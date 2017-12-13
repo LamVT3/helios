@@ -66,7 +66,7 @@ class AdsManagerController extends Controller
         $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ads Manager > Channels <span>> " . $channel->name . "</span>";
 
         $ads = Ads::where('channel_id', $channel->id)->get();
-        $landing_pages = LandingPage::all();
+        $landing_pages = LandingPage::where('is_active', "1")->get();
 
         return view('pages.ads_manager_ads', compact(
             'page_title',
