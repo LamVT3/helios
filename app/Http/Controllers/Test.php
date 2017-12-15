@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\MyModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+//use Faker\Generator as Faker;
 
 class Test extends Controller
 {
@@ -16,7 +17,10 @@ class Test extends Controller
         $m->password = 'Johndfhd';
         $m->save();
         $model = MyModel::all();
-        // dd($model);
+        $faker = \Faker\Factory::create();
+        //$faker->seed(1234);
+        dd($faker->dateTimeBetween($startDate = '-2 months', $endDate = 'now')->modify("+1 day"));
+        //echo Faker::name;
         return view('test', compact('model'));
     }
 }

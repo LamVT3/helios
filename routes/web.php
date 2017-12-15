@@ -34,6 +34,12 @@ Route::group(['prefix' => 'adsmanager'], function () {
     Route::get('/ads/get/{id}', 'AdsController@get')->name('ads-get');
 });
 
+Route::group(['prefix' => 'contacts'], function () {
+    Route::get('/', 'ContactController@index')->name('contacts-c3');
+    Route::get('/details/{id}', 'ContactController@details')->name('contacts-details');
+
+});
+
 /*Route::get('/kpi/add', 'KpiController@add')->name('kpi-add');
 Route::get('/policy/edit', 'PolicyController@edit')->name('policy-edit');
 Route::get('/inventory', 'InventoryController@index')->name('inventory');

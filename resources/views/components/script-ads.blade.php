@@ -54,7 +54,7 @@
             data.is_active = $(this).find('[name=is_active]').val();
             data._token = $(this).find('[name=_token]').val();
 
-            if(!data.name || !data.url){
+            if(!data.name || !data.landing_page){
                 $('#form-ads-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
                 return false;
             }

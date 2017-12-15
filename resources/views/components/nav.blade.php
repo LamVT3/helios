@@ -68,7 +68,7 @@
                             class="menu-item-parent">Contacts</span></a>
                 <ul>
                     <li class="{{ $active == 'contacts-c3' ? 'active' : '' }}">
-                        <a href="{{ route('dashboard') }}">C3 produced</a>
+                        <a href="{{ route('contacts-c3') }}">C3 produced</a>
                     </li>
                     <li class="{{ $active == 'contacs-l8' ? 'active' : '' }}">
                         <a href="{{ route('dashboard') }}">L8</a>
