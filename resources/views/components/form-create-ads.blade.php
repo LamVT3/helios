@@ -2,6 +2,8 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <form method="post" id="form-ads" action="{{ route("ads-create") }}">
+                {{ csrf_field() }}
+                <input type="hidden" name="channel_id" value="{{ $channel->id }}"/>
                 <input type="hidden" name="ads_id" value=""/>
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
@@ -11,7 +13,6 @@
                 </div>
                 <div class="modal-body">
                     <div class="smart-form">
-                        {{ csrf_field() }}
                         <div id="form-ads-alert"></div>
                         <section>
                             <label class="label" for="name">Name</label>

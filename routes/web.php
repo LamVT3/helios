@@ -19,6 +19,15 @@ Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
 Route::get('/home', 'DashboardController@index')->name('dashboard');
 
+Route::group(['prefix' => 'mktmanager'], function () {
+    Route::get('/source', 'SourceController@index')->name('source');
+    Route::post('/source/create', 'SourceController@store')->name('source-create');
+    Route::get('/source/get/{id}', 'SourceController@get')->name('source-get');
+    Route::get('/team/{id}', 'TeamController@index')->name('team');
+    Route::post('/team/create', 'TeamController@store')->name('team-create');
+    Route::get('/team/get/{id}', 'TeamController@get')->name('team-get');
+});
+
 Route::group(['prefix' => 'adsmanager'], function () {
     Route::get('/', 'AdsManagerController@index')->name('campaign');
     Route::get('/landingpage', 'AdsManagerController@landingpage')->name('landing-page');

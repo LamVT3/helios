@@ -8,7 +8,7 @@
         <div id="content">
 
             @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
-                <a class="btn btn-success btn-lg pull-right header-btn hidden-mobile"
+                <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
                    data-toggle="modal"
                    data-target="#addModal"><i
                             class="fa fa-plus fa-lg"></i> Create Ads</a>

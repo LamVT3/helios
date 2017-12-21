@@ -11,7 +11,7 @@
                 <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
                    data-toggle="modal"
                    data-target="#addModal"><i
-                            class="fa fa-plus fa-lg"></i> Create Channel</a>
+                            class="fa fa-plus fa-lg"></i> Create Source</a>
             @endcomponent
 
             @include('layouts.errors')
@@ -25,42 +25,34 @@
 
                     <article class="col-sm-12 col-md-12">
 
-                        {{--@component('components.jarviswidget',
-                                                    ['id' => 1, 'icon' => 'fa-info', 'title' => 'Campaign'])
-                            <div class="widget-body">
-                                <b>Campaign Name:</b> {{ $campaign->name }} <br>
-                                <b>Campaign Code:</b> {{ $campaign->code }} <br>
-                                <b>Campaign Description:</b> {{ $campaign->description }} <br>
-                                <b>Creator:</b> {{ $campaign->creator }} <br>
-                                <b>Created at:</b> {{ $campaign->created_at->toDateTimeString() }}
-                            </div>
-                        @endcomponent--}}
-
                         @component('components.jarviswidget',
-                                                    ['id' => 1, 'icon' => 'fa-table', 'title' => 'Channels in '. $campaign->name])
+                                                    ['id' => 1, 'icon' => 'fa-table', 'title' => 'Sources (' . $sources->count() . ')'])
                             <div class="widget-body no-padding">
-                                <table id="table_channels" class="table table-striped table-bordered table-hover"
+                                <div class="alert alert-info no-margin fade in">
+                                    <button class="close" data-dismiss="alert">
+                                        ×
+                                    </button>
+                                    <i class="fa-fw fa fa-info"></i>
+                                    A 'source' is an advertising platform. A source should be created by a marketing manager. It will be shown as utm_source in a tracking link.
+                                </div>
+                                <table id="table_sources" class="table table-striped table-bordered table-hover"
                                        width="100%">
                                     <thead>
                                     <tr>
                                         <th>Name</th>
-                                        <th>Code</th>
                                         <th>Description</th>
                                         <th>Creator</th>
                                         <th>Created at</th>
-                                        <th>Active?</th>
                                         <th>Action</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    @foreach ($channels as $item)
-                                        <tr id="channel-{{ $item->id }}">
-                                            <td><a href="{{ route("channel-details", $item->id) }}">{{ $item->name }}</a></td>
-                                            <td>{{ $item->code }}</td>
+                                    @foreach ($sources as $item)
+                                        <tr id="source-{{ $item->id }}">
+                                            <td><a href="{{ route("team", $item->id) }}">{{ $item->name }}</a></td>
                                             <td>{{ $item->description }}</td>
-                                            <td></td>
+                                            <td>{{ $item->creator or '' }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
-                                            <td>{{ $item->is_active ? "Yes" : 'No' }}</td>
                                             <td>
                                                 {{--@permission('edit-review')--}}
                                                 <a data-toggle="modal" class='btn btn-xs btn-default'
@@ -68,15 +60,16 @@
                                                    data-item-id="{{ $item->id }}"
                                                    data-original-title='Edit Row'><i
                                                             class='fa fa-pencil'></i></a>
-                                                {{--<a data-toggle="modal" class='btn btn-xs btn-default'
-                                                   data-target="#deleteModal"
+                                                <a data-toggle="modal" class='btn btn-xs btn-default'
+                                                   data-target="#createTeamModal"
                                                    data-item-id="{{ $item->id }}"
                                                    data-item-name="{{ $item->name }}"
-                                                   data-original-title='Delete Row'><i
-                                                            class='fa fa-times'></i></a>--}}
+                                                   data-original-title='Create Team'><i
+                                                            class='fa fa-plus'></i> Create Team</a>
                                                 {{--@endpermission--}}
                                             </td>
                                         </tr>
+
                                     @endforeach
 
                                     </tbody>
@@ -93,35 +86,7 @@
             </section>
             <!-- end widget grid -->
 
-                @include('components.form-create-channel', ['type' => null])
-
-                {{--<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                                    &times;
-                                </button>
-                                <h3 class="modal-title"> Are you sure you want to delete this channel?</h3>
-                            </div>
-                            <div class="modal-footer">
-                                <form method="post" action="">
-                                    {{ csrf_field() }}
-                                    <input type="hidden" name="id" value=""/>
-                                    <button type="submit" class="btn btn-danger">
-                                        Delete
-                                    </button>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                                        Cancel
-                                    </button>
-
-                                </form>
-                            </div>
-
-                        </div><!-- /.modal-content -->
-
-                    </div><!-- /.modal-dialog -->
-                </div>--}}
+                @include('components.form-create-source', ['type' => null])
 
         </div>
         <!-- END MAIN CONTENT -->
@@ -140,6 +105,7 @@
 <script src="{{ asset('js/plugin/datatables/dataTables.tableTools.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatables/dataTables.bootstrap.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatable-responsive/datatables.responsive.min.js') }}"></script>
+<script src="{{ asset('js/plugin/selectize/js/standalone/selectize.min.js')}}"></script>
 
 <script type="text/javascript">
 
@@ -148,29 +114,29 @@
     $(document).ready(function () {
 
         /* BASIC ;*/
-        var responsiveHelper_table_channel = undefined;
+        var responsiveHelper_table_source = undefined;
 
         var breakpointDefinition = {
             tablet: 1024,
             phone: 480
         };
 
-        $('#table_channels').dataTable({
+        $('#table_sources').dataTable({
             "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-6 hidden-xs'C>r>" +
             "t" +
             "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-sm-6 col-xs-12'p>>",
             "autoWidth": true,
             "preDrawCallback": function () {
                 // Initialize the responsive datatables helper once.
-                if (!responsiveHelper_table_channel) {
-                    responsiveHelper_table_channel = new ResponsiveDatatablesHelper($('#table_channels'), breakpointDefinition);
+                if (!responsiveHelper_table_source) {
+                    responsiveHelper_table_source = new ResponsiveDatatablesHelper($('#table_sources'), breakpointDefinition);
                 }
             },
             "rowCallback": function (nRow) {
-                responsiveHelper_table_channel.createExpandIcon(nRow);
+                responsiveHelper_table_source.createExpandIcon(nRow);
             },
             "drawCallback": function (oSettings) {
-                responsiveHelper_table_channel.respond();
+                responsiveHelper_table_source.respond();
             },
             "order": [[0, "desc"]]
         });
@@ -180,8 +146,19 @@
 //        $('head').append('<link rel="stylesheet" href="{{ asset('js/plugin/selectize/css/selectize.bootstrap3.css') }}">');
 
         /* END BASIC */
+
+        allMembers = {!! $allMembers !!}
+        $('input[name=members]').selectize({
+            delimiter: ',',
+            persist: false,
+            valueField: '_id',
+            labelField: 'name',
+            searchField: ['name'],
+            options: allMembers,
+            create: true
+        });
     })
 
 </script>
-@include('components.script-channel')
+@include('components.script-source')
 @stop

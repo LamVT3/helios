@@ -27,12 +27,18 @@
 }
 
 .smart-style-4 aside .minifyme {
-    background: #FF5722;
+    background: #3276b1;
+}
+
+.smart-style-4 aside .minifyme:hover {
+    background: #65a9e4;
+    color: #fff;
 }
 
 .smart-style-4 #logo-group span#activity {
-    background: #5a8354;
-    background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #FF5722), color-stop(1, #FF9800));
+    background: #3276b1;
+    background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #3276b1), color-stop(1, #3276b1));
+    border-color: #ffffff82;
 }
 
 .btn-success {
@@ -135,4 +141,23 @@
 .lockscreen {
     height: auto;
     box-shadow: none;
+}
+
+.smart-form .label {
+    font-weight: bold;
+}
+
+.modal-header {
+    background: #3a3f51;
+    color: white;
+}
+
+.close {
+    color: #fff;
+    opacity: 0.5;
+}
+
+.close:focus, .close:hover {
+    color: #fff;
+    opacity: 0.9;
 }

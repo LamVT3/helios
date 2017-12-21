@@ -43,9 +43,9 @@
         })
 
         $('#form-ads').submit(function (e) {
-            //console.log('run');
             e.preventDefault();
             var data = {};
+            data.channel_id = $(this).find('[name=channel_id]').val();
             data.ads_id = $(this).find('[name=ads_id]').val();
             data.name = $(this).find('[name=name]').val();
             data.landing_page = $(this).find('[name=landing_page]').val();
@@ -60,10 +60,6 @@
             }
             $.post($(this).attr('action'), data, function (data) {
                 if(data.type && data.type == 'success'){
-                    /*$('#form-review').find("input, textarea").val("");
-                    $('#form-review-alert').html('<div class="alert alert-success">' + data.message + '</div>');
-                    $('.starrr').find('.glyphicon-star').removeClass('glyphicon-star').addClass('glyphicon-star-empty');
-                    $('#meaning').html('');*/
                     location.href = data.url;
                 }else{
                     $('#form-ads-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');

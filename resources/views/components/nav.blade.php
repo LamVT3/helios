@@ -33,6 +33,19 @@
                             class="menu-item-parent">Dashboard</span></a>
             </li>
 
+            <li class="{{ $active == 'mktmanager' ? 'active' : '' }}">
+                <a href="javascript:void(0)"><i class="fa fa-lg fa-fw fa-sitemap"></i> <span
+                            class="menu-item-parent">MKT Manager</span></a>
+                <ul>
+                    <li class="{{ $active == 'mktmanager' ? 'active' : '' }}">
+                        <a href="{{ route('source') }}"><i class="fa fa-lg fa-fw fa-table"></i> Sources</a>
+                    </li>
+                    <li class="{{ $active == 'mktmanager-teams' ? 'active' : '' }}">
+                        <a href="{{ route('team', 'all') }}"><i class="fa fa-lg fa-fw fa-table"></i> Teams</a>
+                    </li>
+                </ul>
+            </li>
+
             <li class="{{ $active == 'adsmanager' ? 'active' : '' }}">
                 <a href="javascript:void(0)"><i class="fa fa-lg fa-fw fa-bullhorn"></i> <span
                             class="menu-item-parent">Ads Manager</span></a>

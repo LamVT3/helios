@@ -6,6 +6,8 @@ use App\Ads;
 use App\Campaign;
 use App\Channel;
 use App\LandingPage;
+use App\Source;
+use App\User;
 use Illuminate\Http\Request;
 
 class AdsManagerController extends Controller

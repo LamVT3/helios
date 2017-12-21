@@ -33,16 +33,21 @@
                                         <tr><td>Channel</td><td>{{ $contact->channel_name }}</td></tr>
                                         <tr><td>Ads</td><td>{{ $contact->ads_name }}</td></tr>
                                         <tr><td>Landing page</td><td>{{ $contact->landingpage_name }}</td></tr>
-                                        <tr><td>Current Level</td><td>{{ $contact->current_level }}</td></tr>
-                                        <tr><td>Is Transferred?</td><td>{{ $contact->is_transferred }}</td></tr>
-                                        <tr><td>Is Valid</td><td>{{ $contact->is_valid }}</td></tr>
+                                        <tr><td>Current Level</td><td>Level {{ $contact->current_level }}</td></tr>
+                                        <tr><td>Is Transferred?</td><td>{{ $contact->is_transferred ? "Transferred" : "" }}</td></tr>
+                                        <tr><td>Is Valid</td><td>{{ $contact->is_valid ? "Valid" : "Invalid" }}</td></tr>
                                         <tr><td>Invalid Reason</td><td>{{ $contact->invalid_reason }}</td></tr>
-                                        <tr><td>Is Returned</td><td>{{ $contact->is_returned }}</td></tr>
+                                        <tr><td>Is Returned</td><td>{{ $contact->is_returned ? "Returned" : "No" }}</td></tr>
                                         <tr><td>Returnred Reason</td><td>{{ $contact->returned_reason }}</td></tr>
                                         <tr><td>L1 Date</td><td>{{ $contact->l1_time }}</td></tr>
                                         <tr><td>L2 Date</td><td>{{ $contact->l2_time }}</td></tr>
                                         <tr><td>L3 Date</td><td>{{ $contact->l3_time }}</td></tr>
-                                        <tr><td>Saleperson</td><td>{{ $contact->saleperson }}</td></tr>
+                                        <tr><td>L4 Date</td><td>{{ $contact->l4_time }}</td></tr>
+                                        <tr><td>L5 Date</td><td>{{ $contact->l5_time }}</td></tr>
+                                        <tr><td>L6 Date</td><td>{{ $contact->l6_time }}</td></tr>
+                                        <tr><td>L7 Date</td><td>{{ $contact->l7_time }}</td></tr>
+                                        <tr><td>L8 Date</td><td>{{ $contact->l8_time }}</td></tr>
+                                        <tr><td>Saleperson</td><td>{{ $contact->sale_person }}</td></tr>
                                     </tbody>
                                 </table>
 
@@ -57,7 +62,7 @@
                                         <th>New Level</th>
                                         <th>Comment</th>
                                         <th>Status</th>
-
+                                        <th>Audio</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -68,6 +73,10 @@
                                             <td>{{ $item["new_level"] }}</td>
                                             <td>{{ $item["comment"] }}</td>
                                             <td>{{ $item["status"] }}</td>
+                                            <td><audio controls >
+                                                    <source src="{{ $item["audio"] }}" type="audio/mpeg">
+                                                    Your browser does not support the audio tag.
+                                                </audio></td>
                                         </tr>
                                     @endforeach
 
