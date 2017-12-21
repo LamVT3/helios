@@ -13,36 +13,100 @@
                     <div class="smart-form">
                         {{ csrf_field() }}
                         <div id="form-campaign-alert"></div>
-                        <section>
-                            <label class="label" for="name">Name</label>
-                            <label class="input">
-                                <input type="text" name="name" id="name" class="form-control" placeholder="Campaign name..."/>
-                            </label>
-                        </section>
-                        <section>
-                            <label class="label" for="code">Code</label>
-                            <label class="input">
-                                <input type="text" name="code" class="form-control" id="code"
-                                       placeholder="Campaign Code...">
-                            </label>
-                        </section>
-                        <section>
-                            <label class="label" for="description">Description</label>
-                            <label class="textarea">
-                                <textarea name="description" class="form-control" id="description" rows="3"
-                                          placeholder="Campaign Description..."></textarea>
-                            </label>
-                        </section>
-                        <section>
-                            <label class="label">Active</label>
-                            <label class="select">
-                                <select name="is_active">
-                                    <option value="0">No</option>
-                                    <option value="1">Yes</option>
-                                </select>
-                                <i></i>
-                            </label>
-                        </section>
+                        <fieldset>
+                            <div class="row">
+                                <section class="col col-5">
+                                    <label class="select">
+                                        <select>
+                                            <option>Create New Campaign</option>
+                                            <option>Choose Existing Campaign</option>
+                                        </select>
+                                        <i></i>
+                                    </label>
+                                </section>
+                            </div>
+                            <div class="row">
+                                <section>
+                                    <label class="label col col-3" for="name">Campaign Name</label>
+                                    <label class="input col col-9">
+                                        <input type="text" name="name" id="name" class="form-control" placeholder="Enter a campaign name..."/>
+                                    </label>
+                                </section>
+                            </div>
+                            <div class="row">
+                                <section>
+                                    <label class="label col col-3" for="description">Description</label>
+                                    <label class="textarea col col-9">
+                                        <textarea name="description" class="form-control" id="description" rows="3"
+                                                  placeholder="Enter a campaign description..."></textarea>
+                                    </label>
+                                </section>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <div class="row">
+                                <section class="col col-5">
+                                    <label class="select">
+                                        <select>
+                                            <option>Create New Subcampaign</option>
+                                            <option>Choose Existing Subcampaign</option>
+                                            <option>Skip Subcampaign</option>
+                                        </select>
+                                        <i></i>
+                                    </label>
+                                </section>
+                            </div>
+                            <div class="row">
+                                <section>
+                                    <label class="label col col-3" for="name">Subcampaign Name</label>
+                                    <label class="input col col-9">
+                                        <input type="text" name="name" id="name" class="form-control" placeholder="Enter a subcampaign name..."/>
+                                    </label>
+                                </section>
+                            </div>
+                            <div class="row">
+                                <section>
+                                    <label class="label col col-3" for="description">Description</label>
+                                    <label class="textarea col col-9">
+                                        <textarea name="description" class="form-control" id="description" rows="3"
+                                                  placeholder="Enter a subcampaign description..."></textarea>
+                                    </label>
+                                </section>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <div class="row">
+                                <section class="col col-5">
+                                    <label class="select">
+                                        <select>
+                                            <option>Create New Ad</option>
+                                            <option>Skip Ad</option>
+                                        </select>
+                                        <i></i>
+                                    </label>
+                                </section>
+                            </div>
+                            <div class="row">
+                                <section>
+                                    <label class="label col col-3" for="name">Ad Name</label>
+                                    <label class="input col col-9">
+                                        <input type="text" name="name" id="name" class="form-control" placeholder="Enter an ad name..."/>
+                                    </label>
+                                </section>
+                            </div>
+                            <div class="row">
+                                <section>
+                                    <label class="label col col-3" for="description">Ad Description</label>
+                                    <label class="textarea col col-9">
+                                        <textarea name="description" class="form-control" id="description" rows="3"
+                                                  placeholder="Enter an ad description..."></textarea>
+                                    </label>
+                                </section>
+                            </div>
+                        </fieldset>
+
                     </div>
                 </div>
                 <div class="modal-footer">

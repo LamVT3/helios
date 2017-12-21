@@ -152,12 +152,29 @@
     color: white;
 }
 
-.close {
+.modal .close {
     color: #fff;
     opacity: 0.5;
 }
 
-.close:focus, .close:hover {
+.modal .close:focus, .modal .close:hover {
     color: #fff;
     opacity: 0.9;
+}
+
+.smart-form .label.col {
+    margin-bottom: 20px;
+    text-align: right;
+}
+
+section.col.col-5 select, section.col.col-5 option:selected {
+    font-weight: bold;
+}
+
+.smart-form fieldset {
+    padding-bottom: 25px;
+}
+
+fieldset:first-of-type {
+    padding-top: 0;
 }

@@ -33,7 +33,7 @@
                                         ×
                                     </button>
                                     <i class="fa-fw fa fa-info"></i>
-                                    A 'team' is a marketing team or an advertising account. A team should be created by a marketing manager. It will be shown as utm_team in a tracking link.
+                                    A 'team' is a marketing team or an advertising account. A team should be created by a marketing manager. It will be shown as <span class="txt-color-orangeDark">utm_team</span> in a tracking link.
                                 </div>
                                 <div class="widget-body-toolbar">
                                     <strong>Source: </strong>

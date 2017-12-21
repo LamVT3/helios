@@ -33,7 +33,7 @@
                                         ×
                                     </button>
                                     <i class="fa-fw fa fa-info"></i>
-                                    A 'source' is an advertising platform. A source should be created by a marketing manager. It will be shown as utm_source in a tracking link.
+                                    A 'source' is an advertising platform. A source should be created by a marketing manager. It will be shown as <span class="txt-color-orangeDark">utm_source</span> in a tracking link.
                                 </div>
                                 <table id="table_sources" class="table table-striped table-bordered table-hover"
                                        width="100%">
