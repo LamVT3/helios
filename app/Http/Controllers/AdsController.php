@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Ads;
+use App\Ad;
 use App\Campaign;
 use App\Channel;
 use Illuminate\Http\Request;
@@ -23,7 +23,7 @@ class AdsController extends Controller
             'landing_page' => 'required'
         ]);
 
-        $ads = request('ads_id') ? Ads::find(request('ads_id')) : new Ads();
+        $ads = request('ads_id') ? Ad::find(request('ads_id')) : new Ad();
 		$ads->channel_id = request('channel_id');
         $ads->name = request('name');
         $ads->keyword = request('keyword');
@@ -34,20 +34,20 @@ class AdsController extends Controller
         $ads->save();
 
         if (!request('id'))
-            session()->flash('message', 'Ads has been created successfully');
+            session()->flash('message', 'Ad has been created successfully');
         else
-            session()->flash('message', 'Ads has been updated successfully');
+            session()->flash('message', 'Ad has been updated successfully');
 
-        return response()->json(['type' => 'success', 'url' => route('channel-details', $ads->channel_id), 'message' => 'Ads has been created!']);
+        return response()->json(['type' => 'success', 'url' => route('channel-details', $ads->channel_id), 'message' => 'Ad has been created!']);
     }
 
     public function get($id)
     {
-        $ads = Ads::find($id);
+        $ads = Ad::find($id);
         if ($ads) {
             return response()->json(['type' => 'success', 'ads' => $ads]);
         } else {
-            return response()->json(['type' => 'error', 'message' => "Ads not found"]);
+            return response()->json(['type' => 'error', 'message' => "Ad not found"]);
         }
     }
 

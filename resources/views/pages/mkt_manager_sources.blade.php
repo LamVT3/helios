@@ -154,8 +154,7 @@
             valueField: '_id',
             labelField: 'name',
             searchField: ['name'],
-            options: allMembers,
-            create: true
+            options: allMembers
         });
     })
 

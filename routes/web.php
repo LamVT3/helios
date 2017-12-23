@@ -36,9 +36,9 @@ Route::group(['prefix' => 'adsmanager'], function () {
     Route::post('/campaign/create', 'CampaignController@store')->name('campaign-create');
     Route::get('/campaign/get/{id}', 'CampaignController@get')->name('campaign-get');
     Route::get('/campaign/{id}', 'AdsManagerController@campaign')->name('campaign-details');
-    Route::post('/channel/create', 'ChannelController@store')->name('channel-create');
-    Route::get('/channel/get/{id}', 'ChannelController@get')->name('channel-get');
-    Route::get('/channel/{id}', 'AdsManagerController@channel')->name('channel-details');
+    Route::post('/subcampaign/create', 'SubcampaignController@store')->name('subcampaign-create');
+    Route::get('/subcampaign/get/{id}', 'SubcampaignController@get')->name('subcampaign-get');
+    Route::get('/subcampaign/{id}', 'AdsManagerController@subcampaign')->name('subcampaign-details');
     Route::post('/ads/create', 'AdsController@store')->name('ads-create');
     Route::get('/ads/get/{id}', 'AdsController@get')->name('ads-get');
 });

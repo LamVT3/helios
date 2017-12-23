@@ -33,8 +33,7 @@
                                     <thead>
                                     <tr>
                                         <th>Name</th>
-                                        <th>Code</th>
-                                        <th>Description</th>
+                                        <th>Medium</th>
                                         <th>Creator</th>
                                         <th>Created at</th>
                                         <th>Active?</th>
@@ -45,8 +44,7 @@
                                     @foreach ($campaigns as $item)
                                         <tr id="campaign-{{ $item->id }}">
                                             <td><a href="{{ route("campaign-details", $item->id) }}">{{ $item->name }}</a></td>
-                                            <td>{{ $item->code }}</td>
-                                            <td>{{ $item->description }}</td>
+                                            <td>{{ $item->medium }}</td>
                                             <td></td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
                                             <td>{{ $item->is_active ? "Yes" : 'No' }}</td>
@@ -129,6 +127,7 @@
 <script src="{{ asset('js/plugin/datatables/dataTables.tableTools.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatables/dataTables.bootstrap.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatable-responsive/datatables.responsive.min.js') }}"></script>
+<script src="{{ asset('js/plugin/selectize/js/standalone/selectize.min.js')}}"></script>
 
 <script type="text/javascript">
 
@@ -169,6 +168,16 @@
 //        $('head').append('<link rel="stylesheet" href="{{ asset('js/plugin/selectize/css/selectize.bootstrap3.css') }}">');
 
         /* END BASIC */
+
+        allCampaigns = {!! $campaigns !!}
+
+        $('input[name=campaign]').selectize({
+            valueField: '_id',
+            labelField: 'name',
+            searchField: ['name'],
+            options: allCampaigns,
+            maxItems: 1
+        });
     })
 
 </script>

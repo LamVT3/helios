@@ -21,7 +21,7 @@ class TeamController extends Controller
         $page_css = array('selectize.default.css');
         $no_main_header = FALSE;
         $active = 'mktmanager-teams';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i>Ads Mananger <span>> Teams </span>";
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i>Ad Mananger <span>> Teams </span>";
 
         $sources = Source::all();
 
@@ -35,7 +35,7 @@ class TeamController extends Controller
         $allMembers = User::get(['name', 'id']);
         $members = '';
 
-        return view('pages.ads_manager_teams', compact(
+        return view('pages.mkt_manager_teams', compact(
             'no_main_header',
             'page_title',
             'page_css',
@@ -78,11 +78,34 @@ class TeamController extends Controller
             {
                 return response()->json(['type' => 'error', 'message' => 'Member not found!']);
             }
-            $array_members[] = array('user_id' => $m->_id, 'username' => $m->name);
+
+            $array_members[$m->id] = array('user_id' => $m->_id, 'username' => $m->name);
         }
         $team->members = $array_members;
 
         $team->save();
+
+        foreach($members as $item){
+            $m = User::find($item);
+            if(isset($m->sources)){
+                if(isset($m->sources[$source->id])){
+                    $m->sources[$source->id]['teams'][$team->id] = array('team_name' => $team->name, 'team_id' => $team->id);
+                }else{
+                    $m->sources[$source->id] = array(
+                        'source_id' => $source->id,
+                        'source_name' => $source->name,
+                        'teams' => [$team->id => array('team_name' => $team->name, 'team_id' => $team->id)]
+                    );
+                }
+            }else{
+                $m->sources = [$source->id => array(
+                    'source_id' => $source->id,
+                    'source_name' => $source->name,
+                    'teams' => [$team->id => array('team_name' => $team->name, 'team_id' => $team->id)]
+                )];
+            }
+            $m->save();
+        }
 
         if (!request('id'))
             session()->flash('message', 'Team has been created successfully');

@@ -15,7 +15,7 @@ use Faker\Generator as Faker;
 
 $factory->define(App\Contact::class, function (Faker $faker) {
     $ads_id = $faker->md5;
-    $ads_name = 'Ads '. $ads_id;
+    $ads_name = 'Ad '. $ads_id;
 
     $channel_id = $faker->ean8;
     $channel_name = 'Channel '. $channel_id;

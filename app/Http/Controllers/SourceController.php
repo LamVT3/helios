@@ -19,13 +19,13 @@ class SourceController extends Controller
         $page_css = array('selectize.default.css');
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active = 'mktmanager';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ads Manager <span>> Sources</span>";
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager <span>> Sources</span>";
 
         $sources = Source::all();
         $allMembers = User::get(['name', 'id']);
         $members = '';
 
-        return view('pages.ads_manager_sources', compact(
+        return view('pages.mkt_manager_sources', compact(
             'page_title',
             'page_css',
             'no_main_header',

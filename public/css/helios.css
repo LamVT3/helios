@@ -165,15 +165,16 @@
 .smart-form .label.col {
     margin-bottom: 20px;
     text-align: right;
+    color: #666;
 }
 
-section.col.col-5 select, section.col.col-5 option:selected {
+section.col.col-5 select, section.col.col-5 option:checked {
     font-weight: bold;
 }
 
-.smart-form fieldset {
+/*.smart-form fieldset {
     padding-bottom: 25px;
-}
+}*/
 
 fieldset:first-of-type {
     padding-top: 0;

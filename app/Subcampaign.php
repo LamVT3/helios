@@ -4,7 +4,7 @@ namespace App;
 
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 
-class Ads extends Eloquent
+class Subcampaign extends Eloquent
 {
     //
 }

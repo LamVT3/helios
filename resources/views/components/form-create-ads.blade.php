@@ -3,7 +3,7 @@
         <div class="modal-content">
             <form method="post" id="form-ads" action="{{ route("ads-create") }}">
                 {{ csrf_field() }}
-                <input type="hidden" name="channel_id" value="{{ $channel->id }}"/>
+                <input type="hidden" name="subcampaign_id" value="{{ $subcampaign->id }}"/>
                 <input type="hidden" name="ads_id" value=""/>
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">

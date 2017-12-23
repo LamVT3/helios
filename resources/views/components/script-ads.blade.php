@@ -21,7 +21,7 @@
                     if (data.type && data.type == 'success') {
                         var ads = data.ads;
 
-                        modal.find('.modal-title').text('Edit Ads');
+                        modal.find('.modal-title').text('Edit Ad');
                         modal.find('input[name=ads_id]').val(itemId);
                         modal.find('input[name=name]').val(ads.name);
                         modal.find('input[name=landing_page]').val(ads.landing_page);
@@ -34,7 +34,7 @@
                     }
                 })
             }else{
-                modal.find('.modal-title').text('Create Ads');
+                modal.find('.modal-title').text('Create Ad');
                 modal.find('[type=submit]').html('Create');
                 modal.find('textarea[name=description]').html('');
                 $('#form-ads')[0].reset();

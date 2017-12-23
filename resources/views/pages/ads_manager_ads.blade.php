@@ -37,15 +37,15 @@
                         @endcomponent--}}
 
                         @component('components.jarviswidget',
-                                                    ['id' => 1, 'icon' => 'fa-table', 'title' => 'Ads in ' . $channel->name])
+                                                    ['id' => 1, 'icon' => 'fa-table', 'title' => 'Ad' . $subcampaign->name])
                             <div class="widget-body no-padding">
                                 <table id="table_ads" class="table table-striped table-bordered table-hover"
                                        width="100%">
                                     <thead>
                                     <tr>
                                         <th>Name</th>
-                                        <th>Keyword</th>
-                                        <th>Description</th>
+                                        <th>Subcampaign</th>
+                                        <th>Campaign</th>
                                         <th>Landing Page</th>
                                         <th>Link tracking</th>
                                         <th>Creator</th>
@@ -58,9 +58,9 @@
                                     @foreach ($ads as $item)
                                         <tr id="landing-page-{{ $item->id }}">
                                             <td>{{ $item->name }}</td>
-                                            <td>{{ $item->keyword }}</td>
-                                            <td>{{ $item->description }}</td>
-                                            <td>{{ $item->landingpage_name }}</td>
+                                            <td>{{ $item->subcampaign_name }}</td>
+                                            <td>{{ $item->campaign_name }}</td>
+                                            <td>{{ $item->landing_page_name }}</td>
                                             <td>{{ $item->link_tracking }}</td>
                                             <td></td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
@@ -106,7 +106,7 @@
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                                     &times;
                                 </button>
-                                <h3 class="modal-title"> Are you sure you want to delete this channel?</h3>
+                                <h3 class="modal-title"> Are you sure you want to delete this subcampaign?</h3>
                             </div>
                             <div class="modal-footer">
                                 <form method="post" action="">
@@ -152,7 +152,7 @@
     $(document).ready(function () {
 
         /* BASIC ;*/
-        var responsiveHelper_table_channel = undefined;
+        var responsiveHelper_table_subcampaign = undefined;
 
         var breakpointDefinition = {
             tablet: 1024,
@@ -166,15 +166,15 @@
             "autoWidth": true,
             "preDrawCallback": function () {
                 // Initialize the responsive datatables helper once.
-                if (!responsiveHelper_table_channel) {
-                    responsiveHelper_table_channel = new ResponsiveDatatablesHelper($('#table_ads'), breakpointDefinition);
+                if (!responsiveHelper_table_subcampaign) {
+                    responsiveHelper_table_subcampaign = new ResponsiveDatatablesHelper($('#table_ads'), breakpointDefinition);
                 }
             },
             "rowCallback": function (nRow) {
-                responsiveHelper_table_channel.createExpandIcon(nRow);
+                responsiveHelper_table_subcampaign.createExpandIcon(nRow);
             },
             "drawCallback": function (oSettings) {
-                responsiveHelper_table_channel.respond();
+                responsiveHelper_table_subcampaign.respond();
             },
             "order": [[0, "desc"]]
         });
