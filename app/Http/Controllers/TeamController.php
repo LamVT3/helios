@@ -35,7 +35,7 @@ class TeamController extends Controller
         $allMembers = User::get(['name', 'id']);
         $members = '';
 
-        return view('pages.mkt_manager_teams', compact(
+        return view('pages.mkt_manager-teams', compact(
             'no_main_header',
             'page_title',
             'page_css',

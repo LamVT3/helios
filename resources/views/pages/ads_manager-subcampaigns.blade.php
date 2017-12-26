@@ -56,7 +56,7 @@
                                         <tr id="subcampaign-{{ $item->id }}">
                                             <td><a href="{{ route("subcampaign-details", $item->id) }}">{{ $item->name }}</a></td>
                                             <td>{{ $item->campaign_name }}</td>
-                                            <td></td>
+                                            <td>{{ $item->creator_name }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
                                             <td>{{ $item->is_active ? "Yes" : 'No' }}</td>
                                             <td>

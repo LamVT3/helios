@@ -32,6 +32,8 @@
                                        width="100%">
                                     <thead>
                                     <tr>
+                                        <th>Source</th>
+                                        <th>Team</th>
                                         <th>Name</th>
                                         <th>Medium</th>
                                         <th>Creator</th>
@@ -43,9 +45,11 @@
                                     <tbody>
                                     @foreach ($campaigns as $item)
                                         <tr id="campaign-{{ $item->id }}">
+                                            <td>{{ $item->source_name }}</td>
+                                            <td>{{ $item->team_name }}</td>
                                             <td><a href="{{ route("campaign-details", $item->id) }}">{{ $item->name }}</a></td>
                                             <td>{{ $item->medium }}</td>
-                                            <td></td>
+                                            <td>{{ $item->creator_name }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
                                             <td>{{ $item->is_active ? "Yes" : 'No' }}</td>
                                             <td>

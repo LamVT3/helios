@@ -10,6 +10,9 @@
                     <h3 class="modal-title"> Create Campaign</h3>
                 </div>
                 <div class="modal-body">
+                    @unless(auth()->user()->sources)
+                        <p class="text-warning">This user can not create a campaign because it hasn't been assigned to a team.</p>
+                    @else
                     <div class="smart-form">
                         {{ csrf_field() }}
                         <div id="form-campaign-alert"></div>
@@ -174,11 +177,14 @@
                         </fieldset>
 
                     </div>
+                        @endunless
                 </div>
                 <div class="modal-footer">
+                    @if(auth()->user()->sources)
                     <button type="submit" class="btn btn-primary">
                         Create
                     </button>
+                    @endif
                     <button type="button" class="btn btn-default" data-dismiss="modal">
                         Cancel
                     </button>

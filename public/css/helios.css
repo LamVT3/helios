@@ -179,3 +179,8 @@ section.col.col-5 select, section.col.col-5 option:checked {
 fieldset:first-of-type {
     padding-top: 0;
 }
+
+.tb-only {
+    overflow: auto;
+    width: 100%;
+}

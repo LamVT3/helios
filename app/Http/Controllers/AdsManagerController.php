@@ -24,7 +24,7 @@ class AdsManagerController extends Controller
         $campaigns = Campaign::all();
         $landing_pages = LandingPage::where('is_active', "1")->get();
 
-        return view('pages.ads_manager_campaigns', compact(
+        return view('pages.ads_manager-campaigns', compact(
             'page_title',
             'page_css',
             'no_main_header',
@@ -48,7 +48,7 @@ class AdsManagerController extends Controller
 
         $subcampaigns = Subcampaign::where('campaign_id', $campaign->id)->get();
 
-        return view('pages.ads_manager_subcampaigns', compact(
+        return view('pages.ads_manager-subcampaigns', compact(
             'page_title',
             'page_css',
             'no_main_header',
@@ -73,7 +73,7 @@ class AdsManagerController extends Controller
         $ads = Ad::where('subcampaign_id', $subcampaign->id)->get();
         $landing_pages = LandingPage::where('is_active', "1")->get();
 
-        return view('pages.ads_manager_ads', compact(
+        return view('pages.ads_manager-ads', compact(
             'page_title',
             'page_css',
             'no_main_header',
@@ -95,7 +95,7 @@ class AdsManagerController extends Controller
 
         $landing_pages = LandingPage::all();
 
-        return view('pages.ads_manager_landing_pages', compact(
+        return view('pages.ads_manager-landing_pages', compact(
             'page_title',
             'page_css',
             'no_main_header',

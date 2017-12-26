@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Ad;
 use App\Campaign;
 use App\LandingPage;
+use App\Source;
 use App\Subcampaign;
+use App\Team;
 use Illuminate\Http\Request;
 
 class CampaignController extends Controller
@@ -23,7 +25,10 @@ class CampaignController extends Controller
             'code' => 'required',
             'description' => 'required'
         ]);*/
+        $user = auth()->user();
 
+        $source = request('source');
+        $team = request('team');
         $select_campaign = request('select_campaign');
         $select_subcampaign = request('select_subcampaign');
         $select_ad = request('select_ad');
@@ -40,12 +45,19 @@ class CampaignController extends Controller
 
         $message = "";
 
-        debug($landing_page);
+        $source = Source::findOrFail($source);
+        $team = Team::findOrFail($team);
 
         if($select_campaign === "new"){
             $campaign = new Campaign();
             $campaign->name = $campaign_name;
             $campaign->medium = $medium;
+            $campaign->source_id = $source->id;
+            $campaign->source_name = $source->name;
+            $campaign->team_id = $team->id;
+            $campaign->team_name = $team->name;
+            $campaign->creator_id = $user->id;
+            $campaign->creator_name = $user->name;
             $campaign->is_active = 1;
 
             $campaign->save();
@@ -57,8 +69,14 @@ class CampaignController extends Controller
         if($select_subcampaign === "new"){
             $subcampaign = new Subcampaign();
             $subcampaign->name = $subcampaign_name;
+            $subcampaign->source_id = $source->id;
+            $subcampaign->source_name = $source->name;
+            $subcampaign->team_id = $team->id;
+            $campaign->team_name = $team->name;
             $subcampaign->campaign_id = $campaign->id;
             $subcampaign->campaign_name = $campaign->name;
+            $subcampaign->creator_id = $user->id;
+            $subcampaign->creator_name = $user->name;
             $subcampaign->is_active = 1;
 
             $subcampaign->save();
@@ -71,6 +89,10 @@ class CampaignController extends Controller
         if($select_ad === "new"){
             $ad = new Ad();
             $ad->name = $ad_name;
+            $ad->source_id = $source->id;
+            $ad->source_name = $source->name;
+            $ad->team_id = $team->id;
+            $ad->team_name = $team->name;
             $ad->campaign_name = $campaign->name;
             $ad->campaign_id = $campaign->id;
             $ad->subcampaign_id = $subcampaign->id;
@@ -78,7 +100,9 @@ class CampaignController extends Controller
             $landing_page = LandingPage::findOrFail($landing_page);
             $ad->landing_page_id = $landing_page->id;
             $ad->landing_page_name = $landing_page->name;
-            //$ad->tracking_link = $landingpage . '?utm_source=' .
+            $ad->creator_id = $user->id;
+            $ad->creator_name = $user->name;
+            $ad->tracking_link = $landing_page->url . "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->name}&utm_campaign={$campaign->name}&utm_ad={$ad->name}";
             $ad->is_active = 1;
 
             $ad->save();

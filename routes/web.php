@@ -49,6 +49,8 @@ Route::group(['prefix' => 'contacts'], function () {
 
 });
 
+Route::get('/report', 'ReportController@index')->name('report');
+
 /*Route::get('/kpi/add', 'KpiController@add')->name('kpi-add');
 Route::get('/policy/edit', 'PolicyController@edit')->name('policy-edit');
 Route::get('/inventory', 'InventoryController@index')->name('inventory');

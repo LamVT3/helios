@@ -25,7 +25,7 @@ class SourceController extends Controller
         $allMembers = User::get(['name', 'id']);
         $members = '';
 
-        return view('pages.mkt_manager_sources', compact(
+        return view('pages.mkt_manager-sources', compact(
             'page_title',
             'page_css',
             'no_main_header',

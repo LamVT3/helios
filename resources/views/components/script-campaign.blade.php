@@ -128,6 +128,8 @@
             e.preventDefault();
             var data = {};
 
+            data.source = $(this).find('[name=source]').val();
+            data.team = $(this).find('[name=team]').val();
             data.select_campaign = $(this).find('[name=select_campaign]').val();
             data.select_subcampaign = $(this).find('[name=select_subcampaign]').val();
             data.select_ad = $(this).find('[name=select_ad]').val();

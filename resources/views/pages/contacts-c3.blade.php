@@ -88,7 +88,7 @@
             </section>
             <!-- end widget grid -->
 
-                @include('components.form-create-campaign', ['type' => null])
+                {{--@include('components.form-create-campaign', ['type' => null])--}}
 
                 {{--<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
                     <div class="modal-dialog">

@@ -23,7 +23,7 @@ class ContactController extends Controller
 
         $contacts = Contact::orderBy('registered_at', 'desc')->limit(1000)->get();
 
-        return view('pages.contacts_c3', compact(
+        return view('pages.contacts-c3', compact(
             'page_title',
             'page_css',
             'no_main_header',
@@ -44,7 +44,7 @@ class ContactController extends Controller
         $page_title = "Contact: " . $contact->name . " | Helios";
         $breadcrumbs = "<i class=\"fa-fw fa fa-child\"></i> Contacts > <span>> " . $contact->name . "</span>";
 
-        return view('pages.contacts_details', compact(
+        return view('pages.contacts-details', compact(
             'page_title',
             'page_css',
             'no_main_header',
