@@ -4,13 +4,16 @@ namespace App\Http\Controllers;
 
 use App\ActivityBooking;
 use App\Admin_account;
+use App\AdResult;
 use App\CarBooking;
 use App\Customer;
 use App\CustomerActivity;
 use App\Dm_contact;
 use App\HotelBooking;
 use App\TourBooking;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -40,6 +43,7 @@ class DashboardController extends Controller
         //$user = Admin_account::all();
         //$contacts = Dm_contact::where('link_cv', null)->orderBy('id', 'desc')->limit(5)->get();
         //debug($contacts);
+        $ad_results = AdResult::where("date", Carbon::yesterday()->toDateString());
 
         return view('pages.dashboard', compact(
             'page_title',
@@ -47,7 +51,7 @@ class DashboardController extends Controller
             'no_main_header',
             'active',
             'breadcrumbs',
-            'contacts'
+            'ad_results'
         ));
     }
 }

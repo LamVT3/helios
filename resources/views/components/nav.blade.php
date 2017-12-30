@@ -62,18 +62,8 @@
             </li>
 
             <li class="{{ $active == 'report' ? 'active' : '' }}">
-                <a href="javascript:void(0)"><i class="fa fa-lg fa-fw fa-bar-chart-o"></i> <span
+                <a href="{{ route('report') }}"><i class="fa fa-lg fa-fw fa-bar-chart-o"></i> <span
                             class="menu-item-parent">Report</span></a>
-                <ul>
-                    <li class="{{ $active == 'input' ? 'active' : '' }}">
-                        <a href="{{ route('dashboard') }}"><i class="fa fa-lg fa-fw fa-table"></i> Daily Report</a>
-                    </li>
-                    <li class="{{ $active == 'report' ? 'active' : '' }}">
-                        <a href="{{ route('report') }}"><i class="fa fa-lg fa-fw fa-book"></i> Quality Report</a>
-                    </li>
-
-
-                </ul>
             </li>
 
             <li class="{{ $active == 'contacts' ? 'active' : '' }}">

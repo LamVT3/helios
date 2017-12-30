@@ -22,7 +22,7 @@ class SourceController extends Controller
         $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager <span>> Sources</span>";
 
         $sources = Source::all();
-        $allMembers = User::get(['name', 'id']);
+        $allMembers = User::get(['username', 'id']);
         $members = '';
 
         return view('pages.mkt_manager-sources', compact(

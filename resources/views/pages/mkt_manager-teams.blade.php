@@ -68,7 +68,7 @@
                                     @foreach ($teams as $item)
                                         <tr id="team-{{ $item->id }}">
                                             <td>{{ $item->name }}</td>
-                                            <td>{{ $item->source['source_name'] }}</td>
+                                            <td>{{ $item->source_name }}</td>
                                             <td>{{ $item->description }}</td>
                                             <td>
                                                 @foreach($item->members as $m)
@@ -171,8 +171,8 @@
             delimiter: ',',
             persist: false,
             valueField: '_id',
-            labelField: 'name',
-            searchField: ['name'],
+            labelField: 'username',
+            searchField: ['username'],
             options: allMembers
         });
     })

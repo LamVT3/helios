@@ -51,7 +51,7 @@
                                         <tr id="source-{{ $item->id }}">
                                             <td><a href="{{ route("team", $item->id) }}">{{ $item->name }}</a></td>
                                             <td>{{ $item->description }}</td>
-                                            <td>{{ $item->creator or '' }}</td>
+                                            <td>{{ $item->creator_name or '' }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
                                             <td>
                                                 {{--@permission('edit-review')--}}
@@ -152,8 +152,8 @@
             delimiter: ',',
             persist: false,
             valueField: '_id',
-            labelField: 'name',
-            searchField: ['name'],
+            labelField: 'username',
+            searchField: ['username'],
             options: allMembers
         });
     })

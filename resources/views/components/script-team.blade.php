@@ -24,7 +24,7 @@
                         modal.find('.modal-title').text('Edit Team');
                         modal.find('input[name=team_id]').val(itemId);
                         modal.find('input[name=name]').val(team.name);
-                        modal.find('select[name=source]').val(team.source.source_id);
+                        modal.find('select[name=source]').val(team.source_id);
                         modal.find('textarea[name=description]').html(team.description);
                         var members = modal.find('input[name=members]').selectize();
                         members[0].selectize.setValue(team.member_ids_array);

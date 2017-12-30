@@ -6,6 +6,7 @@ use App\Source;
 use App\Team;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TeamController extends Controller
 {
@@ -22,17 +23,18 @@ class TeamController extends Controller
         $no_main_header = FALSE;
         $active = 'mktmanager-teams';
         $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i>Ad Mananger <span>> Teams </span>";
-
+        //DB::connection( 'mongodb' )->enableQueryLog();
         $sources = Source::all();
 
         if($id == 'all'){
             $teams = Team::all();
         }else{
-            $teams = Team::where('source.source_id', $id)->orderBy('created_at', 'desc')->get();
+            $teams = Team::where('source_id', $id)->orderBy('created_at', 'desc')->get();
         }
+        //dd(DB::connection('mongodb')->getQueryLog());
         //where('destination_id', $id)->orderBy('order', 'asc')->with('user', 'destination')->get();
 
-        $allMembers = User::get(['name', 'id']);
+        $allMembers = User::get(['username', 'id']);
         $members = '';
 
         return view('pages.mkt_manager-teams', compact(
@@ -84,6 +86,8 @@ class TeamController extends Controller
         $team->members = $array_members;
 
         $team->save();
+
+        debug($team);
 
         foreach($members as $item){
             $m = User::find($item);

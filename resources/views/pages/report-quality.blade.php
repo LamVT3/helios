@@ -7,11 +7,11 @@
         <!-- MAIN CONTENT -->
         <div id="content">
 
-            @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
+        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
 
-            @endcomponent
+        @endcomponent
 
-            <!-- widget grid -->
+        <!-- widget grid -->
             <section id="widget-grid" class="">
 
                 <!-- row -->
@@ -33,8 +33,77 @@
 
                         @component('components.jarviswidget',
                                                     ['id' => 1, 'icon' => 'fa-table', 'title' => 'Report'])
-                            <div class="widget-body no-padding">
-                                <table id="table_ads" class="table table-striped table-bordered table-hover"
+                            <div class="widget-body">
+
+                                <form id="search-form" class="smart-form" action="#">
+                                    <div class="row">
+                                        <div id="reportrange" class="pull-left"
+                                             style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; margin: 10px 15px">
+                                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                                            <span></span> <b class="caret"></b>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <section class="col col-3">
+                                            <label class="label">Source</label>
+                                            <label class="select"> <i class="icon-append fa fa-user"></i>
+                                                <select name="source">
+                                                    <option>All</option>
+                                                    @foreach($sources as $item)
+                                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                        @endforeach
+                                                </select>
+                                                <i></i>
+                                            </label>
+                                        </section>
+                                        <section class="col col-3">
+                                            <label class="label">Team</label>
+                                            <label class="select"> <i class="icon-append fa fa-user"></i>
+                                                <select name="team">
+                                                    <option>All</option>
+                                                    @foreach($teams as $item)
+                                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <i></i>
+                                            </label>
+                                        </section>
+                                        <section class="col col-3">
+                                            <label class="label">Marketer</label>
+                                            <label class="select"> <i class="icon-append fa fa-user"></i>
+                                                <select name="marketer">
+                                                    <option>All</option>
+                                                    @foreach($marketers as $item)
+                                                        <option value="{{ $item->id }}">{{ $item->username }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <i></i>
+                                            </label>
+                                        </section>
+                                        <section class="col col-3">
+                                            <label class="label">Campaign</label>
+                                            <label class="select"> <i class="icon-append fa fa-user"></i>
+                                                <select name="campaign">
+                                                    <option>All</option>
+                                                    @foreach($campaigns as $item)
+                                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <i></i>
+                                            </label>
+                                        </section>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12 text-right">
+                                            <button class="btn btn-primary btn-sm" type="submit"  style="margin-right: 15px">
+                                                <i class="fa fa-filter"></i>
+                                                Filter
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <hr>
+                                <table id="table_ads" class="table "
                                        width="100%">
                                     <thead>
                                     <tr>
@@ -45,25 +114,50 @@
                                         <th>Subcampaign</th>
                                         <th>Ad</th>
                                         <th>C1</th>
-                                        <th>C1 Cost</th>
+                                        <th class="long">C1 Cost (VND)</th>
                                         <th>C2</th>
-                                        <th>C2 Cost</th>
+                                        <th class="long">C2 Cost (VND)</th>
                                         <th>C3</th>
-                                        <th>C3 Cost</th>
+                                        <th class="long">C3 Cost (VND)</th>
                                         <th>C3B</th>
-                                        <th>C3B Cost</th>
-                                        <th>C3/C2</th>
+                                        <th class="long">C3B Cost (VND)</th>
+                                        <th>C3/C2 (%)</th>
                                         <th>L1</th>
                                         <th>L3</th>
                                         <th>L8</th>
-                                        <th>L3/L1</th>
-                                        <th>L8/L1</th>
-                                        <th>Spent</th>
-                                        <th>Revenue</th>
-                                        <th>ME/RE</th>
+                                        <th>L3/L1 (%)</th>
+                                        <th>L8/L1 (%)</th>
+                                        <th class="long">Spent (USD)</th>
+                                        <th class="long">Revenue (USD)</th>
+                                        <th>ME/RE (%)</th>
                                     </tr>
                                     </thead>
                                     <tbody>
+                                    <tr id="total">
+                                        <td>{{ $source }}</td>
+                                        <td>{{ $team }}</td>
+                                        <td>{{ $marketer }}</td>
+                                        <td>{{ $campaign }}</td>
+                                        <td>All</td>
+                                        <td>All</td>
+                                        <td>{{ $total['c1'] }}</td>
+                                        <td>{{ $total['c1_cost'] }}</td>
+                                        <td>{{ $total['c2'] }}</td>
+                                        <td>{{ $total['c2_cost'] }}</td>
+                                        <td>{{ $total['c3'] }}</td>
+                                        <td>{{ $total['c3_cost'] }}</td>
+                                        <td>{{ $total['c3b'] }}</td>
+                                        <td>{{ $total['c3b_cost'] }}</td>
+                                        <td>{{ $total['c3_c2'] }}</td>
+                                        <td>{{ $total['l1'] }}</td>
+                                        <td>{{ $total['l3'] }}</td>
+                                        <td>{{ $total['l8'] }}</td>
+                                        <td>{{ $total['l3_l1'] }}</td>
+                                        <td>{{ $total['l8_l1'] }}</td>
+                                        <td>{{ $total['spent'] }}</td>
+                                        <td>{{ $total['revenue'] }}</td>
+                                        <td>{{ $total['me_re'] }}</td>
+                                    </tr>
                                     @foreach ($ads as $item)
                                         <tr id="ad-{{ $item->id }}">
                                             <td>{{ $item->source_name }}</td>
@@ -72,23 +166,23 @@
                                             <td>{{ $item->campaign_name }}</td>
                                             <td>{{ $item->subcampaign_name }}</td>
                                             <td>{{ $item->name }}</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                            <td>C3B</td>
-                                            <td>C3B Cost</td>
-                                            <td>C3/C2</td>
-                                            <td>L1</td>
-                                            <td>L3</td>
-                                            <td>L8</td>
-                                            <td>L3/L1</td>
-                                            <td>L8/L1</td>
-                                            <td>Spent</td>
-                                            <td>Revenue</td>
-                                            <td>ME/RE</td>
+                                            <td>{{ $results[$item->id]->c1 }}</td>
+                                            <td>{{ $results[$item->id]->c1_cost }}</td>
+                                            <td>{{ $results[$item->id]->c2 }}</td>
+                                            <td>{{ $results[$item->id]->c2_cost }}</td>
+                                            <td>{{ $results[$item->id]->c3 }}</td>
+                                            <td>{{ $results[$item->id]->c3_cost }}</td>
+                                            <td>{{ $results[$item->id]->c3 }}</td>
+                                            <td>{{ $results[$item->id]->c3b_cost }}</td>
+                                            <td>{{ round($results[$item->id]->c3 / $results[$item->id]->c2, 4) * 100 }}</td>
+                                            <td>{{ $results[$item->id]->l1 }}</td>
+                                            <td>{{ $results[$item->id]->l3 }}</td>
+                                            <td>{{ $results[$item->id]->l8 }}</td>
+                                            <td>{{ $results[$item->id]->l1 ? round($results[$item->id]->l3 / $results[$item->id]->l1, 4) * 100 : 'n/a' }}</td>
+                                            <td>{{ $results[$item->id]->l1 ? round($results[$item->id]->l8 / $results[$item->id]->l1, 4) * 100 : 'n/a' }}</td>
+                                            <td>{{ $results[$item->id]->spent }}</td>
+                                            <td>{{ $results[$item->id]->revenue }}</td>
+                                            <td>{{ $results[$item->id]->revenue ? round($results[$item->id]->spent / $results[$item->id]->revenue, 4) * 100 : 'n/a' }}</td>
                                         </tr>
                                     @endforeach
 
@@ -117,54 +211,81 @@
 
 @section('script')
 
-<!-- PAGE RELATED PLUGIN(S) -->
-<script src="{{ asset('js/plugin/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('js/plugin/datatables/dataTables.colVis.min.js') }}"></script>
-<script src="{{ asset('js/plugin/datatables/dataTables.tableTools.min.js') }}"></script>
-<script src="{{ asset('js/plugin/datatables/dataTables.bootstrap.min.js') }}"></script>
-<script src="{{ asset('js/plugin/datatable-responsive/datatables.responsive.min.js') }}"></script>
+    <!-- PAGE RELATED PLUGIN(S) -->
+    <script src="{{ asset('js/plugin/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('js/plugin/datatables/dataTables.colVis.min.js') }}"></script>
+    <script src="{{ asset('js/plugin/datatables/dataTables.tableTools.min.js') }}"></script>
+    <script src="{{ asset('js/plugin/datatables/dataTables.bootstrap.min.js') }}"></script>
+    <script src="{{ asset('js/plugin/datatable-responsive/datatables.responsive.min.js') }}"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
-    // DO NOT REMOVE : GLOBAL FUNCTIONS!
+        // DO NOT REMOVE : GLOBAL FUNCTIONS!
 
-    $(document).ready(function () {
+        $(document).ready(function () {
 
-        /* BASIC ;*/
-        var responsiveHelper_table_subcampaign = undefined;
+            var start = moment().subtract(29, 'days');
+            var end = moment();
 
-        var breakpointDefinition = {
-            tablet: 1024,
-            phone: 480
-        };
+            function cb(start, end) {
+                $('#reportrange span').html(start.format('D/M/Y') + ' - ' + end.format('D/M/Y'));
+            }
 
-        $('#table_ads').dataTable({
-            "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-6 hidden-xs'C>r>" +
-            "<'tb-only't>" +
-            "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-sm-6 col-xs-12'p>>",
-            "autoWidth": true,
-            "preDrawCallback": function () {
-                // Initialize the responsive datatables helper once.
-                if (!responsiveHelper_table_subcampaign) {
-                    responsiveHelper_table_subcampaign = new ResponsiveDatatablesHelper($('#table_ads'), breakpointDefinition);
+            $('#reportrange').daterangepicker({
+                startDate: start,
+                endDate: end,
+                opens: 'right',
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    "This Week": [moment().startOf("week"), moment().endOf("week")],
+                    "Last Week": [moment().subtract(1, "week").startOf("week"), moment().subtract(1, "week").endOf("week")],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
                 }
-            },
-            "rowCallback": function (nRow) {
-                responsiveHelper_table_subcampaign.createExpandIcon(nRow);
-            },
-            "drawCallback": function (oSettings) {
-                responsiveHelper_table_subcampaign.respond();
-            },
-            "order": [[0, "desc"]]
-        });
+            }, cb);
 
+            cb(start, end);
+
+            /* BASIC ;*/
+            var responsiveHelper_table_subcampaign = undefined;
+
+            var breakpointDefinition = {
+                tablet: 1024,
+                phone: 480
+            };
+
+            $('#table_ads').dataTable({
+                "sDom":
+                "<'tb-only't>" +
+                "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-sm-6 col-xs-12'p>>",
+                "autoWidth": true,
+                "preDrawCallback": function () {
+                    // Initialize the responsive datatables helper once.
+                    if (!responsiveHelper_table_subcampaign) {
+                        responsiveHelper_table_subcampaign = new ResponsiveDatatablesHelper($('#table_ads'), breakpointDefinition);
+                    }
+                },
+                "rowCallback": function (nRow) {
+                    responsiveHelper_table_subcampaign.createExpandIcon(nRow);
+                },
+                "drawCallback": function (oSettings) {
+                    responsiveHelper_table_subcampaign.respond();
+                }
+
+            });
 
 
 //        $('head').append('<link rel="stylesheet" href="{{ asset('js/plugin/selectize/css/selectize.bootstrap3.css') }}">');
 
-        /* END BASIC */
-    })
+            /* END BASIC */
+        })
 
-</script>
-@include('components.script-ads')
+    </script>
+    @include('components.script-ads')
 @stop

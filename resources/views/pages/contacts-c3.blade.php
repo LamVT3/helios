@@ -50,10 +50,10 @@
                                             <td><a href="{{ route("contacts-details", $item->id) }}">{{ $item->name }}</a></td>
                                             <td>{{ $item->email }}</td>
                                             <td>{{ $item->phone }}</td>
-                                            <td>{{ $item->marketer }}</td>
+                                            <td>{{ $item->marketer_name }}</td>
                                             <td>{{ $item->campaign_name }}</td>
-                                            <td>{{ $item->channel_name }}</td>
-                                            <td>{{ $item->ads_name }}</td>
+                                            <td>{{ $item->subcampaign_name }}</td>
+                                            <td>{{ $item->ad_name }}</td>
                                             <td>{{ $item->landingpage_name }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
                                             <td>

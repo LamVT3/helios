@@ -8,6 +8,10 @@
         <div id="content">
 
         @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
+                <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc;">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                    <span></span> <b class="caret"></b>
+                </div>
         @endcomponent
 
         <!-- widget grid -->
@@ -27,7 +31,7 @@
                                     <span class="widget-unit">C3</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
-                                    6,200
+                                    {{ $ad_results->sum("c3") }}
                                 </div>
                                 <div class="text text-align-right font-sm widget-kpi">
                                     12,000
@@ -54,7 +58,7 @@
                                     <span class="widget-unit">USD</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
-                                    2.1
+                                    {{ $ad_results->sum("c3") ? $ad_results->sum("spent")/$ad_results->sum("c3") : 'n/a' }}
                                 </div>
                                 <div class="text text-align-right font-sm widget-kpi">
                                     2.3
@@ -82,7 +86,7 @@
                                     <span class="widget-unit">USD</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
-                                    1,203
+                                    {{ $ad_results->sum("spent") }}
                                 </div>
                                 <div class="text text-align-right font-sm widget-kpi">
                                     2,000
@@ -110,7 +114,7 @@
                                     <span class="widget-unit">VND</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
-                                    1,203,000,000
+                                    {{ $ad_results->sum("revenue") }}
                                 </div>
                                 <div class="text text-align-right font-sm widget-kpi">
                                     2,000,000,000
@@ -158,29 +162,62 @@
                     </article>
 
                 </div>
-
                 <!-- row -->
-
+                <h1><i class="glyphicon glyphicon-calendar fa fa-line-chart"></i> <b>Leaderboard</b></h1>
                 <div class="row">
 
                     <article class="col-sm-12 col-md-12 col-lg-4">
 
                     @component('components.jarviswidget',
-                    ['id' => 0, 'icon' => 'fa-table', 'title' => "Activities"])
+                    ['id' => 0, 'icon' => 'fa-table', 'title' => "C3 Leaderboard"])
 
                         <!-- widget content -->
                             <div class="widget-body no-padding">
-
+                                <div class="alert alert-info no-margin fade in">
+                                    <button class="btn btn-xs btn-default active">
+                                        Today
+                                    </button>
+                                    <button class="btn btn-xs btn-default">
+                                        This Week
+                                    </button>
+                                    <button class="btn btn-xs btn-default">
+                                        This Month
+                                    </button>
+                                </div>
                                 <table id="table_activities" class="table table-striped table-bordered table-hover"
                                        width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Rank</th>
+                                        <th>C3</th>
+                                    </tr>
+                                    </thead>
                                     <tbody>
                                     <tr>
-                                        <td>Blue has updated her work.</td>
-                                        <td>1 min ago</td>
+                                        <th>1</th>
+                                        <th>James</th>
+                                        <td>level 4</td>
+                                        <td>250</td>
                                     </tr>
                                     <tr>
-                                        <td>Changji has updated her work.</td>
-                                        <td>2 hrs ago</td>
+                                        <th>2</th>
+                                        <th>Eddie</th>
+                                        <td>level 2</td>
+                                        <td>150</td>
+                                    </tr>
+                                    <tr>
+                                        <th>3</th>
+                                        <th>Maii</th>
+                                        <td>level 2</td>
+                                        <td>113</td>
+                                    </tr>
+                                    <tr>
+                                        <th>4</th>
+                                        <th>Chanji</th>
+                                        <td>level 2</td>
+                                        <td>98</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -193,23 +230,115 @@
 
                     </article>
 
-                    <article class="col-sm-12 col-md-12 col-lg-8">
+                    <article class="col-sm-12 col-md-12 col-lg-4">
 
                         @component('components.jarviswidget',
-                                                    ['id' => 1, 'icon' => 'fa-table', 'title' => 'Newest C3'])
+                                                    ['id' => 1, 'icon' => 'fa-table', 'title' => 'Revenue Leaderboard'])
                             <div class="widget-body no-padding">
+                                <div class="alert alert-info no-margin fade in">
+                                    <button class="btn btn-xs btn-default active">
+                                        Today
+                                    </button>
+                                    <button class="btn btn-xs btn-default">
+                                        This Week
+                                    </button>
+                                    <button class="btn btn-xs btn-default">
+                                        This Month
+                                    </button>
+                                </div>
                                 <table id="dt_basic" class="table table-striped table-bordered table-hover"
                                        width="100%">
                                     <thead>
                                     <tr>
+                                        <th>#</th>
                                         <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Created at</th>
+                                        <th>Rank</th>
+                                        <th>Revenue(baht)</th>
                                     </tr>
                                     </thead>
                                     <tbody>
+                                    <tr>
+                                        <th>1</th>
+                                        <th>James</th>
+                                        <td>level 4</td>
+                                        <td>25,000</td>
+                                    </tr>
+                                    <tr>
+                                        <th>2</th>
+                                        <th>Eddie</th>
+                                        <td>level 2</td>
+                                        <td>15,000</td>
+                                    </tr>
+                                    <tr>
+                                        <th>3</th>
+                                        <th>Maii</th>
+                                        <td>level 2</td>
+                                        <td>11,300</td>
+                                    </tr>
+                                    <tr>
+                                        <th>4</th>
+                                        <th>Chanji</th>
+                                        <td>level 2</td>
+                                        <td>98,000</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endcomponent
 
+                    </article>
 
+                    <article class="col-sm-12 col-md-12 col-lg-4">
+
+                        @component('components.jarviswidget',
+                                                    ['id' => 2, 'icon' => 'fa-table', 'title' => 'ME/RE Leaderboard'])
+                            <div class="widget-body no-padding">
+                                <div class="alert alert-warning no-margin fade in">
+                                    <button class="btn btn-xs btn-default active">
+                                        Today
+                                    </button>
+                                    <button class="btn btn-xs btn-default">
+                                        This Week
+                                    </button>
+                                    <button class="btn btn-xs btn-default">
+                                        This Month
+                                    </button>
+                                </div>
+                                <table id="dt_basic" class="table table-striped table-bordered table-hover"
+                                       width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Rank</th>
+                                        <th>Me/Re</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <th>1</th>
+                                        <th>Eddie</th>
+                                        <td>level 2</td>
+                                        <td>35%</td>
+                                    </tr>
+                                    <tr>
+                                        <th>1</th>
+                                        <th>James</th>
+                                        <td>level 4</td>
+                                        <td>40%</td>
+                                    </tr>
+                                    <tr>
+                                        <th>3</th>
+                                        <th>Maii</th>
+                                        <td>level 2</td>
+                                        <td>43%</td>
+                                    </tr>
+                                    <tr>
+                                        <th>4</th>
+                                        <th>Chanji</th>
+                                        <td>level 2</td>
+                                        <td>56%</td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -239,10 +368,37 @@
     <script src="{{ asset('js/plugin/flot/jquery.flot.resize.min.js') }}"></script>
     <script src="{{ asset('js/plugin/flot/jquery.flot.time.min.js') }}"></script>
     <script src="{{ asset('js/plugin/flot/jquery.flot.tooltip.min.js') }}"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
 
     <script type="text/javascript">
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
         $(document).ready(function () {
+
+            var start = moment().subtract(29, 'days');
+            var end = moment();
+
+            function cb(start, end) {
+                $('#reportrange span').html(start.format('D/M/Y') + ' - ' + end.format('D/M/Y'));
+            }
+
+            $('#reportrange').daterangepicker({
+                startDate: start,
+                endDate: end,
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    "This Week":[moment().startOf("week"),moment().endOf("week")],
+                    "Last Week":[moment().subtract(1,"week").startOf("week"),moment().subtract(1,"week").endOf("week")],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                }
+            }, cb);
+
+            cb(start, end);
 
 // TAB THREE GRAPH //
             /* TAB 3: Revenew  */

@@ -14,17 +14,8 @@ use Faker\Generator as Faker;
 */
 
 $factory->define(App\Contact::class, function (Faker $faker) {
-    $ads_id = $faker->md5;
-    $ads_name = 'Ad '. $ads_id;
-
-    $channel_id = $faker->ean8;
-    $channel_name = 'Channel '. $channel_id;
-
-    $campaign_id = $faker->ean13;
-    $campaign_name = 'Campaign '. $campaign_id;
-
-    $landingpage_id = $faker->ean8;
-    $landingpage_name = 'Landing Page '. $landingpage_id;
+    $ad_id = $faker->numberBetween(1, 2);
+    $ad = \App\Ad::find("$ad_id");
 
     $current_level = $faker->numberBetween(0, 8);
 
@@ -47,15 +38,20 @@ $factory->define(App\Contact::class, function (Faker $faker) {
         'email' => $faker->unique()->safeEmail,
         'phone' => $faker->phoneNumber,
         'age' => $faker->numberBetween(15, 55),
-        'marketer' => $faker->userName,
-        'campaign_id' => $campaign_id,
-        'campaign_name' => $campaign_name,
-        'channel_id' => $channel_id,
-        'channel_name' => $channel_name,
-        'ads_id' => $ads_id,
-        'ads_name' => $ads_name,
-        'landingpage_id' => $landingpage_id,
-        'landingpage_name' => $landingpage_name,
+        'marketer_id' => $ad->creator_id,
+        'marketer_name' => $ad->creator_name,
+        "ad_id" => $ad->id,
+        "ad_name" => $ad->name,
+        "source_id" => $ad->source_id,
+        "source_name" => $ad->source_name,
+        "team_id" => $ad->team_id,
+        "team_name" => $ad->team_name,
+        "campaign_id" => $ad->campaign_id,
+        "campaign_name" => $ad->campaign_name,
+        "subcampaign_id" => $ad->subcampaign_id,
+        "subcampaign_name" => $ad->subcampaign_name,
+        "landingpage_id" => $ad->landingpage_id,
+        "landingpage_name" => $ad->landingpage_name,
         'current_level' => $current_level,
         'is_transferred' => $current_level > 0 ? 1 : 0,
         'is_valid' => $is_valid,

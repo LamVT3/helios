@@ -184,3 +184,15 @@ fieldset:first-of-type {
     overflow: auto;
     width: 100%;
 }
+
+#table_ads th{
+    min-width: 60px;
+}
+
+#table_ads th.long{
+    min-width: 95px;
+}
+
+#table_ads tr#total{
+    background-color: rgba(255, 247, 0, 0.31);
+}
