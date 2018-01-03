@@ -10,11 +10,13 @@
                     <h3 class="modal-title"> Create Campaign</h3>
                 </div>
                 <div class="modal-body">
-                    @unless(auth()->user()->sources)
+
+                    {{--@unless(auth()->user()->sources)
                         <p class="text-warning">This user can not create a campaign because it hasn't been assigned to a team.</p>
-                    @else
+                    @else--}}
                     <div class="smart-form">
                         {{ csrf_field() }}
+                        {{ debug(auth()->user()->sources) }}
                         <div id="form-campaign-alert"></div>
                         <fieldset>
                             <div class="row">
@@ -23,6 +25,7 @@
                                     <label class="select col col-9">
                                         <select name="source" id="source">
                                             @foreach(auth()->user()->sources as $item)
+{{ debug($item) }}
                                                 <option value="{{ $item['source_id'] or '' }}">{{ $item['source_name'] }}</option>
                                                 @endforeach
                                         </select>
@@ -177,7 +180,7 @@
                         </fieldset>
 
                     </div>
-                        @endunless
+                        {{--@endunless--}}
                 </div>
                 <div class="modal-footer">
                     @if(auth()->user()->sources)

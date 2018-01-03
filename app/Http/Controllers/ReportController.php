@@ -28,7 +28,8 @@ class ReportController extends Controller
         $breadcrumbs = "<i class=\"fa-fw fa fa-child\"></i> Report <span>>Quality Report </span>";
 
         $ads = Ad::where("is_active", 1)->get();
-        $ad_results = AdResult::where("date", Carbon::yesterday()->toDateString())->get();
+        //$ad_results = AdResult::where("date", Carbon::yesterday()->toDateString())->get();
+        $ad_results = AdResult::where("date", "2017-12-29")->get();
         $results = $total = [];
         foreach($ad_results as $item){
             $results[$item->ad_id] = $item;
