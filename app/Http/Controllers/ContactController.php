@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Campaign;
 use App\Contact;
+use App\LandingPage;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
@@ -43,6 +44,7 @@ class ContactController extends Controller
 
         $page_title = "Contact: " . $contact->name . " | Helios";
         $breadcrumbs = "<i class=\"fa-fw fa fa-child\"></i> Contacts > <span>> " . $contact->name . "</span>";
+        $landing_pages = LandingPage::where('is_active', 1)->get();
 
         return view('pages.contacts-details', compact(
             'page_title',
@@ -50,7 +52,8 @@ class ContactController extends Controller
             'no_main_header',
             'active',
             'breadcrumbs',
-            'contact'
+            'contact',
+            'landing_pages'
         ));
     }
 

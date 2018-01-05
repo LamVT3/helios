@@ -15,15 +15,15 @@ class SubcampaignsTableSeeder extends Seeder
     {
         if(\App\Subcampaign::count() == 0) {
             DB::table('subcampaigns')->insert([
-                "_id" => "1",
+                "_id" => "s1",
                 "name" => "FA_Camp_01_01",
-                "source_id" => "1",
+                "source_id" => "s1",
                 "source_name" => "Facebook",
-                "team_id" => "1",
+                "team_id" => "t1",
                 "team_name" => "FA_TET_01",
-                "campaign_id" => "1",
+                "campaign_id" => "c1",
                 "campaign_name" => "FA_Camp_01",
-                "creator_id" => "1",
+                "creator_id" => "u1",
                 "creator_name" => "admin",
                 "is_active" => 1,
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
@@ -31,15 +31,15 @@ class SubcampaignsTableSeeder extends Seeder
             ]);
 
             DB::table('subcampaigns')->insert([
-                "_id" => "2",
+                "_id" => "s2",
                 "name" => "GG_Camp_01_01",
-                "source_id" => "2",
+                "source_id" => "s2",
                 "source_name" => "Google",
-                "team_id" => "2",
+                "team_id" => "t2",
                 "team_name" => "GG_TET_01",
-                "campaign_id" => "2",
+                "campaign_id" => "c2",
                 "campaign_name" => "GG_Camp_01",
-                "creator_id" => "1",
+                "creator_id" => "u1",
                 "creator_name" => "admin",
                 "is_active" => 1,
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),

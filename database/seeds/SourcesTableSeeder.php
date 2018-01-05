@@ -15,7 +15,7 @@ class SourcesTableSeeder extends Seeder
     {
         if(\App\Source::count() == 0) {
             DB::table('sources')->insert([
-                '_id' => "1",
+                '_id' => "s1",
                 'name' => 'Facebook',
                 'description' => 'Facebook Ads Platform',
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
@@ -23,7 +23,7 @@ class SourcesTableSeeder extends Seeder
             ]);
 
             DB::table('sources')->insert([
-                '_id' => "2",
+                '_id' => "s2",
                 'name' => 'Google',
                 'description' => 'Google Ads Platform',
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),

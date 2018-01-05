@@ -15,7 +15,7 @@ class LandingPagesTableSeeder extends Seeder
     {
         if(\App\LandingPage::count() == 0) {
             DB::table('landing_pages')->insert([
-                "_id" => "1",
+                "_id" => "l1",
                 "name" => "Instapage 1",
                 "platform" => "Instapage",
                 "url" => "http://www.englishforthai.topicanative.co.th/",
@@ -26,7 +26,7 @@ class LandingPagesTableSeeder extends Seeder
             ]);
 
             DB::table('landing_pages')->insert([
-                "_id" => "2",
+                "_id" => "l2",
                 "name" => "Instapage 2",
                 "platform" => "Instapage",
                 "url" => "http://www.english.topicanative.co.th/",

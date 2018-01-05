@@ -15,18 +15,18 @@ class UsersTableSeeder extends Seeder
     {
         if (\App\User::count() == 0) {
             DB::table('users')->insert([
-                '_id' => "1",
+                '_id' => "u1",
                 'username' => 'admin',
                 'fullname' => 'Admin',
                 'email' => 'admin@admin.com',
                 'password' => bcrypt('topica@123'),
                 'sources' => [
-                    "2" => [
-                        'source_id' => "2",
+                    "s2" => [
+                        'source_id' => "s2",
                         'source_name' => "Google",
                         'teams' => [
-                            "2" => [
-                                "team_id" => "2",
+                            "t2" => [
+                                "team_id" => "t2",
                                 "team_name" => "GG_TET_01"
                             ]
                         ]
@@ -38,18 +38,18 @@ class UsersTableSeeder extends Seeder
             ]);
 
             DB::table('users')->insert([
-                '_id' => "2",
+                '_id' => "u2",
                 'username' => 'quangdh',
                 'fullname' => 'QuangDH',
                 'email' => 'quangdh@topica.edu.vn',
                 'password' => bcrypt('topica@123'),
                 'sources' => [
-                    "1" => [
-                        'source_id' => "1",
+                    "s1" => [
+                        'source_id' => "s1",
                         'source_name' => "Facebook",
                         'teams' => [
-                            "1" => [
-                                "team_id" => "1",
+                            "t1" => [
+                                "team_id" => "t1",
                                 "team_name" => "FB_TET_01"
                             ]
                         ]
@@ -61,18 +61,18 @@ class UsersTableSeeder extends Seeder
             ]);
 
             DB::table('users')->insert([
-                '_id' => "3",
+                '_id' => "u3",
                 'username' => 'binhnq',
                 'fullname' => 'BinhNQ',
                 'email' => 'binhnq@topica.edu.vn',
                 'password' => bcrypt('topica@123'),
                 'sources' => [
-                    "2" => [
-                        'source_id' => "2",
+                    "s2" => [
+                        'source_id' => "s2",
                         'source_name' => "Google",
                         'teams' => [
-                            "2" => [
-                                "team_id" => "2",
+                            "t2" => [
+                                "team_id" => "t2",
                                 "team_name" => "GG_TET_01"
                             ]
                         ]
@@ -90,12 +90,12 @@ class UsersTableSeeder extends Seeder
                 'email' => 'anhbt2@topica.edu.vn',
                 'password' => bcrypt('topica@123'),
                 'sources' => [
-                    "1" => [
-                        'source_id' => "1",
+                    "s1" => [
+                        'source_id' => "s1",
                         'source_name' => "Facebook",
                         'teams' => [
-                            "1" => [
-                                "team_id" => "1",
+                            "t1" => [
+                                "team_id" => "t1",
                                 "team_name" => "FB_TET_01"
                             ]
                         ]

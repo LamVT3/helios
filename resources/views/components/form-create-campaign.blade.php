@@ -16,7 +16,6 @@
                     @else--}}
                     <div class="smart-form">
                         {{ csrf_field() }}
-                        {{ debug(auth()->user()->sources) }}
                         <div id="form-campaign-alert"></div>
                         <fieldset>
                             <div class="row">
@@ -25,7 +24,6 @@
                                     <label class="select col col-9">
                                         <select name="source" id="source">
                                             @foreach(auth()->user()->sources as $item)
-{{ debug($item) }}
                                                 <option value="{{ $item['source_id'] or '' }}">{{ $item['source_name'] }}</option>
                                                 @endforeach
                                         </select>

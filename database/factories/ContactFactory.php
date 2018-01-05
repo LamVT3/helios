@@ -15,7 +15,7 @@ use Faker\Generator as Faker;
 
 $factory->define(App\Contact::class, function (Faker $faker) {
     $ad_id = $faker->numberBetween(1, 2);
-    $ad = \App\Ad::find("$ad_id");
+    $ad = \App\Ad::find("a"."$ad_id");
 
     $current_level = $faker->numberBetween(0, 8);
 

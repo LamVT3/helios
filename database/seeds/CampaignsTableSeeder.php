@@ -15,14 +15,14 @@ class CampaignsTableSeeder extends Seeder
     {
         if(\App\Campaign::count() == 0) {
             DB::table('campaigns')->insert([
-                "_id" => "1",
+                "_id" => "c1",
                 "name" => "FA_Camp_01",
                 "medium" => "Conversion",
-                "source_id" => "1",
+                "source_id" => "s1",
                 "source_name" => "Facebook",
-                "team_id" => "1",
+                "team_id" => "t1",
                 "team_name" => "FA_TET_01",
-                "creator_id" => "1",
+                "creator_id" => "c1",
                 "creator_name" => "admin",
                 "is_active" => 1,
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
@@ -30,14 +30,14 @@ class CampaignsTableSeeder extends Seeder
             ]);
 
             DB::table('campaigns')->insert([
-                "_id" => "2",
+                "_id" => "c2",
                 "name" => "GG_Camp_01",
                 "medium" => "ADW",
-                "source_id" => "2",
+                "source_id" => "s2",
                 "source_name" => "Google",
-                "team_id" => "2",
+                "team_id" => "t2",
                 "team_name" => "GG_TET_01",
-                "creator_id" => "2",
+                "creator_id" => "c2",
                 "creator_name" => "admin",
                 "is_active" => 1,
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),

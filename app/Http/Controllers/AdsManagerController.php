@@ -22,8 +22,9 @@ class AdsManagerController extends Controller
         $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager <span>> Campaigns</span>";
 
         $campaigns = Campaign::all();
-        $landing_pages = LandingPage::where('is_active', "1")->get();
+        $landing_pages = LandingPage::where('is_active', 1)->get();
 
+        //dd($landing_pages);
         return view('pages.ads_manager-campaigns', compact(
             'page_title',
             'page_css',
@@ -47,6 +48,7 @@ class AdsManagerController extends Controller
         $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager > Campaigns <span>> " . $campaign->name . "</span>";
 
         $subcampaigns = Subcampaign::where('campaign_id', $campaign->id)->get();
+        $landing_pages = LandingPage::where('is_active', "1")->get();
 
         return view('pages.ads_manager-subcampaigns', compact(
             'page_title',
@@ -55,7 +57,8 @@ class AdsManagerController extends Controller
             'active',
             'breadcrumbs',
             'campaign',
-            'subcampaigns'
+            'subcampaigns',
+            'landing_pages'
         ));
     }
 
