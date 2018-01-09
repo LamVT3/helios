@@ -46,6 +46,8 @@ Route::group(['prefix' => 'adsmanager'], function () {
 Route::group(['prefix' => 'contacts'], function () {
     Route::get('/', 'ContactController@index')->name('contacts-c3');
     Route::get('/details/{id}', 'ContactController@details')->name('contacts-details');
+    Route::get('filter', 'ContactController@getC3')->name('contacts.filter');
+    Route::get('export', 'ContactController@export')->name('contacts.export');
 
 });
 
