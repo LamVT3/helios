@@ -27,8 +27,8 @@
 
                     @component('components.jarviswidget',
                     ['id' => 1, 'icon' => 'fa-table', 'title' => 'C3 Produced'])
-                    <div class="widget-body no-padding">
-                        <form id="search-form-c3" class="smart-form" action="#">
+                    <div class="widget-body">
+                        <form id="search-form-c3" class="smart-form" action="#" url="{!! route('contacts.filter') !!}">
                             <div class="row">
                                 <div id="reportrange" class="pull-left"
                                      style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; margin: 10px 15px">
@@ -37,7 +37,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <section class="col col-3">
+                                <section class="col col-2">
                                     <label class="label">Source</label>
                                     <label class="select"> <i class="icon-append fa fa-user"></i>
                                         <select name="source_id">
@@ -49,7 +49,7 @@
                                         <i></i>
                                     </label>
                                 </section>
-                                <section class="col col-3">
+                                <section class="col col-2">
                                     <label class="label">Team</label>
                                     <label class="select"> <i class="icon-append fa fa-user"></i>
                                         <select name="team_id">
@@ -61,7 +61,7 @@
                                         <i></i>
                                     </label>
                                 </section>
-                                <section class="col col-3">
+                                <section class="col col-2">
                                     <label class="label">Marketer</label>
                                     <label class="select"> <i class="icon-append fa fa-user"></i>
                                         <select name="marketer_id">
@@ -73,7 +73,7 @@
                                         <i></i>
                                     </label>
                                 </section>
-                                <section class="col col-3">
+                                <section class="col col-2">
                                     <label class="label">Campaign</label>
                                     <label class="select"> <i class="icon-append fa fa-user"></i>
                                         <select name="campaign_id">
@@ -85,6 +85,24 @@
                                         <i></i>
                                     </label>
                                 </section>
+                                <section class="col col-2">
+                                    <label class="label">Current Level</label>
+                                    <label class="select"> <i class="icon-append fa fa-user"></i>
+                                        <select name="current_level">
+                                            <option value="">All</option>
+                                            <option value="1">L1</option>
+                                            <option value="2">L2</option>
+                                            <option value="3">L3</option>
+                                            <option value="4">L4</option>
+                                            <option value="5">L5</option>
+                                            <option value="6">L6</option>
+                                            <option value="7">L7</option>
+                                            <option value="8">L8</option>
+                                        </select>
+                                        <i></i>
+                                    </label>
+                                </section>
+
                             </div>
                             <div class="row">
                                 <div class="col-md-12 text-right">
@@ -95,14 +113,21 @@
                                 </div>
                             </div>
                         </form>
-                        <form action="{{ route('contacts.export')}}" enctype="multipart/form-data">
-                            <input type="hidden" name="source_id">
-                            <input type="hidden" name="marketer_id">
-                            <input type="hidden" name="campaign_id">
-                            <input type="hidden" name="team_id">
-                            <input type="hidden" name="registered_date">
-                            <button class="btn btn-success" type="submit">Export</button>
-                        </form>
+                        <div style="position: relative">
+                            <form action="{{ route('contacts.export')}}" enctype="multipart/form-data">
+                                <input type="hidden" name="source_id">
+                                <input type="hidden" name="marketer_id">
+                                <input type="hidden" name="campaign_id">
+                                <input type="hidden" name="team_id">
+                                <input type="hidden" name="current_level">
+                                <input type="hidden" name="registered_date">
+                                <div style="position: absolute; right: 75px; bottom: 0px;">
+                                    <button class="btn btn-success" type="submit"
+                                            style="background-color: #3276b1;border-color: #2c699d;">Export Excel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                         <hr>
                         <div class="wrapper">
                             <table id="table_campaigns" class="table table-striped table-bordered table-hover"
@@ -206,12 +231,21 @@
 
 </div>
 <!-- END MAIN PANEL -->
-
+<div class="modal fade" id="modal_gif" role="dialog">
+    <div class="modal-dialog">
+        <!--Modal content-->
+        <div class="modal-content text-center" style="background: #f7f7f7;border-radius: 0px;">
+            <h4>Loading...</h4>
+            <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 10%;"/>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('script')
 
 <!-- PAGE RELATED PLUGIN(S) -->
+<script src="{{ asset('js/contacts/contacts_c3.js') }}"></script>
 <script src="{{ asset('js/plugin/datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatables/dataTables.colVis.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatables/dataTables.tableTools.min.js') }}"></script>
@@ -222,103 +256,7 @@
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 <script type="text/javascript">
 
-    // DO NOT REMOVE : GLOBAL FUNCTIONS!
-    $(document).ready(function () {
 
-        var start = moment().subtract(29, 'days');
-        var end = moment();
-
-        function cb(start, end) {
-            $('#reportrange span').html(start.format('Y-M-D') + '  ' + end.format('Y-M-D'));
-        }
-
-        $('#reportrange').daterangepicker({
-            startDate: start,
-            endDate: end,
-            opens: 'right',
-            ranges: {
-                'Today': [moment(), moment()],
-                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                "This Week": [moment().startOf("week"), moment().endOf("week")],
-                "Last Week": [moment().subtract(1, "week").startOf("week"), moment().subtract(1, "week").endOf("week")],
-                'This Month': [moment().startOf('month'), moment().endOf('month')],
-                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-            }
-        }, cb);
-
-        cb(start, end);
-    });
-
-        $(document).ready(function () {
-
-        /* BASIC ;*/
-        var responsiveHelper_table_campaign = undefined;
-
-        var breakpointDefinition = {
-            tablet: 1024,
-            phone: 480
-        };
-
-        $('#table_campaigns').dataTable({
-            "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-6 hidden-xs'C>r>" +
-            "t" +
-            "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-sm-6 col-xs-12'p>>",
-            "autoWidth": true,
-            "preDrawCallback": function () {
-                // Initialize the responsive datatables helper once.
-                if (!responsiveHelper_table_campaign) {
-                    responsiveHelper_table_campaign = new ResponsiveDatatablesHelper($('#table_campaigns'), breakpointDefinition);
-                }
-            },
-            "rowCallback": function (nRow) {
-                responsiveHelper_table_campaign.createExpandIcon(nRow);
-            },
-            "drawCallback": function (oSettings) {
-                responsiveHelper_table_campaign.respond();
-            },
-            "order": [[0, "desc"]]
-        });
-
-
-//        $('head').append('<link rel="stylesheet" href="{{ asset('js/plugin/selectize/css/selectize.bootstrap3.css') }}">');
-
-        /* END BASIC */
-    });
-
-    $(document).ready(function () {
-        $('#search-form-c3').submit(function (e) {
-            e.preventDefault();
-            var source_id = $('select[name="source_id"]').val();
-            var team_id = $('select[name="team_id"]').val();
-            var marketer_id = $('select[name="marketer_id"]').val();
-            var campaign_id = $('select[name="campaign_id"]').val();
-            var registered_date = $('.registered_date').text();
-
-            $('input[name="source_id"]').val(source_id);
-            $('input[name="team_id"]').val(team_id);
-            $('input[name="marketer_id"]').val(marketer_id);
-            $('input[name="campaign_id"]').val(campaign_id);
-            $('input[name="registered_date"]').val(registered_date);
-
-
-            var url = "{!! route('contacts.filter') !!}";
-            $.ajax({
-                url: url,
-                type: 'GET',
-                data: {
-                    source_id: source_id,
-                    team_id: team_id,
-                    marketer_id: marketer_id,
-                    campaign_id: campaign_id,
-                    registered_date: registered_date
-                }
-            }).done(function (response) {
-                $('.wrapper').html(response);
-            });
-        });
-    })
 
 </script>
 @include('components.script-campaign')
