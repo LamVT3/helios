@@ -229,15 +229,14 @@ class UserController extends Controller
         $page_css = array();
         $no_main_header = FALSE;
         $active = null;
-        $breadcrumbs = "<i class=\"fa-fw fa fa-user\"></i> Profile";
+        $breadcrumbs = "<i class=\"fa-fw fa fa-user\"></i> " . auth()->user()->username . "'s Profile";
 
         return view('pages.user-profile', compact(
             'no_main_header',
             'page_title',
             'page_css',
             'active',
-            'breadcrumbs',
-            'roles'
+            'breadcrumbs'
         ));
     }
 }

@@ -43,6 +43,9 @@
                     <li class="{{ $active == 'mktmanager-teams' ? 'active' : '' }}">
                         <a href="{{ route('team', 'all') }}"><i class="fa fa-lg fa-fw fa-table"></i> Teams</a>
                     </li>
+                    <li class="{{ $active == 'kpis' ? 'active' : '' }}">
+                        <a href="{{ route('kpis') }}"><i class="fa fa-lg fa-fw fa-target"></i> Kpis</a>
+                    </li>
                 </ul>
             </li>
 

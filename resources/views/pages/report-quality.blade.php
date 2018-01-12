@@ -140,25 +140,26 @@
                                         <td>{{ $campaign }}</td>
                                         <td>All</td>
                                         <td>All</td>
-                                        <td>{{ $total['c1'] }}</td>
-                                        <td>{{ $total['c1_cost'] }}</td>
-                                        <td>{{ $total['c2'] }}</td>
-                                        <td>{{ $total['c2_cost'] }}</td>
-                                        <td>{{ $total['c3'] }}</td>
-                                        <td>{{ $total['c3_cost'] }}</td>
-                                        <td>{{ $total['c3b'] }}</td>
-                                        <td>{{ $total['c3b_cost'] }}</td>
+                                        <td>{{ number_format($total['c1']) }}</td>
+                                        <td>{{ number_format($total['c1_cost'], 2) }}</td>
+                                        <td>{{ number_format($total['c2']) }}</td>
+                                        <td>{{ number_format($total['c2_cost'], 2) }}</td>
+                                        <td>{{ number_format($total['c3']) }}</td>
+                                        <td>{{ number_format($total['c3_cost'], 2) }}</td>
+                                        <td>{{ number_format($total['c3b']) }}</td>
+                                        <td>{{ number_format($total['c3b_cost'], 2) }}</td>
                                         <td>{{ $total['c3_c2'] }}</td>
                                         <td>{{ $total['l1'] }}</td>
                                         <td>{{ $total['l3'] }}</td>
                                         <td>{{ $total['l8'] }}</td>
                                         <td>{{ $total['l3_l1'] }}</td>
                                         <td>{{ $total['l8_l1'] }}</td>
-                                        <td>{{ $total['spent'] }}</td>
-                                        <td>{{ $total['revenue'] }}</td>
+                                        <td>{{ number_format($total['spent'], 2) }}</td>
+                                        <td>{{ number_format($total['revenue']) }}</td>
                                         <td>{{ $total['me_re'] }}</td>
                                     </tr>
                                     @foreach ($ads as $item)
+
                                         <tr id="ad-{{ $item->id }}">
                                             <td>{{ $item->source_name }}</td>
                                             <td>{{ $item->team_name }}</td>
@@ -166,23 +167,23 @@
                                             <td>{{ $item->campaign_name }}</td>
                                             <td>{{ $item->subcampaign_name }}</td>
                                             <td>{{ $item->name }}</td>
-                                            <td>{{ $results[$item->id]->c1 }}</td>
-                                            <td>{{ $results[$item->id]->c1_cost }}</td>
-                                            <td>{{ $results[$item->id]->c2 }}</td>
-                                            <td>{{ $results[$item->id]->c2_cost }}</td>
-                                            <td>{{ $results[$item->id]->c3 }}</td>
-                                            <td>{{ $results[$item->id]->c3_cost }}</td>
-                                            <td>{{ $results[$item->id]->c3 }}</td>
-                                            <td>{{ $results[$item->id]->c3b_cost }}</td>
-                                            <td>{{ round($results[$item->id]->c3 / $results[$item->id]->c2, 4) * 100 }}</td>
-                                            <td>{{ $results[$item->id]->l1 }}</td>
-                                            <td>{{ $results[$item->id]->l3 }}</td>
-                                            <td>{{ $results[$item->id]->l8 }}</td>
-                                            <td>{{ $results[$item->id]->l1 ? round($results[$item->id]->l3 / $results[$item->id]->l1, 4) * 100 : 'n/a' }}</td>
-                                            <td>{{ $results[$item->id]->l1 ? round($results[$item->id]->l8 / $results[$item->id]->l1, 4) * 100 : 'n/a' }}</td>
-                                            <td>{{ $results[$item->id]->spent }}</td>
-                                            <td>{{ $results[$item->id]->revenue }}</td>
-                                            <td>{{ $results[$item->id]->revenue ? round($results[$item->id]->spent / $results[$item->id]->revenue, 4) * 100 : 'n/a' }}</td>
+                                            <td>{{ isset($results[$item->id]) ? number_format($results[$item->id]->c1) : 0 }}</td>
+                                            <td>{{ $results[$item->id]->c1_cost or 0 }}</td>
+                                            <td>{{ $results[$item->id]->c2 or 0}}</td>
+                                            <td>{{ $results[$item->id]->c2_cost or 0 }}</td>
+                                            <td>{{ $results[$item->id]->c3 or 0 }}</td>
+                                            <td>{{ $results[$item->id]->c3_cost or 0 }}</td>
+                                            <td>{{ $results[$item->id]->c3 or 0 }}</td>
+                                            <td>{{ $results[$item->id]->c3b_cost or 0 }}</td>
+                                            <td>{{ isset($results[$item->id]) && $results[$item->id]->c2 ? round($results[$item->id]->c3 / $results[$item->id]->c2, 4) * 100 : 'n/a' }}</td>
+                                            <td>{{ $results[$item->id]->l1 or 0 }}</td>
+                                            <td>{{ $results[$item->id]->l3 or 0 }}</td>
+                                            <td>{{ $results[$item->id]->l8 or 0 }}</td>
+                                            <td>{{ isset($results[$item->id]) && $results[$item->id]->l1 ? round($results[$item->id]->l3 / $results[$item->id]->l1, 4) * 100 : 'n/a' }}</td>
+                                            <td>{{ isset($results[$item->id]) && $results[$item->id]->l1 ? round($results[$item->id]->l8 / $results[$item->id]->l1, 4) * 100 : 'n/a' }}</td>
+                                            <td>{{ $results[$item->id]->spent or 0 }}</td>
+                                            <td>{{ $results[$item->id]->revenue or 0 }}</td>
+                                            <td>{{ isset($results[$item->id]) && $results[$item->id]->revenue ? round($results[$item->id]->spent / $results[$item->id]->revenue, 4) * 100 : 'n/a' }}</td>
                                         </tr>
                                     @endforeach
 
@@ -287,5 +288,5 @@
         })
 
     </script>
-    @include('components.script-ads.blade.php.bk')
+
 @stop

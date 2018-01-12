@@ -196,3 +196,16 @@ fieldset:first-of-type {
 #table_ads tr#total{
     background-color: rgba(255, 247, 0, 0.31);
 }
+
+.table-profile {
+    margin-top: 20px;
+}
+
+.table-profile thead tr th{
+    font-weight: bold;
+}
+
+.table-profile td a {
+    font-size: 30px;
+
+}

@@ -41,6 +41,7 @@ Route::group(['prefix' => 'adsmanager'], function () {
     Route::get('/subcampaign/{id}', 'AdsManagerController@subcampaign')->name('subcampaign-details');
     Route::post('/ads/create', 'AdsController@store')->name('ads-create');
     Route::get('/ads/get/{id}', 'AdsController@get')->name('ads-get');
+    Route::get('/kpis', 'KpiController@index')->name('kpis');
 });
 
 Route::group(['prefix' => 'contacts'], function () {
