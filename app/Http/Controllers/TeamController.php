@@ -81,7 +81,7 @@ class TeamController extends Controller
                 return response()->json(['type' => 'error', 'message' => 'Member not found!']);
             }
 
-            $array_members[$m->id] = array('user_id' => $m->_id, 'username' => $m->name);
+            $array_members[$m->id] = array('user_id' => $m->_id, 'username' => $m->username);
         }
         $team->members = $array_members;
 
@@ -93,13 +93,18 @@ class TeamController extends Controller
             $m = User::find($item);
             if(isset($m->sources)){
                 if(isset($m->sources[$source->id])){
-                    $m->sources[$source->id]['teams'][$team->id] = array('team_name' => $team->name, 'team_id' => $team->id);
+                    // debug($m, $m->sources[$source->id]);
+                    $sources = $m->sources;
+                    $sources[$source->id]['teams'][$team->id] = array('team_name' => $team->name, 'team_id' => $team->id);
+                    $m->sources = $sources;
                 }else{
-                    $m->sources[$source->id] = array(
+                    $sources = $m->sources;
+                    $sources[$source->id] = array(
                         'source_id' => $source->id,
                         'source_name' => $source->name,
                         'teams' => [$team->id => array('team_name' => $team->name, 'team_id' => $team->id)]
                     );
+                    $m->sources = $sources;
                 }
             }else{
                 $m->sources = [$source->id => array(

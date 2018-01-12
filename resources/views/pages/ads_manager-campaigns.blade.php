@@ -9,6 +9,7 @@
 
             @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
                 <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
+                   data-item-type="Campaign"
                    data-toggle="modal"
                    data-target="#addModal"><i
                             class="fa fa-plus fa-lg"></i> Create Campaign</a>

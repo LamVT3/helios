@@ -21,7 +21,11 @@ class AdsManagerController extends Controller
         $active = 'adsmanager';
         $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager <span>> Campaigns</span>";
 
-        $campaigns = Campaign::all();
+        $user = auth()->user();
+        $source = current($user->sources);
+        $team = current($source["teams"]);
+        // dd($team);
+        $campaigns = Campaign::where('team_id', $team['team_id'])->get();
         $landing_pages = LandingPage::where('is_active', 1)->get();
 
         //dd($landing_pages);
@@ -38,7 +42,7 @@ class AdsManagerController extends Controller
 
     public function campaign($id)
     {
-        $page_css = array();
+        $page_css = array('selectize.default.css');
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active = 'adsmanager';
 
@@ -47,8 +51,13 @@ class AdsManagerController extends Controller
         $page_title = "Campaign: " . $campaign->name . " | Helios";
         $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager > Campaigns <span>> " . $campaign->name . "</span>";
 
+        $user = auth()->user();
+        $source = current($user->sources);
+        $team = current($source["teams"]);
+
+        $campaigns = Campaign::where('team_id', $team['team_id'])->get();
         $subcampaigns = Subcampaign::where('campaign_id', $campaign->id)->get();
-        $landing_pages = LandingPage::where('is_active', "1")->get();
+        $landing_pages = LandingPage::where('is_active', 1)->get();
 
         return view('pages.ads_manager-subcampaigns', compact(
             'page_title',
@@ -56,7 +65,9 @@ class AdsManagerController extends Controller
             'no_main_header',
             'active',
             'breadcrumbs',
+            'campaigns',
             'campaign',
+            'campaign_id',
             'subcampaigns',
             'landing_pages'
         ));
@@ -64,17 +75,24 @@ class AdsManagerController extends Controller
 
     public function subcampaign($id)
     {
-        $page_css = array();
+        $page_css = array('selectize.default.css');
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active = 'adsmanager';
 
         $subcampaign = Subcampaign::findOrFail($id);
+        $campaign = Campaign::findOrFail($subcampaign->campaign_id);
 
         $page_title = "Subcampaign: " . $subcampaign->name . " | Helios";
         $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager > Subcampaigns <span>> " . $subcampaign->name . "</span>";
 
+        $user = auth()->user();
+        $source = current($user->sources);
+        $team = current($source["teams"]);
+
+        $campaigns = Campaign::where('team_id', $team['team_id'])->get();
+        $subcampaigns = Subcampaign::where('campaign_id', $campaign->id)->get();
         $ads = Ad::where('subcampaign_id', $subcampaign->id)->get();
-        $landing_pages = LandingPage::where('is_active', "1")->get();
+        $landing_pages = LandingPage::where('is_active', 1)->get();
 
         return view('pages.ads_manager-ads', compact(
             'page_title',
@@ -83,6 +101,9 @@ class AdsManagerController extends Controller
             'active',
             'breadcrumbs',
             'subcampaign',
+            'campaign',
+            'campaigns',
+            'subcampaigns',
             'ads',
             'landing_pages'
         ));

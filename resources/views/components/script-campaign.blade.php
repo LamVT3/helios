@@ -1,22 +1,36 @@
 <script>
     $(function(){
 
-        /*$('#deleteModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget) // Button that triggered the modal
-            var itemName = button.data('item-name') // Extract info from data-* attributes
-            var itemId = button.data('item-id')
-            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-            var modal = $(this)
-            modal.find('.modal-title').text('Bạn có chắc chắn xóa review của "' + itemName + '"?')
-            modal.find('input[name=id]').val(itemId)
-        })*/
+        $('#source').change(function () {
+            $.get('{{ route("ajax-getTeamsCampaigns", "") }}/' + $(this).val(), {}, function (data) {
+                if (data.type && data.type == 'success') {
+                    var teams = data.teams;
+                    var campaigns = data.campaigns;
 
-        $('#select-campaign').change(function () {
+                    var selectize = $('input[name=campaign]').selectize()[0].selectize;
+                    selectize.clearCache('option');
+                    selectize.clearOptions();
+                    selectize.addOption(campaigns);
+                    selectize.refreshOptions(true);
+
+                    var options = '';
+                    for(var item in teams){
+                        options += '<option value="' + teams[item].team_id + '">' + teams[item].team_name + '</option>';
+                    }
+
+                    $('#team').html(options);
+                } else {
+                    alert("Could not get subcampaigns. Please try again.")
+                }
+            })
+        })
+
+        // Choose create a new campaign or choose from existing ones
+        $('#campaign-type').change(function () {
             if($(this).val() == "old"){
                 $("#new-campaign").hide();
                 $("#old-campaign").show();
-                $('#select-subcampaign [value=old]').removeAttr('disabled');
+                $('#subcampaign-type [value=old]').removeAttr('disabled');
                 $.get('{{ route("subcampaign-get", "all") }}', {}, function (data) {
                     if (data.type && data.type == 'success') {
                         var subcampaigns = data.subcampaign;
@@ -32,21 +46,24 @@
                         alert("Could not get subcampaigns. Please try again.")
                     }
                 })
-                $('#select-subcampaign').val("new");
-                $('#select-subcampaign').change();
+                $('#subcampaign-type').val("new");
+                $('#subcampaign-type').change();
             }else{
                 $("#new-campaign").show();
                 $("#old-campaign").hide();
-                $('#select-subcampaign').val("new");
-                $('#select-subcampaign').change();
-                $('#select-subcampaign [value=old]').attr('disabled', 'disabled');
+                $('#subcampaign-type').val("new");
+                $('#subcampaign-type').change();
+                $('#subcampaign-type [value=old]').attr('disabled', 'disabled');
                 $('#select-ad [value=skip]').removeAttr('disabled');
+                $('#subcampaign-type [value=skip]').removeAttr('disabled');
             }
         })
 
+        // Select a campaign
         $('#campaign').change(function () {
-            $.get('{{ route("campaign-get", "") }}/' + $(this).val(), {}, function (data) {
+            $.get('{{ route("ajax-getSubcampaigns", "") }}/' + $(this).val(), {}, function (data) {
                 if (data.type && data.type == 'success') {
+                    var campaign = data.campaign;
                     var subcampaigns = data.subcampaigns;
 
                     var selectize = $('input[name=subcampaign]').selectize()[0].selectize;
@@ -54,13 +71,16 @@
                     selectize.clearOptions();
                     selectize.addOption(subcampaigns);
                     selectize.refreshOptions(true);
+
+                    $('.medium').html(campaign.medium);
                 } else {
                     alert("Could not get subcampaigns. Please try again.")
                 }
             })
         })
 
-        $('#select-subcampaign').change(function () {
+        // Choose create a new subcampaign or choose from existing ones
+        $('#subcampaign-type').change(function () {
             if($(this).val() == "old"){
                 $("#new-subcampaign").hide();
                 $("#old-subcampaign").show();
@@ -74,6 +94,11 @@
             }else{
                 $("#new-subcampaign").hide();
                 $("#old-subcampaign").hide();
+                if($('#campaign-type').val() === "old"){
+                    $('#select-ad [value=skip]').attr('disabled', 'disabled');
+                    $('#select-ad').val("new");
+                    $('#select-ad').change();
+                }
             }
         })
 
@@ -89,14 +114,21 @@
         $('#select-ad').change(function () {
             if($(this).val() == "new"){
                 $("#new-ad").show();
+                $('#subcampaign-type [value=skip]').removeAttr('disabled');
             }else{
                 $("#new-ad").hide();
+                if($('#campaign-type').val() === "old"){
+                    $('#subcampaign-type [value=skip]').attr('disabled', 'disabled');
+                    $('#subcampaign-type').val('new');
+                    $('#subcampaign-type').change();
+                }
             }
         })
 
-        $('#addModal').on('show.bs.modal', function (event) {
+        /*$('#addModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget) // Button that triggered the modal
             var itemId = button.data('item-id')
+            var itemType = button.data('item-type')
             var modal = $(this);
             if (itemId) {
                 $.get('{{ route("campaign-get", "") }}/' + itemId, {}, function (data) {
@@ -115,13 +147,13 @@
                     }
                 })
             }else{
-                modal.find('.modal-title').text('Create Campaign');
+                modal.find('.modal-title').text('Create ' + itemType);
                 modal.find('[type=submit]').html('Create');
                 modal.find('textarea[name=description]').html('');
                 $('#form-campaign')[0].reset();
                 modal.find('input[name=campaign_id]').val('');
             }
-        })
+        })*/
 
         $('#form-campaign').submit(function (e) {
 
@@ -130,8 +162,8 @@
 
             data.source = $(this).find('[name=source]').val();
             data.team = $(this).find('[name=team]').val();
-            data.select_campaign = $(this).find('[name=select_campaign]').val();
-            data.select_subcampaign = $(this).find('[name=select_subcampaign]').val();
+            data.campaign_type = $(this).find('[name=campaign_type]').val();
+            data.subcampaign_type = $(this).find('[name=subcampaign_type]').val();
             data.select_ad = $(this).find('[name=select_ad]').val();
 
             data.campaign_name = $(this).find('[name=campaign_name]').val();
@@ -144,23 +176,25 @@
             data.ad_name = $(this).find('[name=ad_name]').val();
             data.landing_page = $(this).find('[name=landing_page]').val();
 
+            data.current_url = "{{ url()->current() }}";
+
             data._token = $(this).find('[name=_token]').val();
 
             var message = "", error = false;
-            //console.log(data);
-            if(data.select_campaign == "new" && !$.trim(data.campaign_name)){
+            console.log(data);
+            if(data.campaign_type == "new" && !$.trim(data.campaign_name)){
                  message = 'Please enter a campaign name';
                  error = true;
-            }else if(data.select_subcampaign == "new" && !$.trim(data.subcampaign_name)){
+            }else if(data.subcampaign_type == "new" && !$.trim(data.subcampaign_name)){
                 message = 'Please enter a subcampaign name';
                 error = true;
             }else if(data.select_ad == "new" && !$.trim(data.ad_name)){
                 message = 'Please enter an ad name';
                 error = true;
-            }else if(data.select_campaign == "old" && !$.trim(data.campaign)){
+            }else if(data.campaign_type == "old" && !$.trim(data.campaign)){
                 message = 'Please choose a campaign';
                 error = true;
-            }else if(data.select_subcampaign == "old" && !$.trim(data.subcampaign)){
+            }else if(data.subcampaign_type == "old" && !$.trim(data.subcampaign)){
                 message = 'Please choose a subcampaign';
                 error = true;
             }

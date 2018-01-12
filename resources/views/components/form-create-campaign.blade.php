@@ -49,7 +49,7 @@
                             <div class="row">
                                 <section class="col col-5">
                                     <label class="select">
-                                        <select name="select_campaign" id="select-campaign">
+                                        <select name="campaign_type" id="campaign-type">
                                             <option value="new">Create New Campaign</option>
                                             <option value="old">Choose Existing Campaign</option>
                                         </select>
@@ -100,16 +100,16 @@
                             <div class="row">
                                 <section class="col col-5">
                                     <label class="select">
-                                        <select name="select_subcampaign" id="select-subcampaign">
+                                        <select name="subcampaign_type" id="subcampaign-type">
                                             <option value="new">Create New Subcampaign</option>
                                             <option value="old" disabled>Choose Existing Subcampaign</option>
-                                            <option value="skip">Skip Subcampaign</option>
+                                            <option value="skip" selected>Skip Subcampaign</option>
                                         </select>
                                         <i></i>
                                     </label>
                                 </section>
                             </div>
-                            <div id="new-subcampaign">
+                            <div id="new-subcampaign" style="display:none">
                                 <div class="row">
                                     <section>
                                         <label class="label col col-3" for="subcampaign_name">Subcampaign Name</label>
@@ -145,13 +145,13 @@
                                     <label class="select">
                                         <select name="select_ad" id="select-ad">
                                             <option value="new">Create New Ad</option>
-                                            <option value="skip">Skip Ad</option>
+                                            <option value="skip" selected>Skip Ad</option>
                                         </select>
                                         <i></i>
                                     </label>
                                 </section>
                             </div>
-                            <div id="new-ad">
+                            <div id="new-ad" style="display:none">
                                 <div class="row">
                                     <section>
                                         <label class="label col col-3" for="ad_name">Ad Name</label>

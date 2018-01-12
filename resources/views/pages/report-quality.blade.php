@@ -287,5 +287,5 @@
         })
 
     </script>
-    @include('components.script-ads')
+    @include('components.script-ads.blade.php.bk')
 @stop

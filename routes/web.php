@@ -59,6 +59,11 @@ Route::get('/inventory', 'InventoryController@index')->name('inventory');
 Route::get('/productivity', 'ProductivityController@index')->name('productivity');*/
 
 
+Route::group(['prefix' => 'ajax'], function () {
+    Route::get('/getTeamsCampaigns/{id}', 'AjaxController@getTeamsCampaigns')->name('ajax-getTeamsCampaigns');
+    Route::get('/getSubcampaigns/{id}', 'AjaxController@getSubcampaigns')->name('ajax-getSubcampaigns');
+});
+
 Route::get('/test', 'Test@index')->name('test');
 
 // USERS

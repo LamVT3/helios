@@ -29,8 +29,8 @@ class CampaignController extends Controller
 
         $source = request('source');
         $team = request('team');
-        $select_campaign = request('select_campaign');
-        $select_subcampaign = request('select_subcampaign');
+        $campaign_type = request('campaign_type');
+        $subcampaign_type = request('subcampaign_type');
         $select_ad = request('select_ad');
 
         $campaign_name = request('campaign_name');
@@ -43,12 +43,14 @@ class CampaignController extends Controller
         $ad_name = request('ad_name');
         $landing_page = request('landing_page');
 
+        //$current_url = \request('current_url', route('campaign'));
+
         $message = "";
 
         $source = Source::findOrFail($source);
         $team = Team::findOrFail($team);
 
-        if($select_campaign === "new"){
+        if($campaign_type === "new"){
             $campaign = new Campaign();
             $campaign->name = $campaign_name;
             $campaign->medium = $medium;
@@ -57,7 +59,7 @@ class CampaignController extends Controller
             $campaign->team_id = $team->id;
             $campaign->team_name = $team->name;
             $campaign->creator_id = $user->id;
-            $campaign->creator_name = $user->name;
+            $campaign->creator_name = $user->username;
             $campaign->is_active = 1;
 
             $campaign->save();
@@ -66,7 +68,7 @@ class CampaignController extends Controller
             $campaign = Campaign::findOrFail($campaign);
         }
 
-        if($select_subcampaign === "new"){
+        if($subcampaign_type === "new"){
             $subcampaign = new Subcampaign();
             $subcampaign->name = $subcampaign_name;
             $subcampaign->source_id = $source->id;
@@ -76,14 +78,35 @@ class CampaignController extends Controller
             $subcampaign->campaign_id = $campaign->id;
             $subcampaign->campaign_name = $campaign->name;
             $subcampaign->creator_id = $user->id;
-            $subcampaign->creator_name = $user->name;
+            $subcampaign->creator_name = $user->username;
             $subcampaign->is_active = 1;
 
             $subcampaign->save();
             if($message) $message .= ', 1 subcampaign';
             else $message .= '1 subcampaign';
-        }elseif($select_subcampaign === "old"){
+        }elseif($subcampaign_type === "old"){
             $subcampaign = Subcampaign::findOrFail($subcampaign);
+        }else {
+            if(Subcampaign::where(array('campaign_id' => $campaign->id, 'subcampaign_name' => '[default]'))->exists()){
+                $subcampaign = Subcampaign::where(array('campaign_id' => $campaign->id, 'subcampaign_name' => '[default]'))->first();
+            }else{
+                if($select_ad === "new"){
+                    $subcampaign = new Subcampaign();
+                    $subcampaign->name = '[default]';
+                    $subcampaign->source_id = $source->id;
+                    $subcampaign->source_name = $source->name;
+                    $subcampaign->team_id = $team->id;
+                    $campaign->team_name = $team->name;
+                    $subcampaign->campaign_id = $campaign->id;
+                    $subcampaign->campaign_name = $campaign->name;
+                    $subcampaign->creator_id = $user->id;
+                    $subcampaign->creator_name = $user->username;
+                    $subcampaign->is_active = 1;
+
+                    $subcampaign->save();
+                }
+
+            }
         }
 
         if($select_ad === "new"){
@@ -101,8 +124,8 @@ class CampaignController extends Controller
             $ad->landing_page_id = $landing_page->id;
             $ad->landing_page_name = $landing_page->name;
             $ad->creator_id = $user->id;
-            $ad->creator_name = $user->name;
-            $ad->tracking_link = $landing_page->url . "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->name}&utm_campaign={$campaign->name}&utm_ad={$ad->name}";
+            $ad->creator_name = $user->username;
+            $ad->tracking_link = $landing_page->url . "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_ad={$ad->name}";
             $ad->is_active = 1;
 
             $ad->save();
@@ -115,18 +138,9 @@ class CampaignController extends Controller
         else
             session()->flash('message', $message . ' has been updated successfully');
 
-        return response()->json(['type' => 'success', 'url' => route('campaign'), 'message' => 'Campaign has been created!']);
+        return response()->json(['type' => 'success', 'url' => url()->previous(), 'message' => 'Campaign has been created!']);
     }
 
-    public function get($id)
-    {
-        $campaign = Campaign::find($id);
-        $subcampaigns = Subcampaign::where('campaign_id', $id)->get();
-        if ($campaign) {
-            return response()->json(['type' => 'success', 'campaign' => $campaign, 'subcampaigns' => $subcampaigns]);
-        } else {
-            return response()->json(['type' => 'error', 'message' => "Campaign not found"]);
-        }
-    }
+
 
 }

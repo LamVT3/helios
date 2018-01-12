@@ -9,9 +9,10 @@
 
             @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
                 <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
+                   data-item-type="Ad"
                    data-toggle="modal"
                    data-target="#addModal"><i
-                            class="fa fa-plus fa-lg"></i> Create Ads</a>
+                            class="fa fa-plus fa-lg"></i> Create Ad</a>
             @endcomponent
 
             @include('layouts.errors')
@@ -148,6 +149,7 @@
 <script src="{{ asset('js/plugin/datatables/dataTables.tableTools.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatables/dataTables.bootstrap.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatable-responsive/datatables.responsive.min.js') }}"></script>
+<script src="{{ asset('js/plugin/selectize/js/standalone/selectize.min.js')}}"></script>
 
 <script type="text/javascript">
 
@@ -188,8 +190,28 @@
 //        $('head').append('<link rel="stylesheet" href="{{ asset('js/plugin/selectize/css/selectize.bootstrap3.css') }}">');
 
         /* END BASIC */
+
+        allCampaigns = {!! $campaigns !!}
+
+        $('input[name=campaign]').selectize({
+            valueField: '_id',
+            labelField: 'name',
+            searchField: ['name'],
+            options: allCampaigns,
+            maxItems: 1
+        });
+
+        allSubCampaigns = {!! $subcampaigns !!}
+
+        $('input[name=subcampaign]').selectize({
+            valueField: '_id',
+            labelField: 'name',
+            searchField: ['name'],
+            options: allSubCampaigns,
+            maxItems: 1
+        });
     })
 
 </script>
-@include('components.script-ads')
+@include('components.script-campaign')
 @stop
