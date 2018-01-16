@@ -39,68 +39,60 @@
                             <div class="row">
                                 <section class="col col-2">
                                     <label class="label">Source</label>
-                                    <label class="select"> <i class="icon-append fa fa-user"></i>
-                                        <select name="source_id">
-                                            <option value="">All</option>
-                                            @foreach($sources as $item)
-                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        <i></i>
-                                    </label>
+                                    <select name="source_id" class="select2" style="width: 280px" id="source_id"
+                                            data-url="{!! route('contacts.getContactsSource') !!}">
+                                        <option value="all">All</option>
+                                        @foreach($sources as $item)
+                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <i></i>
                                 </section>
                                 <section class="col col-2">
                                     <label class="label">Team</label>
-                                    <label class="select"> <i class="icon-append fa fa-user"></i>
-                                        <select name="team_id">
-                                            <option value="">All</option>
-                                            @foreach($teams as $item)
-                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        <i></i>
-                                    </label>
+                                    <select name="team_id" class="select2" style="width: 280px" id="team_id" data-url="{!! route('contacts.getContactsTeam') !!}">
+                                        <option value="all">All</option>
+                                        @foreach($teams as $item)
+                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <i></i>
                                 </section>
                                 <section class="col col-2">
                                     <label class="label">Marketer</label>
-                                    <label class="select"> <i class="icon-append fa fa-user"></i>
-                                        <select name="marketer_id">
-                                            <option value="">All</option>
-                                            @foreach($marketers as $item)
-                                            <option value="{{ $item->id }}">{{ $item->username }}</option>
-                                            @endforeach
-                                        </select>
-                                        <i></i>
-                                    </label>
+                                    <select name="marketer_id" id="marketer_id" class="select2" style="width: 280px">
+                                        <option value="all">All</option>
+                                        @foreach($marketers as $item)
+                                        <option value="{{ $item->id }}">{{ $item->username }}</option>
+                                        @endforeach
+                                    </select>
+                                    <i></i>
                                 </section>
                                 <section class="col col-2">
                                     <label class="label">Campaign</label>
-                                    <label class="select"> <i class="icon-append fa fa-user"></i>
-                                        <select name="campaign_id">
-                                            <option value="">All</option>
-                                            @foreach($campaigns as $item)
-                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        <i></i>
-                                    </label>
+                                    <select name="campaign_id" id="campaign_id" class="select2" style="width: 280px" data-url ="{!! route('contacts.getContactsCampaings') !!}">
+                                        <option value="all">All</option>
+                                        @foreach($campaigns as $item)
+                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <i></i>
                                 </section>
                                 <section class="col col-2">
                                     <label class="label">Current Level</label>
-                                    <label class="select"> <i class="icon-append fa fa-user"></i>
-                                        <select name="current_level">
-                                            <option value="">All</option>
-                                            <option value="1">L1</option>
-                                            <option value="2">L2</option>
-                                            <option value="3">L3</option>
-                                            <option value="4">L4</option>
-                                            <option value="5">L5</option>
-                                            <option value="6">L6</option>
-                                            <option value="7">L7</option>
-                                            <option value="8">L8</option>
-                                        </select>
-                                        <i></i>
-                                    </label>
+                                    <select name="current_level" id="current_level" class="select2"
+                                            style="width: 280px">
+                                        <option value="all">All</option>
+                                        <option value="1">L1</option>
+                                        <option value="2">L2</option>
+                                        <option value="3">L3</option>
+                                        <option value="4">L4</option>
+                                        <option value="5">L5</option>
+                                        <option value="6">L6</option>
+                                        <option value="7">L7</option>
+                                        <option value="8">L8</option>
+                                    </select>
+                                    <i></i>
                                 </section>
 
                             </div>
@@ -150,7 +142,7 @@
                                 <tbody>
                                     @foreach ($contacts as $item)
                                     <tr id="contact-{{ $item->id }}">
-                                        <td><a href="{{ route("contacts-details", $item->id) }}">{{ $item->name }}</a>
+                                        <td><a href="{{ route(" contacts-details", $item->id) }}">{{ $item->name }}</a>
                                         </td>
                                         <td>{{ $item->email }}</td>
                                         <td>{{ $item->phone }}</td>
@@ -252,11 +244,10 @@
 <script src="{{ asset('js/plugin/datatables/dataTables.bootstrap.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatable-responsive/datatables.responsive.min.js') }}"></script>
 <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
 <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 <script type="text/javascript">
-
-
 
 </script>
 @include('components.script-campaign')

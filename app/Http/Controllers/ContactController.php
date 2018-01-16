@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use App\Source;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use Whoops\Util\TemplateHelper;
 
 class ContactController extends Controller
 {
@@ -98,6 +99,7 @@ class ContactController extends Controller
         if ($request->current_level) {
             $data_where['current_level'] = intval($request->current_level);
         }
+//        dd($data_where);
         if ($request->registered_date) {
             $date_place = str_replace('-', ' ', $request->registered_date);
             $date_arr = explode(' ', str_replace('/', '-', $date_place));
@@ -166,21 +168,81 @@ class ContactController extends Controller
             return back();
         }
     }
-    public function getSearch(){
+
+    public function getContactsSource()
+    {
         $data_where = array();
         $request = request();
         if ($request->source_id) {
             $data_where['source_id'] = $request->source_id;
         }
+        $contacts = Campaign::where($data_where)->get();
+        $html_team = '<option value=\'all\' selected>All</option>';
+        $html_campaign = '<option value=\'all\' selected>All</option>';
+        foreach ($contacts as $item) {
+            $html_team .= "<option value=" . $item->team_id . "> " . $item->team_name . " </option>";
+            $html_campaign .= "<option value=" . $item->id . "> " . $item->name . " </option>";
+        }
+        $data_return = array(
+            'status'           => TRUE,
+            'content_team'     => $html_team,
+            'content_campaign' => $html_campaign
+        );
+        echo json_encode($data_return);
+
+    }
+
+    public function getContactsTeam()
+    {
+        $data_where = array();
+        $request = request();
         if ($request->team_id) {
             $data_where['team_id'] = $request->team_id;
         }
-        if ($request->marketer_id) {
-            $data_where['marketer_id'] = $request->marketer_id;
+        $team = Team::find($request->team_id);
+        $campaigns = Campaign::where($data_where)->get();
+        $sources = Source::all();
+        $html_source = "<option value='all'>All</option>";
+        $html_campaign = "<option value='all'>All</option>";
+        foreach ($campaigns as $item) {
+            $html_campaign .= "<option value=" . $item->id . "> " . $item->name . " </option>";
         }
-        if ($request->campaign_id) {
-            $data_where['campaign_id'] = $request->campaign_id;
+        foreach ($sources as $item) {
+            $html_source .= "<option value='" . $item->id . "' " . ($team && $item->id == $team->source_id ? "selected" : '') . "> " . $item->name . " </option>";
         }
+
+        $data_return = array(
+            'status'           => TRUE,
+            'content_source'   => $html_source,
+            'content_campaign' => $html_campaign
+        );
+        echo json_encode($data_return);
+
+    }
+
+    public function getContactsCampaings()
+    {
+        $request = request();
+        $data_where = array();
+
+        $campaign = Campaign::find($request->campaign_id);
+        $sources = Source::all();
+        $teams = Team::all();
+        $html_source = '<option value=\'all\'>All</option>';
+        $html_team = '<option value=\'all\'>All</option>';
+        foreach ($sources as $item) {
+            $html_source .= "<option value='" . $item->id . "' " . ($campaign && $item->id == $campaign->source_id ? "selected" : '') . "> " . $item->name . " </option>";
+        }
+        foreach ($teams as $item) {
+            $html_team .= "<option value='" . $item->id . "' " . ($campaign && $item->id == $campaign->team_id ? "selected" : '') . "> " . $item->name . " </option>";
+        }
+
+        $data_return = array(
+            'status'         => TRUE,
+            'content_source' => $html_source,
+            'content_team'   => $html_team
+        );
+        echo json_encode($data_return);
 
     }
 

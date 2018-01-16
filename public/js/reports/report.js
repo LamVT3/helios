@@ -28,36 +28,33 @@ $(document).ready(function () {
     }, cb);
 
     cb(start, end);
-});
-
-$(document).ready(function () {
 
     /* BASIC ;*/
-    var responsiveHelper_table_campaign = undefined;
+    var responsiveHelper_table_subcampaign = undefined;
 
     var breakpointDefinition = {
         tablet: 1024,
         phone: 480
     };
 
-    $('#table_campaigns').dataTable({
-        "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-6 hidden-xs'C>r>" +
-        "t" +
+    $('#table_ads').dataTable({
+        "sDom":
+        "<'tb-only't>" +
         "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-sm-6 col-xs-12'p>>",
         "autoWidth": true,
         "preDrawCallback": function () {
             // Initialize the responsive datatables helper once.
-            if (!responsiveHelper_table_campaign) {
-                responsiveHelper_table_campaign = new ResponsiveDatatablesHelper($('#table_campaigns'), breakpointDefinition);
+            if (!responsiveHelper_table_subcampaign) {
+                responsiveHelper_table_subcampaign = new ResponsiveDatatablesHelper($('#table_ads'), breakpointDefinition);
             }
         },
         "rowCallback": function (nRow) {
-            responsiveHelper_table_campaign.createExpandIcon(nRow);
+            responsiveHelper_table_subcampaign.createExpandIcon(nRow);
         },
         "drawCallback": function (oSettings) {
-            responsiveHelper_table_campaign.respond();
-        },
-        "order": [[0, "desc"]]
+            responsiveHelper_table_subcampaign.respond();
+        }
+
     });
 
 
@@ -66,90 +63,10 @@ $(document).ready(function () {
     /* END BASIC */
 });
 $(document).ready(function () {
-    $('#source_id').change(function (e) {
-        var url = $('#source_id').attr('data-url');
-        var source_id = $('select[name="source_id"]').val();
-        if (source_id == 'all') {
-            source_id = '';
-        } else {
-            source_id = source_id;
-        }
-        $.ajax({
-            url: url,
-            type: 'GET',
-            contentType: "application/json",
-            dataType: "json",
-            data: {
-                source_id: source_id
-            }
-        }).done(function (response) {
-            $('#team_id').html(response.content_team);
-            $("#team_id").select2();
-            $('#campaign_id').html(response.content_campaign);
-            $("#campaign_id").select2();
-        });
-    })
-});
-$(document).ready(function () {
-    $('#team_id').change(function (e) {
-        var url = $('#team_id').attr('data-url');
-        var team_id = $('select[name="team_id"]').val();
-        if (team_id == 'all') {
-            team_id = '';
-        } else {
-            team_id = team_id;
-        }
-        $.ajax({
-            url: url,
-            type: 'GET',
-            contentType: "application/json",
-            dataType: "json",
-            data: {
-                team_id: team_id
-            }
-        }).done(function (response) {
-            if (team_id) {
-                $('#source_id').html(response.content_source);
-                $("#source_id").select2();
-                $('#campaign_id').html(response.content_campaign);
-                $("#campaign_id").select2();
-            }
-        });
-    })
-});
-$(document).ready(function () {
-    $('#campaign_id').change(function (e) {
-        var url = $('#campaign_id').attr('data-url');
-        var campaign_id = $('select[name="campaign_id"]').val();
-        if (campaign_id == 'all') {
-            campaign_id = '';
-        } else {
-            campaign_id = campaign_id;
-        }
-        $.ajax({
-            url: url,
-            type: 'GET',
-            contentType: "application/json",
-            dataType: "json",
-            data: {
-                campaign_id: campaign_id
-            }
-        }).done(function (response) {
-            if (campaign_id) {
-                $('#source_id').html(response.content_source);
-                $("#source_id").select2();
-                $('#team_id').html(response.content_team);
-                $("#team_id").select2();
-            }
-        });
-    })
-});
-
-$(document).ready(function () {
-    $('#search-form-c3').submit(function (e) {
+    $('#search-form-report').submit(function (e) {
         e.preventDefault();
         var group = 'all';
-        var url = $('#search-form-c3').attr('url');
+        var url = $('#search-form-report').attr('url');
         var source_id = $('select[name="source_id"]').val();
         var team_id = $('select[name="team_id"]').val();
         var marketer_id = $('select[name="marketer_id"]').val();
@@ -193,7 +110,7 @@ $(document).ready(function () {
         $('input[name="current_level"]').val(current_level);
         $('input[name="registered_date"]').val(registered_date);
         // var url = "{!! route('contacts.filter') !!}";
-        $('#modal_gif').modal('show');
+        // $('#modal_gif').modal('show');
         $.ajax({
             url: url,
             type: 'GET',
@@ -206,9 +123,8 @@ $(document).ready(function () {
                 registered_date: registered_date
             }
         }).done(function (response) {
-            $('#modal_gif').modal('hide');
+            // $('#modal_gif').modal('hide');
             $('.wrapper').html(response);
         });
     });
 });
-

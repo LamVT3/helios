@@ -49,10 +49,16 @@ Route::group(['prefix' => 'contacts'], function () {
     Route::get('/details/{id}', 'ContactController@details')->name('contacts-details');
     Route::get('filter', 'ContactController@getC3')->name('contacts.filter');
     Route::get('export', 'ContactController@export')->name('contacts.export');
+    Route::get('getContactsSource', 'ContactController@getContactsSource')->name('contacts.getContactsSource');
+    Route::get('getContactsTeam', 'ContactController@getContactsTeam')->name('contacts.getContactsTeam');
+    Route::get('getContactsCampaings', 'ContactController@getContactsCampaings')->name('contacts.getContactsCampaings');
 
 });
 
 Route::get('/report', 'ReportController@index')->name('report');
+Route::get('/filter', 'ReportController@getReport')->name('report.filter');
+Route::get('/export', 'ReportController@exportReport')->name('report.export');
+Route::get('/getReportSource', 'ReportController@getReportSource')->name('report.getReportSource');
 
 /*Route::get('/kpi/add', 'KpiController@add')->name('kpi-add');
 Route::get('/policy/edit', 'PolicyController@edit')->name('policy-edit');
