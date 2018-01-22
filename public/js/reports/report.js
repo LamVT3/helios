@@ -71,7 +71,6 @@ $(document).ready(function () {
         var team_id = $('select[name="team_id"]').val();
         var marketer_id = $('select[name="marketer_id"]').val();
         var campaign_id = $('select[name="campaign_id"]').val();
-        var current_level = $('select[name="current_level"]').val();
         var registered_date = $('.registered_date').text();
         if (source_id == group) {
             source_id = '';
@@ -97,17 +96,10 @@ $(document).ready(function () {
         else {
             campaign_id = campaign_id;
         }
-        if (current_level == group) {
-            current_level = '';
-        }
-        else {
-            current_level = current_level;
-        }
         $('input[name="source_id"]').val(source_id);
         $('input[name="team_id"]').val(team_id);
         $('input[name="marketer_id"]').val(marketer_id);
         $('input[name="campaign_id"]').val(campaign_id);
-        $('input[name="current_level"]').val(current_level);
         $('input[name="registered_date"]').val(registered_date);
         // var url = "{!! route('contacts.filter') !!}";
         // $('#modal_gif').modal('show');
@@ -119,12 +111,11 @@ $(document).ready(function () {
                 team_id: team_id,
                 marketer_id: marketer_id,
                 campaign_id: campaign_id,
-                current_level: current_level,
                 registered_date: registered_date
             }
         }).done(function (response) {
             // $('#modal_gif').modal('hide');
-            $('.wrapper').html(response);
+            $('.wrapper_report').html(response);
         });
     });
 });

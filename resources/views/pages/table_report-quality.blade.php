@@ -1,5 +1,5 @@
-<table id="table_ads" class="table "
-       width="100%">
+< <table id="table_ads" class="table "
+         width="100%">
     <thead>
         <tr>
             <th>Source</th>
