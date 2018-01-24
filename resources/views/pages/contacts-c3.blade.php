@@ -104,6 +104,7 @@
                                     </button>
                                 </div>
                             </div>
+
                         </form>
                         <div style="position: relative">
                             <form action="{{ route('contacts.export')}}" enctype="multipart/form-data">
@@ -119,6 +120,11 @@
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                        <div class="loading" style="display: none">
+                            <div class="col-md-12 text-center">
+                                <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
+                            </div>
                         </div>
                         <hr>
                         <div class="wrapper">
@@ -222,16 +228,6 @@
     <!-- END MAIN CONTENT -->
 
 </div>
-<!-- END MAIN PANEL -->
-<div class="modal fade" id="modal_gif" role="dialog">
-    <div class="modal-dialog">
-        <!--Modal content-->
-        <div class="modal-content text-center" style="background: #f7f7f7;border-radius: 0px;">
-            <h4>Loading...</h4>
-            <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 10%;"/>
-        </div>
-    </div>
-</div>
 @endsection
 
 @section('script')
@@ -250,5 +246,5 @@
 <script type="text/javascript">
 
 </script>
-@include('components.script-campaign')
+
 @stop

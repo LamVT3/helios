@@ -42,7 +42,7 @@ $(document).ready(function () {
 
     $('#table_campaigns').dataTable({
         "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-6 hidden-xs'C>r>" +
-        "t" +
+        "<'tb-only't>" +
         "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-sm-6 col-xs-12'p>>",
         "autoWidth": true,
         "preDrawCallback": function () {
@@ -193,7 +193,7 @@ $(document).ready(function () {
         $('input[name="current_level"]').val(current_level);
         $('input[name="registered_date"]').val(registered_date);
         // var url = "{!! route('contacts.filter') !!}";
-        $('#modal_gif').modal('show');
+        $('.loading').show();
         $.ajax({
             url: url,
             type: 'GET',
@@ -206,7 +206,7 @@ $(document).ready(function () {
                 registered_date: registered_date
             }
         }).done(function (response) {
-            $('#modal_gif').modal('hide');
+            $('.loading').hide();
             $('.wrapper').html(response);
         });
     });

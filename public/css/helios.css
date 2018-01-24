@@ -189,7 +189,7 @@ fieldset:first-of-type {
     min-width: 60px;
 }
 
-#table_ads th.long{
+#table_ads th.long, #table_report th.long{
     min-width: 95px;
 }
 
@@ -208,4 +208,12 @@ fieldset:first-of-type {
 .table-profile td a {
     font-size: 30px;
 
+}
+
+.select2-container{
+    width: 100%  !important;
+}
+
+.select2-selection__rendered {
+    margin-left: 5px;
 }

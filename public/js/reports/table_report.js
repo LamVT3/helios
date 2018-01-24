@@ -9,8 +9,8 @@ $(document).ready(function () {
     };
 
     $('#table_campaigns').dataTable({
-        "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-6 hidden-xs'C>r>" +
-        "t" +
+        "sDom":
+        "<'tb-only't>" +
         "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-sm-6 col-xs-12'p>>",
         "autoWidth": true,
         "preDrawCallback": function () {
@@ -25,7 +25,7 @@ $(document).ready(function () {
         "drawCallback": function (oSettings) {
             responsiveHelper_table_campaign.respond();
         },
-        "order": [[0, "desc"]]
+        //"order": [[0, "desc"]]
     });
 
 

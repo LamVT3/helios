@@ -47,8 +47,8 @@
                             <div class="row">
                                 <section class="col col-2">
                                     <label class="label">Source</label>
-                                    <select name="source_id" class="select2" style="width: 280px" id="source_id"
-                                            data-url="{!! route('report.getReportSource') !!}">
+                                    <select name="source_id" class="select2" style="width: 280px" id="source_id" tabindex="1" autofocus
+                                            data-url="{!! route('contacts.getContactsSource') !!}">
                                         <option value="all">All</option>
                                         @foreach($sources as $item)
                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -58,7 +58,8 @@
                                 </section>
                                 <section class="col col-2">
                                     <label class="label">Team</label>
-                                    <select name="team_id" class="select2" id="team_id" style="width: 280px">
+                                    <select name="team_id" class="select2" id="team_id" style="width: 280px" tabindex="2"
+                                            data-url="{!! route('contacts.getContactsTeam') !!}">
                                         <option value="all">All</option>
                                         @foreach($teams as $item)
                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -68,7 +69,7 @@
                                 </section>
                                 <section class="col col-2">
                                     <label class="label">Marketer</label>
-                                    <select name="marketer_id" id="marketer_id" class="select2" style="width: 280px">
+                                    <select name="marketer_id" id="marketer_id" class="select2" style="width: 280px" tabindex="3">
                                         <option value="all">All</option>
                                         @foreach($marketers as $item)
                                         <option value="{{ $item->id }}">{{ $item->username }}</option>
@@ -78,7 +79,7 @@
                                 </section>
                                 <section class="col col-2">
                                     <label class="label">Campaign</label>
-                                    <select name="campaign_id" id="campaign_id" class="select2" style="width: 280px"
+                                    <select name="campaign_id" id="campaign_id" class="select2" style="width: 280px" tabindex="4"
                                             data-url="">
                                         <option value="all">All</option>
                                         @foreach($campaigns as $item)
@@ -111,9 +112,14 @@
                                 </div>
                             </form>
                         </div>
+                        <div class="loading" style="display: none">
+                            <div class="col-md-12 text-center">
+                                <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
+                            </div>
+                        </div>
                         <hr>
                         <div class="wrapper_report">
-                            <table id="table_ads" class="table "
+                            <table id="table_report" class="table "
                                    width="100%">
                                 <thead>
                                     <tr>
@@ -143,59 +149,35 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr id="total">
-                                        <td>{{ $source }}</td>
-                                        <td>{{ $team }}</td>
-                                        <td>{{ $marketer }}</td>
-                                        <td>{{ $campaign }}</td>
-                                        <td>All</td>
-                                        <td>All</td>
-                                        <td>{{ number_format($total['c1']) }}</td>
-                                        <td>{{ number_format($total['c1_cost'], 2) }}</td>
-                                        <td>{{ number_format($total['c2']) }}</td>
-                                        <td>{{ number_format($total['c2_cost'], 2) }}</td>
-                                        <td>{{ number_format($total['c3']) }}</td>
-                                        <td>{{ number_format($total['c3_cost'], 2) }}</td>
-                                        <td>{{ number_format($total['c3b']) }}</td>
-                                        <td>{{ number_format($total['c3b_cost'], 2) }}</td>
-                                        <td>{{ $total['c3_c2'] }}</td>
-                                        <td>{{ $total['l1'] }}</td>
-                                        <td>{{ $total['l3'] }}</td>
-                                        <td>{{ $total['l8'] }}</td>
-                                        <td>{{ $total['l3_l1'] }}</td>
-                                        <td>{{ $total['l8_l1'] }}</td>
-                                        <td>{{ number_format($total['spent'], 2) }}</td>
-                                        <td>{{ number_format($total['revenue']) }}</td>
-                                        <td>{{ $total['me_re'] }}</td>
-                                    </tr>
-                                    @foreach ($ads as $item)
+                                @foreach ($report as $id => $item)
 
-                                    <tr id="ad-{{ $item->id }}">
-                                        <td>{{ $item->source_name }}</td>
-                                        <td>{{ $item->team_name }}</td>
-                                        <td>{{ $item->creator_name }}</td>
-                                        <td>{{ $item->campaign_name }}</td>
-                                        <td>{{ $item->subcampaign_name }}</td>
-                                        <td>{{ $item->name }}</td>
-                                        <td>{{ isset($results[$item->id]) ? number_format($results[$item->id]->c1) : 0 }}</td>
-                                        <td>{{ $results[$item->id]->c1_cost or 0 }}</td>
-                                        <td>{{ $results[$item->id]->c2 or 0}}</td>
-                                        <td>{{ $results[$item->id]->c2_cost or 0 }}</td>
-                                        <td>{{ $results[$item->id]->c3 or 0 }}</td>
-                                        <td>{{ $results[$item->id]->c3_cost or 0 }}</td>
-                                        <td>{{ $results[$item->id]->c3 or 0 }}</td>
-                                        <td>{{ $results[$item->id]->c3b_cost or 0 }}</td>
-                                        <td>{{ isset($results[$item->id]) && $results[$item->id]->c2 ? round($results[$item->id]->c3 / $results[$item->id]->c2, 4) * 100 : 'n/a' }}</td>
-                                        <td>{{ $results[$item->id]->l1 or 0 }}</td>
-                                        <td>{{ $results[$item->id]->l3 or 0 }}</td>
-                                        <td>{{ $results[$item->id]->l8 or 0 }}</td>
-                                        <td>{{ isset($results[$item->id]) && $results[$item->id]->l1 ? round($results[$item->id]->l3 / $results[$item->id]->l1, 4) * 100 : 'n/a' }}</td>
-                                        <td>{{ isset($results[$item->id]) && $results[$item->id]->l1 ? round($results[$item->id]->l8 / $results[$item->id]->l1, 4) * 100 : 'n/a' }}</td>
-                                        <td>{{ $results[$item->id]->spent or 0 }}</td>
-                                        <td>{{ $results[$item->id]->revenue or 0 }}</td>
-                                        <td>{{ isset($results[$item->id]) && $results[$item->id]->revenue ? round($results[$item->id]->spent / $results[$item->id]->revenue, 4) * 100 : 'n/a' }}</td>
+                                    <tr id="ad-{{ $id }}">
+                                        <td>{{ $item->source }}</td>
+                                        <td>{{ $item->team }}</td>
+                                        <td>{{ $item->marketer }}</td>
+                                        <td>{{ $item->campaign }}</td>
+                                        <td>{{ $item->subcampaign }}</td>
+                                        <td>{{ $item->ad }}</td>
+                                        <td>{{ number_format($item->c1) }}</td>
+                                        <td>{{ number_format($item->c1_cost, 2) }}</td>
+                                        <td>{{ number_format($item->c2) }}</td>
+                                        <td>{{ number_format($item->c2_cost, 2) }}</td>
+                                        <td>{{ number_format($item->c3) }}</td>
+                                        <td>{{ number_format($item->c3_cost, 2) }}</td>
+                                        <td>{{ number_format($item->c3b) }}</td>
+                                        <td>{{ number_format($item->c3b_cost, 2) }}</td>
+                                        <td>{{ $item->c3_c2 }}</td>
+                                        <td>{{ $item->l1 }}</td>
+                                        <td>{{ $item->l3 }}</td>
+                                        <td>{{ $item->l8 }}</td>
+                                        <td>{{ $item->l3_l1 }}</td>
+                                        <td>{{ $item->l8_l1 }}</td>
+                                        <td>{{ number_format($item->spent, 2) }}</td>
+                                        <td>{{ number_format($item->revenue) }}</td>
+                                        <td>{{ $item->me_re }}</td>
                                     </tr>
-                                    @endforeach
+
+                                @endforeach
 
                                 </tbody>
                             </table>
@@ -239,5 +221,4 @@
 
 </script>
 
-</script>
 @stop

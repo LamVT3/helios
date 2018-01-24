@@ -176,13 +176,19 @@ class ContactController extends Controller
         if ($request->source_id) {
             $data_where['source_id'] = $request->source_id;
         }
-        $contacts = Campaign::where($data_where)->get();
-        $html_team = '<option value=\'all\' selected>All</option>';
+
+        $campaigns = Campaign::where($data_where)->get();
         $html_campaign = '<option value=\'all\' selected>All</option>';
-        foreach ($contacts as $item) {
-            $html_team .= "<option value=" . $item->team_id . "> " . $item->team_name . " </option>";
+        foreach ($campaigns as $item) {
             $html_campaign .= "<option value=" . $item->id . "> " . $item->name . " </option>";
         }
+
+        $teams = Team::where($data_where)->get();
+        $html_team = '<option value=\'all\' selected>All</option>';
+        foreach ($teams as $item) {
+            $html_team .= "<option value=" . $item->id . "> " . $item->name . " </option>";
+        }
+
         $data_return = array(
             'status'           => TRUE,
             'content_team'     => $html_team,
