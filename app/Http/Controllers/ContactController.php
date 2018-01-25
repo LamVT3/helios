@@ -30,8 +30,8 @@ class ContactController extends Controller
         $breadcrumbs = "<i class=\"fa-fw fa fa-child\"></i> Contacts <span>> C3</span>";
 
         $contacts = Contact::where('registered_date', '>=', Date('Y-m-d'))
-            ->where('registered_date', '<=', Date('Y-m-d 23:59:00'))
-            ->orderBy('registered_ at', 'desc')->limit(1000)->get();
+            ->where('registered_date', '<=', Date('Y-m-d 23:59:59'))
+            ->orderBy('registered_date', 'desc')->limit(1000)->get();
         $sources = Source::all();
         $teams = Team::all();
         $marketers = User::all();
@@ -99,29 +99,25 @@ class ContactController extends Controller
         if ($request->current_level) {
             $data_where['current_level'] = intval($request->current_level);
         }
-//        dd($data_where);
-        if ($request->registered_date) {
+        DB::connection( 'mongodb' )->enableQueryLog();
+
+        $startDate = Date('Y-m-d');
+        $endDate = Date('Y-m-d 23:59:59');
+        if($request->registered_date){
             $date_place = str_replace('-', ' ', $request->registered_date);
             $date_arr = explode(' ', str_replace('/', '-', $date_place));
             $startDate = Date('Y-m-d', strtotime($date_arr[0]));
-            $endDate = Date('Y-m-d', strtotime($date_arr[1]));
-            $contacts = Contact::where('registered_date', '>=', $startDate)
-                ->where('registered_date', '<=', $endDate);
+            $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
         }
-        if (count($data_where) >= 1) {
-            $date_place = str_replace('-', ' ', $request->registered_date);
-            $date_arr = explode(' ', str_replace('/', '-', $date_place));
-            $startDate = Date('Y-m-d', strtotime($date_arr[0]));
-            $endDate = Date('Y-m-d', strtotime($date_arr[1]));
-            $contacts = Contact::where($data_where)
-                ->where('registered_date', '>=', $startDate)
-                ->where('registered_date', '<=', $endDate);
+        $query = Contact::where('registered_date', '>=', $startDate);
+        $query->where('registered_date', '<=', $endDate);
+
+        if(count($data_where) > 0){
+            $query->where($data_where);
         }
-        if (!$request->registered_date) {
-            $contacts = Contact::where('registered_date', '>=', Date('Y-m-d'))
-                ->where('registered_date', '<=', Date('Y-m-d'));
-        }
-        $contacts = $contacts->orderBy('registered_ at', 'desc')->limit(1000)->get();
+
+        $contacts = $query->orderBy('registered_date', 'desc')->limit(1000)->get();
+        DB::connection('mongodb')->getQueryLog();
         $data = $data_where;
         $data['contacts'] = $contacts;
         return $data;

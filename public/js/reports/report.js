@@ -53,8 +53,8 @@ $(document).ready(function () {
         },
         "drawCallback": function (oSettings) {
             responsiveHelper_table_report.respond();
-        }
-
+        },
+        "order": []
     });
 
 
@@ -217,8 +217,8 @@ $(document).ready(function () {
                 },
                 "drawCallback": function (oSettings) {
                     responsiveHelper_table_report.respond();
-                }
-
+                },
+                order: []
             });
         });
     });

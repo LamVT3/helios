@@ -48,14 +48,3 @@
 
     </tbody>
 </table>
-<script src="{{ asset('js/contacts/table_contact_c3.js') }}"></script>
-<script src="{{ asset('js/plugin/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('js/plugin/datatables/dataTables.colVis.min.js') }}"></script>
-<script src="{{ asset('js/plugin/datatables/dataTables.tableTools.min.js') }}"></script>
-<script src="{{ asset('js/plugin/datatables/dataTables.bootstrap.min.js') }}"></script>
-<script src="{{ asset('js/plugin/datatable-responsive/datatables.responsive.min.js') }}"></script>
-
-<script type="text/javascript">
-
-
-</script>
