@@ -193,7 +193,7 @@ fieldset:first-of-type {
     min-width: 95px;
 }
 
-#table_ads tr#total{
+#table_ads tr#ad-total, #table_report tr#ad-total{
     background-color: rgba(255, 247, 0, 0.31);
 }
 

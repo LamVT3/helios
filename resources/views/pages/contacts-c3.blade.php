@@ -148,7 +148,7 @@
                                 <tbody>
                                     @foreach ($contacts as $item)
                                     <tr id="contact-{{ $item->id }}">
-                                        <td><a href="{{ route(" contacts-details", $item->id) }}">{{ $item->name }}</a>
+                                        <td><a href="{{ route("contacts-details", $item->id) }}">{{ $item->name }}</a>
                                         </td>
                                         <td>{{ $item->email }}</td>
                                         <td>{{ $item->phone }}</td>
