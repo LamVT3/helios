@@ -45,13 +45,17 @@ class SourceController extends Controller
             'description' => 'required'
         ]);
 
+        $user = auth()->user();
+
         $source = request('source_id') ? Source::find(request('source_id')) : new Source();
         $source->name = request('name');
         $source->description = request('description');
+        $source->creator_id = $user->id;
+        $source->creator_name = $user->username;
 
         $source->save();
 
-        if (!request('id'))
+        if (!request('source_id'))
             session()->flash('message', 'Source has been created successfully');
         else
             session()->flash('message', 'Source has been updated successfully');

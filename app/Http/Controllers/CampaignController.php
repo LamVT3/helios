@@ -133,12 +133,14 @@ class CampaignController extends Controller
             else $message .= '1 ad';
         }
 
+        $url = $select_ad === "new" ? route('subcampaign-details', $subcampaign->id) : url()->previous();
+
         if (!request('id'))
             session()->flash('message', 'Campaign has been created successfully');
         else
             session()->flash('message', $message . ' has been updated successfully');
 
-        return response()->json(['type' => 'success', 'url' => url()->previous(), 'message' => 'Campaign has been created!']);
+        return response()->json(['type' => 'success', 'url' => $url, 'message' => 'Campaign has been created!']);
     }
 
 

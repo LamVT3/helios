@@ -22,82 +22,46 @@
                         <!-- widget div-->
                         <div>
 
-                            <div class="widget-body">
+                            <section class="widget-body">
                                 <!-- content goes here -->
 
-                                <form id="add-event-form">
+                                <form id="add-event-form" class="smart-form">
                                     <fieldset>
 
-                                        {{--<div class="form-group">
-                                            <label>Select KPI Icon</label>
-                                            <div class="btn-group btn-group-sm btn-group-justified" data-toggle="buttons">
-                                                <label class="btn btn-default active">
-                                                    <input type="radio" name="iconselect" id="icon-1" value="fa-info" checked>
-                                                    <i class="fa fa-info text-muted"></i> </label>
-                                                <label class="btn btn-default">
-                                                    <input type="radio" name="iconselect" id="icon-2" value="fa-warning">
-                                                    <i class="fa fa-warning text-muted"></i> </label>
-                                                <label class="btn btn-default">
-                                                    <input type="radio" name="iconselect" id="icon-3" value="fa-check">
-                                                    <i class="fa fa-check text-muted"></i> </label>
-                                                <label class="btn btn-default">
-                                                    <input type="radio" name="iconselect" id="icon-4" value="fa-user">
-                                                    <i class="fa fa-user text-muted"></i> </label>
-                                                <label class="btn btn-default">
-                                                    <input type="radio" name="iconselect" id="icon-5" value="fa-lock">
-                                                    <i class="fa fa-lock text-muted"></i> </label>
-                                                <label class="btn btn-default">
-                                                    <input type="radio" name="iconselect" id="icon-6" value="fa-clock-o">
-                                                    <i class="fa fa-clock-o text-muted"></i> </label>
-                                            </div>
-                                        </div>--}}
-
-                                        <div class="form-group">
-                                            <label>KPI Type</label>
+                                        <section>
+                                            <label>Month</label>
                                             <label class="select">
-                                                <select name="kpi_type" id="kpi-type" class="form-control">
-                                                    <option value="c3">C3</option>
-                                                    <option value="spent">Spent</option>
-                                                    <option value="revenue">Revenue</option>
+                                                <select name="kpi_month" id="kpi-month" class="form-control">
+                                                    <option value="1">January</option>
+                                                    <option value="2">Febrary</option>
+                                                    <option value="3">March</option>
+                                                    <option value="4">April</option>
+                                                    <option value="5">May</option>
+                                                    <option value="6">June</option>
+                                                    <option value="7">July</option>
+                                                    <option value="8">August</option>
+                                                    <option value="9">September</option>
+                                                    <option value="10">October</option>
+                                                    <option value="11">November</option>
+                                                    <option value="12">December</option>
                                                 </select>
                                                 <i></i>
                                             </label>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>KPI Value</label>
-                                            <input class="form-control" id="kpi-value" name="kpi_value" maxlength="40" type="text" placeholder="KPI Value">
-                                        </div>
-
-                                        {{--<div class="form-group">
-                                            <label>Select Event Color</label>
-                                            <div class="btn-group btn-group-justified btn-select-tick" data-toggle="buttons">
-                                                <label class="btn bg-color-darken active">
-                                                    <input type="radio" name="priority" id="option1" value="bg-color-darken txt-color-white" checked>
-                                                    <i class="fa fa-check txt-color-white"></i> </label>
-                                                <label class="btn bg-color-blue">
-                                                    <input type="radio" name="priority" id="option2" value="bg-color-blue txt-color-white">
-                                                    <i class="fa fa-check txt-color-white"></i> </label>
-                                                <label class="btn bg-color-orange">
-                                                    <input type="radio" name="priority" id="option3" value="bg-color-orange txt-color-white">
-                                                    <i class="fa fa-check txt-color-white"></i> </label>
-                                                <label class="btn bg-color-greenLight">
-                                                    <input type="radio" name="priority" id="option4" value="bg-color-greenLight txt-color-white">
-                                                    <i class="fa fa-check txt-color-white"></i> </label>
-                                                <label class="btn bg-color-blueLight">
-                                                    <input type="radio" name="priority" id="option5" value="bg-color-blueLight txt-color-white">
-                                                    <i class="fa fa-check txt-color-white"></i> </label>
-                                                <label class="btn bg-color-red">
-                                                    <input type="radio" name="priority" id="option6" value="bg-color-red txt-color-white">
-                                                    <i class="fa fa-check txt-color-white"></i> </label>
+                                        </section>
+                                        <section>
+                                            <label class="label">KPI File</label>
+                                            <div class="input input-file">
+                                                <span class="button"><input type="file" id="file" onchange="this.parentNode.nextSibling.value = this.value">Browse</span><input type="text" readonly="">
                                             </div>
-                                        </div>--}}
+                                            <div class="note">This is a required field.</div>
+                                        </section>
 
                                     </fieldset>
-                                    <div class="form-actions">
+                                    <div class="form-actions text-center">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <button class="btn btn-default" type="button" id="add-event" >
-                                                    Add KPI
+                                                <button class="btn btn-primary btn-sm" type="button" id="add-event" >
+                                                    Import KPI
                                                 </button>
                                             </div>
                                         </div>
@@ -105,10 +69,8 @@
                                 </form>
 
                                 <!-- end content -->
-                            </div>
-
+                            </section>
                         </div>
-                        <!-- end widget div -->
                     </div>
                     <!-- end widget -->
 

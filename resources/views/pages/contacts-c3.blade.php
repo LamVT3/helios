@@ -158,7 +158,7 @@
                                         <td>{{ $item->campaign_name }}</td>
                                         <td>{{ $item->subcampaign_name }}</td>
                                         <td>{{ $item->ad_name }}</td>
-                                        <td>{{ $item->landingpage_name }}</td>
+                                        <td>{{ $item->landing_page }}</td>
                                         <td>
                                             {{--@permission('edit-review')--}}
                                             <a data-toggle="modal" class='btn btn-xs btn-default'

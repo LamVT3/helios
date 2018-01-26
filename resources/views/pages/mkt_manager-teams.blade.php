@@ -59,6 +59,7 @@
                                         <th>Source</th>
                                         <th>Team Description</th>
                                         <th>Team Members</th>
+                                        <th>Creator</th>
                                         <th>Created at</th>
                                         <th>Action</th>
                                     </tr>
@@ -75,6 +76,7 @@
                                                 <span class="label label-primary">{{ '@'.$m['username'] }}</span>
                                                     @endforeach
                                             </td>
+                                            <td>{{ $item->creator_name or '' }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
                                             <td>
                                                 {{--@permission('edit-review')--}}
