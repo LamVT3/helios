@@ -25,7 +25,7 @@ class LandingPageController extends Controller
         $landing_page->platform = request('platform');
         $landing_page->url = request('url');
         $landing_page->description = request('description');
-        $landing_page->is_active = \request('is_active');
+        $landing_page->is_active = (int) \request('is_active');
 
         $landing_page->save();
 
