@@ -28,7 +28,7 @@
                                     <div class="row">
                                         <div class="smart-form col-lg-12">
                                             <section class="col-lg-12">
-                                                <label class="label">Tên user *</label>
+                                                <label class="label">Username *</label>
                                                 <label class="input">
                                                     <input type="text" name="name" required
                                                            value="{{ old('name', isset($user) ? $user->name : '') }}">
