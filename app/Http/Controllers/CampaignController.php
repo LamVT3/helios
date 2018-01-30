@@ -126,6 +126,7 @@ class CampaignController extends Controller
             $ad->creator_id = $user->id;
             $ad->creator_name = $user->username;
             $ad->tracking_link = $landing_page->url . "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_ad={$ad->name}";
+            $ad->uri_query = "utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_ad={$ad->name}";
             $ad->is_active = 1;
 
             $ad->save();
@@ -142,7 +143,5 @@ class CampaignController extends Controller
 
         return response()->json(['type' => 'success', 'url' => $url, 'message' => 'Campaign has been created!']);
     }
-
-
 
 }
