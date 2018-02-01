@@ -28,7 +28,7 @@
                                     <div class="row">
                                         <div class="smart-form col-lg-12">
                                             <section class="col-lg-12">
-                                                <label class="label">Tên user *</label>
+                                                <label class="label">Username *</label>
                                                 <label class="input">
                                                     <input type="text" name="name" required
                                                            value="{{ old('name') }}">
@@ -57,9 +57,13 @@
                                             </section>
                                             <section class="col-lg-12">
                                                 <label class="label">Rank *</label>
-                                                <label class="input">
-                                                    <input type="text" name="rank" required
-                                                           value="">
+                                                <label class="select">
+                                                    <select name="rank">
+                                                        @for($i = 1; $i <= 8; $i++ )
+                                                            <option value="{{ $i }}">{{ $i }}</option>
+                                                        @endfor
+                                                    </select>
+                                                    <i></i>
                                                 </label>
                                             </section>
                                             {{--<section class="col-lg-12">

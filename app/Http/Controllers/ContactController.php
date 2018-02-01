@@ -165,6 +165,23 @@ class ContactController extends Controller
         }
     }
 
+    public function import(Request $request)
+    {
+        $file = $request->file('import');
+
+        $destinationPath = storage_path('app/upload');
+        $file->move($destinationPath,$file->getClientOriginalName());
+
+        $filePath =  $destinationPath . '/' . $file->getClientOriginalName();
+        Excel::load($filePath, function($reader) {
+
+            // Getting all results
+            $results = $reader->get();
+            dd($results);
+
+        });
+    }
+
     public function getContactsSource()
     {
         $data_where = array();

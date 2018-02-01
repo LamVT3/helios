@@ -54,7 +54,7 @@ Route::group(['prefix' => 'contacts'], function () {
     Route::get('getContactsSource', 'ContactController@getContactsSource')->name('contacts.getContactsSource');
     Route::get('getContactsTeam', 'ContactController@getContactsTeam')->name('contacts.getContactsTeam');
     Route::get('getContactsCampaings', 'ContactController@getContactsCampaings')->name('contacts.getContactsCampaings');
-
+    Route::post('import', 'ContactController@import')->name('contacts.import');
 });
 
 Route::get('/report', 'ReportController@index')->name('report');

@@ -11,7 +11,7 @@
         <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
            data-toggle="modal"
            data-target="#addModal"><i
-                    class="fa fa-plus fa-lg"></i> Create Contact</a>
+                    class="fa fa-upload fa-lg"></i> Import Contact</a>
         @endcomponent
 
         @include('layouts.errors')
@@ -116,11 +116,12 @@
                                 <input type="hidden" name="registered_date">
                                 <div style="position: absolute; right: 75px; bottom: 0px;">
                                     <button class="btn btn-success" type="submit"
-                                            style="background-color: #3276b1;border-color: #2c699d;">Export Excel
+                                            style=""> <i class="fa fa-download"></i> Export
                                     </button>
                                 </div>
                             </form>
                         </div>
+
                         <div class="loading" style="display: none">
                             <div class="col-md-12 text-center">
                                 <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
@@ -192,7 +193,7 @@
         </section>
         <!-- end widget grid -->
 
-        {{--@include('components.form-create-campaign', ['type' => null])--}}
+        @include('components.form-import-contact', ['type' => null])
 
         {{--
         <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">

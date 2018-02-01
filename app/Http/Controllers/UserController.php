@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Ad;
 use App\Permission;
 use App\Role;
 use App\User;
@@ -119,11 +120,12 @@ class UserController extends Controller
 
             $this->validate(request(), $validator);
 
-        //$user = !request('id') ? new User() : User::find(request('id'));
-        $user = new User();
+        $user = !request('id') ? new User() : User::find(request('id'));
+        // $user = new User();
         $user->username = request('name');
         $user->email = request('email');
         $user->rank = request('rank');
+
         if (request('password') || !request('id'))
             $user->password = bcrypt(request('password'));
         $user->save();
@@ -236,10 +238,18 @@ class UserController extends Controller
         $active = null;
         $breadcrumbs = "<i class=\"fa-fw fa fa-user\"></i> " . auth()->user()->username . "'s Profile";
 //        $fillable = ['c3,c3_cost,l8'];
-        $query = DB::table('adresults as ars')
+        /*$query = DB::table('adresults as ars')
             ->join('ads', 'ads.id','=','ars.creator_id')
             ->join('users','user.id','=','ars.creator_id')
-            ->where('users_id', Auth::user()->user_id);
+            ->where('users_id', Auth::user()->user_id);*/
+
+        $user = auth()->user();
+
+        $ads = Ad::where('creator_id', $user->id)->pluck('_id')->toArray();
+        $query = AdResult::whereIn('ad_id', $ads);
+
+        // dd($query->sum('c3'));
+
         $profile['c3'] = $query->sum('c3');
         $profile['revenue'] = $query->sum('revenue');
         $profile['l8'] = $query->sum('l8');
@@ -251,6 +261,7 @@ class UserController extends Controller
             'page_css',
             'active',
             'breadcrumbs',
+            'user',
             'profile'
         ));
     }

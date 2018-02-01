@@ -41,7 +41,7 @@
                             <!-- TR -->
                             <tr>
                                 <td>
-                                    <a href="javascript:void(0);">{{$profile['c3']}}</a>
+                                    <a href="javascript:void(0);">{{ $user->rank }}</a>
                                 </td>
                                 <td class="text-center hidden-xs hidden-sm">
                                     <a href="javascript:void(0);">{{ number_format($profile['c3']) }}</a>
