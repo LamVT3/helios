@@ -26,7 +26,7 @@ class ContactController extends Controller
         $page_title = "Contacts | Helios";
         $page_css = array();
         $no_main_header = FALSE; //set true for lock.php and login.php
-        $active = 'contacts-c3';
+        $active = 'contacts';
         $breadcrumbs = "<i class=\"fa-fw fa fa-child\"></i> Contacts <span>> C3</span>";
 
         $contacts = Contact::where('registered_date', '>=', Date('Y-m-d'))
@@ -99,7 +99,7 @@ class ContactController extends Controller
         if ($request->current_level) {
             $data_where['current_level'] = intval($request->current_level);
         }
-        DB::connection( 'mongodb' )->enableQueryLog();
+        // DB::connection( 'mongodb' )->enableQueryLog();
 
         $startDate = Date('Y-m-d');
         $endDate = Date('Y-m-d 23:59:59');
@@ -117,7 +117,7 @@ class ContactController extends Controller
         }
 
         $contacts = $query->orderBy('registered_date', 'desc')->limit(1000)->get();
-        DB::connection('mongodb')->getQueryLog();
+        // DB::connection('mongodb')->getQueryLog();
         $data = $data_where;
         $data['contacts'] = $contacts;
         return $data;

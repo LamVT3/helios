@@ -20,12 +20,16 @@ class LandingPageController extends Controller
             'url' => 'required',
         ]);
 
+        $user = auth()->user();
+
         $landing_page = request('landing_page_id') ? LandingPage::find(request('landing_page_id')) : new LandingPage();
         $landing_page->name = request('name');
         $landing_page->platform = request('platform');
         $landing_page->url = request('url');
         $landing_page->description = request('description');
-        $landing_page->is_active = \request('is_active');
+        $landing_page->creator_id = $user->id;
+        $landing_page->creator_name = $user->username;
+        $landing_page->is_active = (int) \request('is_active');
 
         $landing_page->save();
 

@@ -126,6 +126,7 @@ class CampaignController extends Controller
             $ad->creator_id = $user->id;
             $ad->creator_name = $user->username;
             $ad->tracking_link = $landing_page->url . "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_ad={$ad->name}";
+            $ad->uri_query = "utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_ad={$ad->name}";
             $ad->is_active = 1;
 
             $ad->save();
@@ -133,14 +134,14 @@ class CampaignController extends Controller
             else $message .= '1 ad';
         }
 
+        $url = $select_ad === "new" ? route('subcampaign-details', $subcampaign->id) : url()->previous();
+
         if (!request('id'))
             session()->flash('message', 'Campaign has been created successfully');
         else
             session()->flash('message', $message . ' has been updated successfully');
 
-        return response()->json(['type' => 'success', 'url' => url()->previous(), 'message' => 'Campaign has been created!']);
+        return response()->json(['type' => 'success', 'url' => $url, 'message' => 'Campaign has been created!']);
     }
-
-
 
 }

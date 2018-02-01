@@ -29,7 +29,9 @@ Route::group(['prefix' => 'mktmanager'], function () {
 });
 
 Route::group(['prefix' => 'adsmanager'], function () {
-    Route::get('/', 'AdsManagerController@index')->name('campaign');
+    Route::get('/', 'AdsManagerController@index')->name('campaigns');
+    //Route::get('/subcampaigns', 'AdsManagerController@subcampaigns')->name('subcampaigns');
+    //Route::get('/ads', 'AdsManagerController@ads')->name('ads');
     Route::get('/landingpage', 'AdsManagerController@landingpage')->name('landing-page');
     Route::post('/landingpage/create', 'LandingPageController@store')->name('landing-page-create');
     Route::get('/landingpage/get/{id}', 'LandingPageController@get')->name('landing-page-get');

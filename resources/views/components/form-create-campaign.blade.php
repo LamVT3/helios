@@ -11,9 +11,9 @@
                 </div>
                 <div class="modal-body">
 
-                    {{--@unless(auth()->user()->sources)
+                    @unless(auth()->user()->sources)
                         <p class="text-warning">This user can not create a campaign because it hasn't been assigned to a team.</p>
-                    @else--}}
+                    @else
                     <div class="smart-form">
                         {{ csrf_field() }}
                         <div id="form-campaign-alert"></div>
@@ -178,7 +178,7 @@
                         </fieldset>
 
                     </div>
-                        {{--@endunless--}}
+                        @endunless
                 </div>
                 <div class="modal-footer">
                     @if(auth()->user()->sources)

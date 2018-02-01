@@ -98,7 +98,7 @@
                                 </div>
                             </div>
                         </form>
-                        <div style="position: relative">
+                        {{--<div style="position: relative">
                             <form action="{{ route('report.export')}}" enctype="multipart/form-data">
                                 <input type="hidden" name="source_id">
                                 <input type="hidden" name="marketer_id">
@@ -111,7 +111,7 @@
                                     </button>
                                 </div>
                             </form>
-                        </div>
+                        </div>--}}
                         <div class="loading" style="display: none">
                             <div class="col-md-12 text-center">
                                 <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>

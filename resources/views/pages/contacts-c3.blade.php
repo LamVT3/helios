@@ -152,13 +152,13 @@
                                         </td>
                                         <td>{{ $item->email }}</td>
                                         <td>{{ $item->phone }}</td>
-                                        <td>{{ Date('d-m-Y H:i:s', strtotime($item->registered_date)) }}</td>
+                                        <td>{{ Date('d-m-Y H:i:s', $item->submit_time/1000) }}</td>
                                         <td>{{ $item->current_level }}</td>
                                         <td>{{ $item->marketer_name }}</td>
                                         <td>{{ $item->campaign_name }}</td>
                                         <td>{{ $item->subcampaign_name }}</td>
                                         <td>{{ $item->ad_name }}</td>
-                                        <td>{{ $item->landingpage_name }}</td>
+                                        <td>{{ $item->landing_page }}</td>
                                         <td>
                                             {{--@permission('edit-review')--}}
                                             <a data-toggle="modal" class='btn btn-xs btn-default'

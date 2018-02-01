@@ -23,7 +23,7 @@ class TeamController extends Controller
         $no_main_header = FALSE;
         $active = 'mktmanager-teams';
         $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i>Ad Mananger <span>> Teams </span>";
-        //DB::connection( 'mongodb' )->enableQueryLog();
+        DB::connection( 'mongodb' )->enableQueryLog();
         $sources = Source::all();
 
         if($id == 'all'){
@@ -31,7 +31,7 @@ class TeamController extends Controller
         }else{
             $teams = Team::where('source_id', $id)->orderBy('created_at', 'desc')->get();
         }
-        //dd(DB::connection('mongodb')->getQueryLog());
+        DB::connection('mongodb')->getQueryLog();
         //where('destination_id', $id)->orderBy('order', 'asc')->with('user', 'destination')->get();
 
         $allMembers = User::get(['username', 'id']);
@@ -60,6 +60,8 @@ class TeamController extends Controller
             'description' => 'required'
         ]);
 
+        $user = auth()->user();
+
         $team = request('team_id') ? Team::find(request('team_id')) : new Team();
 
         $source = Source::find(request('source'));
@@ -68,9 +70,13 @@ class TeamController extends Controller
             return response()->json(['type' => 'error', 'message' => 'Source not found!']);
         }
 
-        $team->source = array('source_id' => $source->_id, 'source_name' => $source->name);
+        $team->source_id = $source->_id;
+        $team->source_name = $source->name;
         $team->name = request('name');
         $team->description = request('description');
+        $team->creator_id = $user->id;
+        $team->creator_name = $user->username;
+
         $array_members = [];
 
         $members = explode(',', request('members'));
@@ -87,7 +93,7 @@ class TeamController extends Controller
 
         $team->save();
 
-        debug($team);
+        // debug($team);
 
         foreach($members as $item){
             $m = User::find($item);

@@ -38,13 +38,13 @@
                             class="menu-item-parent">MKT Manager</span></a>
                 <ul>
                     <li class="{{ $active == 'mktmanager' ? 'active' : '' }}">
-                        <a href="{{ route('source') }}"><i class="fa fa-lg fa-fw fa-table"></i> Sources</a>
+                        <a href="{{ route('source') }}"><i class="fa fa-lg fa-fw fa-sitemap"></i> Sources</a>
                     </li>
                     <li class="{{ $active == 'mktmanager-teams' ? 'active' : '' }}">
-                        <a href="{{ route('team', 'all') }}"><i class="fa fa-lg fa-fw fa-table"></i> Teams</a>
+                        <a href="{{ route('team', 'all') }}"><i class="fa fa-lg fa-fw fa-group"></i> Teams</a>
                     </li>
                     <li class="{{ $active == 'kpis' ? 'active' : '' }}">
-                        <a href="{{ route('kpis') }}"><i class="fa fa-lg fa-fw fa-target"></i> Kpis</a>
+                        <a href="{{ route('kpis') }}"><i class="fa fa-lg fa-fw fa-bullseye"></i> Kpis</a>
                     </li>
                 </ul>
             </li>
@@ -53,9 +53,15 @@
                 <a href="javascript:void(0)"><i class="fa fa-lg fa-fw fa-bullhorn"></i> <span
                             class="menu-item-parent">Ads Manager</span></a>
                 <ul>
-                    <li class="{{ $active == 'adsmanager' ? 'active' : '' }}">
-                        <a href="{{ route('campaign') }}"><i class="fa fa-lg fa-fw fa-table"></i> Campaigns</a>
+                    <li class="{{ $active == 'campaigns' ? 'active' : '' }}">
+                        <a href="{{ route('campaigns') }}"><i class="fa fa-lg fa-fw fa-table"></i> Campaigns</a>
                     </li>
+                   {{-- <li class="{{ $active == 'subcampaigns' ? 'active' : '' }}">
+                        <a href="--}}{{--{{ //route('subcampaigns') }}--}}{{--"><i class="fa fa-lg fa-fw fa-table"></i> Subcampaigns</a>
+                    </li>
+                    <li class="{{ $active == 'ads' ? 'active' : '' }}">
+                        <a href="--}}{{--{{ //route('ads') }}--}}{{--"><i class="fa fa-lg fa-fw fa-table"></i> Ads</a>
+                    </li>--}}
                     <li class="{{ $active == 'adsmanager-lp' ? 'active' : '' }}">
                         <a href="{{ route('landing-page') }}"><i class="fa fa-lg fa-fw fa-book"></i> Landing Pages</a>
                     </li>
@@ -70,19 +76,8 @@
             </li>
 
             <li class="{{ $active == 'contacts' ? 'active' : '' }}">
-                <a href="javascript:void(0)"><i class="fa fa-lg fa-fw fa-child"></i> <span
+                <a href="{{ route('contacts-c3') }}"><i class="fa fa-lg fa-fw fa-child"></i> <span
                             class="menu-item-parent">Contacts</span></a>
-                <ul>
-                    <li class="{{ $active == 'contacts-c3' ? 'active' : '' }}">
-                        <a href="{{ route('contacts-c3') }}">C3 produced</a>
-                    </li>
-                    <li class="{{ $active == 'contacs-l8' ? 'active' : '' }}">
-                        <a href="{{ route('dashboard') }}">L8</a>
-                    </li>
-                    <li class="{{ $active == 'contacts-inventory' ? 'active' : '' }}">
-                        <a href="{{ route('dashboard') }}">Inventory</a>
-                    </li>
-                </ul>
             </li>
 
             {{--@permission('view-user')--}}

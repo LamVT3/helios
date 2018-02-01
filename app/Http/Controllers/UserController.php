@@ -121,7 +121,7 @@ class UserController extends Controller
 
         //$user = !request('id') ? new User() : User::find(request('id'));
         $user = new User();
-        $user->name = request('name');
+        $user->username = request('name');
         $user->email = request('email');
         $user->rank = request('rank');
         if (request('password') || !request('id'))
