@@ -55,6 +55,13 @@
                                                            value="">
                                                 </label>
                                             </section>
+                                            <section class="col-lg-12">
+                                                <label class="label">Rank *</label>
+                                                <label class="input">
+                                                    <input type="text" name="rank" required
+                                                           value="">
+                                                </label>
+                                            </section>
                                             {{--<section class="col-lg-12">
                                                 <label class="label">Role</label>
                                                 <label class="select">

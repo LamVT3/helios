@@ -1,3 +1,4 @@
+
 @extends('layouts.master')
 
 @section('content')
@@ -5,7 +6,6 @@
     <div id="main" role="main">
         <!-- MAIN CONTENT -->
         <div id="content">
-
             @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs]) @endcomponent
             <div class="well">
                 <div class="row">
@@ -41,16 +41,16 @@
                             <!-- TR -->
                             <tr>
                                 <td>
-                                    <a href="javascript:void(0);">3</a>
+                                    <a href="javascript:void(0);">{{$profile['c3']}}</a>
                                 </td>
                                 <td class="text-center hidden-xs hidden-sm">
-                                    <a href="javascript:void(0);">{{ number_format(4319) }}</a>
+                                    <a href="javascript:void(0);">{{ number_format($profile['c3']) }}</a>
                                 </td>
                                 <td class="text-center hidden-xs hidden-sm">
-                                    <a href="javascript:void(0);">{{ number_format(46) }}</a>
+                                    <a href="javascript:void(0);">{{ number_format($profile['l8']) }}</a>
                                 </td>
                                 <td class="text-center hidden-xs hidden-sm">
-                                    <a href="javascript:void(0);">{{ number_format(920000000) . ' VND' }}</a>
+                                    <a href="javascript:void(0);">{{ number_format($profile['revenue']) . ' VND' }}</a>
                                 </td>
                             </tr>
                             <!-- end TR -->
