@@ -41,7 +41,7 @@ class SourceController extends Controller
     {
         /*if (!\Entrust::can('edit-review')) return view('errors.403');*/
         $this->validate(request(), [
-            'name' => 'required',
+            'name' => 'required|alpha_dash',
             'description' => 'required'
         ]);
 

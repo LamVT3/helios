@@ -27,6 +27,7 @@ class AdsManagerController extends Controller
         $team = current($source["teams"]);*/
 
         $campaigns = Campaign::where('creator_id', $user->id)->get();
+        //dd($campaigns);
         $landing_pages = LandingPage::where('is_active', 1)->get();
 
         //dd($landing_pages);
@@ -66,10 +67,10 @@ class AdsManagerController extends Controller
         $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager > Campaigns <span>> " . $campaign->name . "</span>";
 
         $user = auth()->user();
-        $source = current($user->sources);
-        $team = current($source["teams"]);
+        $source = $user->sources[$campaign->source_id];
+        $team = $source["teams"][$campaign->team_id];
 
-        $campaigns = Campaign::where('team_id', $team['team_id'])->get();
+        $campaigns = Campaign::where(['team_id' => $team['team_id'], 'creator_id' => $user->id])->get();
         $subcampaigns = Subcampaign::where('campaign_id', $campaign->id)->get();
         $landing_pages = LandingPage::where('is_active', 1)->get();
 
@@ -100,10 +101,10 @@ class AdsManagerController extends Controller
         $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager > Subcampaigns <span>> " . $subcampaign->name . "</span>";
 
         $user = auth()->user();
-        $source = current($user->sources);
-        $team = current($source["teams"]);
+        $source = $user->sources[$campaign->source_id];
+        $team = $source["teams"][$campaign->team_id];
 
-        $campaigns = Campaign::where('team_id', $team['team_id'])->get();
+        $campaigns = Campaign::where(['team_id' => $team['team_id'], 'creator_id' => $user->id])->get();
         $subcampaigns = Subcampaign::where('campaign_id', $campaign->id)->get();
         $ads = Ad::where('subcampaign_id', $subcampaign->id)->get();
         $landing_pages = LandingPage::where('is_active', 1)->get();

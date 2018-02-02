@@ -74,7 +74,7 @@ class CampaignController extends Controller
             $subcampaign->source_id = $source->id;
             $subcampaign->source_name = $source->name;
             $subcampaign->team_id = $team->id;
-            $campaign->team_name = $team->name;
+            $subcampaign->team_name = $team->name;
             $subcampaign->campaign_id = $campaign->id;
             $subcampaign->campaign_name = $campaign->name;
             $subcampaign->creator_id = $user->id;
@@ -96,7 +96,7 @@ class CampaignController extends Controller
                     $subcampaign->source_id = $source->id;
                     $subcampaign->source_name = $source->name;
                     $subcampaign->team_id = $team->id;
-                    $campaign->team_name = $team->name;
+                    $subcampaign->team_name = $team->name;
                     $subcampaign->campaign_id = $campaign->id;
                     $subcampaign->campaign_name = $campaign->name;
                     $subcampaign->creator_id = $user->id;

@@ -44,6 +44,8 @@
                                        width="100%">
                                     <thead>
                                     <tr>
+                                        <th>Source</th>
+                                        <th>Team</th>
                                         <th>Name</th>
                                         <th>Campaign</th>
                                         <th>Creator</th>
@@ -55,6 +57,8 @@
                                     <tbody>
                                     @foreach ($subcampaigns as $item)
                                         <tr id="subcampaign-{{ $item->id }}">
+                                            <td>{{ $item->source_name }}</td>
+                                            <td>{{ $item->team_name }}</td>
                                             <td><a href="{{ route("subcampaign-details", $item->id) }}">{{ $item->name }}</a></td>
                                             <td>{{ $item->campaign_name }}</td>
                                             <td>{{ $item->creator_name }}</td>

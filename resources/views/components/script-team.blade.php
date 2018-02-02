@@ -1,5 +1,40 @@
 <script>
     $(function(){
+        var errorClass = 'invalid';
+        var errorElement = 'em';
+
+        $.validator.addMethod( "alphanumeric", function( value, element ) {
+            return this.optional( element ) || /^\w+$/i.test( value );
+        }, "Letters, numbers, and underscores only please" );
+
+        $('#form-team').validate({
+            errorClass: errorClass,
+            errorElement: errorElement,
+            highlight: function (element) {
+                $(element).parent().removeClass('state-success').addClass("state-error");
+                $(element).removeClass('valid');
+            },
+            unhighlight: function (element) {
+                $(element).parent().removeClass("state-error").addClass('state-success');
+                $(element).addClass('valid');
+            },
+
+            // Rules for form validation
+            rules: {
+                name: {
+                    required: true,
+                    alphanumeric: true
+                },
+                description: {
+                    required: true,
+                }
+            },
+
+            // Do not change code below
+            errorPlacement: function (error, element) {
+                error.insertAfter(element.parent());
+            }
+        });
 
         /*$('#deleteModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget) // Button that triggered the modal
@@ -56,10 +91,12 @@
             data.members = $(this).find('[name=members]').val();
             data._token = $(this).find('[name=_token]').val();
 
-            if(!data.name || !data.description){
+            if(!$(this).valid()) return false;
+
+            /*if(!data.name || !data.description){
                 $('#form-team-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
                 return false;
-            }
+            }*/
             $.post($(this).attr('action'), data, function (data) {
                 if(data.type && data.type == 'success'){
                     /*$('#form-review').find("input, textarea").val("");

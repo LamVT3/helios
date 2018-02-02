@@ -1,6 +1,51 @@
 <script>
     $(function(){
 
+        var errorClass = 'invalid';
+        var errorElement = 'em';
+
+        $.validator.addMethod( "alphanumeric", function( value, element ) {
+            return this.optional( element ) || /^\w+$/i.test( value );
+        }, "Letters, numbers, and underscores only please" );
+
+        $('#form-campaign').validate({
+            errorClass: errorClass,
+            errorElement: errorElement,
+            highlight: function (element) {
+                $(element).parent().removeClass('state-success').addClass("state-error");
+                $(element).removeClass('valid');
+            },
+            unhighlight: function (element) {
+                $(element).parent().removeClass("state-error").addClass('state-success');
+                $(element).addClass('valid');
+            },
+
+            // Rules for form validation
+            rules: {
+                campaign_name: {
+                    required: true,
+                    alphanumeric: true
+                },
+                medium: {
+                    required: true,
+                    alphanumeric: true
+                },
+                subcampaign_name: {
+                    required: true,
+                    alphanumeric: true
+                },
+                ad_name: {
+                    required: true,
+                    alphanumeric: true
+                }
+            },
+
+            // Do not change code below
+            errorPlacement: function (error, element) {
+                error.insertAfter(element.parent());
+            }
+        });
+
         $('#source').change(function () {
             $.get('{{ route("ajax-getTeamsCampaigns", "") }}/' + $(this).val(), {}, function (data) {
                 if (data.type && data.type == 'success') {
@@ -19,6 +64,23 @@
                     }
 
                     $('#team').html(options);
+                } else {
+                    alert("Could not get subcampaigns. Please try again.")
+                }
+            })
+        })
+
+        $('#team').change(function () {
+            $.get('{{ route("ajax-getCampaigns", "") }}/' + $(this).val(), {}, function (data) {
+                if (data.type && data.type == 'success') {
+                    var campaigns = data.campaigns;
+
+                    var selectize = $('input[name=campaign]').selectize()[0].selectize;
+                    selectize.clearCache('option');
+                    selectize.clearOptions();
+                    selectize.addOption(campaigns);
+                    selectize.refreshOptions(true);
+
                 } else {
                     alert("Could not get subcampaigns. Please try again.")
                 }
@@ -181,7 +243,9 @@
             data._token = $(this).find('[name=_token]').val();
 
             var message = "", error = false;
-            console.log(data);
+
+            if(!$(this).valid()) return false;
+
             if(data.campaign_type == "new" && !$.trim(data.campaign_name)){
                  message = 'Please enter a campaign name';
                  error = true;

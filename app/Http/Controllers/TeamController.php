@@ -56,13 +56,18 @@ class TeamController extends Controller
         /*if (!\Entrust::can('edit-review')) return view('errors.403');*/
         $this->validate(request(), [
             'source' => 'required',
-            'name' => 'required',
+            'name' => 'required|alpha_dash',
             'description' => 'required'
         ]);
 
         $user = auth()->user();
 
         $team = request('team_id') ? Team::find(request('team_id')) : new Team();
+
+        $old_members = [];
+        if(\request('team_id')) $old_members = $team->getMemberIdsArrayAttribute();
+
+        // debug($old_members);
 
         $source = Source::find(request('source'));
         if(!$source)
@@ -79,7 +84,8 @@ class TeamController extends Controller
 
         $array_members = [];
 
-        $members = explode(',', request('members'));
+        $members = \request('members') ? explode(',', request('members')) : [];
+
         foreach($members as $item){
             $m = User::find($item);
             if(!$m)
@@ -93,7 +99,16 @@ class TeamController extends Controller
 
         $team->save();
 
-        // debug($team);
+        if(\request('team_id')){
+            $removed = array_diff($old_members, $members);
+            foreach($removed as $item){
+                $m = User::find($item);
+                $sources = $m->sources;
+                unset($sources[$source->id]['teams'][$team->id]);
+                $m->sources = $sources;
+                $m->save();
+            }
+        }
 
         foreach($members as $item){
             $m = User::find($item);

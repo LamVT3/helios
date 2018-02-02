@@ -35,7 +35,7 @@
                                     <label class="label col col-3" for="team">Team</label>
                                     <label class="select col col-9">
                                         <select name="team" id="team">
-                                            @foreach(current(auth()->user()->sources)['teams'] as $item)
+                                            @foreach(auth()->user()->sources[$campaign->source_id]['teams'] as $item)
                                                 <option value="{{ $item['team_id'] or '' }}" {{ $campaign->team_id == $item['team_id'] ? "selected" : "" }}>{{ $item['team_name'] }}</option>
                                             @endforeach
                                         </select>

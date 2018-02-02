@@ -70,6 +70,7 @@ Route::get('/productivity', 'ProductivityController@index')->name('productivity'
 
 Route::group(['prefix' => 'ajax'], function () {
     Route::get('/getTeamsCampaigns/{id}', 'AjaxController@getTeamsCampaigns')->name('ajax-getTeamsCampaigns');
+    Route::get('/getCampaigns/{id}', 'AjaxController@getCampaigns')->name('ajax-getCampaigns');
     Route::get('/getSubcampaigns/{id}', 'AjaxController@getSubcampaigns')->name('ajax-getSubcampaigns');
 });
 
