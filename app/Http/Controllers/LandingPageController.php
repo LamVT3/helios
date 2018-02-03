@@ -12,6 +12,26 @@ class LandingPageController extends Controller
         $this->middleware('auth');
     }
 
+    public function index()
+    {
+        $page_css = array();
+        $no_main_header = FALSE; //set true for lock.php and login.php
+        $active = 'adsmanager-lp';
+        $page_title = "Landing Pages | Helios";
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager <span>> Landing Pages</span>";
+
+        $landing_pages = LandingPage::all();
+
+        return view('pages.landing_pages', compact(
+            'page_title',
+            'page_css',
+            'no_main_header',
+            'active',
+            'breadcrumbs',
+            'landing_pages'
+        ));
+    }
+
     public function store()
     {
         /*if (!\Entrust::can('edit-review')) return view('errors.403');*/

@@ -41,7 +41,7 @@
                         <a href="{{ route('source') }}"><i class="fa fa-lg fa-fw fa-sitemap"></i> Sources</a>
                     </li>
                     <li class="{{ $active == 'mktmanager-teams' ? 'active' : '' }}">
-                        <a href="{{ route('team', 'all') }}"><i class="fa fa-lg fa-fw fa-group"></i> Teams</a>
+                        <a href="{{ route('team') }}"><i class="fa fa-lg fa-fw fa-group"></i> Teams</a>
                     </li>
                     <li class="{{ $active == 'kpis' ? 'active' : '' }}">
                         <a href="{{ route('kpis') }}"><i class="fa fa-lg fa-fw fa-bullseye"></i> Kpis</a>

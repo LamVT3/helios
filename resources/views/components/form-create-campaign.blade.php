@@ -11,34 +11,27 @@
                 </div>
                 <div class="modal-body">
 
-                    @unless(auth()->user()->sources)
+                    @unless(auth()->user()->team_id)
                         <p class="text-warning">This user can not create a campaign because it hasn't been assigned to a team.</p>
                     @else
                     <div class="smart-form">
                         {{ csrf_field() }}
                         <div id="form-campaign-alert"></div>
                         <fieldset>
-                            <div class="row">
+                            <div class="row" style="margin: 10px -15px">
                                 <section>
-                                    <label class="label col col-3" for="source">Source</label>
-                                    <label class="select col col-9">
-                                        <select name="source" id="source">
-                                            @foreach(auth()->user()->sources as $item)
-                                                <option value="{{ $item['source_id'] or '' }}">{{ $item['source_name'] }}</option>
-                                                @endforeach
-                                        </select>
-                                        <i></i>
-                                    </label>
+                                    <strong class="col col-3">Team</strong>
+                                    <div class="col col-9">{{ auth()->user()->team_name }}</div>
                                 </section>
                             </div>
                             <div class="row">
                                 <section>
-                                    <label class="label col col-3" for="team">Team</label>
-                                    <label class="select col col-9">
-                                        <select name="team" id="team">
-                                            @foreach(current(auth()->user()->sources)['teams'] as $item)
-                                                <option value="{{ $item['team_id'] or '' }}">{{ $item['team_name'] }}</option>
-                                            @endforeach
+                                    <label class="label col col-3" for="source">Source</label>
+                                    <label class="select col col-8">
+                                        <select name="source" id="source">
+                                            @foreach($team->sources as $item)
+                                                <option value="{{ $item['source_id'] or '' }}">{{ $item['source_name'] }}</option>
+                                                @endforeach
                                         </select>
                                         <i></i>
                                     </label>
@@ -88,10 +81,12 @@
                                         </label>
                                     </section>
                                 </div>
-                                <div class="row">
-                                    <strong class="text-right col col-3">Medium</strong>
-                                    <div class="col col-9 medium">
-                                    </div>
+                                <div class="row" style="margin: 10px -15px">
+                                    <section class="form-group">
+                                        <label class="label col col-3">Medium</label>
+                                        <div class="col col-9 medium">
+                                        </div>
+                                    </section>
                                 </div>
                             </div>
                         </fieldset>

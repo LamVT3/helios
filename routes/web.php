@@ -19,31 +19,43 @@ Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
 Route::get('/home', 'DashboardController@index')->name('dashboard');
 
-Route::group(['prefix' => 'mktmanager'], function () {
-    Route::get('/source', 'SourceController@index')->name('source');
-    Route::post('/source/create', 'SourceController@store')->name('source-create');
-    Route::get('/source/get/{id}', 'SourceController@get')->name('source-get');
-    Route::get('/team/{id}', 'TeamController@index')->name('team');
-    Route::post('/team/create', 'TeamController@store')->name('team-create');
-    Route::get('/team/get/{id}', 'TeamController@get')->name('team-get');
+Route::group(['prefix' => 'source'], function () {
+    Route::get('/', 'SourceController@index')->name('source');
+    Route::post('/create', 'SourceController@store')->name('source-create');
+    Route::get('/get/{id}', 'SourceController@get')->name('source-get');
 });
 
-Route::group(['prefix' => 'adsmanager'], function () {
-    Route::get('/', 'AdsManagerController@index')->name('campaigns');
-    //Route::get('/subcampaigns', 'AdsManagerController@subcampaigns')->name('subcampaigns');
-    //Route::get('/ads', 'AdsManagerController@ads')->name('ads');
-    Route::get('/landingpage', 'AdsManagerController@landingpage')->name('landing-page');
-    Route::post('/landingpage/create', 'LandingPageController@store')->name('landing-page-create');
-    Route::get('/landingpage/get/{id}', 'LandingPageController@get')->name('landing-page-get');
-    Route::post('/campaign/create', 'CampaignController@store')->name('campaign-create');
-    Route::get('/campaign/get/{id}', 'CampaignController@get')->name('campaign-get');
-    Route::get('/campaign/{id}', 'AdsManagerController@campaign')->name('campaign-details');
-    Route::post('/subcampaign/create', 'SubcampaignController@store')->name('subcampaign-create');
-    Route::get('/subcampaign/get/{id}', 'SubcampaignController@get')->name('subcampaign-get');
-    Route::get('/subcampaign/{id}', 'AdsManagerController@subcampaign')->name('subcampaign-details');
-    Route::post('/ads/create', 'AdsController@store')->name('ads-create');
-    Route::get('/ads/get/{id}', 'AdsController@get')->name('ads-get');
-    Route::get('/kpis', 'KpiController@index')->name('kpis');
+Route::group(['prefix' => 'team'], function () {
+    Route::get('/', 'TeamController@index')->name('team');
+    Route::post('/create', 'TeamController@store')->name('team-create');
+    Route::get('/get/{id}', 'TeamController@get')->name('team-get');
+});
+
+Route::get('/kpis', 'KpiController@index')->name('kpis');
+
+Route::group(['prefix' => 'campaign'], function () {
+    Route::get('/', 'CampaignController@index')->name('campaigns');
+    Route::post('/create', 'CampaignController@store')->name('campaign-create');
+    Route::get('/get/{id}', 'CampaignController@get')->name('campaign-get');
+    Route::get('/{id}', 'CampaignController@show')->name('campaign-details');
+});
+
+Route::group(['prefix' => 'landingpage'], function () {
+
+    Route::get('/', 'LandingPageController@index')->name('landing-page');
+    Route::post('/create', 'LandingPageController@store')->name('landing-page-create');
+    Route::get('/get/{id}', 'LandingPageController@get')->name('landing-page-get');
+});
+
+Route::group(['prefix' => 'subcampaign'], function () {
+    Route::post('/create', 'SubcampaignController@store')->name('subcampaign-create');
+    Route::get('/get/{id}', 'SubcampaignController@get')->name('subcampaign-get');
+    Route::get('/{id}', 'SubcampaignController@show')->name('subcampaign-details');
+});
+
+Route::group(['prefix' => 'ad'], function () {
+    Route::post('/create', 'AdController@store')->name('ads-create');
+    Route::get('/get/{id}', 'AdController@get')->name('ads-get');
 });
 
 Route::group(['prefix' => 'contacts'], function () {

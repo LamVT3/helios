@@ -47,9 +47,9 @@
         });
 
         $('#source').change(function () {
-            $.get('{{ route("ajax-getTeamsCampaigns", "") }}/' + $(this).val(), {}, function (data) {
+            $.get('{{ route("ajax-getCampaigns", "") }}/' + $(this).val(), {}, function (data) {
                 if (data.type && data.type == 'success') {
-                    var teams = data.teams;
+                    //var teams = data.teams;
                     var campaigns = data.campaigns;
 
                     var selectize = $('input[name=campaign]').selectize()[0].selectize;
@@ -58,29 +58,14 @@
                     selectize.addOption(campaigns);
                     selectize.refreshOptions(true);
 
-                    var options = '';
+                    $('.medium').html('');
+
+                    /*var options = '';
                     for(var item in teams){
                         options += '<option value="' + teams[item].team_id + '">' + teams[item].team_name + '</option>';
                     }
 
-                    $('#team').html(options);
-                } else {
-                    alert("Could not get subcampaigns. Please try again.")
-                }
-            })
-        })
-
-        $('#team').change(function () {
-            $.get('{{ route("ajax-getCampaigns", "") }}/' + $(this).val(), {}, function (data) {
-                if (data.type && data.type == 'success') {
-                    var campaigns = data.campaigns;
-
-                    var selectize = $('input[name=campaign]').selectize()[0].selectize;
-                    selectize.clearCache('option');
-                    selectize.clearOptions();
-                    selectize.addOption(campaigns);
-                    selectize.refreshOptions(true);
-
+                    $('#team').html(options);*/
                 } else {
                     alert("Could not get subcampaigns. Please try again.")
                 }
@@ -123,22 +108,28 @@
 
         // Select a campaign
         $('#campaign').change(function () {
-            $.get('{{ route("ajax-getSubcampaigns", "") }}/' + $(this).val(), {}, function (data) {
-                if (data.type && data.type == 'success') {
-                    var campaign = data.campaign;
-                    var subcampaigns = data.subcampaigns;
+            if($(this).val()) {
+                $.get('{{ route("ajax-getSubcampaigns", "") }}/' + $(this).val(), {}, function (data) {
+                    if (data.type && data.type == 'success') {
+                        var campaign = data.campaign;
+                        var subcampaigns = data.subcampaigns;
 
-                    var selectize = $('input[name=subcampaign]').selectize()[0].selectize;
-                    selectize.clearCache('option');
-                    selectize.clearOptions();
-                    selectize.addOption(subcampaigns);
-                    selectize.refreshOptions(true);
+                        var selectize = $('input[name=subcampaign]').selectize()[0].selectize;
+                        selectize.clearCache('option');
+                        selectize.clearOptions();
+                        selectize.addOption(subcampaigns);
+                        selectize.refreshOptions(true);
 
-                    $('.medium').html(campaign.medium);
-                } else {
-                    alert("Could not get subcampaigns. Please try again.")
-                }
-            })
+                        $('.medium').html(campaign.medium);
+                    } else {
+                        alert("Could not get subcampaigns. Please try again.")
+                    }
+                })
+            } else {
+                var selectize = $('input[name=subcampaign]').selectize()[0].selectize;
+                selectize.clearCache('option');
+                selectize.clearOptions();
+            }
         })
 
         // Choose create a new subcampaign or choose from existing ones

@@ -17,26 +17,19 @@
                         {{ csrf_field() }}
                         <div id="form-campaign-alert"></div>
                         <fieldset>
+                            <div class="row" style="margin: 10px -15px">
+                                <section>
+                                    <strong class="col col-3">Team</strong>
+                                    <div class="col col-9">{{ auth()->user()->team_name }}</div>
+                                </section>
+                            </div>
                             <div class="row">
                                 <section>
                                     <label class="label col col-3" for="source">Source</label>
                                     <label class="select col col-9">
                                         <select name="source" id="source">
-                                            @foreach(auth()->user()->sources as $item)
+                                            @foreach($team->sources as $item)
                                                 <option value="{{ $item['source_id'] or '' }}" {{ $campaign->source_id == $item['source_id'] ? "selected" : "" }}>{{ $item['source_name'] }}</option>
-                                            @endforeach
-                                        </select>
-                                        <i></i>
-                                    </label>
-                                </section>
-                            </div>
-                            <div class="row">
-                                <section>
-                                    <label class="label col col-3" for="team">Team</label>
-                                    <label class="select col col-9">
-                                        <select name="team" id="team">
-                                            @foreach(auth()->user()->sources[$campaign->source_id]['teams'] as $item)
-                                                <option value="{{ $item['team_id'] or '' }}" {{ $campaign->team_id == $item['team_id'] ? "selected" : "" }}>{{ $item['team_name'] }}</option>
                                             @endforeach
                                         </select>
                                         <i></i>
@@ -88,10 +81,11 @@
                                         </label>
                                     </section>
                                 </div>
-                                <div class="row">
-                                    <strong class="text-right col col-3">Medium</strong>
-                                    <div class="col col-9 medium">{{ $campaign->medium }}
-                                    </div>
+                                <div class="row" style="margin: 10px -15px">
+                                    <section class="form-group">
+                                        <label class="label col col-3">Medium</label>
+                                        <div class="col col-9 medium">{{ $campaign->medium }}</div>
+                                    </section>
                                 </div>
                             </div>
                         </fieldset>

@@ -59,10 +59,14 @@
                         modal.find('.modal-title').text('Edit Team');
                         modal.find('input[name=team_id]').val(itemId);
                         modal.find('input[name=name]').val(team.name);
-                        modal.find('select[name=source]').val(team.source_id);
+                        //modal.find('select[name=source]').val(team.source_id);
                         modal.find('textarea[name=description]').html(team.description);
+
                         var members = modal.find('input[name=members]').selectize();
                         members[0].selectize.setValue(team.member_ids_array);
+
+                        var sources = modal.find('input[name=sources]').selectize();
+                        sources[0].selectize.setValue(team.source_ids_array);
 
                         modal.find('[type=submit]').html('Save');
                     } else {
@@ -86,7 +90,7 @@
             var data = {};
             data.team_id = $(this).find('[name=team_id]').val();
             data.name = $(this).find('[name=name]').val();
-            data.source = $(this).find('[name=source]').val();
+            data.sources = $(this).find('[name=sources]').val();
             data.description = $(this).find('[name=description]').val();
             data.members = $(this).find('[name=members]').val();
             data._token = $(this).find('[name=_token]').val();

@@ -17,4 +17,11 @@ class Team extends Eloquent
         }
         return $members;
     }
+
+    public function getSourceIdsArrayAttribute()
+    {
+        if (!count($this->sources)) return [];
+
+        return array_keys($this->sources);
+    }
 }

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Ad;
 use App\Campaign;
 use App\Channel;
+use App\LandingPage;
 use App\Subcampaign;
+use App\Team;
 use Illuminate\Http\Request;
 
 class SubcampaignController extends Controller
@@ -12,6 +15,42 @@ class SubcampaignController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+    }
+
+    public function show($id)
+    {
+        $page_css = array('selectize.default.css');
+        $no_main_header = FALSE; //set true for lock.php and login.php
+        $active = 'adsmanager';
+
+        $subcampaign = Subcampaign::findOrFail($id);
+        $campaign = Campaign::findOrFail($subcampaign->campaign_id);
+
+        $page_title = "Subcampaign: " . $subcampaign->name . " | Helios";
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager > Subcampaigns <span>> " . $subcampaign->name . "</span>";
+
+        $user = auth()->user();
+        $team = Team::find($user->team_id);
+
+        $campaigns = Campaign::where(['creator_id' => $user->id])->get();
+        $subcampaigns = Subcampaign::where('campaign_id', $campaign->id)->get();
+        $ads = Ad::where('subcampaign_id', $subcampaign->id)->get();
+        $landing_pages = LandingPage::where('is_active', 1)->get();
+
+        return view('pages.ads', compact(
+            'page_title',
+            'page_css',
+            'no_main_header',
+            'active',
+            'breadcrumbs',
+            'subcampaign',
+            'campaign',
+            'team',
+            'campaigns',
+            'subcampaigns',
+            'ads',
+            'landing_pages'
+        ));
     }
 
     public function store()

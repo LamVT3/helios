@@ -17,6 +17,70 @@ class CampaignController extends Controller
         $this->middleware('auth');
     }
 
+    public function index()
+    {
+        $page_title = "Campaigns | Helios";
+        $page_css = array('selectize.default.css');
+        $no_main_header = FALSE; //set true for lock.php and login.php
+        $active = 'campaigns';
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager <span>> Campaigns</span>";
+
+        $user = auth()->user();
+
+        $campaigns = Campaign::where('creator_id', $user->id)->get();
+        $team = Team::find($user->team_id);
+
+        $landing_pages = LandingPage::where('is_active', 1)->get();
+
+        return view('pages.campaigns', compact(
+            'page_title',
+            'page_css',
+            'no_main_header',
+            'active',
+            'breadcrumbs',
+            'campaigns',
+            'team',
+            'landing_pages',
+            'user'
+        ));
+    }
+
+    public function show($id)
+    {
+        $page_css = array('selectize.default.css');
+        $no_main_header = FALSE; //set true for lock.php and login.php
+        $active = 'adsmanager';
+
+        if($id == 'all'){
+
+        }
+        $campaign = Campaign::findOrFail($id);
+
+        $page_title = "Campaign: " . $campaign->name . " | Helios";
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager > Campaigns <span>> " . $campaign->name . "</span>";
+
+        $user = auth()->user();
+        $team = Team::find($user->team_id);
+
+        $campaigns = Campaign::where(['creator_id' => $user->id])->get();
+        $subcampaigns = Subcampaign::where('campaign_id', $campaign->id)->get();
+        $landing_pages = LandingPage::where('is_active', 1)->get();
+
+        return view('pages.subcampaigns', compact(
+            'page_title',
+            'page_css',
+            'no_main_header',
+            'active',
+            'breadcrumbs',
+            'team',
+            'campaigns',
+            'campaign',
+            'campaign_id',
+            'subcampaigns',
+            'landing_pages'
+        ));
+    }
+
     public function store()
     {
         /*if (!\Entrust::can('edit-review')) return view('errors.403');*/
@@ -28,7 +92,7 @@ class CampaignController extends Controller
         $user = auth()->user();
 
         $source = request('source');
-        $team = request('team');
+        $team = $user->team_id;
         $campaign_type = request('campaign_type');
         $subcampaign_type = request('subcampaign_type');
         $select_ad = request('select_ad');
