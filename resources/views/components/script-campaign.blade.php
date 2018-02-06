@@ -27,7 +27,6 @@
                     alphanumeric: true
                 },
                 medium: {
-                    required: true,
                     alphanumeric: true
                 },
                 subcampaign_name: {
@@ -57,8 +56,6 @@
                     selectize.clearOptions();
                     selectize.addOption(campaigns);
                     selectize.refreshOptions(true);
-
-                    $('.medium').html('');
 
                     /*var options = '';
                     for(var item in teams){
@@ -120,7 +117,6 @@
                         selectize.addOption(subcampaigns);
                         selectize.refreshOptions(true);
 
-                        $('.medium').html(campaign.medium);
                     } else {
                         alert("Could not get subcampaigns. Please try again.")
                     }
@@ -211,6 +207,7 @@
         $('#form-campaign').submit(function (e) {
 
             e.preventDefault();
+
             var data = {};
 
             data.source = $(this).find('[name=source]').val();
@@ -260,6 +257,8 @@
                 return false;
             }
 
+            $('.loading').show();
+
             $.post($(this).attr('action'), data, function (data) {
                 if(data.type && data.type == 'success'){
                     /*$('#form-review').find("input, textarea").val("");
@@ -269,11 +268,13 @@
                     location.href = data.url;
                 }else{
                     $('#form-campaign-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
+                    $('.loading').hide();
                 }
             }).fail(
                 function (err) {
                     console.log(err);
                     $('#form-campaign-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
+                    $('.loading').hide();
             });
         })
 

@@ -164,7 +164,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
-
+        Mbarwick83\Shorty\ShortyServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -229,6 +229,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Moloquent' => Jenssegers\Mongodb\Eloquent\Model::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Shorty'    => Mbarwick83\Shorty\Facades\Shorty::class
 
     ],
 

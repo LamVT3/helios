@@ -66,6 +66,19 @@
                                                     <i></i>
                                                 </label>
                                             </section>
+                                            <section class="col-lg-12">
+                                                <label class="label">Active?</label>
+                                                <div class="inline-group">
+                                                    <label class="radio">
+                                                        <input type="radio" name="is_active"
+                                                               value="1" {{ old('is_active', isset($user->is_active) ? $user->is_active : 0) == 1 ? 'checked' : '' }}>
+                                                        <i></i> Yes</label>
+                                                    <label class="radio">
+                                                        <input type="radio" name="is_active"
+                                                               value="0" {{ old('is_active', isset($user->is_active) ? $user->is_active : 0) != 1 ? 'checked' : '' }}>
+                                                        <i></i> No</label>
+                                                </div>
+                                            </section>
                                             {{--<section class="col-lg-12">
                                                 <label class="label">Role</label>
                                                 <label class="select">

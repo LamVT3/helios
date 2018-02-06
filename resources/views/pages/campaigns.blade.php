@@ -47,7 +47,6 @@
                                         <th>Source</th>
                                         <th>Team</th>
                                         <th>Name</th>
-                                        <th>Medium</th>
                                         <th>Creator</th>
                                         <th>Created at</th>
                                         <th>Active?</th>
@@ -60,17 +59,16 @@
                                             <td>{{ $item->source_name }}</td>
                                             <td>{{ $item->team_name }}</td>
                                             <td><a href="{{ route("campaign-details", $item->id) }}">{{ $item->name }}</a></td>
-                                            <td>{{ $item->medium }}</td>
                                             <td>{{ $item->creator_name }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
                                             <td>{{ $item->is_active ? "Yes" : 'No' }}</td>
                                             <td>
                                                 {{--@permission('edit-review')--}}
-                                                <a data-toggle="modal" class='btn btn-xs btn-default'
+                                                {{--<a data-toggle="modal" class='btn btn-xs btn-default'
                                                    data-target="#addModal"
                                                    data-item-id="{{ $item->id }}"
                                                    data-original-title='Edit Row'><i
-                                                            class='fa fa-pencil'></i></a>
+                                                            class='fa fa-pencil'></i></a>--}}
                                                 {{--<a data-toggle="modal" class='btn btn-xs btn-default'
                                                    data-target="#deleteModal"
                                                    data-item-id="{{ $item->id }}"

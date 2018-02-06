@@ -61,15 +61,6 @@
                                         </label>
                                     </section>
                                 </div>
-                                <div class="row">
-                                    <section>
-                                        <label class="label col col-3" for="medium">Medium</label>
-                                        <label class="input col col-9">
-                                            <input type="text" name="medium" id="medium" class="form-control"
-                                                   placeholder="Enter a medium..."/>
-                                        </label>
-                                    </section>
-                                </div>
                             </div>
                             <div id="old-campaign" style="display:none">
                                 <div class="row">
@@ -79,13 +70,6 @@
                                             <input type="text" name="campaign" id="campaign" class=""
                                                    placeholder="Choose a campaign..."/>
                                         </label>
-                                    </section>
-                                </div>
-                                <div class="row" style="margin: 10px -15px">
-                                    <section class="form-group">
-                                        <label class="label col col-3">Medium</label>
-                                        <div class="col col-9 medium">
-                                        </div>
                                     </section>
                                 </div>
                             </div>
@@ -158,6 +142,15 @@
                                 </div>
                                 <div class="row">
                                     <section>
+                                        <label class="label col col-3" for="medium">Medium</label>
+                                        <label class="input col col-9">
+                                            <input type="text" name="medium" id="medium" class="form-control"
+                                                   placeholder="Enter a medium. Ex: Conversion"/>
+                                        </label>
+                                    </section>
+                                </div>
+                                <div class="row">
+                                    <section>
                                         <label class="label col col-3" for="landing_page">Landing Page</label>
                                         <label class="select col col-9">
                                             <select name="landing_page" id="landing_page">
@@ -176,7 +169,10 @@
                         @endunless
                 </div>
                 <div class="modal-footer">
-                    @if(auth()->user()->sources)
+                    <span class="loading pull-left" style="display:none">
+                        <img id="img_ajax_upload" src="http://helios.com/img/loading/rolling.gif" alt="" style="float:left; width: 20%;">
+                    </span>
+                    @if(auth()->user()->team_id)
                     <button type="submit" class="btn btn-primary">
                         Create
                     </button>

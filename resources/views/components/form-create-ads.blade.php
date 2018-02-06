@@ -10,9 +10,9 @@
                 </div>
                 <div class="modal-body">
 
-                    {{--@unless(auth()->user()->sources)
+                    @unless(auth()->user()->team_id)
                         <p class="text-warning">This user can not create a campaign because it hasn't been assigned to a team.</p>
-                    @else--}}
+                    @else
                     <div class="smart-form">
                         {{ csrf_field() }}
                         <div id="form-campaign-alert"></div>
@@ -60,15 +60,6 @@
                                         </label>
                                     </section>
                                 </div>
-                                <div class="row">
-                                    <section>
-                                        <label class="label col col-3" for="medium">Medium</label>
-                                        <label class="input col col-9">
-                                            <input type="text" name="medium" id="medium" class="form-control"
-                                                   placeholder="Enter a medium..."/>
-                                        </label>
-                                    </section>
-                                </div>
                             </div>
                             <div id="old-campaign">
                                 <div class="row">
@@ -79,12 +70,6 @@
                                                    value="{{ $campaign->id }}"
                                                    placeholder="Choose a campaign..."/>
                                         </label>
-                                    </section>
-                                </div>
-                                <div class="row" style="margin: 10px -15px">
-                                    <section class="form-group">
-                                        <label class="label col col-3">Medium</label>
-                                        <div class="col col-9 medium">{{ $campaign->medium }}</div>
                                     </section>
                                 </div>
                             </div>
@@ -159,6 +144,15 @@
                                 </div>
                                 <div class="row">
                                     <section>
+                                        <label class="label col col-3" for="medium">Medium</label>
+                                        <label class="input col col-9">
+                                            <input type="text" name="medium" id="medium" class="form-control"
+                                                   placeholder="Enter a medium. Ex: Conversion"/>
+                                        </label>
+                                    </section>
+                                </div>
+                                <div class="row">
+                                    <section>
                                         <label class="label col col-3" for="landing_page">Landing Page</label>
                                         <label class="select col col-9">
                                             <select name="landing_page" id="landing_page">
@@ -174,10 +168,13 @@
                         </fieldset>
 
                     </div>
-                    {{--@endunless--}}
+                    @endunless
                 </div>
                 <div class="modal-footer">
-                    @if(auth()->user()->sources)
+                    <span class="loading pull-left" style="display:none">
+                        <img id="img_ajax_upload" src="http://helios.com/img/loading/rolling.gif" alt="" style="float:left; width: 20%;">
+                    </span>
+                    @if(auth()->user()->team_id)
                         <button type="submit" class="btn btn-primary">
                             Create
                         </button>

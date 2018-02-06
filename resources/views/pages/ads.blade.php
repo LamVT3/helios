@@ -47,9 +47,11 @@
                                         <th>Source</th>
                                         <th>Team</th>
                                         <th>Name</th>
+                                        <th>Medium</th>
                                         <th>Subcampaign</th>
                                         <th>Campaign</th>
                                         <th>Landing Page</th>
+                                        <th>Shorten URL</th>
                                         <th>Link tracking</th>
                                         <th>Creator</th>
                                         <th>Created at</th>
@@ -63,20 +65,25 @@
                                             <td>{{ $item->source_name }}</td>
                                             <td>{{ $item->team_name }}</td>
                                             <td>{{ $item->name }}</td>
+                                            <td>{{ $item->medium }}</td>
                                             <td>{{ $item->subcampaign_name }}</td>
                                             <td>{{ $item->campaign_name }}</td>
                                             <td>{{ $item->landing_page_name }}</td>
+                                            <td>
+                                                <a class="copy btn btn-default btn-xs" data-id="{{ $item->id }}" href="javascript:void(0)"> <i class='fa fa-copy'></i></a>
+                                                <a id="url-{{ $item->id }}" href="{{ $item->shorten_url }}">{{ $item->shorten_url }}</a>
+                                            </td>
                                             <td>{{ $item->tracking_link }}</td>
                                             <td>{{ $item->creator_name }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
                                             <td>{{ $item->is_active ? "Yes" : 'No' }}</td>
                                             <td>
                                                 {{--@permission('edit-review')--}}
-                                                <a data-toggle="modal" class='btn btn-xs btn-default'
+                                                {{--<a data-toggle="modal" class='btn btn-xs btn-default'
                                                    data-target="#addModal"
                                                    data-item-id="{{ $item->id }}"
                                                    data-original-title='Edit Row'><i
-                                                            class='fa fa-pencil'></i></a>
+                                                            class='fa fa-pencil'></i></a>--}}
                                                 {{--<a data-toggle="modal" class='btn btn-xs btn-default'
                                                    data-target="#deleteModal"
                                                    data-item-id="{{ $item->id }}"
@@ -209,6 +216,24 @@
             searchField: ['name'],
             options: allSubCampaigns,
             maxItems: 1
+        });
+
+        $('.copy').click(function(e) {
+
+            // Select some text (you could also create a range)
+            selectText("url-" + $(this).data("id"));
+
+            // Use try & catch for unsupported browser
+            try {
+
+                // The important part (copy selected text)
+                var ok = document.execCommand('copy');
+
+                if (ok) $(this).text('Copied!');
+                else    $(this).text('Unable to copy!');
+            } catch (err) {
+                console.log('Unsupported Browser!');
+            }
         });
     })
 

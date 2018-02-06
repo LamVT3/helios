@@ -129,6 +129,7 @@ class UserController extends Controller
         $user->username = request('username');
         $user->email = request('email');
         $user->rank = request('rank');
+        $user->is_active = (int)request('is_active');
 
         if (request('password') || !request('id'))
             $user->password = bcrypt(request('password'));

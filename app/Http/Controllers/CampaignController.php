@@ -9,6 +9,7 @@ use App\Source;
 use App\Subcampaign;
 use App\Team;
 use Illuminate\Http\Request;
+use Mbarwick83\Shorty\Facades\Shorty;
 
 class CampaignController extends Controller
 {
@@ -98,13 +99,13 @@ class CampaignController extends Controller
         $select_ad = request('select_ad');
 
         $campaign_name = request('campaign_name');
-        $medium = request('medium');
         $campaign = request('campaign');
 
         $subcampaign_name = request('subcampaign_name');
         $subcampaign = request('subcampaign');
 
         $ad_name = request('ad_name');
+        $medium = request('medium', "");
         $landing_page = request('landing_page');
 
         //$current_url = \request('current_url', route('campaign'));
@@ -117,7 +118,6 @@ class CampaignController extends Controller
         if($campaign_type === "new"){
             $campaign = new Campaign();
             $campaign->name = $campaign_name;
-            $campaign->medium = $medium;
             $campaign->source_id = $source->id;
             $campaign->source_name = $source->name;
             $campaign->team_id = $team->id;
@@ -176,6 +176,7 @@ class CampaignController extends Controller
         if($select_ad === "new"){
             $ad = new Ad();
             $ad->name = $ad_name;
+            $ad->medium = $medium;
             $ad->source_id = $source->id;
             $ad->source_name = $source->name;
             $ad->team_id = $team->id;
@@ -189,8 +190,10 @@ class CampaignController extends Controller
             $ad->landing_page_name = $landing_page->name;
             $ad->creator_id = $user->id;
             $ad->creator_name = $user->username;
-            $ad->tracking_link = $landing_page->url . "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_ad={$ad->name}";
-            $ad->uri_query = "utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_ad={$ad->name}";
+            $ad->tracking_link = $landing_page->url . "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_medium={$ad->medium}&utm_subcampaign={$subcampaign->name}&utm_ad={$ad->name}";
+            $ad->uri_query = "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_medium={$ad->medium}&utm_subcampaign={$subcampaign->name}&utm_ad={$ad->name}";
+            $shorten_url = Shorty::shorten($ad->tracking_link);
+            $ad->shorten_url = $shorten_url;
             $ad->is_active = 1;
 
             $ad->save();

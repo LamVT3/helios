@@ -66,11 +66,11 @@
                                             <td>{{ $item->is_active ? "Yes" : 'No' }}</td>
                                             <td>
                                                 {{--@permission('edit-review')--}}
-                                                <a data-toggle="modal" class='btn btn-xs btn-default'
+                                                {{--<a data-toggle="modal" class='btn btn-xs btn-default'
                                                    data-target="#addModal"
                                                    data-item-id="{{ $item->id }}"
                                                    data-original-title='Edit Row'><i
-                                                            class='fa fa-pencil'></i></a>
+                                                            class='fa fa-pencil'></i></a>--}}
                                                 {{--<a data-toggle="modal" class='btn btn-xs btn-default'
                                                    data-target="#deleteModal"
                                                    data-item-id="{{ $item->id }}"
