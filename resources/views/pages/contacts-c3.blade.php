@@ -140,7 +140,7 @@
                                         <th>Current level</th>
                                         <th>Marketer</th>
                                         <th>Campaign</th>
-                                        <th>Channel</th>
+                                        <th>Subcampaign</th>
                                         <th>Ads</th>
                                         <th>Landing page</th>
                                         <th>Action</th>

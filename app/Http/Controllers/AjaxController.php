@@ -26,16 +26,22 @@ class AjaxController extends Controller
         }
     }
 
-    public function getTeamsCampaigns($source_id)
+    /*public function getTeamsCampaigns($source_id)
     {
         $user = auth()->user();
         $sources = $user->sources;
         $teams = $sources[$source_id]['teams'];
 
-        $campaigns = Campaign::where('team_id', current($teams)['team_id'])->get();
+        $campaigns = Campaign::where(['team_id' => current($teams)['team_id'], 'creator_id' => $user->id])->get();
         return response()->json(['type' => 'success', 'teams' => $teams, 'campaigns' => $campaigns]);
+    }*/
+
+    public function getCampaigns($source_id)
+    {
+        $user = auth()->user();
+
+        $campaigns = Campaign::where(['source_id' => $source_id, 'creator_id' => $user->id])->get();
+        return response()->json(['type' => 'success', 'campaigns' => $campaigns]);
     }
-
-
 
 }

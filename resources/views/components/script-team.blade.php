@@ -1,5 +1,40 @@
 <script>
     $(function(){
+        var errorClass = 'invalid';
+        var errorElement = 'em';
+
+        $.validator.addMethod( "alphanumeric", function( value, element ) {
+            return this.optional( element ) || /^\w+$/i.test( value );
+        }, "Letters, numbers, and underscores only please" );
+
+        $('#form-team').validate({
+            errorClass: errorClass,
+            errorElement: errorElement,
+            highlight: function (element) {
+                $(element).parent().removeClass('state-success').addClass("state-error");
+                $(element).removeClass('valid');
+            },
+            unhighlight: function (element) {
+                $(element).parent().removeClass("state-error").addClass('state-success');
+                $(element).addClass('valid');
+            },
+
+            // Rules for form validation
+            rules: {
+                name: {
+                    required: true,
+                    alphanumeric: true
+                },
+                description: {
+                    required: true,
+                }
+            },
+
+            // Do not change code below
+            errorPlacement: function (error, element) {
+                error.insertAfter(element.parent());
+            }
+        });
 
         /*$('#deleteModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget) // Button that triggered the modal
@@ -24,10 +59,14 @@
                         modal.find('.modal-title').text('Edit Team');
                         modal.find('input[name=team_id]').val(itemId);
                         modal.find('input[name=name]').val(team.name);
-                        modal.find('select[name=source]').val(team.source_id);
+                        //modal.find('select[name=source]').val(team.source_id);
                         modal.find('textarea[name=description]').html(team.description);
+
                         var members = modal.find('input[name=members]').selectize();
                         members[0].selectize.setValue(team.member_ids_array);
+
+                        var sources = modal.find('input[name=sources]').selectize();
+                        sources[0].selectize.setValue(team.source_ids_array);
 
                         modal.find('[type=submit]').html('Save');
                     } else {
@@ -51,15 +90,17 @@
             var data = {};
             data.team_id = $(this).find('[name=team_id]').val();
             data.name = $(this).find('[name=name]').val();
-            data.source = $(this).find('[name=source]').val();
+            data.sources = $(this).find('[name=sources]').val();
             data.description = $(this).find('[name=description]').val();
             data.members = $(this).find('[name=members]').val();
             data._token = $(this).find('[name=_token]').val();
 
-            if(!data.name || !data.description){
+            if(!$(this).valid()) return false;
+
+            /*if(!data.name || !data.description){
                 $('#form-team-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
                 return false;
-            }
+            }*/
             $.post($(this).attr('action'), data, function (data) {
                 if(data.type && data.type == 'success'){
                     /*$('#form-review').find("input, textarea").val("");

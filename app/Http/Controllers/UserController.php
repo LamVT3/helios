@@ -107,25 +107,30 @@ class UserController extends Controller
 
     public function store()
     {
-//        $request = request();
-//        dd($request->all());
         // if (!\Entrust::can('edit-user')) return view('errors.403');
-            $validator = [
-                'name' => 'required',
-                'email' => 'required|email|max:255'
-            ];
-            if(!\request('id')) $validator['email'] = 'required|email|max:255|unique:users';
-            if (request('password') || !request('id')) {
-                $validator['password'] = 'required|min:6|confirmed';
-            }
+        $validator = [
+            'username' => 'required|alpha_dash|unique:users',
+            'email' => 'required|email|max:255|unique:users'
+        ];
 
-            $this->validate(request(), $validator);
+        if (request('password') || !request('id')) {
+            $validator['password'] = 'required|min:6|confirmed';
+        }
 
         $user = !request('id') ? new User() : User::find(request('id'));
+
+        if(request('id')){
+            if(request('username') == $user->username) $validator['username'] = 'required|alpha_dash';
+            if(request('email') == $user->email) $validator['email'] = 'required|email|max:255';
+        }
+
+        $this->validate(request(), $validator);
+
         // $user = new User();
-        $user->username = request('name');
+        $user->username = request('username');
         $user->email = request('email');
         $user->rank = request('rank');
+        $user->is_active = (int)request('is_active');
 
         if (request('password') || !request('id'))
             $user->password = bcrypt(request('password'));

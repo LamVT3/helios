@@ -7,7 +7,7 @@ use App\Campaign;
 use App\Channel;
 use Illuminate\Http\Request;
 
-class AdsController extends Controller
+class AdController extends Controller
 {
     public function __construct()
     {

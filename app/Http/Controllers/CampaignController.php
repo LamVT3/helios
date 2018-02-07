@@ -9,12 +9,77 @@ use App\Source;
 use App\Subcampaign;
 use App\Team;
 use Illuminate\Http\Request;
+use Mbarwick83\Shorty\Facades\Shorty;
 
 class CampaignController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+    }
+
+    public function index()
+    {
+        $page_title = "Campaigns | Helios";
+        $page_css = array('selectize.default.css');
+        $no_main_header = FALSE; //set true for lock.php and login.php
+        $active = 'campaigns';
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager <span>> Campaigns</span>";
+
+        $user = auth()->user();
+
+        $campaigns = Campaign::where('creator_id', $user->id)->get();
+        $team = Team::find($user->team_id);
+
+        $landing_pages = LandingPage::where('is_active', 1)->get();
+
+        return view('pages.campaigns', compact(
+            'page_title',
+            'page_css',
+            'no_main_header',
+            'active',
+            'breadcrumbs',
+            'campaigns',
+            'team',
+            'landing_pages',
+            'user'
+        ));
+    }
+
+    public function show($id)
+    {
+        $page_css = array('selectize.default.css');
+        $no_main_header = FALSE; //set true for lock.php and login.php
+        $active = 'adsmanager';
+
+        if($id == 'all'){
+
+        }
+        $campaign = Campaign::findOrFail($id);
+
+        $page_title = "Campaign: " . $campaign->name . " | Helios";
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager > Campaigns <span>> " . $campaign->name . "</span>";
+
+        $user = auth()->user();
+        $team = Team::find($user->team_id);
+
+        $campaigns = Campaign::where(['creator_id' => $user->id])->get();
+        $subcampaigns = Subcampaign::where('campaign_id', $campaign->id)->get();
+        $landing_pages = LandingPage::where('is_active', 1)->get();
+
+        return view('pages.subcampaigns', compact(
+            'page_title',
+            'page_css',
+            'no_main_header',
+            'active',
+            'breadcrumbs',
+            'team',
+            'campaigns',
+            'campaign',
+            'campaign_id',
+            'subcampaigns',
+            'landing_pages'
+        ));
     }
 
     public function store()
@@ -28,19 +93,19 @@ class CampaignController extends Controller
         $user = auth()->user();
 
         $source = request('source');
-        $team = request('team');
+        $team = $user->team_id;
         $campaign_type = request('campaign_type');
         $subcampaign_type = request('subcampaign_type');
         $select_ad = request('select_ad');
 
         $campaign_name = request('campaign_name');
-        $medium = request('medium');
         $campaign = request('campaign');
 
         $subcampaign_name = request('subcampaign_name');
         $subcampaign = request('subcampaign');
 
         $ad_name = request('ad_name');
+        $medium = request('medium', "");
         $landing_page = request('landing_page');
 
         //$current_url = \request('current_url', route('campaign'));
@@ -53,7 +118,6 @@ class CampaignController extends Controller
         if($campaign_type === "new"){
             $campaign = new Campaign();
             $campaign->name = $campaign_name;
-            $campaign->medium = $medium;
             $campaign->source_id = $source->id;
             $campaign->source_name = $source->name;
             $campaign->team_id = $team->id;
@@ -74,7 +138,7 @@ class CampaignController extends Controller
             $subcampaign->source_id = $source->id;
             $subcampaign->source_name = $source->name;
             $subcampaign->team_id = $team->id;
-            $campaign->team_name = $team->name;
+            $subcampaign->team_name = $team->name;
             $subcampaign->campaign_id = $campaign->id;
             $subcampaign->campaign_name = $campaign->name;
             $subcampaign->creator_id = $user->id;
@@ -96,7 +160,7 @@ class CampaignController extends Controller
                     $subcampaign->source_id = $source->id;
                     $subcampaign->source_name = $source->name;
                     $subcampaign->team_id = $team->id;
-                    $campaign->team_name = $team->name;
+                    $subcampaign->team_name = $team->name;
                     $subcampaign->campaign_id = $campaign->id;
                     $subcampaign->campaign_name = $campaign->name;
                     $subcampaign->creator_id = $user->id;
@@ -112,6 +176,7 @@ class CampaignController extends Controller
         if($select_ad === "new"){
             $ad = new Ad();
             $ad->name = $ad_name;
+            $ad->medium = $medium;
             $ad->source_id = $source->id;
             $ad->source_name = $source->name;
             $ad->team_id = $team->id;
@@ -125,8 +190,10 @@ class CampaignController extends Controller
             $ad->landing_page_name = $landing_page->name;
             $ad->creator_id = $user->id;
             $ad->creator_name = $user->username;
-            $ad->tracking_link = $landing_page->url . "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_ad={$ad->name}";
-            $ad->uri_query = "utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_ad={$ad->name}";
+            $ad->tracking_link = $landing_page->url . "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_medium={$ad->medium}&utm_subcampaign={$subcampaign->name}&utm_ad={$ad->name}";
+            $ad->uri_query = "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_medium={$ad->medium}&utm_subcampaign={$subcampaign->name}&utm_ad={$ad->name}";
+            $shorten_url = Shorty::shorten($ad->tracking_link);
+            $ad->shorten_url = $shorten_url;
             $ad->is_active = 1;
 
             $ad->save();

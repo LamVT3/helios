@@ -22,7 +22,7 @@ class KpiController extends Controller
         $active = 'kpis';
         $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager <span>> Kpis</span>";
 
-        return view('pages.ads_manager-kpis', compact(
+        return view('pages.kpis', compact(
             'page_title',
             'page_css',
             'no_main_header',

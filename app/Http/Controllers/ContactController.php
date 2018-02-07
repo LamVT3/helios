@@ -29,9 +29,9 @@ class ContactController extends Controller
         $active = 'contacts';
         $breadcrumbs = "<i class=\"fa-fw fa fa-child\"></i> Contacts <span>> C3</span>";
 
-        $contacts = Contact::where('registered_date', '>=', Date('Y-m-d'))
-            ->where('registered_date', '<=', Date('Y-m-d 23:59:59'))
-            ->orderBy('registered_date', 'desc')->limit(1000)->get();
+        $contacts = Contact::where('submit_time', '>=', strtotime("midnight"))
+            ->where('submit_time', '<', strtotime("tomorrow"))
+            ->orderBy('submit_time', 'desc')->limit(1000)->get();
         $sources = Source::all();
         $teams = Team::all();
         $marketers = User::all();
@@ -101,22 +101,23 @@ class ContactController extends Controller
         }
         // DB::connection( 'mongodb' )->enableQueryLog();
 
-        $startDate = Date('Y-m-d');
-        $endDate = Date('Y-m-d 23:59:59');
+        $startDate = strtotime("midnight");
+        $endDate = strtotime("tomorrow");
         if($request->registered_date){
             $date_place = str_replace('-', ' ', $request->registered_date);
             $date_arr = explode(' ', str_replace('/', '-', $date_place));
-            $startDate = Date('Y-m-d', strtotime($date_arr[0]));
-            $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
+            $startDate = strtotime($date_arr[0]);
+            // $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
+            $endDate = strtotime("+1 day", strtotime($date_arr[1]));
         }
-        $query = Contact::where('registered_date', '>=', $startDate);
-        $query->where('registered_date', '<=', $endDate);
+        $query = Contact::where('submit_time', '>=', $startDate);
+        $query->where('submit_time', '<', $endDate);
 
         if(count($data_where) > 0){
             $query->where($data_where);
         }
 
-        $contacts = $query->orderBy('registered_date', 'desc')->limit(1000)->get();
+        $contacts = $query->orderBy('submit_time', 'desc')->limit(1000)->get();
         // DB::connection('mongodb')->getQueryLog();
         $data = $data_where;
         $data['contacts'] = $contacts;
@@ -139,7 +140,7 @@ class ContactController extends Controller
                             $item->name,
                             $item->email,
                             $item->phone,
-                            Date('d-m-Y H:i:s', strtotime($item->registered_date)),
+                            Date('d-m-Y H:i:s', $item->submit_time),
                             $item->current_level,
                             $item->marketer_name,
                             $item->campaign_name,

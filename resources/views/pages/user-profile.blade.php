@@ -26,7 +26,7 @@ foreach($chart_l8 as $key_l8=> $value_l8){
                         <div class="padding-10">
                             <h4 class="font-md"><strong>{{ auth()->user()->username }}</strong>
                             <br>
-                            <small class="text-danger">Marketer</small></h4>
+                            <small class="text-danger">Team: {{ auth()->user()->team_name }}</small></h4>
                         </div>
                     </div>
                     <div class="col col-sm-10">

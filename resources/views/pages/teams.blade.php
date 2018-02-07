@@ -10,8 +10,8 @@
             @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
                 <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
                    data-toggle="modal"
-                   data-target="#addModal"><i
-                            class="fa fa-plus fa-lg"></i> Create Source</a>
+                   data-target="#createTeamModal"><i
+                            class="fa fa-plus fa-lg"></i> Create Team</a>
             @endcomponent
 
             @include('layouts.errors')
@@ -26,46 +26,57 @@
                     <article class="col-sm-12 col-md-12">
 
                         @component('components.jarviswidget',
-                                                    ['id' => 1, 'icon' => 'fa-table', 'title' => 'Sources (' . $sources->count() . ')'])
+                                                    ['id' => 1, 'icon' => 'fa-table', 'title' => 'Teams (' . $teams->count() . ')'])
                             <div class="widget-body no-padding">
                                 <div class="alert alert-info no-margin fade in">
                                     <button class="close" data-dismiss="alert">
                                         ×
                                     </button>
                                     <i class="fa-fw fa fa-info"></i>
-                                    A 'source' is an advertising platform. A source should be created by a marketing manager. It will be shown as <span class="txt-color-orangeDark">utm_source</span> in a tracking link.
+                                    A 'team' is a marketing team or an advertising account. A team should be created by a marketing manager. It will be shown as <span class="txt-color-orangeDark">utm_team</span> in a tracking link.
                                 </div>
-                                <table id="table_sources" class="table table-striped table-bordered table-hover"
+                                <table id="table_teams" class="table table-striped table-bordered table-hover"
                                        width="100%">
                                     <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Description</th>
+                                        <th>Team Name</th>
+                                        <th>Team Description</th>
+                                        <th>Team Members</th>
+                                        <th>Sources</th>
                                         <th>Creator</th>
                                         <th>Created at</th>
                                         <th>Action</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    @foreach ($sources as $item)
-                                        <tr id="source-{{ $item->id }}">
-                                            <td><a href="{{ route("team", $item->id) }}">{{ $item->name }}</a></td>
+                                    @foreach ($teams as $item)
+                                        <tr id="team-{{ $item->id }}">
+                                            <td>{{ $item->name }}</td>
                                             <td>{{ $item->description }}</td>
+                                            <td>
+                                                @if($item->members)
+                                                    @foreach($item->members as $m)
+                                                        <span class="label label-primary">{{ '@'.$m['username'] }}</span>
+                                                    @endforeach
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($item->sources)
+                                                    @foreach($item->sources as $s)
+                                                        <span class="label label-warning">{{ $s['source_name'] }}</span>
+                                                    @endforeach
+                                                @endif
+                                            </td>
                                             <td>{{ $item->creator_name or '' }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
                                             <td>
                                                 {{--@permission('edit-review')--}}
                                                 <a data-toggle="modal" class='btn btn-xs btn-default'
-                                                   data-target="#addModal"
+                                                   data-target="#createTeamModal"
                                                    data-item-id="{{ $item->id }}"
                                                    data-original-title='Edit Row'><i
                                                             class='fa fa-pencil'></i></a>
-                                                <a data-toggle="modal" class='btn btn-xs btn-default'
-                                                   data-target="#createTeamModal"
-                                                   data-item-id="{{ $item->id }}"
-                                                   data-item-name="{{ $item->name }}"
-                                                   data-original-title='Create Team'><i
-                                                            class='fa fa-plus'></i> Create Team</a>
+
                                                 {{--@endpermission--}}
                                             </td>
                                         </tr>
@@ -86,7 +97,7 @@
             </section>
             <!-- end widget grid -->
 
-                @include('components.form-create-source', ['type' => null])
+                @include('components.form-create-team', ['type' => null])
 
         </div>
         <!-- END MAIN CONTENT -->
@@ -114,29 +125,29 @@
     $(document).ready(function () {
 
         /* BASIC ;*/
-        var responsiveHelper_table_source = undefined;
+        var responsiveHelper_table_team = undefined;
 
         var breakpointDefinition = {
             tablet: 1024,
             phone: 480
         };
 
-        $('#table_sources').dataTable({
+        $('#table_teams').dataTable({
             "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-6 hidden-xs'C>r>" +
             "t" +
             "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-sm-6 col-xs-12'p>>",
             "autoWidth": true,
             "preDrawCallback": function () {
                 // Initialize the responsive datatables helper once.
-                if (!responsiveHelper_table_source) {
-                    responsiveHelper_table_source = new ResponsiveDatatablesHelper($('#table_sources'), breakpointDefinition);
+                if (!responsiveHelper_table_team) {
+                    responsiveHelper_table_team = new ResponsiveDatatablesHelper($('#table_teams'), breakpointDefinition);
                 }
             },
             "rowCallback": function (nRow) {
-                responsiveHelper_table_source.createExpandIcon(nRow);
+                responsiveHelper_table_team.createExpandIcon(nRow);
             },
             "drawCallback": function (oSettings) {
-                responsiveHelper_table_source.respond();
+                responsiveHelper_table_team.respond();
             },
             "order": [[0, "desc"]]
         });
@@ -148,6 +159,7 @@
         /* END BASIC */
 
         allMembers = {!! $allMembers !!}
+
         $('input[name=members]').selectize({
             delimiter: ',',
             persist: false,
@@ -156,8 +168,19 @@
             searchField: ['username'],
             options: allMembers
         });
+
+        allSources = {!! $allSources !!}
+
+        $('input[name=sources]').selectize({
+            delimiter: ',',
+            persist: false,
+            valueField: '_id',
+            labelField: 'name',
+            searchField: ['name'],
+            options: allSources
+        });
     })
 
 </script>
-@include('components.script-source')
+@include('components.script-team')
 @stop

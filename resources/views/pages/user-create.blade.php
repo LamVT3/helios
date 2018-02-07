@@ -30,8 +30,8 @@
                                             <section class="col-lg-12">
                                                 <label class="label">Username *</label>
                                                 <label class="input">
-                                                    <input type="text" name="name" required
-                                                           value="{{ old('name') }}">
+                                                    <input type="text" name="username" required
+                                                           value="{{ old('username') }}">
                                                 </label>
                                             </section>
                                             <section class="col-lg-12">
@@ -65,6 +65,19 @@
                                                     </select>
                                                     <i></i>
                                                 </label>
+                                            </section>
+                                            <section class="col-lg-12">
+                                                <label class="label">Active?</label>
+                                                <div class="inline-group">
+                                                    <label class="radio">
+                                                        <input type="radio" name="is_active"
+                                                               value="1" checked>
+                                                        <i></i> Yes</label>
+                                                    <label class="radio">
+                                                        <input type="radio" name="is_active"
+                                                               value="0">
+                                                        <i></i> No</label>
+                                                </div>
                                             </section>
                                             {{--<section class="col-lg-12">
                                                 <label class="label">Role</label>
@@ -115,6 +128,10 @@
 
             //CKEDITOR.replace('page_content', {extraPlugins: 'autogrow'});
 
+            $.validator.addMethod( "alphanumeric", function( value, element ) {
+                return this.optional( element ) || /^\w+$/i.test( value );
+            }, "Letters, numbers, and underscores only please" );
+
             $('#edit-form').validate({
                 errorClass: errorClass,
                 errorElement: errorElement,
@@ -129,8 +146,9 @@
 
                 // Rules for form validation
                 rules: {
-                    name: {
-                        required: true
+                    username: {
+                        required: true,
+                        alphanumeric: true
                     },
                     email: {
                         required: true,
@@ -141,25 +159,13 @@
                     }
                 },
 
-                // Messages for form validation
-                messages: {
-                    title: {
-                        required: 'Nhập tên'
-                    },
-                    email: {
-                        required: 'Nhập email',
-                        email: 'Mail không hợp lệ'
-                    },
-                    password: {
-                        required: 'Nhập password'
-                    }
-                },
-
                 // Do not change code below
                 errorPlacement: function (error, element) {
                     error.insertAfter(element.parent());
                 }
             });
+
+
 
         })
 

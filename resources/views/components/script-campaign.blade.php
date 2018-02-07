@@ -1,10 +1,54 @@
 <script>
     $(function(){
 
+        var errorClass = 'invalid';
+        var errorElement = 'em';
+
+        $.validator.addMethod( "alphanumeric", function( value, element ) {
+            return this.optional( element ) || /^\w+$/i.test( value );
+        }, "Letters, numbers, and underscores only please" );
+
+        $('#form-campaign').validate({
+            errorClass: errorClass,
+            errorElement: errorElement,
+            highlight: function (element) {
+                $(element).parent().removeClass('state-success').addClass("state-error");
+                $(element).removeClass('valid');
+            },
+            unhighlight: function (element) {
+                $(element).parent().removeClass("state-error").addClass('state-success');
+                $(element).addClass('valid');
+            },
+
+            // Rules for form validation
+            rules: {
+                campaign_name: {
+                    required: true,
+                    alphanumeric: true
+                },
+                medium: {
+                    alphanumeric: true
+                },
+                subcampaign_name: {
+                    required: true,
+                    alphanumeric: true
+                },
+                ad_name: {
+                    required: true,
+                    alphanumeric: true
+                }
+            },
+
+            // Do not change code below
+            errorPlacement: function (error, element) {
+                error.insertAfter(element.parent());
+            }
+        });
+
         $('#source').change(function () {
-            $.get('{{ route("ajax-getTeamsCampaigns", "") }}/' + $(this).val(), {}, function (data) {
+            $.get('{{ route("ajax-getCampaigns", "") }}/' + $(this).val(), {}, function (data) {
                 if (data.type && data.type == 'success') {
-                    var teams = data.teams;
+                    //var teams = data.teams;
                     var campaigns = data.campaigns;
 
                     var selectize = $('input[name=campaign]').selectize()[0].selectize;
@@ -13,12 +57,12 @@
                     selectize.addOption(campaigns);
                     selectize.refreshOptions(true);
 
-                    var options = '';
+                    /*var options = '';
                     for(var item in teams){
                         options += '<option value="' + teams[item].team_id + '">' + teams[item].team_name + '</option>';
                     }
 
-                    $('#team').html(options);
+                    $('#team').html(options);*/
                 } else {
                     alert("Could not get subcampaigns. Please try again.")
                 }
@@ -61,22 +105,27 @@
 
         // Select a campaign
         $('#campaign').change(function () {
-            $.get('{{ route("ajax-getSubcampaigns", "") }}/' + $(this).val(), {}, function (data) {
-                if (data.type && data.type == 'success') {
-                    var campaign = data.campaign;
-                    var subcampaigns = data.subcampaigns;
+            if($(this).val()) {
+                $.get('{{ route("ajax-getSubcampaigns", "") }}/' + $(this).val(), {}, function (data) {
+                    if (data.type && data.type == 'success') {
+                        var campaign = data.campaign;
+                        var subcampaigns = data.subcampaigns;
 
-                    var selectize = $('input[name=subcampaign]').selectize()[0].selectize;
-                    selectize.clearCache('option');
-                    selectize.clearOptions();
-                    selectize.addOption(subcampaigns);
-                    selectize.refreshOptions(true);
+                        var selectize = $('input[name=subcampaign]').selectize()[0].selectize;
+                        selectize.clearCache('option');
+                        selectize.clearOptions();
+                        selectize.addOption(subcampaigns);
+                        selectize.refreshOptions(true);
 
-                    $('.medium').html(campaign.medium);
-                } else {
-                    alert("Could not get subcampaigns. Please try again.")
-                }
-            })
+                    } else {
+                        alert("Could not get subcampaigns. Please try again.")
+                    }
+                })
+            } else {
+                var selectize = $('input[name=subcampaign]').selectize()[0].selectize;
+                selectize.clearCache('option');
+                selectize.clearOptions();
+            }
         })
 
         // Choose create a new subcampaign or choose from existing ones
@@ -158,6 +207,7 @@
         $('#form-campaign').submit(function (e) {
 
             e.preventDefault();
+
             var data = {};
 
             data.source = $(this).find('[name=source]').val();
@@ -181,7 +231,9 @@
             data._token = $(this).find('[name=_token]').val();
 
             var message = "", error = false;
-            console.log(data);
+
+            if(!$(this).valid()) return false;
+
             if(data.campaign_type == "new" && !$.trim(data.campaign_name)){
                  message = 'Please enter a campaign name';
                  error = true;
@@ -205,6 +257,8 @@
                 return false;
             }
 
+            $('.loading').show();
+
             $.post($(this).attr('action'), data, function (data) {
                 if(data.type && data.type == 'success'){
                     /*$('#form-review').find("input, textarea").val("");
@@ -214,11 +268,13 @@
                     location.href = data.url;
                 }else{
                     $('#form-campaign-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
+                    $('.loading').hide();
                 }
             }).fail(
                 function (err) {
                     console.log(err);
                     $('#form-campaign-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
+                    $('.loading').hide();
             });
         })
 
