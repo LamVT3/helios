@@ -8,10 +8,13 @@
         <div id="content">
 
         @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
+            <form action="" method="" >
                 <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc;">
                     <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
                     <span></span> <b class="caret"></b>
                 </div>
+            </form>
+
         @endcomponent
 
         <!-- widget grid -->
@@ -376,7 +379,7 @@
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
         $(document).ready(function () {
 
-            var start = moment().subtract(29, 'days');
+            var start = moment();
             var end = moment();
 
             function cb(start, end) {
@@ -395,20 +398,23 @@
                     "Last Week":[moment().subtract(1,"week").startOf("week"),moment().subtract(1,"week").endOf("week")],
                     'This Month': [moment().startOf('month'), moment().endOf('month')],
                     'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-                }
+                },
+
+
             }, cb);
 
             cb(start, end);
+
 
 // TAB THREE GRAPH //
             /* TAB 3: Revenew  */
 
             $(function () {
 
-                var customers = 0,
-                    tours = 0,
-                    hotels = 0,
-                    cars = 0,
+                var customers = [[2, 25], [3, 87], [4, 93], [5, 127], [6, 116], [7, 137], [8, 135], [9, 130], [10, 167], [11, 169], [12, 179], [13, 185], [14, 176], [15, 180], [16, 174], [17, 300], [18, 186], [19, 177], [20, 153], [21, 149], [22, 130]],
+                    tours = 10,
+                    hotels = 8,
+                    cars = 30,
                     activities = 0,
                     toggles = $("#rev-toggles"), target = $("#flotcontainer");
 
@@ -522,6 +528,7 @@
                 plotNow()
 
             });
+
 
         });
 
