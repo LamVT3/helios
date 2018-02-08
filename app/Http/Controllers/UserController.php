@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Ad;
+use App\Contact;
 use App\Permission;
 use App\Role;
 use App\User;
@@ -242,24 +243,93 @@ class UserController extends Controller
         $no_main_header = FALSE;
         $active = null;
         $breadcrumbs = "<i class=\"fa-fw fa fa-user\"></i> " . auth()->user()->username . "'s Profile";
-//        $fillable = ['c3,c3_cost,l8'];
-        /*$query = DB::table('adresults as ars')
-            ->join('ads', 'ads.id','=','ars.creator_id')
-            ->join('users','user.id','=','ars.creator_id')
-            ->where('users_id', Auth::user()->user_id);*/
+        /* format date */
+        $month = date('m');
+        $year = date('Y');
+        $d=cal_days_in_month(CAL_GREGORIAN,$month,$year); /* số ngày trong tháng */
+        $first_day_this_month = date('Y-m-01'); /* ngày đàu tiên của tháng */
+        $last_day_this_month  = date('Y-m-t'); /* ngày cuối cùng của tháng */
+        $curentday = date('Y-m-d'); /* ngày hiện tại của tháng */
 
         $user = auth()->user();
+//        $ads = Ad::where('creator_id', $user->id)->pluck('_id')->toArray();
+//        $query = AdResult::whereIn('ad_id', $ads);
+//        $query->where('date','>=',$first_day_this_month);
+//        $query->where('date','<=',$last_day_this_month);
+        /* lấy query theo lenh mogodb */
+        $query = AdResult::raw(function($collection) use ($first_day_this_month,$last_day_this_month) {
+            return $collection->aggregate([
+                [
+                    '$lookup' => [
+                        'as'=>'field_ads',
+                        'from'=>'ads',
+                        'foreignField'=>'ad_id',
+                        'localField'=>'_id'
+                    ]
+                ],
+                [
+                    '$lookup' => [
+                        'as'=>'field_user',
+                        'from'=>'users',
+                        'foreignField'=>'_id',
+                        'localField'=>'field_ads.creator_id'
+                    ]
+                ],
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                [
+                    '$group' => [
+                        '_id' => '$date',
+                        'c3' => [
+                            '$sum' => '$c3'
+                        ],
+                        'l8'=>[
+                            '$sum' => '$l8'
+                        ]
+                    ]
+                ]
+            ]);
+        });
+        $array_month = array();
+        for($i=1;$i<=$d; $i++){
+            $array_month[date($i)] = 0;
+        }
+        /*  lay du lieu c3*/
+        $c3_array = array();
+        foreach ($query as $item_result_c3){
+            $day = explode('-',$item_result_c3['_id']);
+            $c3_array[intval($day[2])] = $item_result_c3['c3'];
+        }
+        $chart_c3 = array();
+        foreach($array_month as $key =>  $c3_day){
+            if(isset($c3_array[$key])){
+                $chart_c3[$key] = $c3_array[$key];
+            }else{
+                $chart_c3[$key] = 0;
+            }
+        }
+        /* end c3 */
+        /* lay du lieu l8*/
+        $l8_array = array();
+        foreach ($query as $item_result_l8){
+            $day = explode('-',$item_result_l8['_id']);
+            $l8_array[intval($day[2])] = $item_result_l8['l8'];
+        }
+        $chart_l8 = array();
+        foreach($array_month as $key =>  $l8_day){
+            if(isset($l8_array[$key])){
+                $chart_l8[$key] = $l8_array[$key];
+            }else{
+                $chart_l8[$key] = 0;
+            }
+        }
+        /* end l8 */
 
-        $ads = Ad::where('creator_id', $user->id)->pluck('_id')->toArray();
-        $query = AdResult::whereIn('ad_id', $ads);
-
-        // dd($query->sum('c3'));
-
+        /*  lấy tổng số c3 và số l8*/
         $profile['c3'] = $query->sum('c3');
         $profile['revenue'] = $query->sum('revenue');
         $profile['l8'] = $query->sum('l8');
-        $profile['username'] = Auth::user()->username;
-
+        $profile['chart_c3'] = $chart_c3;
+        $profile['chart_l8'] = $chart_l8;
         return view('pages.user-profile', compact(
             'no_main_header',
             'page_title',
