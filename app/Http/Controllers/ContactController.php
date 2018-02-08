@@ -8,6 +8,7 @@ use App\LandingPage;
 use App\Team;
 use App\User;
 use DB;
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 use App\Source;
 use Maatwebsite\Excel\Facades\Excel;
@@ -29,9 +30,9 @@ class ContactController extends Controller
         $active = 'contacts';
         $breadcrumbs = "<i class=\"fa-fw fa fa-child\"></i> Contacts <span>> C3</span>";
 
-        $contacts = Contact::where('submit_time', '>=', strtotime("midnight"))
-            ->where('submit_time', '<', strtotime("tomorrow"))
-            ->orderBy('submit_time', 'desc')->limit(1000)->get();
+        $contacts = Contact::where('submit_time', '>=', strtotime("midnight")*1000)
+            ->where('submit_time', '<', strtotime("tomorrow")*1000)
+            ->orderBy('submit_time', 'desc')->limit(10000)->get();
         $sources = Source::all();
         $teams = Team::all();
         $marketers = User::all();
@@ -50,7 +51,7 @@ class ContactController extends Controller
         ));
     }
 
-    public function details($id)
+    /*public function details($id)
     {
         $page_css = array();
         $no_main_header = FALSE; //set true for lock.php and login.php
@@ -71,7 +72,7 @@ class ContactController extends Controller
             'contact',
             'landing_pages'
         ));
-    }
+    }*/
 
     public function getC3()
     {
@@ -101,14 +102,14 @@ class ContactController extends Controller
         }
         // DB::connection( 'mongodb' )->enableQueryLog();
 
-        $startDate = strtotime("midnight");
-        $endDate = strtotime("tomorrow");
+        $startDate = strtotime("midnight")*1000;
+        $endDate = strtotime("tomorrow")*1000;
         if($request->registered_date){
             $date_place = str_replace('-', ' ', $request->registered_date);
             $date_arr = explode(' ', str_replace('/', '-', $date_place));
-            $startDate = strtotime($date_arr[0]);
+            $startDate = strtotime($date_arr[0])*1000;
             // $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
-            $endDate = strtotime("+1 day", strtotime($date_arr[1]));
+            $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
@@ -117,7 +118,7 @@ class ContactController extends Controller
             $query->where($data_where);
         }
 
-        $contacts = $query->orderBy('submit_time', 'desc')->limit(1000)->get();
+        $contacts = $query->orderBy('submit_time', 'desc')->limit(20000)->get();
         // DB::connection('mongodb')->getQueryLog();
         $data = $data_where;
         $data['contacts'] = $contacts;
@@ -140,7 +141,7 @@ class ContactController extends Controller
                             $item->name,
                             $item->email,
                             $item->phone,
-                            Date('d-m-Y H:i:s', $item->submit_time),
+                            Date('d-m-Y H:i:s', $item->submit_time/1000),
                             $item->current_level,
                             $item->marketer_name,
                             $item->campaign_name,
@@ -174,11 +175,39 @@ class ContactController extends Controller
         $file->move($destinationPath,$file->getClientOriginalName());
 
         $filePath =  $destinationPath . '/' . $file->getClientOriginalName();
-        Excel::load($filePath, function($reader) {
+        /*Excel::load($filePath, function($reader) {
 
             // Getting all results
             $results = $reader->get();
             dd($results);
+
+        });*/
+
+        Excel::load($filePath, function($reader) {
+
+            $client = new Client();
+            // Getting all results
+            $results = $reader->get();
+            //dd($results->toArray());
+            /*$r = $client->request('POST', "http://209.58.165.15/api/v5/tracking/submitter", [
+                'json' => $results->toArray()
+            ]);*/
+
+
+            foreach($results as $item){
+                //$arr = $item->toArray();
+                $arr = [];
+                $arr["msg_source"] = "import_data";
+                $arr["msg_type"] = "submitter";
+                $arr["submit_time"] = $item->submit_time->timestamp * 1000;
+                $arr["name"] = $item->name;
+                $arr["phone"] = $item->phone."";
+                $arr["email"] = $item->email;
+                $r = $client->request('POST', "http://209.58.165.15/api/v5/tracking/submitter", [
+                    'json' => $arr
+                ]);
+                //print_r($arr);
+            }
 
         });
     }

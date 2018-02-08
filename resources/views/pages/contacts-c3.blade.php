@@ -129,7 +129,7 @@
                         </div>
                         <hr>
                         <div class="wrapper">
-                            <table id="table_campaigns" class="table table-striped table-bordered table-hover"
+                            <table id="table_contacts" class="table table-striped table-bordered table-hover"
                                    width="100%">
                                 <thead>
                                     <tr>
@@ -149,24 +149,21 @@
                                 <tbody>
                                     @foreach ($contacts as $item)
                                     <tr id="contact-{{ $item->id }}">
-                                        <td><a href="{{ route("contacts-details", $item->id) }}">{{ $item->name }}</a>
+                                        <td><a href="javascript:void(0)" class="name" data-id="{{ $item->id }}">{{ $item->name }}</a>
                                         </td>
                                         <td>{{ $item->email }}</td>
                                         <td>{{ $item->phone }}</td>
                                         <td>{{ Date('d-m-Y H:i:s', $item->submit_time/1000) }}</td>
                                         <td>{{ $item->current_level }}</td>
-                                        <td>{{ $item->marketer_name }}</td>
-                                        <td>{{ $item->campaign_name }}</td>
-                                        <td>{{ $item->subcampaign_name }}</td>
-                                        <td>{{ $item->ad_name }}</td>
+                                        <td>{{ $item->marketer_name or '-100' }}</td>
+                                        <td>{{ $item->campaign_name or '-100' }}</td>
+                                        <td>{{ $item->subcampaign_name or '-100' }}</td>
+                                        <td>{{ $item->ad_name or '-100' }}</td>
                                         <td>{{ $item->landing_page }}</td>
                                         <td>
                                             {{--@permission('edit-review')--}}
-                                            <a data-toggle="modal" class='btn btn-xs btn-default'
-                                               data-target="#addModal"
-                                               data-item-id="{{ $item->id }}"
-                                               data-original-title='Edit Row'><i
-                                                        class='fa fa-pencil'></i></a>
+                                            <a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="{{ $item->id }}"><i
+                                                        class='fa fa-eye'></i></a>
                                             {{--<a data-toggle="modal" class='btn btn-xs btn-default'
                                                    data-target="#deleteModal"
                                                    data-item-id="{{ $item->id }}"
@@ -229,6 +226,14 @@
     <!-- END MAIN CONTENT -->
 
 </div>
+
+<div class="modal fade" id="contactModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
 @endsection
 
 @section('script')
@@ -245,7 +250,18 @@
 <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 <script type="text/javascript">
-
+    $(document).ready(function(){
+        $('#table_contacts').on('click', '.name', (function(){
+            var id = $(this).data('id');
+            $.get("{{ route('contact-details', '') }}/" + id, function (data) {
+                $('#contactModal .modal-content').html(data);
+                $('#contactModal').modal('show');
+            }).fail(
+                function (err) {
+                    $('#room-list').html('<tr><td colspan="6">Cannot connect to server</td></td>');
+                });
+        }));
+    });
 </script>
 
 @stop

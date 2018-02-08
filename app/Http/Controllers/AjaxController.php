@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Campaign;
+use App\Contact;
 use App\Source;
 use App\Subcampaign;
 use App\User;
@@ -44,4 +45,12 @@ class AjaxController extends Controller
         return response()->json(['type' => 'success', 'campaigns' => $campaigns]);
     }
 
+    public function contactDetails($id)
+    {
+        $contact = Contact::findOrFail($id);
+
+        return view('components.contact-details', compact(
+            'contact'
+        ));
+    }
 }
