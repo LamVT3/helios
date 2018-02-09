@@ -23,10 +23,10 @@
             <td>{{ $item->phone }}</td>
             <td>{{ Date('d-m-Y H:i:s', $item->submit_time/1000) }}</td>
             <td>{{ $item->current_level }}</td>
-            <td>{{ $item->marketer_name }}</td>
-            <td>{{ $item->campaign_name }}</td>
-            <td>{{ $item->subcampaign_name }}</td>
-            <td>{{ $item->ad_name }}</td>
+            <td>{{ $item->marketer_name or '-100' }}</td>
+            <td>{{ $item->campaign_name or '-100' }}</td>
+            <td>{{ $item->subcampaign_name or '-100' }}</td>
+            <td>{{ $item->ad_name or '-100' }}</td>
             <td>{{ $item->landing_page }}</td>
             <td>
                 {{--@permission('edit-review')--}}

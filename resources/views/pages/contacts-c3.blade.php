@@ -154,7 +154,7 @@
                                         <td>{{ $item->email }}</td>
                                         <td>{{ $item->phone }}</td>
                                         <td>{{ Date('d-m-Y H:i:s', $item->submit_time/1000) }}</td>
-                                        <td>{{ $item->current_level }}</td>
+                                        <td>{{ $item->current_level or $item->clevel }}</td>
                                         <td>{{ $item->marketer_name or '-100' }}</td>
                                         <td>{{ $item->campaign_name or '-100' }}</td>
                                         <td>{{ $item->subcampaign_name or '-100' }}</td>
@@ -230,6 +230,15 @@
 <div class="modal fade" id="contactModal" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h3 class="modal-title"><i class="fa fa-table"></i> Contact Details</h3>
+            </div>
+            <div class="modal-body">
+
+            </div>
 
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -254,7 +263,7 @@
         $('#table_contacts').on('click', '.name', (function(){
             var id = $(this).data('id');
             $.get("{{ route('contact-details', '') }}/" + id, function (data) {
-                $('#contactModal .modal-content').html(data);
+                $('#contactModal .modal-body').html(data);
                 $('#contactModal').modal('show');
             }).fail(
                 function (err) {
