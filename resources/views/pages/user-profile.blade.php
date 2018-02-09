@@ -71,12 +71,8 @@ foreach($chart_l8 as $key_l8=> $value_l8){
                         </table>
                     </div>
                 </div>
-
-
             </div>
-
                 <div class="row">
-
                     <!-- NEW WIDGET START -->
                     <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 
@@ -97,7 +93,7 @@ foreach($chart_l8 as $key_l8=> $value_l8){
                             -->
                             <header>
                                 <span class="widget-icon"> <i class="fa fa-bar-chart-o"></i> </span>
-                                <h2>C3 - L8 Statistics</h2>
+                                <h2>Contact C3</h2>
 
                             </header>
 
@@ -114,8 +110,59 @@ foreach($chart_l8 as $key_l8=> $value_l8){
                                 <!-- widget content -->
                                 <div class="widget-body no-padding">
 
-                                    <div id="site-stats" class="chart has-legend"></div>
+                                    <div id="site-stats_c3" class="chart has-legend"></div>
 
+                                </div>
+                                <!-- end widget content -->
+
+                            </div>
+                            <!-- end widget div -->
+
+                        </div>
+                        <!-- end widget -->
+
+                    </article>
+                    <!-- WIDGET END -->
+
+                </div>
+                <div class="row">
+                    <!-- NEW WIDGET START -->
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+                        <!-- Widget ID (each widget will need unique ID)-->
+                        <div class="jarviswidget" id="wid-id-7" data-widget-editbutton="false">
+                            <!-- widget options:
+                            usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                            data-widget-colorbutton="false"
+                            data-widget-editbutton="false"
+                            data-widget-togglebutton="false"
+                            data-widget-deletebutton="false"
+                            data-widget-fullscreenbutton="false"
+                            data-widget-custombutton="false"
+                            data-widget-collapsed="true"
+                            data-widget-sortable="false"
+
+                            -->
+                            <header>
+                                <span class="widget-icon"> <i class="fa fa-bar-chart-o"></i> </span>
+                                <h2>Contact L8</h2>
+
+                            </header>
+
+                            <!-- widget div-->
+                            <div>
+
+                                <!-- widget edit box -->
+                                <div class="jarviswidget-editbox">
+                                    <!-- This area used as dropdown edit box -->
+
+                                </div>
+                                <!-- end widget edit box -->
+
+                                <!-- widget content -->
+                                <div class="widget-body no-padding">
+                                    <div id="site-stats_l8" class="chart has-legend"></div>
                                 </div>
                                 <!-- end widget content -->
 
@@ -143,13 +190,12 @@ foreach($chart_l8 as $key_l8=> $value_l8){
     {{--<script src="js/plugin/flot/jquery.flot.pie.min.js"></script>--}}
     {{--<script src="js/plugin/flot/jquery.flot.time.min.js"></script>--}}
     <script src="js/plugin/flot/jquery.flot.tooltip.min.js"></script>
-
     <script type="text/javascript">
         // PAGE RELATED SCRIPTS
 
         /* chart colors default */
         var $chrt_border_color = "#efefef";
-        var $chrt_grid_color = "#DDD"
+        var $chrt_grid_color = "#DDD";
         var $chrt_main = "#E24913";
         /* red       */
         var $chrt_second = "#6595b4";
@@ -188,20 +234,16 @@ foreach($chart_l8 as $key_l8=> $value_l8){
 
             /* site stats chart */
 
-            if ($("#site-stats").length) {
+            if ($("#site-stats_c3").length) {
 
                 // var pageviews = [[2, 25], [3, 87], [4, 93], [5, 127], [6, 116], [7, 137], [8, 135], [9, 130], [10, 167], [11, 169], [12, 179], [13, 185], [14, 176], [15, 180], [16, 174], [17, 300], [18, 186], [19, 177], [20, 153], [21, 149], [22, 130], [23, 100], [24, 50],[25,175],[26,80]];
                var pageviews = chart_c3;
                 // var visitors = [[2, 65], [4, 73], [5, 100], [6, 95], [7, 103], [8, 111], [9, 97], [10, 125], [11, 100], [12, 95], [13, 141], [14, 126], [15, 131], [16, 146], [17, 158], [18, 160], [19, 151], [20, 125], [21, 110], [22, 100], [23, 85], [24, 37],[25, 38],[26,15]];
-                var visitors = chart_l8;
+                // var visitors = chart_l8;
                 //console.log(pageviews)
-                var plot = $.plot($("#site-stats"), [{
+                var plot = $.plot($("#site-stats_c3"), [{
                     data : pageviews,
-                    label : "Your pageviews"
-
-                }, {
-                    data : visitors,
-                    label : "Site visitors"
+                    label : "Contact C3"
 
                 }], {
                     series : {
@@ -240,11 +282,11 @@ foreach($chart_l8 as $key_l8=> $value_l8){
                     },
                     tooltip : true,
                     tooltipOpts : {
-                        // content : "%s for <b>%x:00 hrs</b> was %y",
-                        // dateFormat : "%y-%0m-%0d",
-                        // defaultTheme : false
+                        content : "%s ngày mùng<b> %x</b> là <b>%y</b>",
+                        dateFormat : "%y-%0m-%0d",
+                        defaultTheme : false
                     },
-                    colors : [$chrt_main, $chrt_second],
+                    colors : [$chrt_main],
                     xaxis : {
                         ticks : 12, // hiểm thị số phần tử trục x
                         tickDecimals : 0
@@ -258,7 +300,71 @@ foreach($chart_l8 as $key_l8=> $value_l8){
             }
 
             /* end site stats */
+            if ($("#site-stats_l8").length) {
 
+                // var pageviews = [[2, 25], [3, 87], [4, 93], [5, 127], [6, 116], [7, 137], [8, 135], [9, 130], [10, 167], [11, 169], [12, 179], [13, 185], [14, 176], [15, 180], [16, 174], [17, 300], [18, 186], [19, 177], [20, 153], [21, 149], [22, 130], [23, 100], [24, 50],[25,175],[26,80]];
+                // var pageviews = chart_c3;
+                // var visitors = [[2, 65], [4, 73], [5, 100], [6, 95], [7, 103], [8, 111], [9, 97], [10, 125], [11, 100], [12, 95], [13, 141], [14, 126], [15, 131], [16, 146], [17, 158], [18, 160], [19, 151], [20, 125], [21, 110], [22, 100], [23, 85], [24, 37],[25, 38],[26,15]];
+                var visitors = chart_l8;
+                //console.log(pageviews)
+                var plot = $.plot($("#site-stats_l8"), [
+                 {
+                    data : visitors,
+                    label : "Contact L8"
+
+                }], {
+                    series : {
+                        lines : {
+                            show : true,
+                            lineWidth : 1,
+                            fill : true,
+                            fillColor : {
+                                colors : [{
+                                    opacity : 0.1
+                                }, {
+                                    opacity : 0.15
+                                }]
+                            }
+                        },
+                        points : {
+                            show : true
+                        },
+                        shadowSize : 0
+                    },
+                    xaxis : {
+                        mode : "time",
+                        tickLength : 10
+                    },
+
+                    yaxes : [{
+                        min : 0,
+                        tickLength : 5
+                    }],
+                    grid : {
+                        hoverable : true,
+                        clickable : true,
+                        tickColor : $chrt_border_color,
+                        borderWidth : 0,
+                        borderColor : $chrt_border_color,
+                    },
+                    tooltip : true,
+                    tooltipOpts : {
+                        content : "%s ngày mùng <b> %x</b> là <b>%y</b>",
+                        dateFormat : "%y-%0m-%0d",
+                        defaultTheme : false
+                    },
+                    colors : [$chrt_second],
+                    xaxis : {
+                        ticks : 12, // hiểm thị số phần tử trục x
+                        tickDecimals : 0
+                    },
+                    yaxis : {
+                        ticks : 15, // hiển thị số phần tử trục y
+                        tickDecimals : 0
+                    }
+                });
+
+            }
 
 
         });
