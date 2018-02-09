@@ -60,7 +60,6 @@ Route::group(['prefix' => 'ad'], function () {
 
 Route::group(['prefix' => 'contacts'], function () {
     Route::get('/', 'ContactController@index')->name('contacts-c3');
-    Route::get('/details/{id}', 'ContactController@details')->name('contacts-details');
     Route::get('filter', 'ContactController@getC3')->name('contacts.filter');
     Route::get('export', 'ContactController@export')->name('contacts.export');
     Route::get('getContactsSource', 'ContactController@getContactsSource')->name('contacts.getContactsSource');
@@ -84,6 +83,7 @@ Route::group(['prefix' => 'ajax'], function () {
     Route::get('/getTeamsCampaigns/{id}', 'AjaxController@getTeamsCampaigns')->name('ajax-getTeamsCampaigns');
     Route::get('/getCampaigns/{id}', 'AjaxController@getCampaigns')->name('ajax-getCampaigns');
     Route::get('/getSubcampaigns/{id}', 'AjaxController@getSubcampaigns')->name('ajax-getSubcampaigns');
+    Route::get('contactDetails/{id}', 'AjaxController@contactDetails')->name('contact-details');
 });
 
 Route::get('/test', 'Test@index')->name('test');

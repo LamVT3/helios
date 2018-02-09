@@ -192,7 +192,12 @@ class CampaignController extends Controller
             $ad->creator_name = $user->username;
             $ad->tracking_link = $landing_page->url . "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_medium={$ad->medium}&utm_subcampaign={$subcampaign->name}&utm_ad={$ad->name}";
             $ad->uri_query = "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_medium={$ad->medium}&utm_subcampaign={$subcampaign->name}&utm_ad={$ad->name}";
-            $shorten_url = Shorty::shorten($ad->tracking_link);
+            try{
+                $shorten_url = Shorty::shorten($ad->tracking_link);
+            }catch (\Exception $e){
+                $shorten_url = "";
+            }
+
             $ad->shorten_url = $shorten_url;
             $ad->is_active = 1;
 

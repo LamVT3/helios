@@ -8,7 +8,7 @@ $(document).ready(function () {
         phone: 480
     };
 
-    $('#table_campaigns').dataTable({
+    $('#table_contacts').dataTable({
         "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-6 hidden-xs'C>r>" +
         "<'tb-only't>" +
         "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-sm-6 col-xs-12'p>>",

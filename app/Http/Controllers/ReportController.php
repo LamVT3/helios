@@ -79,7 +79,7 @@ class ReportController extends Controller
 
     public function getReportData()
     {
-        DB::connection( 'mongodb' )->enableQueryLog();
+        // DB::connection( 'mongodb' )->enableQueryLog();
         $data_where = array();
         $request = request();
         if ($request->source_id) {
