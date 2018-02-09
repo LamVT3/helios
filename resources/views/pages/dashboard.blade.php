@@ -1,3 +1,16 @@
+<?php
+$chart_c3 = $dashboard['chart_c3'];
+$chart_l8 = $dashboard['chart_l8'];
+$key_arr = [];
+foreach($chart_c3 as $key_c3=> $value_c3){
+    $key_arr_c3[] = $key_c3;
+    $value_arr_c3[] = $value_c3;
+}
+foreach($chart_l8 as $key_l8=> $value_l8){
+    $key_arr_l8[] = $key_l8;
+    $value_arr_l8[] = $value_l8;
+}
+?>
 @extends('layouts.master')
 
 @section('content')
@@ -8,10 +21,16 @@
         <div id="content">
 
         @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
-            <form action="" method="" >
+            <form action="/home" method="GET" class="form_search">
+                {{ csrf_field()}}
                 <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc;">
                     <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
                     <span></span> <b class="caret"></b>
+                </div>
+                <div>
+                    <input type="hidden" id="startDate" name="startDate">
+                    <input type="hidden" id="endDate" name="endDate">
+                    <button type="submit" id="submit" type="hidden"></button>
                 </div>
             </form>
 
@@ -34,7 +53,7 @@
                                     <span class="widget-unit">C3</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
-                                    {{ $ad_results->sum("c3") }}
+                                    {{ $dashboard['c3'] }}
                                 </div>
                                 <div class="text text-align-right font-sm widget-kpi">
                                     12,000
@@ -61,7 +80,7 @@
                                     <span class="widget-unit">USD</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
-                                    {{ $ad_results->sum("c3") ? $ad_results->sum("spent")/$ad_results->sum("c3") : 'n/a' }}
+                                    {{ $dashboard['c3_cost'] ? $dashboard['c3_cost'] : 'n/a' }}
                                 </div>
                                 <div class="text text-align-right font-sm widget-kpi">
                                     2.3
@@ -89,7 +108,7 @@
                                     <span class="widget-unit">USD</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
-                                    {{ $ad_results->sum("spent") }}
+                                    {{ $dashboard['spent'] }}
                                 </div>
                                 <div class="text text-align-right font-sm widget-kpi">
                                     2,000
@@ -117,7 +136,7 @@
                                     <span class="widget-unit">VND</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
-                                    {{ $ad_results->sum("revenue") }}
+                                    {{ $dashboard['revenue']}}
                                 </div>
                                 <div class="text text-align-right font-sm widget-kpi">
                                     2,000,000,000
@@ -154,12 +173,8 @@
                                             <input type="checkbox" name="gra-2" id="gra-2" checked="checked">
                                             <i></i> Real Achievement </label>
                                     </div>
-
                                 </div>
-
-                                <div class="padding-10">
-                                    <div id="flotcontainer" class="chart-large has-legend-unique"></div>
-                                </div>
+                                    <div id="site-stats" class="chart has-legend"></div>
                             </div>
                         @endcomponent
                     </article>
@@ -177,55 +192,147 @@
                         <!-- widget content -->
                             <div class="widget-body no-padding">
                                 <div class="alert alert-info no-margin fade in">
-                                    <button class="btn btn-xs btn-default active">
+                                    <button class="btn btn-xs btn-default active" onclick="c3_leaderboard('c3_today')">
                                         Today
                                     </button>
-                                    <button class="btn btn-xs btn-default">
+                                    <button class="btn btn-xs btn-default" onclick="c3_leaderboard('c3_thisweek')">
                                         This Week
                                     </button>
-                                    <button class="btn btn-xs btn-default">
+                                    <button class="btn btn-xs btn-default" onclick="c3_leaderboard('c3_thismonth')">
                                         This Month
                                     </button>
                                 </div>
-                                <table id="table_activities" class="table table-striped table-bordered table-hover"
-                                       width="100%">
-                                    <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Name</th>
-                                        <th>Rank</th>
-                                        <th>C3</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <th>1</th>
-                                        <th>James</th>
-                                        <td>level 4</td>
-                                        <td>250</td>
-                                    </tr>
-                                    <tr>
-                                        <th>2</th>
-                                        <th>Eddie</th>
-                                        <td>level 2</td>
-                                        <td>150</td>
-                                    </tr>
-                                    <tr>
-                                        <th>3</th>
-                                        <th>Maii</th>
-                                        <td>level 2</td>
-                                        <td>113</td>
-                                    </tr>
-                                    <tr>
-                                        <th>4</th>
-                                        <th>Chanji</th>
-                                        <td>level 2</td>
-                                        <td>98</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-
+                                <div  id="c3_today" class="c3_leaderboard">
+                                    <span onclick="this.parentElement.style.display='none'"> </span>
+                                    <table  class="table table-striped table-bordered table-hover"
+                                           width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>Rank</th>
+                                                <th>C3</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th>1</th>
+                                                <th>James</th>
+                                                <td>level 4</td>
+                                                <td>250</td>
+                                            </tr>
+                                            <tr>
+                                                <th>2</th>
+                                                <th>Eddie</th>
+                                                <td>level 2</td>
+                                                <td>150</td>
+                                            </tr>
+                                            <tr>
+                                                <th>3</th>
+                                                <th>Maii</th>
+                                                <td>level 2</td>
+                                                <td>113</td>
+                                            </tr>
+                                            <tr>
+                                                <th>4</th>
+                                                <th>Chanji</th>
+                                                <td>level 2</td>
+                                                <td>98</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="c3_thisweek" class="c3_leaderboard" style="display:none">
+                                    <span onclick="this.parentElement.style.display='none'"> </span>
+                                    <table  class="table table-striped table-bordered table-hover"
+                                           width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>giang</th>
+                                                <th>C3</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th>1</th>
+                                                <th>James</th>
+                                                <td>level 4</td>
+                                                <td>250</td>
+                                            </tr>
+                                            <tr>
+                                                <th>2</th>
+                                                <th>Eddie</th>
+                                                <td>level 2</td>
+                                                <td>150</td>
+                                            </tr>
+                                            <tr>
+                                                <th>3</th>
+                                                <th>Maii</th>
+                                                <td>level 2</td>
+                                                <td>113</td>
+                                            </tr>
+                                            <tr>
+                                                <th>4</th>
+                                                <th>Chanji</th>
+                                                <td>level 2</td>
+                                                <td>98</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div  id="c3_thismonth" class="c3_leaderboard" style="display:none">
+                                    <span onclick="this.parentElement.style.display='none'"> </span>
+                                    <table  class="table table-striped table-bordered table-hover"
+                                           width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>giang</th>
+                                                <th>Rank</th>
+                                                <th>C3</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th>1</th>
+                                                <th>James</th>
+                                                <td>level 4</td>
+                                                <td>250</td>
+                                            </tr>
+                                            <tr>
+                                                <th>2</th>
+                                                <th>Eddie</th>
+                                                <td>level 2</td>
+                                                <td>150</td>
+                                            </tr>
+                                            <tr>
+                                                <th>3</th>
+                                                <th>Maii</th>
+                                                <td>level 2</td>
+                                                <td>113</td>
+                                            </tr>
+                                            <tr>
+                                                <th>4</th>
+                                                <th>Chanji</th>
+                                                <td>level 2</td>
+                                                <td>98</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
+                            <script>
+                                function c3_leaderboard(detail_c3) {
+                                    var i;
+                                    var x = document.getElementsByClassName("c3_leaderboard");
+                                    for (i = 0; i < x.length; i++) {
+                                        x[i].style.display = "none";
+                                    }
+                                    document.getElementById(detail_c3).style.display = "block";
+                                }
+                            </script>
                             <!-- end widget content -->
 
                         @endcomponent
@@ -239,53 +346,146 @@
                                                     ['id' => 1, 'icon' => 'fa-table', 'title' => 'Revenue Leaderboard'])
                             <div class="widget-body no-padding">
                                 <div class="alert alert-info no-margin fade in">
-                                    <button class="btn btn-xs btn-default active">
+                                    <button class="btn btn-xs btn-default active" onclick="revenue_leaderboard('revenue_today')">
                                         Today
                                     </button>
-                                    <button class="btn btn-xs btn-default">
+                                    <button class="btn btn-xs btn-default" onclick="revenue_leaderboard('revenue_thisweek')">
                                         This Week
                                     </button>
-                                    <button class="btn btn-xs btn-default">
+                                    <button class="btn btn-xs btn-default" onclick="revenue_leaderboard('revenue_thismonth')">
                                         This Month
                                     </button>
                                 </div>
-                                <table id="dt_basic" class="table table-striped table-bordered table-hover"
-                                       width="100%">
-                                    <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Name</th>
-                                        <th>Rank</th>
-                                        <th>Revenue(baht)</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <th>1</th>
-                                        <th>James</th>
-                                        <td>level 4</td>
-                                        <td>25,000</td>
-                                    </tr>
-                                    <tr>
-                                        <th>2</th>
-                                        <th>Eddie</th>
-                                        <td>level 2</td>
-                                        <td>15,000</td>
-                                    </tr>
-                                    <tr>
-                                        <th>3</th>
-                                        <th>Maii</th>
-                                        <td>level 2</td>
-                                        <td>11,300</td>
-                                    </tr>
-                                    <tr>
-                                        <th>4</th>
-                                        <th>Chanji</th>
-                                        <td>level 2</td>
-                                        <td>98,000</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
+                                <div id="revenue_today" class="revenue_leaderboard">
+                                    <span onclick="this.parentElement.style.display='none'"> </span>
+                                    <table id="dt_basic" class="table table-striped table-bordered table-hover"
+                                           width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>Rank</th>
+                                                <th>Revenue(baht)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th>1</th>
+                                                <th>James</th>
+                                                <td>level 4</td>
+                                                <td>25,000</td>
+                                            </tr>
+                                            <tr>
+                                                <th>2</th>
+                                                <th>Eddie</th>
+                                                <td>level 2</td>
+                                                <td>15,000</td>
+                                            </tr>
+                                            <tr>
+                                                <th>3</th>
+                                                <th>Maii</th>
+                                                <td>level 2</td>
+                                                <td>11,300</td>
+                                            </tr>
+                                            <tr>
+                                                <th>4</th>
+                                                <th>Chanji</th>
+                                                <td>level 2</td>
+                                                <td>98,000</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                               <div id="revenue_thisweek" class="revenue_leaderboard" style="display:none">
+                                   <span onclick="this.parentElement.style.display='none'"> </span>
+                                   <table id="dt_basic" class="table table-striped table-bordered table-hover"
+                                          width="100%">
+                                       <thead>
+                                           <tr>
+                                               <th>#</th>
+                                               <th>linh</th>
+                                               <th>Rank</th>
+                                               <th>Revenue(baht)</th>
+                                           </tr>
+                                       </thead>
+                                       <tbody>
+                                           <tr>
+                                               <th>1</th>
+                                               <th>James</th>
+                                               <td>level 4</td>
+                                               <td>25,000</td>
+                                           </tr>
+                                           <tr>
+                                               <th>2</th>
+                                               <th>Eddie</th>
+                                               <td>level 2</td>
+                                               <td>15,000</td>
+                                           </tr>
+                                           <tr>
+                                               <th>3</th>
+                                               <th>Maii</th>
+                                               <td>level 2</td>
+                                               <td>11,300</td>
+                                           </tr>
+                                           <tr>
+                                               <th>4</th>
+                                               <th>Chanji</th>
+                                               <td>level 2</td>
+                                               <td>98,000</td>
+                                           </tr>
+                                       </tbody>
+                                   </table>
+                               </div>
+                                <div id="revenue_thismonth" class="revenue_leaderboard" style="display:none">
+                                    <span onclick="this.parentElement.style.display='none'"> </span>
+                                    <table id="dt_basic" class="table table-striped table-bordered table-hover"
+                                           width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>giang</th>
+                                                <th>Rank</th>
+                                                <th>Revenue(baht)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th>1</th>
+                                                <th>James</th>
+                                                <td>level 4</td>
+                                                <td>25,000</td>
+                                            </tr>
+                                            <tr>
+                                                <th>2</th>
+                                                <th>Eddie</th>
+                                                <td>level 2</td>
+                                                <td>15,000</td>
+                                            </tr>
+                                            <tr>
+                                                <th>3</th>
+                                                <th>Maii</th>
+                                                <td>level 2</td>
+                                                <td>11,300</td>
+                                            </tr>
+                                            <tr>
+                                                <th>4</th>
+                                                <th>Chanji</th>
+                                                <td>level 2</td>
+                                                <td>98,000</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <script>
+                                    function revenue_leaderboard(detail_revenue) {
+                                        var i;
+                                        var x = document.getElementsByClassName("revenue_leaderboard");
+                                        for (i = 0; i < x.length; i++) {
+                                            x[i].style.display = "none";
+                                        }
+                                        document.getElementById(detail_revenue).style.display = "block";
+                                    }
+                                </script>
                             </div>
                         @endcomponent
 
@@ -297,53 +497,146 @@
                                                     ['id' => 2, 'icon' => 'fa-table', 'title' => 'ME/RE Leaderboard'])
                             <div class="widget-body no-padding">
                                 <div class="alert alert-warning no-margin fade in">
-                                    <button class="btn btn-xs btn-default active">
+                                    <button class="btn btn-xs btn-default active" onclick="mere_leaderboard('mere_today')">
                                         Today
                                     </button>
-                                    <button class="btn btn-xs btn-default">
+                                    <button class="btn btn-xs btn-default" onclick="mere_leaderboard('mere_thisweek')">
                                         This Week
                                     </button>
-                                    <button class="btn btn-xs btn-default">
+                                    <button class="btn btn-xs btn-default" onclick="mere_leaderboard('mere_thismonth')">
                                         This Month
                                     </button>
                                 </div>
-                                <table id="dt_basic" class="table table-striped table-bordered table-hover"
+                                <div id="mere_today" class="mere_leaderboard" >
+                                    <span onclick="this.parentElement.style.display='none'"> </span>
+                                    <table id="dt_basic" class="table table-striped table-bordered table-hover"
+                                           width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>Rank</th>
+                                                <th>Me/Re</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th>1</th>
+                                                <th>Eddie</th>
+                                                <td>level 2</td>
+                                                <td>35%</td>
+                                            </tr>
+                                            <tr>
+                                                <th>1</th>
+                                                <th>James</th>
+                                                <td>level 4</td>
+                                                <td>40%</td>
+                                            </tr>
+                                            <tr>
+                                                <th>3</th>
+                                                <th>Maii</th>
+                                                <td>level 2</td>
+                                                <td>43%</td>
+                                            </tr>
+                                            <tr>
+                                                <th>4</th>
+                                                <th>Chanji</th>
+                                                <td>level 2</td>
+                                                <td>56%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                               <div id="mere_thisweek" class="mere_leaderboard" style="display:none">
+                                    <span onclick="this.parentElement.style.display='none'"> </span>
+                                    <table id="dt_basic" class="table table-striped table-bordered table-hover"
                                        width="100%">
                                     <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Name</th>
-                                        <th>Rank</th>
-                                        <th>Me/Re</th>
-                                    </tr>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Name</th>
+                                            <th>Rank</th>
+                                            <th>Me/Re</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                    <tr>
-                                        <th>1</th>
-                                        <th>Eddie</th>
-                                        <td>level 2</td>
-                                        <td>35%</td>
-                                    </tr>
-                                    <tr>
-                                        <th>1</th>
-                                        <th>James</th>
-                                        <td>level 4</td>
-                                        <td>40%</td>
-                                    </tr>
-                                    <tr>
-                                        <th>3</th>
-                                        <th>Maii</th>
-                                        <td>level 2</td>
-                                        <td>43%</td>
-                                    </tr>
-                                    <tr>
-                                        <th>4</th>
-                                        <th>Chanji</th>
-                                        <td>level 2</td>
-                                        <td>56%</td>
-                                    </tr>
+                                        <tr>
+                                            <th>1</th>
+                                            <th>Eddie</th>
+                                            <td>level 2</td>
+                                            <td>35%</td>
+                                        </tr>
+                                        <tr>
+                                            <th>1</th>
+                                            <th>James</th>
+                                            <td>level 4</td>
+                                            <td>40%</td>
+                                        </tr>
+                                        <tr>
+                                            <th>3</th>
+                                            <th>Maii</th>
+                                            <td>level 2</td>
+                                            <td>43%</td>
+                                        </tr>
+                                        <tr>
+                                            <th>4</th>
+                                            <th>Chanji</th>
+                                            <td>level 2</td>
+                                            <td>56%</td>
+                                        </tr>
                                     </tbody>
                                 </table>
+                                </div>
+                                <div id="mere_thismonth" class="mere_leaderboard" style="display:none">
+                                    <span onclick="this.parentElement.style.display='none'"> </span>
+                                    <table id="dt_basic" class="table table-striped table-bordered table-hover"
+                                           width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>Rank</th>
+                                                <th>Me/Re</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th>1</th>
+                                                <th>Eddie</th>
+                                                <td>level 2</td>
+                                                <td>35%</td>
+                                            </tr>
+                                            <tr>
+                                                <th>1</th>
+                                                <th>James</th>
+                                                <td>level 4</td>
+                                                <td>40%</td>
+                                            </tr>
+                                            <tr>
+                                                <th>3</th>
+                                                <th>Maii</th>
+                                                <td>level 2</td>
+                                                <td>43%</td>
+                                            </tr>
+                                            <tr>
+                                                <th>4</th>
+                                                <th>Chanji</th>
+                                                <td>level 2</td>
+                                                <td>56%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <script>
+                                    function mere_leaderboard(detail_mere) {
+                                        var i;
+                                        var x = document.getElementsByClassName("mere_leaderboard");
+                                        for (i = 0; i < x.length; i++) {
+                                            x[i].style.display = "none";
+                                        }
+                                        document.getElementById(detail_mere).style.display = "block";
+                                    }
+                                </script>
                             </div>
                         @endcomponent
 
@@ -368,8 +661,8 @@
     <!-- PAGE RELATED PLUGIN(S) -->
     <!-- Flot Chart Plugin: Flot Engine, Flot Resizer, Flot Tooltip -->
     <script src="{{ asset('js/plugin/flot/jquery.flot.cust.min.js') }}"></script>
-    <script src="{{ asset('js/plugin/flot/jquery.flot.resize.min.js') }}"></script>
-    <script src="{{ asset('js/plugin/flot/jquery.flot.time.min.js') }}"></script>
+{{--    <script src="{{ asset('js/plugin/flot/jquery.flot.resize.min.js') }}"></script>--}}
+{{--    <script src="{{ asset('js/plugin/flot/jquery.flot.time.min.js') }}"></script>--}}
     <script src="{{ asset('js/plugin/flot/jquery.flot.tooltip.min.js') }}"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
@@ -384,6 +677,9 @@
 
             function cb(start, end) {
                 $('#reportrange span').html(start.format('D/M/Y') + ' - ' + end.format('D/M/Y'));
+                $('#startDate').val(start.format('MMMM D, YYYY'));
+                $('#endDate').val(end.format('MMMM D, YYYY'));
+
             }
 
             $('#reportrange').daterangepicker({
@@ -402,8 +698,8 @@
 
 
             }, cb);
-
             cb(start, end);
+            // $( "#submit" ).click();
 
 
 // TAB THREE GRAPH //
@@ -533,5 +829,126 @@
         });
 
     </script>
+    <script type="text/javascript">
+        // PAGE RELATED SCRIPTS
 
+        /* chart colors default */
+        var $chrt_border_color = "#efefef";
+        var $chrt_grid_color = "#DDD";
+        var $chrt_main = "#E24913";
+        /* red       */
+        var $chrt_second = "#6595b4";
+        /* blue      */
+        var $chrt_third = "#FF9F01";
+        /* orange    */
+        var $chrt_fourth = "#7e9d3a";
+        /* green     */
+        var $chrt_fifth = "#BD362F";
+        /* dark red  */
+        var $chrt_mono = "#000";
+
+        $(document).ready(function() {
+            /* du lieu bieu do c3 */
+
+            /* end c3 */
+            /* du lieu bieu do l8 */
+
+            /* du lieu bieu do c3 */
+            var key_arr_c3 = <?= json_encode($key_arr_c3)?>;
+            var value_arr_c3 = <?= json_encode($value_arr_c3) ?>;
+            var chart_c3 = [];
+            for(var i=0; i< key_arr_c3.length;i ++){
+                var temp_c3 = [key_arr_c3[i], value_arr_c3[i]];
+                chart_c3.push(temp_c3);
+            }
+            /* end c3 */
+            /* du lieu bieu do l8 */
+            var key_arr_l8 = <?= json_encode($key_arr_l8)?>;
+            var value_arr_l8 = <?= json_encode($value_arr_l8) ?>;
+            var chart_l8 = [];
+            for(var i=0; i< key_arr_l8.length;i ++){
+                var temp_l8 = [key_arr_l8[i], value_arr_l8[i]];
+                chart_l8.push(temp_l8);
+            }
+
+            /* end l8 */
+            /* end l8 */
+            // DO NOT REMOVE : GLOBAL FUNCTIONS!
+            pageSetUp();
+
+
+            /* site stats chart */
+
+            if ($("#site-stats").length) {
+
+                // var pageviews = [[2, 25], [3, 87], [4, 93], [5, 127], [6, 116], [7, 137], [8, 135], [9, 130], [10, 167], [11, 169], [12, 179], [13, 185], [14, 176], [15, 180], [16, 174], [17, 300], [18, 186], [19, 177], [20, 153], [21, 149], [22, 130], [23, 100], [24, 50],[25,175],[26,80]];
+                var pageviews = chart_c3;
+                // var visitors = [[2, 65], [4, 73], [5, 100], [6, 95], [7, 103], [8, 111], [9, 97], [10, 125], [11, 100], [12, 95], [13, 141], [14, 126], [15, 131], [16, 146], [17, 158], [18, 160], [19, 151], [20, 125], [21, 110], [22, 100], [23, 85], [24, 37],[25, 38],[26,15]];
+                var visitors = chart_l8;
+                //console.log(pageviews)
+                var plot = $.plot($("#site-stats"), [{
+                    data : pageviews,
+                    label : "Contact C3"
+                },{
+                        data : visitors,
+                        label : "Contact L8"
+                    }], {
+                    series : {
+                        lines : {
+                            show : true,
+                            lineWidth : 1,
+                            fill : true,
+                            fillColor : {
+                                colors : [{
+                                    opacity : 0.1
+                                }, {
+                                    opacity : 0.15
+                                }]
+                            }
+                        },
+                        points : {
+                            show : true
+                        },
+                        shadowSize : 0
+                    },
+                    xaxis : {
+                        mode : "time",
+                        tickLength : 10
+                    },
+
+                    yaxes : [{
+                        min : 0,
+                        tickLength : 5
+                    }],
+                    grid : {
+                        hoverable : true,
+                        clickable : true,
+                        tickColor : $chrt_border_color,
+                        borderWidth : 0,
+                        borderColor : $chrt_border_color,
+                    },
+                    tooltip : true,
+                    tooltipOpts : {
+                        content : "%s ngày mùng<b> %x</b> là <b>%y</b>",
+                        dateFormat : "%y-%0m-%0d",
+                        defaultTheme : false
+                    },
+                    colors : [$chrt_main,$chrt_third],
+                    xaxis : {
+                        ticks : 12, // hiểm thị số phần tử trục x
+                        tickDecimals : 0
+                    },
+                    yaxis : {
+                        ticks : 15, // hiển thị số phần tử trục y
+                        tickDecimals : 0
+                    }
+                });
+
+            }
+            /* end site stats */
+        });
+
+        /* end flot charts */
+
+    </script>
 @endsection
