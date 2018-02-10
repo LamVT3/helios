@@ -168,10 +168,10 @@ foreach($chart_l8 as $key_l8=> $value_l8){
 
                                         <label for="gra-1" class="checkbox" style="color: #ff0c00; font-weight: bold">
                                             <input type="checkbox" name="gra-1" id="gra-1" checked="checked">
-                                            <i></i> KPI </label>
+                                            <i></i> C3 </label>
                                         <label for="gra-2" class="checkbox" style="color: #00c01a; font-weight: bold">
                                             <input type="checkbox" name="gra-2" id="gra-2" checked="checked">
-                                            <i></i> Real Achievement </label>
+                                            <i></i> L8 </label>
                                     </div>
                                 </div>
                                     <div id="site-stats" class="chart has-legend"></div>
@@ -661,8 +661,8 @@ foreach($chart_l8 as $key_l8=> $value_l8){
     <!-- PAGE RELATED PLUGIN(S) -->
     <!-- Flot Chart Plugin: Flot Engine, Flot Resizer, Flot Tooltip -->
     <script src="{{ asset('js/plugin/flot/jquery.flot.cust.min.js') }}"></script>
-{{--    <script src="{{ asset('js/plugin/flot/jquery.flot.resize.min.js') }}"></script>--}}
-{{--    <script src="{{ asset('js/plugin/flot/jquery.flot.time.min.js') }}"></script>--}}
+    <script src="{{ asset('js/plugin/flot/jquery.flot.resize.min.js') }}"></script>
+    <script src="{{ asset('js/plugin/flot/jquery.flot.time.min.js') }}"></script>
     <script src="{{ asset('js/plugin/flot/jquery.flot.tooltip.min.js') }}"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
@@ -839,7 +839,7 @@ foreach($chart_l8 as $key_l8=> $value_l8){
         /* red       */
         var $chrt_second = "#6595b4";
         /* blue      */
-        var $chrt_third = "#FF9F01";
+        var $chrt_third = "#00c01a";
         /* orange    */
         var $chrt_fourth = "#7e9d3a";
         /* green     */
@@ -929,14 +929,14 @@ foreach($chart_l8 as $key_l8=> $value_l8){
                     },
                     tooltip : true,
                     tooltipOpts : {
-                        content : "%s ngày mùng<b> %x</b> là <b>%y</b>",
+                        content : "<b>%y</b> %s on <b> %x</b>",
                         dateFormat : "%y-%0m-%0d",
                         defaultTheme : false
                     },
                     colors : [$chrt_main,$chrt_third],
                     xaxis : {
                         ticks : 12, // hiểm thị số phần tử trục x
-                        tickDecimals : 0
+                        tickDecimals : 0,
                     },
                     yaxis : {
                         ticks : 15, // hiển thị số phần tử trục y

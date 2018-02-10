@@ -168,8 +168,9 @@ class DashboardController extends Controller
                 if(!isset($adresult_today[$value_adresult_today['ad_id']])){
                     $adresult_today[$value_adresult_today['ad_id']] = 0;
                 }
+                if(isset($value_adresult_today['c3'])) {
                     $adresult_today[$value_adresult_today['ad_id']] += $value_adresult_today['c3'];
-
+                }
             }
 //            dd($adresult_today);
             /* end gom ads */
@@ -184,11 +185,13 @@ class DashboardController extends Controller
                           'rank'=>''
                       ];
                   }
+
+                  //dd($item_ads_aray);
                   if(isset($adresult_today[$item_ads_aray['_id']])){
                       $data_c3_today[$key]['sum_c3'] += $adresult_today[$item_ads_aray['_id']];
                       if(empty($data_c3_today[$key]['user_name'])){
-                          $data_c3_today[$key]['user_name'] = $item_ads_aray['user_name'][0];
-                          $data_c3_today[$key]['rank'] = $item_ads_aray['rank'][0];
+                          $data_c3_today[$key]['user_name'] = $item_ads_aray['user_name'];
+                          $data_c3_today[$key]['rank'] = $item_ads_aray['rank'];
                       }
 
                   }
@@ -206,7 +209,7 @@ class DashboardController extends Controller
                     ->where('date', '>=', $first_day_of_week)
                     ->where('date', '<=', $last_day_of_week)
                     ->get();
-                dd($query_adresult_thisweek);
+
                 /* end query */
                 /* gom tất cả c3 của cac ads */
                 $adresult_today = array();
@@ -214,7 +217,9 @@ class DashboardController extends Controller
                     if(!isset($adresult_today[$value_adresult_today['ad_id']])){
                         $adresult_today[$value_adresult_today['ad_id']] = 0;
                     }
-                    $adresult_today[$value_adresult_today['ad_id']] += $value_adresult_today['c3'];
+                    if(isset($value_adresult_today['c3'])) {
+                        $adresult_today[$value_adresult_today['ad_id']] += $value_adresult_today['c3'];
+                    }
 
                 }
         //            dd($adresult_today);
@@ -233,8 +238,8 @@ class DashboardController extends Controller
                         if(isset($adresult_today[$item_ads_aray['_id']])){
                             $data_c3_today[$key]['sum_c3'] += $adresult_today[$item_ads_aray['_id']];
                             if(empty($data_c3_today[$key]['user_name'])){
-                                $data_c3_today[$key]['user_name'] = $item_ads_aray['user_name'][0];
-                                $data_c3_today[$key]['rank'] = $item_ads_aray['rank'][0];
+                                $data_c3_today[$key]['user_name'] = $item_ads_aray['user_name'];
+                                $data_c3_today[$key]['rank'] = $item_ads_aray['rank'];
                             }
 
                         }
@@ -242,7 +247,7 @@ class DashboardController extends Controller
                     }
                 }
                 /* -----------------------------ENDTHISWEEK---------------------------------------------------- */
-            dd($data_c3_today);
+
 //            die();
 
 //            dd($query_today);
