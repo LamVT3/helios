@@ -2,14 +2,14 @@
 $chart_c3 = $profile['chart_c3'];
 $chart_l8 = $profile['chart_l8'];
 $key_arr = [];
-foreach($chart_c3 as $key_c3=> $value_c3){
+/*foreach($chart_c3 as $key_c3=> $value_c3){
     $key_arr_c3[] = $key_c3;
     $value_arr_c3[] = $value_c3;
-}
-foreach($chart_l8 as $key_l8=> $value_l8){
-    $key_arr_l8[] = $key_l8;
-    $value_arr_l8[] = $value_l8;
-}
+}*/
+//foreach($chart_l8 as $key_l8=> $value_l8){
+//    $key_arr_l8[] = $key_l8;
+//    $value_arr_l8[] = $value_l8;
+//}
 ?>
 @extends('layouts.master')
 
@@ -184,11 +184,11 @@ foreach($chart_l8 as $key_l8=> $value_l8){
 
     <!-- Flot Chart Plugin: Flot Engine, Flot Resizer, Flot Tooltip -->
     <script src="js/plugin/flot/jquery.flot.cust.min.js"></script>
-    {{--<script src="js/plugin/flot/jquery.flot.resize.min.js"></script>--}}
-    {{--<script src="js/plugin/flot/jquery.flot.fillbetween.min.js"></script>--}}
-    {{--<script src="js/plugin/flot/jquery.flot.orderBar.min.js"></script>--}}
-    {{--<script src="js/plugin/flot/jquery.flot.pie.min.js"></script>--}}
-    {{--<script src="js/plugin/flot/jquery.flot.time.min.js"></script>--}}
+    <script src="js/plugin/flot/jquery.flot.resize.min.js"></script>
+    <script src="js/plugin/flot/jquery.flot.fillbetween.min.js"></script>
+    <script src="js/plugin/flot/jquery.flot.orderBar.min.js"></script>
+    <script src="js/plugin/flot/jquery.flot.pie.min.js"></script>
+    <script src="js/plugin/flot/jquery.flot.time.min.js"></script>
     <script src="js/plugin/flot/jquery.flot.tooltip.min.js"></script>
     <script type="text/javascript">
         // PAGE RELATED SCRIPTS
@@ -214,7 +214,7 @@ foreach($chart_l8 as $key_l8=> $value_l8){
             var value_arr_c3 = <?= json_encode($value_arr_c3) ?>;
             var chart_c3 = [];
             for(var i=0; i< key_arr_c3.length;i ++){
-                var temp_c3 = [key_arr_c3[i], value_arr_c3[i]];
+                var temp_c3 = [parseFloat(key_arr_c3[i]), value_arr_c3[i]];
                 chart_c3.push(temp_c3);
             }
             /* end c3 */
@@ -223,7 +223,7 @@ foreach($chart_l8 as $key_l8=> $value_l8){
             var value_arr_l8 = <?= json_encode($value_arr_l8) ?>;
             var chart_l8 = [];
             for(var i=0; i< key_arr_l8.length;i ++){
-                var temp_l8 = [key_arr_l8[i], value_arr_l8[i]];
+                var temp_l8 = [parseFloat(key_arr_l8[i]), value_arr_l8[i]];
                 chart_l8.push(temp_l8);
             }
 
@@ -265,8 +265,9 @@ foreach($chart_l8 as $key_l8=> $value_l8){
                         shadowSize : 0
                     },
                     xaxis : {
-                        mode : "time",
-                        tickLength : 10
+                        mode: "time",
+                        timeformat: "%d/%m/%Y",
+                        ticks : 12
                     },
 
                     yaxes : [{
@@ -287,10 +288,7 @@ foreach($chart_l8 as $key_l8=> $value_l8){
                         defaultTheme : false
                     },
                     colors : [$chrt_main],
-                    xaxis : {
-                        ticks : 12, // hiểm thị số phần tử trục x
-                        tickDecimals : 0
-                    },
+
                     yaxis : {
                         ticks : 15, // hiển thị số phần tử trục y
                         tickDecimals : 0
@@ -332,8 +330,9 @@ foreach($chart_l8 as $key_l8=> $value_l8){
                         shadowSize : 0
                     },
                     xaxis : {
-                        mode : "time",
-                        tickLength : 10
+                        mode: "time",
+                        timeformat: "%d/%m/%Y",
+                        ticks : 12
                     },
 
                     yaxes : [{
@@ -354,10 +353,10 @@ foreach($chart_l8 as $key_l8=> $value_l8){
                         defaultTheme : false
                     },
                     colors : [$chrt_second],
-                    xaxis : {
-                        ticks : 12, // hiểm thị số phần tử trục x
-                        tickDecimals : 0
-                    },
+                    // xaxis: {
+                    //     ticks : 12, // hiểm thị số phần tử trục x
+                    //     tickDecimals : 0
+                    // },
                     yaxis : {
                         ticks : 15, // hiển thị số phần tử trục y
                         tickDecimals : 0

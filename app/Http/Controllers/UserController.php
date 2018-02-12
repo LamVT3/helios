@@ -257,25 +257,36 @@ class UserController extends Controller
 //        $query->where('date','>=',$first_day_this_month);
 //        $query->where('date','<=',$last_day_this_month);
         /* lấy query theo lenh mogodb */
-        $query = AdResult::raw(function($collection) use ($first_day_this_month,$last_day_this_month) {
+        DB::connection( 'mongodb' )->enableQueryLog();
+        $query = AdResult::raw(function($collection) use ($first_day_this_month,$last_day_this_month,$user) {
             return $collection->aggregate([
                 [
                     '$lookup' => [
                         'as'=>'field_ads',
                         'from'=>'ads',
-                        'foreignField'=>'ad_id',
-                        'localField'=>'_id'
+                        'foreignField'=>'_id',
+                        'localField'=>'ad_id'
                     ]
                 ],
-                [
+                /*[
                     '$lookup' => [
                         'as'=>'field_user',
                         'from'=>'users',
                         'foreignField'=>'_id',
                         'localField'=>'field_ads.creator_id'
                     ]
-                ],
-                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                ],*/
+                ['$match' => [
+                	'date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month],
+                	//'field_ads.creator_id'  => $user->_id
+            	]],
+            	/*[
+                        '$project' => [
+                            'ad_id'=>'$ad_id',
+                            'creator_id'=>'$field_ads.creator_id',
+                        ]
+                    ],*/
+
                 [
                     '$group' => [
                         '_id' => '$date',
@@ -289,10 +300,16 @@ class UserController extends Controller
                 ]
             ]);
         });
+DB::connection('mongodb')->getQueryLog();
         $array_month = array();
+
+        //dd($d);
         for($i=1;$i<=$d; $i++){
-            $array_month[date($i)] = 0;
+            $timestamp = strtotime(date("Y")."-".date("m")."-".$i) * 1000;
+            //dd($timestamp);
+            $array_month[$i] = $timestamp."";
         }
+//        dd($array_month);
         /*  lay du lieu c3*/
         $c3_array = array();
         foreach ($query as $item_result_c3){
@@ -302,11 +319,19 @@ class UserController extends Controller
         $chart_c3 = array();
         foreach($array_month as $key =>  $c3_day){
             if(isset($c3_array[$key])){
-                $chart_c3[$key] = $c3_array[$key];
+                $chart_c3[$c3_day] = $c3_array[$key];
             }else{
-                $chart_c3[$key] = 0;
+                $chart_c3[$c3_day] = 0;
             }
         }
+
+
+        $key_arr = [];
+        foreach($chart_c3 as $key_c3=> $value_c3){
+            $key_arr_c3[] = $key_c3;
+            $value_arr_c3[] = $value_c3;
+        }
+
         /* end c3 */
         /* lay du lieu l8*/
         $l8_array = array();
@@ -317,10 +342,14 @@ class UserController extends Controller
         $chart_l8 = array();
         foreach($array_month as $key =>  $l8_day){
             if(isset($l8_array[$key])){
-                $chart_l8[$key] = $l8_array[$key];
+                $chart_l8[$l8_day] = $l8_array[$key];
             }else{
-                $chart_l8[$key] = 0;
+                $chart_l8[$l8_day] = 0;
             }
+        }
+        foreach($chart_l8 as $key_l8=> $value_l8){
+            $key_arr_l8[] = $key_l8;
+            $value_arr_l8[] = $value_l8;
         }
         /* end l8 */
 
@@ -337,7 +366,11 @@ class UserController extends Controller
             'active',
             'breadcrumbs',
             'user',
-            'profile'
+            'profile',
+            'key_arr_c3',
+            'value_arr_c3',
+            'key_arr_l8',
+            'value_arr_l8'
         ));
     }
 }
