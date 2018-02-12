@@ -153,6 +153,15 @@
                                 </div>
                                 <div class="row">
                                     <section>
+                                        <label class="label col col-3" for="mol-link-tracking">MOL link tracking</label>
+                                        <label class="input col col-9">
+                                            <input type="text" name="mol_link_tracking" id="mol_link_tracking" class="form-control" required
+                                                   placeholder="Ex: id_landingpage=265&code_chanel=BR16_Salary_Englishinyourlife&id_campaign=16&id=25094"/>
+                                        </label>
+                                    </section>
+                                </div>
+                                <div class="row">
+                                    <section>
                                         <label class="label col col-3" for="landing_page">Landing Page</label>
                                         <label class="select col col-9">
                                             <select name="landing_page" id="landing_page">

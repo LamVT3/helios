@@ -224,6 +224,7 @@
             data.subcampaign = $(this).find('[name=subcampaign]').val();
 
             data.ad_name = $(this).find('[name=ad_name]').val();
+            data.mol_link_tracking = $(this).find('[name=mol_link_tracking]').val();
             data.landing_page = $(this).find('[name=landing_page]').val();
 
             data.current_url = "{{ url()->current() }}";

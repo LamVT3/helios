@@ -105,6 +105,7 @@ class CampaignController extends Controller
         $subcampaign = request('subcampaign');
 
         $ad_name = request('ad_name');
+        $mol_link_tracking = request('mol_link_tracking', "");
         $medium = request('medium', "");
         $landing_page = request('landing_page');
 
@@ -177,6 +178,7 @@ class CampaignController extends Controller
             $ad = new Ad();
             $ad->name = $ad_name;
             $ad->medium = $medium;
+            $ad->mol_link_tracking = trim(trim($mol_link_tracking), '?&');
             $ad->source_id = $source->id;
             $ad->source_name = $source->name;
             $ad->team_id = $team->id;
@@ -190,11 +192,13 @@ class CampaignController extends Controller
             $ad->landing_page_name = $landing_page->name;
             $ad->creator_id = $user->id;
             $ad->creator_name = $user->username;
-            $ad->tracking_link = $landing_page->url . "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_medium={$ad->medium}&utm_subcampaign={$subcampaign->name}&utm_ad={$ad->name}";
-            $ad->uri_query = "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_medium={$ad->medium}&utm_subcampaign={$subcampaign->name}&utm_ad={$ad->name}";
+            $ad->tracking_link = $landing_page->url . "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_medium={$ad->medium}&utm_subcampaign={$subcampaign->name}&utm_ad={$ad->name}&{$ad->mol_link_tracking}";
+            $ad->uri_query = "utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_medium={$ad->medium}&utm_subcampaign={$subcampaign->name}&utm_ad={$ad->name}&{$ad->mol_link_tracking}";
+
             try{
                 $shorten_url = Shorty::shorten($ad->tracking_link);
             }catch (\Exception $e){
+                debug($e);
                 $shorten_url = "";
             }
 
