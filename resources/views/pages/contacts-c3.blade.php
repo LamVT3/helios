@@ -128,6 +128,7 @@
                             </div>
                         </div>
                         <hr>
+                        <div class="container-table-contacts">
                         <div class="wrapper">
                             <table id="table_contacts" class="table table-striped table-bordered table-hover"
                                    width="100%">
@@ -177,6 +178,7 @@
 
                                 </tbody>
                             </table>
+                        </div>
                         </div>
                     </div>
                     @endcomponent
@@ -260,7 +262,7 @@
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 <script type="text/javascript">
     $(document).ready(function(){
-        $('#table_contacts').on('click', '.name', (function(){
+        $('.container-table-contacts').on('click', '.name', (function(){
             var id = $(this).data('id');
             $.get("{{ route('contact-details', '') }}/" + id, function (data) {
                 $('#contactModal .modal-body').html(data);

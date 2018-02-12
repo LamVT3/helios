@@ -45,3 +45,4 @@
 
     </tbody>
 </table>
+<script src="{{ asset('js/contacts/table_contact_c3.js') }}"></script>

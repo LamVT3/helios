@@ -16,7 +16,7 @@ $(document).ready(function () {
         "preDrawCallback": function () {
             // Initialize the responsive datatables helper once.
             if (!responsiveHelper_table_campaign) {
-                responsiveHelper_table_campaign = new ResponsiveDatatablesHelper($('#table_campaigns'), breakpointDefinition);
+                responsiveHelper_table_campaign = new ResponsiveDatatablesHelper($('#table_contacts'), breakpointDefinition);
             }
         },
         "rowCallback": function (nRow) {
