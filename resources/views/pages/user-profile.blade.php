@@ -1,16 +1,3 @@
-<?php
-$chart_c3 = $profile['chart_c3'];
-$chart_l8 = $profile['chart_l8'];
-$key_arr = [];
-/*foreach($chart_c3 as $key_c3=> $value_c3){
-    $key_arr_c3[] = $key_c3;
-    $value_arr_c3[] = $value_c3;
-}*/
-//foreach($chart_l8 as $key_l8=> $value_l8){
-//    $key_arr_l8[] = $key_l8;
-//    $value_arr_l8[] = $value_l8;
-//}
-?>
 @extends('layouts.master')
 
 @section('content')
@@ -56,13 +43,13 @@ $key_arr = [];
                                     <a href="javascript:void(0);">{{ $user->rank }}</a>
                                 </td>
                                 <td class="text-center hidden-xs hidden-sm">
-                                    <a href="javascript:void(0);">{{ number_format($profile['c3']) }}</a>
+                                    <a href="javascript:void(0);">{{ number_format($profile['total_c3']) }}</a>
                                 </td>
                                 <td class="text-center hidden-xs hidden-sm">
-                                    <a href="javascript:void(0);">{{ number_format($profile['l8']) }}</a>
+                                    <a href="javascript:void(0);">{{ number_format($profile['total_l8']) }}</a>
                                 </td>
                                 <td class="text-center hidden-xs hidden-sm">
-                                    <a href="javascript:void(0);">{{ number_format($profile['revenue']) . ' VND' }}</a>
+                                    <a href="javascript:void(0);">{{ number_format($profile['total_revenue']) . ' VND' }}</a>
                                 </td>
                             </tr>
                             <!-- end TR -->
@@ -93,7 +80,7 @@ $key_arr = [];
                             -->
                             <header>
                                 <span class="widget-icon"> <i class="fa fa-bar-chart-o"></i> </span>
-                                <h2>Contact C3</h2>
+                                <h2>C3 this month</h2>
 
                             </header>
 
@@ -146,7 +133,7 @@ $key_arr = [];
                             -->
                             <header>
                                 <span class="widget-icon"> <i class="fa fa-bar-chart-o"></i> </span>
-                                <h2>Contact L8</h2>
+                                <h2>L8 this month</h2>
 
                             </header>
 
@@ -209,41 +196,16 @@ $key_arr = [];
         var $chrt_mono = "#000";
 
         $(document).ready(function() {
-            /* du lieu bieu do c3 */
-            var key_arr_c3 = <?= json_encode($key_arr_c3)?>;
-            var value_arr_c3 = <?= json_encode($value_arr_c3) ?>;
-            var chart_c3 = [];
-            for(var i=0; i< key_arr_c3.length;i ++){
-                var temp_c3 = [parseFloat(key_arr_c3[i]), value_arr_c3[i]];
-                chart_c3.push(temp_c3);
-            }
-            /* end c3 */
-            /* du lieu bieu do l8 */
-            var key_arr_l8 = <?= json_encode($key_arr_l8)?>;
-            var value_arr_l8 = <?= json_encode($value_arr_l8) ?>;
-            var chart_l8 = [];
-            for(var i=0; i< key_arr_l8.length;i ++){
-                var temp_l8 = [parseFloat(key_arr_l8[i]), value_arr_l8[i]];
-                chart_l8.push(temp_l8);
-            }
-
-            /* end l8 */
             // DO NOT REMOVE : GLOBAL FUNCTIONS!
             pageSetUp();
-
 
             /* site stats chart */
 
             if ($("#site-stats_c3").length) {
 
-                // var pageviews = [[2, 25], [3, 87], [4, 93], [5, 127], [6, 116], [7, 137], [8, 135], [9, 130], [10, 167], [11, 169], [12, 179], [13, 185], [14, 176], [15, 180], [16, 174], [17, 300], [18, 186], [19, 177], [20, 153], [21, 149], [22, 130], [23, 100], [24, 50],[25,175],[26,80]];
-               var pageviews = chart_c3;
-                // var visitors = [[2, 65], [4, 73], [5, 100], [6, 95], [7, 103], [8, 111], [9, 97], [10, 125], [11, 100], [12, 95], [13, 141], [14, 126], [15, 131], [16, 146], [17, 158], [18, 160], [19, 151], [20, 125], [21, 110], [22, 100], [23, 85], [24, 37],[25, 38],[26,15]];
-                // var visitors = chart_l8;
-                //console.log(pageviews)
                 var plot = $.plot($("#site-stats_c3"), [{
-                    data : pageviews,
-                    label : "Contact C3"
+                    data : {{ $profile["chart_c3"] }},
+                    label : "C3"
 
                 }], {
                     series : {
@@ -266,13 +228,13 @@ $key_arr = [];
                     },
                     xaxis : {
                         mode: "time",
-                        timeformat: "%d/%m/%Y",
-                        ticks : 12
+                        timeformat: "%d/%m",
+                        ticks : 14
                     },
 
                     yaxes : [{
+                        ticks : 10,
                         min : 0,
-                        tickLength : 5
                     }],
                     grid : {
                         hoverable : true,
@@ -283,16 +245,20 @@ $key_arr = [];
                     },
                     tooltip : true,
                     tooltipOpts : {
-                        content : "%s ngày mùng<b> %x</b> là <b>%y</b>",
-                        dateFormat : "%y-%0m-%0d",
-                        defaultTheme : false
+                        content : "<b>%y C3</b> (%x)",
+                        dateFormat : "%d/%m/%Y",
+                        defaultTheme : false,
+                        shifts: {
+                            x: -50,
+                            y: 20
+                        }
                     },
                     colors : [$chrt_main],
 
-                    yaxis : {
-                        ticks : 15, // hiển thị số phần tử trục y
+                   /* yaxis : {
+                        ticks : 10, // hiển thị số phần tử trục y
                         tickDecimals : 0
-                    }
+                    }*/
                 });
 
             }
@@ -300,15 +266,10 @@ $key_arr = [];
             /* end site stats */
             if ($("#site-stats_l8").length) {
 
-                // var pageviews = [[2, 25], [3, 87], [4, 93], [5, 127], [6, 116], [7, 137], [8, 135], [9, 130], [10, 167], [11, 169], [12, 179], [13, 185], [14, 176], [15, 180], [16, 174], [17, 300], [18, 186], [19, 177], [20, 153], [21, 149], [22, 130], [23, 100], [24, 50],[25,175],[26,80]];
-                // var pageviews = chart_c3;
-                // var visitors = [[2, 65], [4, 73], [5, 100], [6, 95], [7, 103], [8, 111], [9, 97], [10, 125], [11, 100], [12, 95], [13, 141], [14, 126], [15, 131], [16, 146], [17, 158], [18, 160], [19, 151], [20, 125], [21, 110], [22, 100], [23, 85], [24, 37],[25, 38],[26,15]];
-                var visitors = chart_l8;
-                //console.log(pageviews)
                 var plot = $.plot($("#site-stats_l8"), [
                  {
-                    data : visitors,
-                    label : "Contact L8"
+                    data : {{ $profile["chart_l8"] }},
+                    label : "L8"
 
                 }], {
                     series : {
@@ -331,8 +292,8 @@ $key_arr = [];
                     },
                     xaxis : {
                         mode: "time",
-                        timeformat: "%d/%m/%Y",
-                        ticks : 12
+                        timeformat: "%d/%m",
+                        ticks : 14
                     },
 
                     yaxes : [{
@@ -348,9 +309,13 @@ $key_arr = [];
                     },
                     tooltip : true,
                     tooltipOpts : {
-                        content : "%s ngày mùng <b> %x</b> là <b>%y</b>",
-                        dateFormat : "%y-%0m-%0d",
-                        defaultTheme : false
+                        content : "<b>%y L8</b> (%x)",
+                        dateFormat : "%d/%m/%Y",
+                        defaultTheme : false,
+                        shifts: {
+                            x: -50,
+                            y: 20
+                        }
                     },
                     colors : [$chrt_second],
                     // xaxis: {

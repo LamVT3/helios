@@ -98,7 +98,7 @@ class ContactController extends Controller
             $data_where['campaign_id'] = $request->campaign_id;
         }
         if ($request->current_level) {
-            $data_where['current_level'] = intval($request->current_level);
+            $data_where['current_level'] = $request->current_level;
         }
         // DB::connection( 'mongodb' )->enableQueryLog();
 

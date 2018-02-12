@@ -249,7 +249,7 @@ class UserController extends Controller
         $d=cal_days_in_month(CAL_GREGORIAN,$month,$year); /* số ngày trong tháng */
         $first_day_this_month = date('Y-m-01'); /* ngày đàu tiên của tháng */
         $last_day_this_month  = date('Y-m-t'); /* ngày cuối cùng của tháng */
-        $curentday = date('Y-m-d'); /* ngày hiện tại của tháng */
+        // $currentday = date('Y-m-d'); /* ngày hiện tại của tháng */
 
         $user = auth()->user();
 //        $ads = Ad::where('creator_id', $user->id)->pluck('_id')->toArray();
@@ -257,36 +257,14 @@ class UserController extends Controller
 //        $query->where('date','>=',$first_day_this_month);
 //        $query->where('date','<=',$last_day_this_month);
         /* lấy query theo lenh mogodb */
+
         DB::connection( 'mongodb' )->enableQueryLog();
         $query = AdResult::raw(function($collection) use ($first_day_this_month,$last_day_this_month,$user) {
             return $collection->aggregate([
-                [
-                    '$lookup' => [
-                        'as'=>'field_ads',
-                        'from'=>'ads',
-                        'foreignField'=>'_id',
-                        'localField'=>'ad_id'
-                    ]
-                ],
-                /*[
-                    '$lookup' => [
-                        'as'=>'field_user',
-                        'from'=>'users',
-                        'foreignField'=>'_id',
-                        'localField'=>'field_ads.creator_id'
-                    ]
-                ],*/
                 ['$match' => [
                 	'date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month],
-                	//'field_ads.creator_id'  => $user->_id
+                	'creator_id'  => $user->_id
             	]],
-            	/*[
-                        '$project' => [
-                            'ad_id'=>'$ad_id',
-                            'creator_id'=>'$field_ads.creator_id',
-                        ]
-                    ],*/
-
                 [
                     '$group' => [
                         '_id' => '$date',
@@ -300,63 +278,54 @@ class UserController extends Controller
                 ]
             ]);
         });
-DB::connection('mongodb')->getQueryLog();
+        DB::connection('mongodb')->getQueryLog();
         $array_month = array();
 
-        //dd($d);
         for($i=1;$i<=$d; $i++){
             $timestamp = strtotime(date("Y")."-".date("m")."-".$i) * 1000;
             //dd($timestamp);
-            $array_month[$i] = $timestamp."";
+            $array_month[$i] = $timestamp;
         }
-//        dd($array_month);
-        /*  lay du lieu c3*/
+
         $c3_array = array();
-        foreach ($query as $item_result_c3){
-            $day = explode('-',$item_result_c3['_id']);
-            $c3_array[intval($day[2])] = $item_result_c3['c3'];
-        }
-        $chart_c3 = array();
-        foreach($array_month as $key =>  $c3_day){
-            if(isset($c3_array[$key])){
-                $chart_c3[$c3_day] = $c3_array[$key];
-            }else{
-                $chart_c3[$c3_day] = 0;
-            }
-        }
-
-
-        $key_arr = [];
-        foreach($chart_c3 as $key_c3=> $value_c3){
-            $key_arr_c3[] = $key_c3;
-            $value_arr_c3[] = $value_c3;
-        }
-
-        /* end c3 */
-        /* lay du lieu l8*/
         $l8_array = array();
-        foreach ($query as $item_result_l8){
-            $day = explode('-',$item_result_l8['_id']);
-            $l8_array[intval($day[2])] = $item_result_l8['l8'];
+
+        foreach ($query as $item_result){
+            $day = explode('-',$item_result['_id']);
+            $c3_array[(int)($day[2])] = $item_result['c3'];
+            $l8_array[(int)($day[2])] = $item_result['l8'];
         }
-        $chart_l8 = array();
-        foreach($array_month as $key =>  $l8_day){
-            if(isset($l8_array[$key])){
-                $chart_l8[$l8_day] = $l8_array[$key];
+
+        /*  lay du lieu c3*/
+        $chart_c3 = array();
+        foreach($array_month as $key =>  $timestamp){
+            if(isset($c3_array[$key])){
+                $chart_c3[] = [$timestamp, $c3_array[$key]];
             }else{
-                $chart_l8[$l8_day] = 0;
+                $chart_c3[] = [$timestamp, 0];
             }
         }
-        foreach($chart_l8 as $key_l8=> $value_l8){
-            $key_arr_l8[] = $key_l8;
-            $value_arr_l8[] = $value_l8;
+        $chart_c3 = json_encode($chart_c3);
+        /* end c3 */
+
+        /* lay du lieu l8*/
+
+        $chart_l8 = array();
+        foreach($array_month as $key =>  $timestamp){
+            if(isset($l8_array[$key])){
+                $chart_l8[] = [$timestamp, $l8_array[$key]];
+            }else{
+                $chart_l8[] = [$timestamp, 0];
+            }
         }
+        $chart_l8 = json_encode($chart_l8);
         /* end l8 */
 
         /*  lấy tổng số c3 và số l8*/
-        $profile['c3'] = $query->sum('c3');
-        $profile['revenue'] = $query->sum('revenue');
-        $profile['l8'] = $query->sum('l8');
+        $profile['total_c3'] = AdResult::where('creator_id', $user->id)->sum('c3');
+        $profile['total_revenue'] = AdResult::where('creator_id', $user->id)->sum('revenue');
+        $profile['total_l8'] = AdResult::where('creator_id', $user->id)->sum('l8');
+
         $profile['chart_c3'] = $chart_c3;
         $profile['chart_l8'] = $chart_l8;
         return view('pages.user-profile', compact(
@@ -366,11 +335,7 @@ DB::connection('mongodb')->getQueryLog();
             'active',
             'breadcrumbs',
             'user',
-            'profile',
-            'key_arr_c3',
-            'value_arr_c3',
-            'key_arr_l8',
-            'value_arr_l8'
+            'profile'
         ));
     }
 }
