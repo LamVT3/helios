@@ -132,10 +132,9 @@
                 <td>{{ $item["comment"] }}</td>
                 <td>{{ $item["call_status_new_desc"] }}</td>
                 <td>
-                    <audio controls>
-                        <source src="{{ $item["link_record"] }}" type="audio/mpeg">
-                        Your browser does not support the audio tag.
-                    </audio>
+                    @if($item["link_record"])
+                    <a class="btn btn-xs btn-danger" href="{{ $item["link_record"] }}" target="_blank"><i class="fa fa-play-circle-o"></i></a>
+                        @endif
                 </td>
             </tr>
         @endforeach

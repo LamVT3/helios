@@ -9,7 +9,7 @@
             <th>Current level</th>
             <th>Marketer</th>
             <th>Campaign</th>
-            <th>Channel</th>
+            <th>Subcampaign</th>
             <th>Ads</th>
             <th>Landing page</th>
             <th>Action</th>
@@ -22,7 +22,7 @@
             <td>{{ $item->email }}</td>
             <td>{{ $item->phone }}</td>
             <td>{{ Date('d-m-Y H:i:s', $item->submit_time/1000) }}</td>
-            <td>{{ $item->current_level }}</td>
+            <td>{{ $item->current_level or $item->clevel }}</td>
             <td>{{ $item->marketer_name or '-100' }}</td>
             <td>{{ $item->campaign_name or '-100' }}</td>
             <td>{{ $item->subcampaign_name or '-100' }}</td>

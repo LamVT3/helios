@@ -32,6 +32,7 @@ $(document).ready(function () {
 //        $('head').append('<link rel="stylesheet" href="{{ asset('js/plugin/selectize/css/selectize.bootstrap3.css') }}">');
 
     /* END BASIC */
+
 });
 
 

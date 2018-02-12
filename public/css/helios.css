@@ -217,6 +217,10 @@ fieldset:first-of-type {
     margin-left: 5px;
 }
 
-#table_contact_details td {
+table#table_contact_details td:first-child {
+    font-weight: bold;
+}
+
+table#table_contact_details td:last-child {
     word-break: break-all;
 }
