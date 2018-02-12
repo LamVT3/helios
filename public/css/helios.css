@@ -74,10 +74,10 @@
     padding: 5px 10px;
 }
 
-.widget-revenue .widget-title {
+/*.widget-revenue .widget-title {
     background-color: #E91E63;
     color: white;
-}
+}*/
 
 .widget-revenue .progress-bar {
     background-color: #E91E63 !important;
@@ -89,10 +89,10 @@
     color: #E91E63;
 }
 
-.widget-c3 .widget-title {
+/*.widget-c3 .widget-title {
     background-color: #3F51B5;
     color: white;
-}
+}*/
 
 .widget-c3 .progress-bar {
     background-color: #3F51B5 !important;
@@ -103,11 +103,11 @@
     font-weight: bold;
     color: #3F51B5;
 }
-
+/*
 .widget-c3-cost .widget-title {
     background-color: #4CAF50;
     color: white;
-}
+}*/
 
 .widget-c3-cost .progress-bar {
     background-color: #4CAF50 !important;
@@ -119,10 +119,10 @@
     color: #4CAF50;
 }
 
-.widget-budget .widget-title {
+/*.widget-budget .widget-title {
     background-color: #FF9800;
     color: white;
-}
+}*/
 
 .widget-budget .progress-bar {
     background-color: #FF9800 !important;

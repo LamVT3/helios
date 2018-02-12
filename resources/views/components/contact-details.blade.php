@@ -126,14 +126,14 @@
     @if($contact->call_history)
         @foreach ($contact->call_history as $item)
             <tr id="">
-                <td>{{ $item["time"] }}</td>
-                <td>{{ $item["old_level"] }}</td>
-                <td>{{ $item["new_level"] }}</td>
+                <td>{{ $item["date"] }}</td>
+                <td>{{ $item["level_old"] }}</td>
+                <td>{{ $item["level_new"] }}</td>
                 <td>{{ $item["comment"] }}</td>
-                <td>{{ $item["status"] }}</td>
+                <td>{{ $item["call_status_new_desc"] }}</td>
                 <td>
                     <audio controls>
-                        <source src="{{ $item["audio"] }}" type="audio/mpeg">
+                        <source src="{{ $item["link_record"] }}" type="audio/mpeg">
                         Your browser does not support the audio tag.
                     </audio>
                 </td>
