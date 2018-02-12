@@ -91,9 +91,9 @@
                     <li class="{{ $active == 'users-create' ? 'active' : '' }}">
                         <a href="{{ route('users-create') }}">Add user</a>
                     </li>
-                    <li class="{{ $active == 'users-roles' ? 'active' : '' }}">
+                    {{--<li class="{{ $active == 'users-roles' ? 'active' : '' }}">
                         <a href="{{ route('users-roles') }}">User roles</a>
-                    </li>
+                    </li>--}}
                 </ul>
             </li>
             {{--@endpermission

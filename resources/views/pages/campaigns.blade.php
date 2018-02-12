@@ -29,7 +29,7 @@
                         @component('components.jarviswidget',
                                                     ['id' => 1, 'icon' => 'fa-table', 'title' => 'Campaigns (' . $campaigns->count() . ')'])
                             <div class="widget-body no-padding">
-                                <ul id="myTab1" class="nav nav-tabs bordered">
+                                {{--<ul id="myTab1" class="nav nav-tabs bordered">
                                     <li {!! $active == 'campaigns' ? 'class="active"' : '' !!}>
                                         <a href="{{ route('campaigns') }}">Campaigns </a>
                                     </li>
@@ -39,7 +39,7 @@
                                     <li {!! $active == 'ads' ? 'class="active"' : '' !!}>
                                         <a href="{{ route('subcampaign-details', 'all') }}"> Ads </a>
                                     </li>
-                                </ul>
+                                </ul>--}}
                                 <table id="table_campaigns" class="table table-striped table-bordered table-hover"
                                        width="100%">
                                     <thead>
