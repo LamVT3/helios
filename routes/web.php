@@ -101,7 +101,10 @@ Route::group(['prefix' => 'users'], function () {
     Route::post('/roles/save', 'UserController@roleStore')->name('users-roles-save');
 });
 
-Route::get('/profile', 'UserController@profile')->name('profile');
+Route::group(['prefix' => 'profile'], function () {
+    Route::get('/', 'UserController@profile')->name('profile');
+    Route::get('/{username}', 'UserController@profile')->name('profile-user');
+});
 
 Route::post('{related}/{model}/delete', 'Controller@deleteRelated')->name('delete-related');
 Route::post('{model}/delete', 'Controller@delete')->name('delete');

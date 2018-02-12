@@ -11,9 +11,9 @@
                     <div class="col-sm-2">
                         <img src="{{ asset('img/avatars/sunny-big.png') }}" alt="demo user">
                         <div class="padding-10">
-                            <h4 class="font-md"><strong>{{ auth()->user()->username }}</strong>
+                            <h4 class="font-md"><strong>{{ $user->username }}</strong>
                             <br>
-                            <small class="text-danger">Team: {{ auth()->user()->team_name }}</small></h4>
+                            <small class="text-danger">Team: <strong>{{ $user->team_name }}</strong></small></h4>
                         </div>
                     </div>
                     <div class="col col-sm-10">
@@ -170,13 +170,10 @@
 @section('script')
 
     <!-- Flot Chart Plugin: Flot Engine, Flot Resizer, Flot Tooltip -->
-    <script src="js/plugin/flot/jquery.flot.cust.min.js"></script>
-    <script src="js/plugin/flot/jquery.flot.resize.min.js"></script>
-    <script src="js/plugin/flot/jquery.flot.fillbetween.min.js"></script>
-    <script src="js/plugin/flot/jquery.flot.orderBar.min.js"></script>
-    <script src="js/plugin/flot/jquery.flot.pie.min.js"></script>
-    <script src="js/plugin/flot/jquery.flot.time.min.js"></script>
-    <script src="js/plugin/flot/jquery.flot.tooltip.min.js"></script>
+    <script src="{{ asset('js/plugin/flot/jquery.flot.cust.min.js') }}"></script>
+    <script src="{{ asset('js/plugin/flot/jquery.flot.resize.min.js') }}"></script>
+    <script src="{{ asset('js/plugin/flot/jquery.flot.time.min.js') }}"></script>
+    <script src="{{ asset('js/plugin/flot/jquery.flot.tooltip.min.js') }}"></script>
     <script type="text/javascript">
         // PAGE RELATED SCRIPTS
 

@@ -50,7 +50,7 @@
                                     @foreach ($users as $item)
                                         <tr>
                                             <td>{{ $item->id }}</td>
-                                            <td>{{ $item->username }}</td>
+                                            <td><a href="{{ route('profile-user', $item->username) }}">{{ $item->username }}</a></td>
                                             <td>{{ $item->email }}</td>
                                             <td>{{ $item->created_at->toFormattedDateString() }}</td>
                                             <td>

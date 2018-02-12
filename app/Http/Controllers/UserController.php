@@ -236,13 +236,16 @@ class UserController extends Controller
         return redirect()->route('users-roles');
     }
 
-    public function profile()
+    public function profile($username = null)
     {
         $page_title = "User Profile | Helios";
         $page_css = array();
         $no_main_header = FALSE;
         $active = null;
-        $breadcrumbs = "<i class=\"fa-fw fa fa-user\"></i> " . auth()->user()->username . "'s Profile";
+
+        $user = $username ? User::where('username', $username)->firstOrFail() : auth()->user();
+        $breadcrumbs = "<i class=\"fa-fw fa fa-user\"></i> " . $user->username . "'s Profile";
+
         /* format date */
         $month = date('m');
         $year = date('Y');
@@ -250,13 +253,6 @@ class UserController extends Controller
         $first_day_this_month = date('Y-m-01'); /* ngày đàu tiên của tháng */
         $last_day_this_month  = date('Y-m-t'); /* ngày cuối cùng của tháng */
         // $currentday = date('Y-m-d'); /* ngày hiện tại của tháng */
-
-        $user = auth()->user();
-//        $ads = Ad::where('creator_id', $user->id)->pluck('_id')->toArray();
-//        $query = AdResult::whereIn('ad_id', $ads);
-//        $query->where('date','>=',$first_day_this_month);
-//        $query->where('date','<=',$last_day_this_month);
-        /* lấy query theo lenh mogodb */
 
         DB::connection( 'mongodb' )->enableQueryLog();
         $query = AdResult::raw(function($collection) use ($first_day_this_month,$last_day_this_month,$user) {
@@ -279,6 +275,7 @@ class UserController extends Controller
             ]);
         });
         DB::connection('mongodb')->getQueryLog();
+
         $array_month = array();
 
         for($i=1;$i<=$d; $i++){
