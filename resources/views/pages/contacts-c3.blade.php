@@ -269,7 +269,7 @@
                 $('#contactModal').modal('show');
             }).fail(
                 function (err) {
-                    $('#room-list').html('<tr><td colspan="6">Cannot connect to server</td></td>');
+                    alert('Cannot connect to server. Please try again later.');
                 });
         }));
     });

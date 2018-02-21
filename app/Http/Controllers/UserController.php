@@ -254,7 +254,7 @@ class UserController extends Controller
         $last_day_this_month  = date('Y-m-t'); /* ngày cuối cùng của tháng */
         // $currentday = date('Y-m-d'); /* ngày hiện tại của tháng */
 
-        DB::connection( 'mongodb' )->enableQueryLog();
+        // DB::connection( 'mongodb' )->enableQueryLog();
         $query = AdResult::raw(function($collection) use ($first_day_this_month,$last_day_this_month,$user) {
             return $collection->aggregate([
                 ['$match' => [
@@ -274,7 +274,7 @@ class UserController extends Controller
                 ]
             ]);
         });
-        DB::connection('mongodb')->getQueryLog();
+        // DB::connection('mongodb')->getQueryLog();
 
         $array_month = array();
 
@@ -306,7 +306,6 @@ class UserController extends Controller
         /* end c3 */
 
         /* lay du lieu l8*/
-
         $chart_l8 = array();
         foreach($array_month as $key =>  $timestamp){
             if(isset($l8_array[$key])){

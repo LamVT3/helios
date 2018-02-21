@@ -224,3 +224,7 @@ table#table_contact_details td:first-child {
 table#table_contact_details td:last-child {
     word-break: break-all;
 }
+
+.c3_leaderboard, .revenue_leaderboard, .spent_leaderboard{
+    text-align: center;
+}

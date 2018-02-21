@@ -113,7 +113,7 @@ class ReportController extends Controller
 
         $results = $query->get();
 
-        DB::connection('mongodb')->getQueryLog();
+        // DB::connection('mongodb')->getQueryLog();
         $report = $total = [];
         if ($results) {
             $report = $this->prepare_report($results);

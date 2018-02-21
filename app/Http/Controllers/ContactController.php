@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Ad;
+use App\AdResult;
 use App\Campaign;
 use App\Contact;
 use App\LandingPage;
@@ -175,41 +177,118 @@ class ContactController extends Controller
         $file->move($destinationPath,$file->getClientOriginalName());
 
         $filePath =  $destinationPath . '/' . $file->getClientOriginalName();
-        /*Excel::load($filePath, function($reader) {
-
-            // Getting all results
-            $results = $reader->get();
-            dd($results);
-
-        });*/
-
+        // DB::connection( 'mongodb' )->enableQueryLog();
         Excel::load($filePath, function($reader) {
 
             $client = new Client();
             // Getting all results
             $results = $reader->get();
-            //dd($results->toArray());
             /*$r = $client->request('POST', "http://209.58.165.15/api/v5/tracking/submitter", [
                 'json' => $results->toArray()
             ]);*/
 
+            $import_time = time();
+            $invalid_item = [];
 
             foreach($results as $item){
-                //$arr = $item->toArray();
-                $arr = [];
-                $arr["msg_source"] = "import_data";
-                $arr["msg_type"] = "submitter";
-                $arr["submit_time"] = $item->submit_time->timestamp * 1000;
-                $arr["name"] = $item->name;
-                $arr["phone"] = $item->phone."";
-                $arr["email"] = $item->email;
-                $r = $client->request('POST', "http://209.58.165.15/api/v5/tracking/submitter", [
-                    'json' => $arr
-                ]);
-                //print_r($arr);
+
+                // validate submit_time
+
+                $submit_time = is_object($item->submit_time) ? $item->submit_time->timestamp : $import_time;
+                if($submit_time < strtotime("01/01/2010")
+                    || $submit_time > strtotime("01/01/2035") ){
+                    $submit_time = $import_time;
+                }
+
+                $phone = $this->format_phone($item->phone."");
+                if(!$phone) continue;
+
+                // validate email
+                $email = $item->email;
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $email = 'invalid@email.com';
+                }
+
+                $contact = new Contact();
+                $contact->msg_source = "import_data";
+                $contact->msg_type = "submitter";
+                $contact->submit_time = $submit_time * 1000;
+                $contact->source_name = $item->utm_source;
+                $contact->team_name = $item->utm_team;
+                $contact->marketer_name = $item->utm_agent;
+                $contact->utm_medium = $item->utm_medium;
+                $contact->campaign_name = $item->utm_campaign;
+                $contact->subcampaign_name = $item->utm_subcampaign;
+                $contact->ad_name = $item->utm_ad;
+                $contact->name = $item->fullname;
+                $contact->phone = $phone;
+                $contact->email = $email;
+                $contact->age = $item->age;
+                $contact->landing_page = $item->landing_page;
+                $contact->ad_link = $item->ad_link;
+                $contact->channel = $item->channel;
+                $contact->import_time = $import_time;
+                $contact->clevel = "c3b";
+
+                // validate phone
+                if(!$this->validate_phone($phone)){
+                    $contact->clevel = "c3a";
+                    $contact->invalid_reason = "invalid phone";
+                }
+
+                // Check duplicated
+                $submit_date = date('Y-m-d', $contact->submit_time/1000);
+                $startDate = strtotime($submit_date)*1000;
+                $endDate = strtotime("+1 day", strtotime($submit_date)) * 1000;
+
+                if(Contact::where('phone', $phone)->where('submit_time', '>=', $startDate)->where('submit_time', '<', $endDate)->exists()){
+                    $contact->clevel = "c3a";
+                    $contact->invalid_reason = "duplicated";
+                }
+                // Check age
+                if(is_numeric($item->age) && $item->age < 18){
+                    $contact->clevel = "c3a";
+                    $contact->invalid_reason = "invalid age";
+                }
+
+                // match ad_id
+                $uri_query = "utm_source={$item->utm_source}&utm_team={$item->utm_team}&utm_agent={$item->utm_agent}&utm_campaign={$item->utm_campaign}&utm_medium={$item->utm_medium}&utm_subcampaign={$item->utm_subcampaign}&utm_ad={$item->utm_ad}";
+                $ad = Ad::where('uri_query', $uri_query)->first();
+                if($ad === null){
+                    $contact->ad_id = 'unknown';
+                }else{
+                    $contact->ad_id = $ad->_id;
+                    $contact->source_id = $ad->source_id;
+                    $contact->team_id = $ad->team_id;
+                    $contact->marketer_id = $ad->creator_id;
+                    $contact->campaign_id = $ad->campaign_id;
+                    $contact-> subcampaign_id = $ad->subcampaign_id;
+                }
+
+                $contact->save();
+
+                // Update c3, c3b statistic in ad_results
+                $ad_result = AdResult::where('ad_id', $contact->ad_id)->where('date', date('Y-m-d', $contact->submit_time/1000))->first();
+                if($ad_result === null){
+                    $ad_result = new AdResult();
+                    $ad_result->ad_id = $contact->ad_id;
+                    $ad_result->date = date('Y-m-d', $contact->submit_time/1000);
+                    $ad_result->c3 = 1;
+                    $ad_result->c3b = ($contact->clevel === "c3a") ? 0 : 1;
+                    if($contact->ad_id !== 'unknown') $ad_result->creator_id = $ad->creator_id;
+                }else{
+                    $ad_result->c3 ++;
+                    $ad_result->c3b += ($contact->clevel === "c3a") ? 0 : 1;
+                }
+
+                $ad_result->save();
+
             }
 
         });
+        //DB::connection('mongodb')->getQueryLog();
+        session()->flash('message', 'Contacts have been imported successfully');
+        return redirect()->back();
     }
 
     public function getContactsSource()
@@ -293,6 +372,19 @@ class ContactController extends Controller
         );
         echo json_encode($data_return);
 
+    }
+
+    private function format_phone($phone)
+    {
+        $phone = preg_replace('/[^0-9]/', "", $phone);
+        $phone = trim($phone, '0');
+
+        return $phone;
+    }
+
+    private function validate_phone($phone){
+        if($phone) return true;
+        return false;
     }
 
 }

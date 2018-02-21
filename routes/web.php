@@ -83,7 +83,11 @@ Route::group(['prefix' => 'ajax'], function () {
     Route::get('/getTeamsCampaigns/{id}', 'AjaxController@getTeamsCampaigns')->name('ajax-getTeamsCampaigns');
     Route::get('/getCampaigns/{id}', 'AjaxController@getCampaigns')->name('ajax-getCampaigns');
     Route::get('/getSubcampaigns/{id}', 'AjaxController@getSubcampaigns')->name('ajax-getSubcampaigns');
-    Route::get('contactDetails/{id}', 'AjaxController@contactDetails')->name('contact-details');
+    Route::get('/contactDetails/{id}', 'AjaxController@contactDetails')->name('contact-details');
+    Route::get('/dashboard', 'AjaxController@dashboard')->name('ajax-dashboard');
+    Route::get('/c3_leaderboard', 'AjaxController@c3_leaderboard')->name('ajax-c3-leaderboard');
+    Route::get('/revenue_leaderboard', 'AjaxController@revenue_leaderboard')->name('ajax-revenue-leaderboard');
+    Route::get('/spent_leaderboard', 'AjaxController@spent_leaderboard')->name('ajax-spent-leaderboard');
 });
 
 Route::get('/test', 'Test@index')->name('test');
