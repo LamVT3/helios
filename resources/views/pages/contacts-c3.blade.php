@@ -79,7 +79,17 @@
                                     <i></i>
                                 </section>
                                 <section class="col col-2">
-                                    <label class="label">Current Level</label>
+                                    <label class="label">CLevel</label>
+                                    <select name="clevel" id="clevel" class="select2"
+                                            style="width: 280px">
+                                        <option value="all">All</option>
+                                        <option value="c3a">C3A</option>
+                                        <option value="c3b">C3B</option>
+                                    </select>
+                                    <i></i>
+                                </section>
+                                <section class="col col-2">
+                                    <label class="label">CRM Level</label>
                                     <select name="current_level" id="current_level" class="select2"
                                             style="width: 280px">
                                         <option value="all">All</option>
@@ -137,8 +147,10 @@
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Phone</th>
+                                        <th>Age</th>
                                         <th>Registered at</th>
-                                        <th>Current level</th>
+                                        <th>C Level</th>
+                                        <th>CRM level</th>
                                         <th>Marketer</th>
                                         <th>Campaign</th>
                                         <th>Subcampaign</th>
@@ -154,8 +166,10 @@
                                         </td>
                                         <td>{{ $item->email }}</td>
                                         <td>{{ $item->phone }}</td>
+                                        <td>{{ $item->age }}</td>
                                         <td>{{ Date('d-m-Y H:i:s', $item->submit_time/1000) }}</td>
-                                        <td>{{ $item->current_level or $item->clevel }}</td>
+                                        <td>{{ $item->clevel }}</td>
+                                        <td>{{ $item->current_level }}</td>
                                         <td>{{ $item->marketer_name or '-100' }}</td>
                                         <td>{{ $item->campaign_name or '-100' }}</td>
                                         <td>{{ $item->subcampaign_name or '-100' }}</td>

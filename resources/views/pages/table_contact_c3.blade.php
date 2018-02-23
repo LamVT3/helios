@@ -1,3 +1,4 @@
+{{ debug($contacts) }}
 <table id="table_contacts" class="table table-striped table-bordered table-hover"
        width="100%">
     <thead>
@@ -5,8 +6,10 @@
             <th>Name</th>
             <th>Email</th>
             <th>Phone</th>
+            <th>Age</th>
             <th>Registered at</th>
-            <th>Current level</th>
+            <th>C Level</th>
+            <th>CRM Level</th>
             <th>Marketer</th>
             <th>Campaign</th>
             <th>Subcampaign</th>
@@ -21,8 +24,10 @@
             <td><a href="javascript:void(0)" class="name" data-id="{{ $item->_id }}">{{ $item->name }}</a></td>
             <td>{{ $item->email }}</td>
             <td>{{ $item->phone }}</td>
+            <td>{{ $item->age }}</td>
             <td>{{ Date('d-m-Y H:i:s', $item->submit_time/1000) }}</td>
-            <td>{{ $item->current_level or $item->clevel }}</td>
+            <td>{{ $item->clevel }}</td>
+            <td>{{ $item->current_level }}</td>
             <td>{{ $item->marketer_name or '-100' }}</td>
             <td>{{ $item->campaign_name or '-100' }}</td>
             <td>{{ $item->subcampaign_name or '-100' }}</td>

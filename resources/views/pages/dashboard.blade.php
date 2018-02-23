@@ -37,14 +37,14 @@
                                 <div class="text text-align-right font-xl widget-actual">
                                     ...
                                 </div>
-                                <div class="text text-align-right font-sm widget-kpi">
+                                {{--<div class="text text-align-right font-sm widget-kpi">
                                     12,000
                                 </div>
                                 <ul class="links widget-progress">
                                     <div class="progress progress-sm">
                                         <div class="progress-bar bg-color-red" role="progressbar" style="width: 56%;vertical-align: top;line-height: unset;">56%</div>
                                     </div>
-                                </ul>
+                                </ul>--}}
                             </div>
                         </div>
 
@@ -64,14 +64,14 @@
                                 <div class="text text-align-right font-xl widget-actual">
                                     ...
                                 </div>
-                                <div class="text text-align-right font-sm widget-kpi">
+                                {{--<div class="text text-align-right font-sm widget-kpi">
                                     2.3
                                 </div>
                                 <ul class="links widget-progress">
                                     <div class="progress progress-sm">
                                         <div class="progress-bar bg-color-red" role="progressbar" style="width: 90%;vertical-align: top;line-height: unset;">90%</div>
                                     </div>
-                                </ul>
+                                </ul>--}}
                             </div>
                         </div>
 
@@ -92,14 +92,14 @@
                                 <div class="text text-align-right font-xl widget-actual">
                                     ...
                                 </div>
-                                <div class="text text-align-right font-sm widget-kpi">
+                                {{--<div class="text text-align-right font-sm widget-kpi">
                                     2,000
                                 </div>
                                 <ul class="links widget-progress">
                                     <div class="progress progress-sm">
                                         <div class="progress-bar bg-color-red" role="progressbar" style="width: 60%;vertical-align: top;line-height: unset;">60%</div>
                                     </div>
-                                </ul>
+                                </ul>--}}
                             </div>
                         </div>
 
@@ -115,19 +115,19 @@
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
                                     Actual / KPI
-                                    <span class="widget-unit">VND</span>
+                                    <span class="widget-unit">Baht</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
                                     ...
                                 </div>
-                                <div class="text text-align-right font-sm widget-kpi">
+                                {{--<div class="text text-align-right font-sm widget-kpi">
                                     2,000,000,000
                                 </div>
                                 <ul class="links widget-progress">
                                     <div class="progress progress-sm">
                                         <div class="progress-bar bg-color-red" role="progressbar" style="width: 60%;vertical-align: top;line-height: unset;">60%</div>
                                     </div>
-                                </ul>
+                                </ul>--}}
                             </div>
                         </div>
 
@@ -140,7 +140,7 @@
                     <article class="col-sm-12 col-md-12">
 
                     @component('components.jarviswidget',
-                    ['id' => 'chart', 'icon' => 'fa-line-chart', 'title' => "Chart"])
+                    ['id' => 'chart', 'icon' => 'fa-line-chart', 'title' => "Chart this month"])
                         <!-- widget content -->
                             <div class="widget-body no-padding">
 

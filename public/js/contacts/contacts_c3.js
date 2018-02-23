@@ -155,6 +155,7 @@ $(document).ready(function () {
         var team_id = $('select[name="team_id"]').val();
         var marketer_id = $('select[name="marketer_id"]').val();
         var campaign_id = $('select[name="campaign_id"]').val();
+        var clevel = $('select[name="clevel"]').val();
         var current_level = $('select[name="current_level"]').val();
         var registered_date = $('.registered_date').text();
         if (source_id == group) {
@@ -187,10 +188,17 @@ $(document).ready(function () {
         else {
             current_level = current_level;
         }
+        if (clevel == group) {
+            clevel = '';
+        }
+        else {
+            clevel = clevel;
+        }
         $('input[name="source_id"]').val(source_id);
         $('input[name="team_id"]').val(team_id);
         $('input[name="marketer_id"]').val(marketer_id);
         $('input[name="campaign_id"]').val(campaign_id);
+        $('input[name="clevel"]').val(clevel);
         $('input[name="current_level"]').val(current_level);
         $('input[name="registered_date"]').val(registered_date);
         // var url = "{!! route('contacts.filter') !!}";
@@ -203,6 +211,7 @@ $(document).ready(function () {
                 team_id: team_id,
                 marketer_id: marketer_id,
                 campaign_id: campaign_id,
+                clevel: clevel,
                 current_level: current_level,
                 registered_date: registered_date
             }

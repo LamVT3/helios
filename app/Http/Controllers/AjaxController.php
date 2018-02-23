@@ -240,7 +240,7 @@ class AjaxController extends Controller
                                     <th>#</th>
                                     <th>Name</th>
                                     <th>Rank</th>
-                                    <th>C3</th>
+                                    <th>Spent</th>
                                 </tr>
                             </thead>
                             <tbody>';

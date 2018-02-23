@@ -43,9 +43,9 @@
                     <li class="{{ $active == 'mktmanager-teams' ? 'active' : '' }}">
                         <a href="{{ route('team') }}"><i class="fa fa-lg fa-fw fa-group"></i> Teams</a>
                     </li>
-                    <li class="{{ $active == 'kpis' ? 'active' : '' }}">
+                    {{--<li class="{{ $active == 'kpis' ? 'active' : '' }}">
                         <a href="{{ route('kpis') }}"><i class="fa fa-lg fa-fw fa-bullseye"></i> Kpis</a>
-                    </li>
+                    </li>--}}
                 </ul>
             </li>
 
@@ -136,9 +136,9 @@
             @endpermission
 
             @permission('view-setting')--}}
-            <li class="{{ $active == 'settings' ? 'active' : '' }}">
+            {{--<li class="{{ $active == 'settings' ? 'active' : '' }}">
                 <a href="{{ route('dashboard') }}"><i class="fa fa-lg fa-fw fa-gear"></i> <span class="menu-item-parent">General settings</span></a>
-            </li>
+            </li>--}}
             {{--@endpermission--}}
         </ul>
     </nav>

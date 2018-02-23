@@ -83,7 +83,7 @@ class ContactController extends Controller
 
     }
 
-    public function getC3Data()
+    public function getC3Data($type = 'all')
     {
         $data_where = array();
         $request = request();
@@ -102,6 +102,10 @@ class ContactController extends Controller
         if ($request->current_level) {
             $data_where['current_level'] = $request->current_level;
         }
+        if ($request->clevel) {
+            $data_where['clevel'] = $request->clevel;
+        }
+
         // DB::connection( 'mongodb' )->enableQueryLog();
 
         $startDate = strtotime("midnight")*1000;
@@ -143,19 +147,22 @@ class ContactController extends Controller
                             $item->name,
                             $item->email,
                             $item->phone,
-                            Date('d-m-Y H:i:s', $item->submit_time/1000),
+                            $item->age,
+                            Date('Y-m-d H:i:s', $item->submit_time/1000),
                             $item->current_level,
                             $item->marketer_name,
                             $item->campaign_name,
                             $item->subcampaign_name,
                             $item->ad_name,
-                            $item->landingpage_name,
+                            $item->landing_page,
+                            $item->contact_id,
+                            $item->ads_link
                         );
                     }
                     $sheet->fromArray($datas, NULL, 'A1', FALSE, FALSE);
-                    $headings = array('STT', 'Name', 'Email', 'Phone', 'Registered at', 'Current level', 'Marketer', 'Campaign', 'Channel', 'Ads', 'Landing page');
+                    $headings = array('STT', 'Name', 'Email', 'Phone', 'Age', 'Time', 'Current level', 'Marketer', 'Campaign', 'Subcampaign', 'Ads', 'Landing page', 'ContactID', 'Link Tracking');
                     $sheet->prependRow(1, $headings);
-                    $sheet->cells('A1:K1', function ($cells) {
+                    $sheet->cells('A1:N1', function ($cells) {
                         $cells->setBackground('#191919');
                         $cells->setFontColor('#DBAC69');
                         $cells->setFontSize(12);
