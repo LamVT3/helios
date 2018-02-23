@@ -201,7 +201,7 @@ class ContactController extends Controller
                 }
 
                 $phone = $this->format_phone($item->phone."");
-                if(!$phone) continue;
+                if(!$this->validate_phone($phone)) continue;
 
                 // validate email
                 $email = $item->email;
@@ -210,7 +210,7 @@ class ContactController extends Controller
                 }
 
                 $contact = new Contact();
-                $contact->msg_source = "import_data";
+                $contact->contact_source = "import_data";
                 $contact->msg_type = "submitter";
                 $contact->submit_time = $submit_time * 1000;
                 $contact->source_name = $item->utm_source;
@@ -264,6 +264,7 @@ class ContactController extends Controller
                     $contact->campaign_id = $ad->campaign_id;
                     $contact-> subcampaign_id = $ad->subcampaign_id;
                 }
+                $contact->contact_id = $this->gen_contact_id($contact);
 
                 $contact->save();
 
@@ -385,6 +386,13 @@ class ContactController extends Controller
     private function validate_phone($phone){
         if($phone) return true;
         return false;
+    }
+
+    private function gen_contact_id($contact)
+    {
+        $submit_time = date('Ymd', $contact->submit_time/1000);
+        $phone = substr($contact->phone, -6);
+        return $submit_time.$phone.'TL';
     }
 
 }

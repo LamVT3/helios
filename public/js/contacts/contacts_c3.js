@@ -58,7 +58,7 @@ $(document).ready(function () {
             responsiveHelper_table_campaign.respond();
         },
         "order": [],
-        "iDisplayLength": 50
+        "iDisplayLength": 20
     });
 
 
@@ -235,7 +235,7 @@ $(document).ready(function () {
                     responsiveHelper_table_campaign.respond();
                 },
                 "order": [],
-                "iDisplayLength": 50
+                "iDisplayLength": 20
             });
         });
     });

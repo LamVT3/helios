@@ -2,6 +2,10 @@
        width="100%">
     <tbody>
     <tr>
+        <td>Type</td>
+        <td>{{ $contact->contact_source or 'Landing page' }}</td>
+    </tr>
+    <tr>
         <td>Name</td>
         <td>{{ $contact->name or '' }}</td>
     </tr>
@@ -14,15 +18,27 @@
         <td>{{ $contact->phone or '' }}</td>
     </tr>
     <tr>
+        <td>Age</td>
+        <td>{{ $contact->age or 'n/a' }}</td>
+    </tr>
+    <tr>
         <td>Marketer</td>
-        <td>{{ $contact->marketer or '-100' }}</td>
+        <td>{{ $contact->marketer_name or '-100' }}</td>
+    </tr>
+    <tr>
+        <td>Source</td>
+        <td>{{ $contact->source_name or '-100' }}</td>
+    </tr>
+    <tr>
+        <td>Team</td>
+        <td>{{ $contact->team_name or '-100' }}</td>
     </tr>
     <tr>
         <td>Campaign</td>
         <td>{{ $contact->campaign_name or '-100' }}</td>
     </tr>
     <tr>
-        <td>Channel</td>
+        <td>Subcampaign</td>
         <td>{{ $contact->subcampaign_name or '-100' }}</td>
     </tr>
     <tr>
@@ -41,10 +57,10 @@
         <td>Current Level</td>
         <td>{{ $contact->current_level or $contact->clevel }}</td>
     </tr>
-    <tr>
+    {{--<tr>
         <td>Is Transferred?</td>
         <td>{{ $contact->is_transferred ? "Transferred" : "n/a" }}</td>
-    </tr>
+    </tr>--}}
     <tr>
         <td>Is Valid</td>
         <td>{!!  $contact->clevel === "c3b" ? "<strong class='text-success'>Valid</strong>" : "<strong class='text-danger'>Invalid</strong>" !!}</td>
@@ -53,19 +69,23 @@
         <td>Invalid Reason</td>
         <td>{{ $contact->invalid_reason or '' }}</td>
     </tr>
-    <tr>
+    {{--<tr>
         <td>Is Returned</td>
         <td>{{ $contact->is_returned ? "Returned" : "No" }}</td>
     </tr>
     <tr>
         <td>Returned Reason</td>
         <td>{{ $contact->returned_reason or '' }}</td>
-    </tr>
+    </tr>--}}
     <tr>
         <td>Saleperson</td>
         <td>{{ $contact->sale_person or '' }}</td>
     </tr>
     <tr>
+        <td>Revenue</td>
+        <td>{{ $contact->revenue or 0 }}</td>
+    </tr>
+    {{--<tr>
         <td>L1 Date</td>
         <td>{{ $contact->l1_time or '' }}</td>
     </tr>
@@ -96,7 +116,7 @@
     <tr>
         <td>L8 Date</td>
         <td>{{ $contact->l8_time or '' }}</td>
-    </tr>
+    </tr>--}}
     <tr>
         <td>Browser</td>
         <td>{{ $contact->browser or '' }}</td>
