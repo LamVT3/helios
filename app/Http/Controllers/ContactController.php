@@ -83,7 +83,7 @@ class ContactController extends Controller
 
     }
 
-    public function getC3Data($type = 'all')
+    public function getC3Data()
     {
         $data_where = array();
         $request = request();

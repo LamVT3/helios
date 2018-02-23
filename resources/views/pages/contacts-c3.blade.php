@@ -122,6 +122,7 @@
                                 <input type="hidden" name="marketer_id">
                                 <input type="hidden" name="campaign_id">
                                 <input type="hidden" name="team_id">
+                                <input type="hidden" name="clevel">
                                 <input type="hidden" name="current_level">
                                 <input type="hidden" name="registered_date">
                                 <div style="position: absolute; right: 75px; bottom: 0px;">
