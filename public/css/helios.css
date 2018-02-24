@@ -228,3 +228,9 @@ table#table_contact_details td:last-child {
 .c3_leaderboard, .revenue_leaderboard, .spent_leaderboard{
     text-align: center;
 }
+
+#login-form header{
+    border-top: 1px dashed #ddd;
+    margin-bottom: 10px;
+    background-color: #eee;
+}

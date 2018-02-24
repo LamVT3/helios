@@ -95,3 +95,20 @@
     <!-- END MAIN PANEL -->
     <!-- ==========================CONTENT ENDS HERE ========================== -->
 @endsection
+
+@section('script')
+    <script type="text/javascript">
+        //var i = 3;
+        //while(i == 3){
+            i = getRandomInt(1, 3);
+        //}
+
+        var image = '{{ asset('img/bg') }}' + i + '.jpg';
+        $("html").css('background', 'url("' + image + '") #fff center');
+        $("html").css('background-size', 'cover');
+        $("body").css('background', 'transparent');
+        function getRandomInt (min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+    </script>
+@endsection
