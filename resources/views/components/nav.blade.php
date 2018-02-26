@@ -10,7 +10,7 @@
 					<a href="javascript:void(0);" id="show-shortcut" data-action="toggleShortcut">
 						<img src="{{ asset('img/avatars/male.png') }}" alt="me" class="online"/>
 						<span>
-							Blue
+							{{ auth()->user()->username }}
 						</span>
 						<i class="fa fa-angle-down"></i>
 					</a>
@@ -32,7 +32,6 @@
                 <a href="{{ route('dashboard') }}" title="Dashboard"><i class="fa fa-lg fa-fw fa-home"></i> <span
                             class="menu-item-parent">Dashboard</span></a>
             </li>
-
             <li class="{{ $active == 'mktmanager' ? 'active' : '' }}">
                 <a href="javascript:void(0)"><i class="fa fa-lg fa-fw fa-sitemap"></i> <span
                             class="menu-item-parent">MKT Manager</span></a>
@@ -48,7 +47,6 @@
                     </li>--}}
                 </ul>
             </li>
-
             <li class="{{ $active == 'adsmanager' ? 'active' : '' }}">
                 <a href="javascript:void(0)"><i class="fa fa-lg fa-fw fa-bullhorn"></i> <span
                             class="menu-item-parent">Ads Manager</span></a>
@@ -88,9 +86,11 @@
                     <li class="{{ $active == 'users' ? 'active' : '' }}">
                         <a href="{{ route('users') }}">List</a>
                     </li>
+                    @if(auth()->user()->role == "Manager")
                     <li class="{{ $active == 'users-create' ? 'active' : '' }}">
                         <a href="{{ route('users-create') }}">Add user</a>
                     </li>
+                    @endif
                     {{--<li class="{{ $active == 'users-roles' ? 'active' : '' }}">
                         <a href="{{ route('users-roles') }}">User roles</a>
                     </li>--}}

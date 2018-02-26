@@ -80,8 +80,8 @@ $(document).ready(function () {
                 source_id: source_id
             }
         }).done(function (response) {
-            $('#team_id').html(response.content_team);
-            $("#team_id").select2();
+            /*$('#team_id').html(response.content_team);
+            $("#team_id").select2();*/
             $('#campaign_id').html(response.content_campaign);
             $("#campaign_id").select2();
         });
@@ -90,11 +90,7 @@ $(document).ready(function () {
     $('#team_id').change(function (e) {
         var url = $('#team_id').attr('data-url');
         var team_id = $('select[name="team_id"]').val();
-        if (team_id == 'all') {
-            team_id = '';
-        } else {
-            team_id = team_id;
-        }
+
         $.ajax({
             url: url,
             type: 'GET',
@@ -109,6 +105,8 @@ $(document).ready(function () {
                 $("#source_id").select2();
                 $('#campaign_id').html(response.content_campaign);
                 $("#campaign_id").select2();
+                $('#marketer_id').html(response.content_marketer);
+                $("#marketer_id").select2();
             }
         });
     })
@@ -135,6 +133,8 @@ $(document).ready(function () {
                 $("#source_id").select2();
                 $('#team_id').html(response.content_team);
                 $("#team_id").select2();
+                $('#marketer_id').html(response.content_marketer);
+                $("#marketer_id").select2();
             }
         });
     })

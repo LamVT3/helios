@@ -7,8 +7,10 @@ use App\Campaign;
 use App\Contact;
 use App\Source;
 use App\Subcampaign;
+use App\Team;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AjaxController extends Controller
 {
@@ -53,6 +55,111 @@ class AjaxController extends Controller
         return view('components.contact-details', compact(
             'contact'
         ));
+    }
+
+    public function getFilterSource()
+    {
+        $data_where = array();
+        $request = request();
+        if ($request->source_id) {
+            $data_where['source_id'] = $request->source_id;
+        }
+
+        $campaigns = Campaign::where($data_where)->get();
+        $html_campaign = '<option value=\'all\' selected>All</option>';
+        foreach ($campaigns as $item) {
+            $html_campaign .= "<option value=" . $item->id . "> " . $item->name . " </option>";
+        }
+
+        $teams = Team::where($data_where)->get();
+        $html_team = '<option value=\'all\' selected>All</option>';
+        foreach ($teams as $item) {
+            $html_team .= "<option value=" . $item->id . "> " . $item->name . " </option>";
+        }
+
+        $data_return = array(
+            'status'           => TRUE,
+            'content_team'     => $html_team,
+            'content_campaign' => $html_campaign
+        );
+        echo json_encode($data_return);
+
+    }
+
+    public function getFilterTeam()
+    {
+        $data_where = array();
+        $request = request();
+        DB::connection( 'mongodb' )->enableQueryLog();
+
+        $html_source = "<option value='all'>All</option>";
+        $html_campaign = "<option value='all'>All</option>";
+        $html_marketer = "<option value='all'>All</option>";
+
+        if ($request->team_id === 'all') {
+            $campaigns = Campaign::all();
+            $sources = Source::all();
+            $marketers = User::all();
+            foreach ($sources as $item) {
+                $html_source .= "<option value='" . $item->_id . "'> " . $item->name . " </option>";
+            }
+        }else{
+            $data_where['team_id'] = $request->team_id;
+            $team = Team::find($request->team_id);
+            $campaigns = Campaign::where($data_where)->get();
+            $sources = $team->sources;
+            $marketers = $team->members;
+            foreach ($sources as $item) {
+                $html_source .= "<option value='" . $item['source_id'] . "'> " . $item['source_name'] . " </option>";
+            }
+        }
+
+        foreach ($campaigns as $item) {
+            $html_campaign .= "<option value=" . $item->id . "> " . $item->name . " </option>";
+        }
+        foreach ($marketers as $item) {
+            $html_marketer .= "<option value='" . $item['user_id'] . "'> " . $item['username'] . " </option>";
+        }
+        DB::connection('mongodb')->getQueryLog();
+        $data_return = array(
+            'status'           => TRUE,
+            'content_source'   => $html_source,
+            'content_campaign' => $html_campaign,
+            'content_marketer' => $html_marketer
+        );
+        echo json_encode($data_return);
+
+    }
+
+    public function getFilterCampaign()
+    {
+        $request = request();
+
+        $campaign = Campaign::find($request->campaign_id);
+        $sources = Source::all();
+        $teams = Team::all();
+        $marketers = User::all();
+        $html_source = '<option value=\'all\'>All</option>';
+        $html_team = '<option value=\'all\'>All</option>';
+        $html_marketer = '<option value=\'all\'>All</option>';
+        foreach ($sources as $item) {
+            $html_source .= "<option value='" . $item->id . "' " . ($campaign && $item->id == $campaign->source_id ? "selected" : '') . "> " . $item->name . " </option>";
+        }
+        foreach ($teams as $item) {
+            $html_team .= "<option value='" . $item->id . "' " . ($campaign && $item->id == $campaign->team_id ? "selected" : '') . "> " . $item->name . " </option>";
+        }
+        foreach ($marketers as $item) {
+            $html_marketer .= "<option value='" . $item->_id . "' " . ($campaign && $item->_id == $campaign->creator_id ? "selected" : '') . "> " . $item->username . " </option>";
+        }
+
+        $data_return = array(
+            'status'         => TRUE,
+            'content_source' => $html_source,
+            'content_team'   => $html_team,
+            'content_marketer'   => $html_marketer
+        );
+        echo json_encode($data_return);
+
     }
 
     public function dashboard()

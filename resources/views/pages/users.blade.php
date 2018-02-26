@@ -54,18 +54,15 @@
                                             <td>{{ $item->email }}</td>
                                             <td>{{ $item->created_at->toFormattedDateString() }}</td>
                                             <td>
-                                                {{--@permission('edit-user')--}}
+                                                @if(auth()->user()->role == "Manager")
                                                 <a class='btn btn-xs btn-default'
                                                    href="{{ route('users-edit', ['id' => $item->id]) }}"
                                                    data-original-title='Edit Row'><i
                                                             class='fa fa-pencil'></i></a>
-                                                {{--<a data-toggle="modal" class='btn btn-xs btn-default'
-                                                   data-target="#deleteModal"
-                                                   data-item-name="{{ $item->name }}"
-                                                   data-item-id="{{ $item->id }}"
-                                                   data-original-title='Delete Row'><i
-                                                            class='fa fa-times'></i></a>--}}
-                                                {{--@endpermission--}}
+                                                @endif
+                                                <a class="name btn btn-default btn-xs"
+                                                   href="{{ route('profile-user', $item->username) }}" target="_blank"><i
+                                                            class='fa fa-eye'></i></a>
                                             </td>
                                         </tr>
                                     @endforeach

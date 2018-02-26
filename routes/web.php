@@ -62,9 +62,6 @@ Route::group(['prefix' => 'contacts'], function () {
     Route::get('/', 'ContactController@index')->name('contacts-c3');
     Route::get('filter', 'ContactController@getC3')->name('contacts.filter');
     Route::get('export', 'ContactController@export')->name('contacts.export');
-    Route::get('getContactsSource', 'ContactController@getContactsSource')->name('contacts.getContactsSource');
-    Route::get('getContactsTeam', 'ContactController@getContactsTeam')->name('contacts.getContactsTeam');
-    Route::get('getContactsCampaings', 'ContactController@getContactsCampaings')->name('contacts.getContactsCampaings');
     Route::post('import', 'ContactController@import')->name('contacts.import');
 });
 
@@ -88,6 +85,9 @@ Route::group(['prefix' => 'ajax'], function () {
     Route::get('/c3_leaderboard', 'AjaxController@c3_leaderboard')->name('ajax-c3-leaderboard');
     Route::get('/revenue_leaderboard', 'AjaxController@revenue_leaderboard')->name('ajax-revenue-leaderboard');
     Route::get('/spent_leaderboard', 'AjaxController@spent_leaderboard')->name('ajax-spent-leaderboard');
+    Route::get('getFilterSource', 'AjaxController@getFilterSource')->name('ajax-getFilterSource');
+    Route::get('getFilterTeam', 'AjaxController@getFilterTeam')->name('ajax-getFilterTeam');
+    Route::get('getFilterCampaign', 'AjaxController@getFilterCampaign')->name('ajax-getFilterCampaign');
 });
 
 Route::get('/test', 'Test@index')->name('test');

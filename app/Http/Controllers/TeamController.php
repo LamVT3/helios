@@ -54,7 +54,7 @@ class TeamController extends Controller
 
     public function store()
     {
-        /*if (!\Entrust::can('edit-review')) return view('errors.403');*/
+        if(auth()->user()->role !== "Manager") return view('errors.403');
         $this->validate(request(), [
             'name' => 'required|alpha_dash',
             'description' => 'required'
@@ -129,6 +129,13 @@ class TeamController extends Controller
 
         foreach($members as $item){
             $m = User::find($item);
+            if($m->team_id != $team->id) {
+                $t = Team::find($m->team_id);
+                $mb = $t->members;
+                unset($mb[$m->id]);
+                $t->members = $mb;
+                $t->save();
+            }
             $m->team_id = $team->id;
             $m->team_name = $team->name;
             $m->save();

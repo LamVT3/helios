@@ -55,7 +55,7 @@
                                         <th>Link tracking</th>
                                         <th>Creator</th>
                                         <th>Created at</th>
-                                        <th>Active?</th>
+                                        {{--<th>Active?</th>--}}
                                         <th>Action</th>
                                     </tr>
                                     </thead>
@@ -71,12 +71,12 @@
                                             <td>{{ $item->landing_page_name }}</td>
                                             <td>
                                                 <a class="copy btn btn-default btn-xs" data-id="{{ $item->id }}" href="javascript:void(0)"> <i class='fa fa-copy'></i></a>
-                                                <a id="url-{{ $item->id }}" href="{{ $item->shorten_url }}">{{ $item->shorten_url }}</a>
+                                                <a id="url-{{ $item->id }}" href="{{ $item->shorten_url }}" target="_blank">{{ $item->shorten_url }}</a>
                                             </td>
-                                            <td>{{ $item->tracking_link }}</td>
+                                            <td><a href="{{ $item->tracking_link }}" target="_blank">{{ $item->tracking_link }}</a></td>
                                             <td>{{ $item->creator_name }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
-                                            <td>{{ $item->is_active ? "Yes" : 'No' }}</td>
+                                            {{--<td>{{ $item->is_active ? "Yes" : 'No' }}</td>--}}
                                             <td>
                                                 {{--@permission('edit-review')--}}
                                                 {{--<a data-toggle="modal" class='btn btn-xs btn-default'

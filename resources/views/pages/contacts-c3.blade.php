@@ -40,7 +40,7 @@
                                 <section class="col col-2">
                                     <label class="label">Source</label>
                                     <select name="source_id" class="select2" style="width: 280px" id="source_id"
-                                            data-url="{!! route('contacts.getContactsSource') !!}">
+                                            data-url="{!! route('ajax-getFilterSource') !!}">
                                         <option value="all">All</option>
                                         @foreach($sources as $item)
                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -50,7 +50,8 @@
                                 </section>
                                 <section class="col col-2">
                                     <label class="label">Team</label>
-                                    <select name="team_id" class="select2" style="width: 280px" id="team_id" data-url="{!! route('contacts.getContactsTeam') !!}">
+                                    <select name="team_id" class="select2" style="width: 280px" id="team_id"
+                                            data-url="{!! route('ajax-getFilterTeam') !!}">
                                         <option value="all">All</option>
                                         @foreach($teams as $item)
                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -70,7 +71,8 @@
                                 </section>
                                 <section class="col col-2">
                                     <label class="label">Campaign</label>
-                                    <select name="campaign_id" id="campaign_id" class="select2" style="width: 280px" data-url ="{!! route('contacts.getContactsCampaings') !!}">
+                                    <select name="campaign_id" id="campaign_id" class="select2" style="width: 280px"
+                                            data-url="{!! route('ajax-getFilterCampaign') !!}">
                                         <option value="all">All</option>
                                         @foreach($campaigns as $item)
                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -279,9 +281,13 @@
     $(document).ready(function(){
         $('.container-table-contacts').on('click', '.name', (function(){
             var id = $(this).data('id');
+            var loading = '<p class="text-center">' +
+                '                        <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 5%;"/>' +
+                '                </p>';
+            $('#contactModal .modal-body').html(loading);
+            $('#contactModal').modal('show');
             $.get("{{ route('contact-details', '') }}/" + id, function (data) {
                 $('#contactModal .modal-body').html(data);
-                $('#contactModal').modal('show');
             }).fail(
                 function (err) {
                     alert('Cannot connect to server. Please try again later.');

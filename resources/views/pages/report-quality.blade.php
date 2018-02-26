@@ -20,17 +20,6 @@
 
                 <article class="col-sm-12 col-md-12">
 
-                    {{--@component('components.jarviswidget',
-                    ['id' => 1, 'icon' => 'fa-info', 'title' => 'Campaign'])
-                    <div class="widget-body">
-                        <b>Campaign Name:</b> {{ $campaign->name }} <br>
-                        <b>Campaign Code:</b> {{ $campaign->code }} <br>
-                        <b>Campaign Description:</b> {{ $campaign->description }} <br>
-                        <b>Creator:</b> {{ $campaign->creator }} <br>
-                        <b>Created at:</b> {{ $campaign->created_at->toDateTimeString() }}
-                    </div>
-                    @endcomponent--}}
-
                     @component('components.jarviswidget',
                     ['id' => 1, 'icon' => 'fa-table', 'title' => 'Report'])
                     <div class="widget-body">
@@ -48,7 +37,7 @@
                                 <section class="col col-2">
                                     <label class="label">Source</label>
                                     <select name="source_id" class="select2" style="width: 280px" id="source_id" tabindex="1" autofocus
-                                            data-url="{!! route('contacts.getContactsSource') !!}">
+                                            data-url="{!! route('ajax-getFilterSource') !!}">
                                         <option value="all">All</option>
                                         @foreach($sources as $item)
                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -59,7 +48,7 @@
                                 <section class="col col-2">
                                     <label class="label">Team</label>
                                     <select name="team_id" class="select2" id="team_id" style="width: 280px" tabindex="2"
-                                            data-url="{!! route('contacts.getContactsTeam') !!}">
+                                            data-url="{!! route('ajax-getFilterTeam') !!}">
                                         <option value="all">All</option>
                                         @foreach($teams as $item)
                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -80,7 +69,7 @@
                                 <section class="col col-2">
                                     <label class="label">Campaign</label>
                                     <select name="campaign_id" id="campaign_id" class="select2" style="width: 280px" tabindex="4"
-                                            data-url="">
+                                            data-url="{!! route('ajax-getFilterCampaign') !!}">
                                         <option value="all">All</option>
                                         @foreach($campaigns as $item)
                                         <option value="{{ $item->id }}">{{ $item->name }}</option>

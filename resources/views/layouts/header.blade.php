@@ -48,7 +48,7 @@
         <ul id="mobile-profile-img" class="header-dropdown-list hidden-xs padding-5">
             <li class="">
                 <a href="#" class="dropdown-toggle no-margin userdropdown" data-toggle="dropdown">
-                    <img src="{{ asset('img/avatars/male.png') }}" alt="Blue" class="online"/>
+                    <img src="{{ asset('img/avatars/male.png') }}" alt="{{ auth()->user()->username }}" class="online"/>
                 </a>
                 <ul class="dropdown-menu pull-right">
                     <li>
@@ -56,11 +56,11 @@
                                     class="fa fa-user"></i> <u>P</u>rofile</a>
                     </li>
                     <li class="divider"></li>
-                    <li>
+                    {{--<li>
                         <a href="javascript:void(0);" class="padding-10 padding-top-0 padding-bottom-0"
                            data-action="toggleShortcut"><i class="fa fa-arrow-down"></i> <u>S</u>hortcut</a>
                     </li>
-                    <li class="divider"></li>
+                    <li class="divider"></li>--}}
                     <li>
                         <a href="javascript:void(0);" class="padding-10 padding-top-0 padding-bottom-0"
                            data-action="launchFullscreen"><i class="fa fa-arrows-alt"></i> Full <u>S</u>creen</a>

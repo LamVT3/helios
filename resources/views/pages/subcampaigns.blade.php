@@ -50,7 +50,7 @@
                                         <th>Campaign</th>
                                         <th>Creator</th>
                                         <th>Created at</th>
-                                        <th>Active?</th>
+                                        {{--<th>Active?</th>--}}
                                         <th>Action</th>
                                     </tr>
                                     </thead>
@@ -63,7 +63,7 @@
                                             <td>{{ $item->campaign_name }}</td>
                                             <td>{{ $item->creator_name }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
-                                            <td>{{ $item->is_active ? "Yes" : 'No' }}</td>
+                                            {{--<td>{{ $item->is_active ? "Yes" : 'No' }}</td>--}}
                                             <td>
                                                 {{--@permission('edit-review')--}}
                                                 {{--<a data-toggle="modal" class='btn btn-xs btn-default'

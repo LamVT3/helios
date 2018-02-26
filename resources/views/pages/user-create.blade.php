@@ -67,6 +67,16 @@
                                                 </label>
                                             </section>
                                             <section class="col-lg-12">
+                                                <label class="label">Role</label>
+                                                <label class="select">
+                                                    <select name="role">
+                                                        <option value="Marketer">Marketer</option>
+                                                        <option value="Manager">Manager</option>
+                                                    </select>
+                                                    <i></i>
+                                                </label>
+                                            </section>
+                                            <section class="col-lg-12">
                                                 <label class="label">Active?</label>
                                                 <div class="inline-group">
                                                     <label class="radio">

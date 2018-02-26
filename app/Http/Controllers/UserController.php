@@ -42,7 +42,7 @@ class UserController extends Controller
 
     public function create()
     {
-        // if (!\Entrust::can('edit-user')) return view('errors.403');
+        if(auth()->user()->role !== "Manager") return view('errors.403');
         $page_title = "Create User | Helios";
         $page_css = array();
         $no_main_header = FALSE;
@@ -61,30 +61,9 @@ class UserController extends Controller
         ));
     }
 
-    /*public function store()
-    {
-        $this->validate(request(), [
-            'name' => 'required',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|min:6|confirmed',
-        ]);
-
-        $user = new User();
-        $user->name = request('name');
-        $user->email = request('email');
-        $user->password = bcrypt(request('password'));
-        $user->save();
-
-        $user->attachRole(\request('role_id'));
-
-        session()->flash('message', 'User được tạo thành công');
-
-        return redirect()->route('users');
-    }*/
-
     public function edit($id)
     {
-        // if (!\Entrust::can('edit-user')) return view('errors.403');
+        if(auth()->user()->role !== "Manager") return view('errors.403');
         $page_title = "Edit User | Helios";
         $page_css = array();
         $no_main_header = FALSE;
@@ -107,7 +86,7 @@ class UserController extends Controller
 
     public function store()
     {
-        // if (!\Entrust::can('edit-user')) return view('errors.403');
+        if(auth()->user()->role !== "Manager") return view('errors.403');
         $validator = [
             'username' => 'required|alpha_dash|unique:users',
             'email' => 'required|email|max:255|unique:users'
@@ -130,6 +109,7 @@ class UserController extends Controller
         $user->username = request('username');
         $user->email = request('email');
         $user->rank = request('rank');
+        $user->role = request('role');
         $user->is_active = (int)request('is_active');
 
         if (request('password') || !request('id'))
@@ -145,95 +125,6 @@ class UserController extends Controller
             session()->flash('message', 'User has been edited successfully');
 
         return redirect()->route('users');
-    }
-
-    public function roles()
-    {
-        // if (!\Entrust::can('view-user')) return view('errors.403');
-        $page_title = "User Roles List | Helios";
-        $page_css = array();
-        $no_main_header = FALSE;
-        $active = 'users-roles';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-user\"></i> Users <span>> User Roles List </span>";
-
-        $roles = Role::all();
-
-        return view('pages.user-roles', compact(
-            'no_main_header',
-            'page_title',
-            'page_css',
-            'active',
-            'breadcrumbs',
-            'roles'
-        ));
-    }
-
-    public function roleCreate()
-    {
-        // if (!\Entrust::can('edit-user')) return view('errors.403');
-        $page_title = "Create Role | Helios";
-        $page_css = array();
-        $no_main_header = FALSE;
-        $active = 'users-roles';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-user\"></i>Users <span>> Create Role </span>";
-
-        $perms = Permission::where('name', '!=', 'access-admin')->get();
-        return view('pages.user-role-edit', compact(
-            'no_main_header',
-            'page_title',
-            'page_css',
-            'active',
-            'breadcrumbs',
-            'perms'
-        ));
-    }
-
-    public function roleEdit($id)
-    {
-        // if (!\Entrust::can('edit-user')) return view('errors.403');
-        $page_title = "Edit Role | Helios";
-        $page_css = array();
-        $no_main_header = FALSE;
-        $active = 'users-roles';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-user\"></i>Users<span>> Edit Role </span>";
-
-        $role = Role::find($id);
-        $perms = Permission::where('name', '!=', 'access-admin')->get();
-
-        return view('pages.user-role-edit', compact(
-            'no_main_header',
-            'page_title',
-            'page_css',
-            'active',
-            'breadcrumbs',
-            'role',
-            'perms'
-        ));
-    }
-
-    public function roleStore()
-    {
-        // if (!\Entrust::can('edit-user')) return view('errors.403');
-        $this->validate(request(), [
-            'name' => 'required',
-        ]);
-
-        $role = !request('id') ? new Role() : Role::find(request('id'));
-        $role->name = request('name');
-        $role->display_name = request('display_name');
-        $role->description = request('description');
-        $role->save();
-
-        $perms = \request('perms');
-        if(!is_array($perms)) $perms = array();
-        $role->savePermissions($perms);
-
-        if (!request('id'))
-            session()->flash('message', 'Role has been created successfully');
-        else
-            session()->flash('message', 'Role has been edited successfully');
-
-        return redirect()->route('users-roles');
     }
 
     public function profile($username = null)

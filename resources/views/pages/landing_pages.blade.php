@@ -59,7 +59,7 @@
                                             <td>{{ $item->name }}</td>
                                             <td>{{ $item->platform }}</td>
                                             <td>{{ $item->description }}</td>
-                                            <td>{{ $item->url }}</td>
+                                            <td><a href="{{ $item->url }}" target="_blank">{{ $item->url }}</a></td>
                                             <td></td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
                                             <td>{{ $item->is_active ? "Yes" : 'No' }}</td>

@@ -5,8 +5,8 @@
         var errorElement = 'em';
 
         $.validator.addMethod( "alphanumeric", function( value, element ) {
-            return this.optional( element ) || /^\w+$/i.test( value );
-        }, "Letters, numbers, and underscores only please" );
+            return this.optional( element ) || /^[\w.]+$/i.test( value );
+        }, "Letters, numbers, dots and underscores only please" );
 
         $('#form-campaign').validate({
             errorClass: errorClass,

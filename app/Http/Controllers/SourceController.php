@@ -35,7 +35,7 @@ class SourceController extends Controller
 
     public function store()
     {
-        /*if (!\Entrust::can('edit-review')) return view('errors.403');*/
+        if(auth()->user()->role !== "Manager") return view('errors.403');
         $this->validate(request(), [
             'name' => 'required|alpha_dash',
             'description' => 'required'

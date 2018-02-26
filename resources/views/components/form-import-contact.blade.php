@@ -18,6 +18,11 @@
 
                         </div>
                     </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            Sample Files: <a href="{{ asset('sample/import_contacts.xlsx') }}" target="_blank">import_contact.xlsx</a>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">

@@ -8,10 +8,12 @@
         <div id="content">
 
             @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
+                @if(auth()->user()->role == "Manager")
                 <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
                    data-toggle="modal"
                    data-target="#addModal"><i
                             class="fa fa-plus fa-lg"></i> Create Source</a>
+                @endif
             @endcomponent
 
             @include('layouts.errors')
@@ -54,12 +56,13 @@
                                             <td>{{ $item->creator_name or '' }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
                                             <td>
-                                                {{--@permission('edit-review')--}}
+                                                @if(auth()->user()->role == "Manager")
                                                 <a data-toggle="modal" class='btn btn-xs btn-default'
                                                    data-target="#addModal"
                                                    data-item-id="{{ $item->id }}"
                                                    data-original-title='Edit Row'><i
                                                             class='fa fa-pencil'></i></a>
+                                                @endif
                                                 {{--<a data-toggle="modal" class='btn btn-xs btn-default'
                                                    data-target="#createTeamModal"
                                                    data-item-id="{{ $item->id }}"

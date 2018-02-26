@@ -140,23 +140,32 @@
                     <article class="col-sm-12 col-md-12">
 
                     @component('components.jarviswidget',
-                    ['id' => 'chart', 'icon' => 'fa-line-chart', 'title' => "Chart this month"])
+                    ['id' => 'chart', 'icon' => 'fa-line-chart', 'title' => "C3 this month"])
                         <!-- widget content -->
                             <div class="widget-body no-padding">
 
                                 <div class="widget-body-toolbar bg-color-white smart-form" id="rev-toggles">
 
-                                    <div class="inline-group">
-
-                                        <label for="gra-1" class="checkbox" style="color: #ff0c00; font-weight: bold">
-                                            <input type="checkbox" name="gra-1" id="gra-1" checked="checked">
-                                            <i></i> C3 </label>
-                                        <label for="gra-2" class="checkbox" style="color: #00c01a; font-weight: bold">
-                                            <input type="checkbox" name="gra-2" id="gra-2" checked="checked">
-                                            <i></i> L8 </label>
-                                    </div>
                                 </div>
-                                    <div id="site-stats" class="chart has-legend"></div>
+                                    <div id="site-stats-c3" class="chart has-legend"></div>
+                            </div>
+                        @endcomponent
+                    </article>
+
+                </div>
+
+                <div class="row">
+                    <article class="col-sm-12 col-md-12">
+
+                    @component('components.jarviswidget',
+                    ['id' => 'chart', 'icon' => 'fa-line-chart', 'title' => "L8 this month"])
+                        <!-- widget content -->
+                            <div class="widget-body no-padding">
+
+                                <div class="widget-body-toolbar bg-color-white smart-form">
+
+                                </div>
+                                <div id="site-stats-l8" class="chart has-legend"></div>
                             </div>
                         @endcomponent
                     </article>
@@ -312,14 +321,11 @@
             var $chrt_mono = "#000";
             /* site stats chart */
 
-            if ($("#site-stats").length) {
+            if ($("#site-stats-c3").length) {
 
-                var plot = $.plot($("#site-stats"), [{
+                var plot = $.plot($("#site-stats-c3"), [{
                     data : {{ $dashboard["chart_c3"] }},
                     label : "C3"
-                },{
-                    data : {{ $dashboard["chart_l8"] }},
-                    label : "L8"
                 }], {
                     series : {
                         lines : {
@@ -367,6 +373,63 @@
                         }
                     },
                     colors : [$chrt_main,$chrt_third],
+                });
+
+            }
+            /* end site stats */
+
+            if ($("#site-stats-l8").length) {
+
+                var plot = $.plot($("#site-stats-l8"), [{
+                    data : {{ $dashboard["chart_l8"] }},
+                    label : "L8"
+                }], {
+                    series : {
+                        lines : {
+                            show : true,
+                            lineWidth : 1,
+                            fill : true,
+                            fillColor : {
+                                colors : [{
+                                    opacity : 0.1
+                                }, {
+                                    opacity : 0.15
+                                }]
+                            }
+                        },
+                        points : {
+                            show : true
+                        },
+                        shadowSize : 0
+                    },
+                    xaxis : {
+                        mode: "time",
+                        timeformat: "%d/%m",
+                        ticks : 14
+                    },
+
+                    yaxes : [{
+                        ticks : 10,
+                        min : 0,
+                    }],
+                    grid : {
+                        hoverable : true,
+                        clickable : true,
+                        tickColor : $chrt_border_color,
+                        borderWidth : 0,
+                        borderColor : $chrt_border_color,
+                    },
+                    tooltip : true,
+                    tooltipOpts : {
+                        content : "<b>%y L8</b> (%x)",
+                        dateFormat : "%d/%m/%Y",
+                        defaultTheme : false,
+                        shifts: {
+                            x: -50,
+                            y: 20
+                        }
+                    },
+                    colors : [$chrt_second],
                 });
 
             }
