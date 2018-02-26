@@ -352,7 +352,7 @@ class AjaxController extends Controller
                                     <th>#</th>
                                     <th>Name</th>
                                     <th>Rank</th>
-                                    <th>Spent</th>
+                                    <th>Spent (USD)</th>
                                 </tr>
                             </thead>
                             <tbody>';

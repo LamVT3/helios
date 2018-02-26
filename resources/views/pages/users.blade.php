@@ -8,11 +8,11 @@
         <div id="content">
 
             @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
-                {{--@permission('edit-user')--}}
+                @if(auth()->user()->role == "Manager")
                 <a href="{{ route('users-create') }}"
                    class="btn btn-success btn-lg pull-right header-btn hidden-mobile"><i
                             class="fa fa-plus fa-lg"></i> Create User</a>
-                {{--@endpermission--}}
+                @endif
             @endcomponent
 
         @include('layouts.errors')
