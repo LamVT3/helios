@@ -133,6 +133,7 @@ class ReportController extends Controller
     {
         // Conversion rate from 1 USD to VND
         $rate = 22000;
+        $usd_thb = 31.3;
 
         $request = request();
         $source_name = $team_name = $campaign_name = $marketer_name = 'All';
@@ -239,7 +240,7 @@ class ReportController extends Controller
             $item->c3_c2 = $item->c2 ? round($item->c3 / $item->c2, 4) * 100 : '0';
             $item->l3_l1 = $item->l1 ? round($item->l3 / $item->l1, 4) * 100 : '0';
             $item->l8_l1 = $item->l1 ? round($item->l8 / $item->l1, 4) * 100 : '0';
-            $item->me_re = $item->revenue ? round($item->spent / $item->revenue, 4) * 100 : '0';
+            $item->me_re = $item->revenue ? round($item->spent * $usd_thb / $item->revenue, 4) * 100 : '0';
             $report[$key] = $item;
         }
 

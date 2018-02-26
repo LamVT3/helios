@@ -59,7 +59,7 @@
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
                                     Actual / KPI
-                                    <span class="widget-unit">USD</span>
+                                    <span class="widget-unit">VND</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
                                     ...

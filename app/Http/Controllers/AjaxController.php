@@ -164,6 +164,7 @@ class AjaxController extends Controller
 
     public function dashboard()
     {
+        $rate = 22000;
         $request = request();
         /* phan dashboard*/
         $startDate = $request->startDate ? date('Y-m-d', strtotime($request->startDate)) : Date('Y-m-d');
@@ -173,9 +174,12 @@ class AjaxController extends Controller
             ->where('date', '<=', $endDate);
 
         $dashboard['c3'] = $query_dashboard->sum('c3');
-        $dashboard['c3_cost'] = $query_dashboard->sum('c3_cost');
         $dashboard['spent'] = $query_dashboard->sum('spent');
         $dashboard['revenue'] = $query_dashboard->sum('revenue');
+        $dashboard['c3_cost'] = $dashboard['c3'] ? round($dashboard['spent'] * $rate / $dashboard['c3'], 2) : '0';
+
+        $dashboard['c3'] = number_format((int)$query_dashboard->sum('c3'));
+        $dashboard['revenue'] = number_format($query_dashboard->sum('revenue'));
         /* end Dashboard */
 
         return response()->json(['type' => 'success', 'dashboard' => $dashboard]);

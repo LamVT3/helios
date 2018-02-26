@@ -23,7 +23,7 @@
             <th>L3/L1 (%)</th>
             <th>L8/L1 (%)</th>
             <th class="long">Spent (USD)</th>
-            <th class="long">Revenue (USD)</th>
+            <th class="long">Revenue (THB)</th>
             <th>ME/RE (%)</th>
         </tr>
     </thead>

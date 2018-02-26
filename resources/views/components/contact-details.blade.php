@@ -83,7 +83,7 @@
     </tr>
     <tr>
         <td>Revenue</td>
-        <td>{{ $contact->revenue or 0 }}</td>
+        <td>{{ $contact->revenue or 0 }} baths</td>
     </tr>
     {{--<tr>
         <td>L1 Date</td>
