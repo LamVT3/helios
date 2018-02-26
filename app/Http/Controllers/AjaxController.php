@@ -178,6 +178,7 @@ class AjaxController extends Controller
         $dashboard['revenue'] = $query_dashboard->sum('revenue');
         $dashboard['c3_cost'] = $dashboard['c3'] ? round($dashboard['spent'] * $rate / $dashboard['c3'], 2) : '0';
 
+        $dashboard['c3_cost'] = number_format($dashboard['c3_cost']);
         $dashboard['c3'] = number_format((int)$query_dashboard->sum('c3'));
         $dashboard['revenue'] = number_format($query_dashboard->sum('revenue'));
         /* end Dashboard */

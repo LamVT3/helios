@@ -10,6 +10,8 @@
             <th>Registered at</th>
             <th>C Level</th>
             <th>CRM Level</th>
+            <th>Source</th>
+            <th>Team</th>
             <th>Marketer</th>
             <th>Campaign</th>
             <th>Subcampaign</th>
@@ -28,6 +30,8 @@
             <td>{{ Date('d-m-Y H:i:s', $item->submit_time/1000) }}</td>
             <td>{{ $item->clevel }}</td>
             <td>{{ $item->current_level }}</td>
+            <td>{{ $item->source_name or '-100' }}</td>
+            <td>{{ $item->team_name or '-100' }}</td>
             <td>{{ $item->marketer_name or '-100' }}</td>
             <td>{{ $item->campaign_name or '-100' }}</td>
             <td>{{ $item->subcampaign_name or '-100' }}</td>
