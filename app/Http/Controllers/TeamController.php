@@ -25,7 +25,7 @@ class TeamController extends Controller
         $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i>Ad Mananger <span>> Teams </span>";
         //DB::connection( 'mongodb' )->enableQueryLog();
 
-        $teams = Team::all();
+        $teams = Team::orderBy('created_at', 'desc')->get();
 
         $allSources = Source::all();
         $sources = '';
@@ -131,10 +131,12 @@ class TeamController extends Controller
             $m = User::find($item);
             if($m->team_id != $team->id) {
                 $t = Team::find($m->team_id);
-                $mb = $t->members;
-                unset($mb[$m->id]);
-                $t->members = $mb;
-                $t->save();
+                if(isset($t->members)){
+                    $mb = $t->members;
+                    unset($mb[$m->id]);
+                    $t->members = $mb;
+                    $t->save();
+                }
             }
             $m->team_id = $team->id;
             $m->team_name = $team->name;

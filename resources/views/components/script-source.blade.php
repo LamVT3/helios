@@ -104,8 +104,9 @@
         })
 
         $('#form-source').submit(function (e) {
-            //console.log('run');
+
             e.preventDefault();
+
             var data = {};
             data.source_id = $(this).find('[name=source_id]').val();
             data.name = $(this).find('[name=name]').val();
@@ -118,6 +119,9 @@
                 $('#form-source-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
                 return false;
             }*/
+
+            var btn = $(this).find('[type=submit]');
+            btn.attr('disabled', 'disabled');
             $.post($(this).attr('action'), data, function (data) {
                 if(data.type && data.type == 'success'){
                     /*$('#form-review').find("input, textarea").val("");
@@ -126,53 +130,15 @@
                     $('#meaning').html('');*/
                     location.href = data.url;
                 }else{
+                    btn.removeAttr('disabled');
                     $('#form-source-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
                 }
             }).fail(
                 function (err) {
                     console.log(err);
+                    btn.removeAttr('disabled');
                     $('#form-source-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
             });
-        })
-
-        $('#createTeamModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget) // Button that triggered the modal
-            var itemId = button.data('item-id');
-            var modal = $(this);
-            modal.find('select[name=source]').val(itemId);
-            modal.find('textarea[name=description]').val('');
-            modal.find('input[name=name]').val('');
-            var members = modal.find('input[name=members]').selectize();
-            members[0].selectize.setValue([]);
-        })
-
-        $('#form-team').submit(function (e) {
-            //console.log('run');
-            e.preventDefault();
-            var data = {};
-            data.source = $(this).find('[name=source]').val();
-            data.name = $(this).find('[name=name]').val();
-            data.description = $(this).find('[name=description]').val();
-            data.members = $(this).find('[name=members]').val();
-            data._token = $(this).find('[name=_token]').val();
-
-            if(!$(this).valid()) return false;
-
-            /*if(!data.name || !data.description){
-                $('#form-team-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
-                return false;
-            }*/
-            $.post($(this).attr('action'), data, function (data) {
-                if(data.type && data.type == 'success'){
-                    location.href = data.url;
-                }else{
-                    $('#form-team-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
-                }
-            }).fail(
-                function (err) {
-                    console.log(err);
-                    $('#form-team-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
-                });
         })
 
     })

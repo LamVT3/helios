@@ -28,7 +28,7 @@ class CampaignController extends Controller
 
         $user = auth()->user();
 
-        $campaigns = Campaign::where('creator_id', $user->id)->get();
+        $campaigns = Campaign::where('creator_id', $user->id)->orderBy('created_at', 'desc')->get();
         $team = Team::find($user->team_id);
 
         $landing_pages = LandingPage::where('is_active', 1)->get();

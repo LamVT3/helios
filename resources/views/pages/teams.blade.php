@@ -151,7 +151,7 @@
             "drawCallback": function (oSettings) {
                 responsiveHelper_table_team.respond();
             },
-            "order": [[0, "desc"]]
+            "order": []
         });
 
 

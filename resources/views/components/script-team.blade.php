@@ -85,7 +85,6 @@
         })
 
         $('#form-team').submit(function (e) {
-            //console.log('run');
             e.preventDefault();
             var data = {};
             data.team_id = $(this).find('[name=team_id]').val();
@@ -101,6 +100,8 @@
                 $('#form-team-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
                 return false;
             }*/
+            var btn = $(this).find('[type=submit]');
+            btn.attr('disabled', 'disabled');
             $.post($(this).attr('action'), data, function (data) {
                 if(data.type && data.type == 'success'){
                     /*$('#form-review').find("input, textarea").val("");
@@ -109,11 +110,13 @@
                     $('#meaning').html('');*/
                     location.href = data.url;
                 }else{
+                    btn.removeAttr('disabled');
                     $('#form-team-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
                 }
             }).fail(
                 function (err) {
                     console.log(err);
+                    btn.removeAttr('disabled');
                     $('#form-team-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
             });
         })

@@ -258,6 +258,9 @@
                 return false;
             }
 
+            var btn = $(this).find('[type=submit]');
+            btn.attr('disabled', 'disabled');
+
             $('.loading').show();
 
             $.post($(this).attr('action'), data, function (data) {
@@ -268,12 +271,14 @@
                     $('#meaning').html('');*/
                     location.href = data.url;
                 }else{
+                    btn.removeAttr('disabled');
                     $('#form-campaign-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
                     $('.loading').hide();
                 }
             }).fail(
                 function (err) {
                     console.log(err);
+                    btn.removeAttr('disabled');
                     $('#form-campaign-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
                     $('.loading').hide();
             });

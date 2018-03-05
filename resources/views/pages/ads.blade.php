@@ -56,7 +56,7 @@
                                         <th>Creator</th>
                                         <th>Created at</th>
                                         {{--<th>Active?</th>--}}
-                                        <th>Action</th>
+                                        {{--<th>Action</th>--}}
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -77,7 +77,7 @@
                                             <td>{{ $item->creator_name }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
                                             {{--<td>{{ $item->is_active ? "Yes" : 'No' }}</td>--}}
-                                            <td>
+                                            {{--<td>--}}
                                                 {{--@permission('edit-review')--}}
                                                 {{--<a data-toggle="modal" class='btn btn-xs btn-default'
                                                    data-target="#addModal"
@@ -91,7 +91,7 @@
                                                    data-original-title='Delete Row'><i
                                                             class='fa fa-times'></i></a>--}}
                                                 {{--@endpermission--}}
-                                            </td>
+                                            {{--</td>--}}
                                         </tr>
                                     @endforeach
 
@@ -189,7 +189,7 @@
             "drawCallback": function (oSettings) {
                 responsiveHelper_table_subcampaign.respond();
             },
-            "order": [[0, "desc"]]
+            "order": []
         });
 
 

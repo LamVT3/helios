@@ -8,10 +8,10 @@
 
         <!-- Note: The activity badge color changes when clicked and resets the number to 0
         Suggestion: You may want to set a flag when this happens to tick off all checked messages / notifications -->
-        <span id="activity" data-booking="" data-support="" class="activity-dropdown"> <i class="fa fa-user"></i> <b class="badge bg-color-redLight"> 0 </b> </span>
+        {{--<span id="activity" data-booking="" data-support="" class="activity-dropdown"> <i class="fa fa-user"></i> <b class="badge bg-color-redLight"> 0 </b> </span>--}}
 
         <!-- AJAX-DROPDOWN : control this dropdown height, look and feel from the LESS variable file -->
-        <div class="ajax-dropdown">
+        {{--<div class="ajax-dropdown">
 
             <!-- the ID links are fetched via AJAX to the ajax container "ajax-notifications" -->
             <div class="btn-group btn-group-justified" data-toggle="buttons">
@@ -29,7 +29,7 @@
             <!-- end notification content -->
 
 
-        </div>
+        </div>--}}
         <!-- END AJAX-DROPDOWN -->
     </div>
 
@@ -48,7 +48,7 @@
         <ul id="mobile-profile-img" class="header-dropdown-list hidden-xs padding-5">
             <li class="">
                 <a href="#" class="dropdown-toggle no-margin userdropdown" data-toggle="dropdown">
-                    <img src="{{ asset('img/avatars/male.png') }}" alt="{{ auth()->user()->username }}" class="online"/>
+                    <img src="{{ asset('img/avatars/male.png') }}" alt="{{ auth()->user()->username or '' }}" class="online"/>
                 </a>
                 <ul class="dropdown-menu pull-right">
                     <li>

@@ -34,7 +34,7 @@ class SubcampaignController extends Controller
 
         $campaigns = Campaign::where(['creator_id' => $user->id])->get();
         $subcampaigns = Subcampaign::where('campaign_id', $campaign->id)->get();
-        $ads = Ad::where('subcampaign_id', $subcampaign->id)->get();
+        $ads = Ad::where('subcampaign_id', $subcampaign->id)->orderBy('created_at', 'desc')->get();
         $landing_pages = LandingPage::where('is_active', 1)->get();
 
         return view('pages.ads', compact(

@@ -141,7 +141,7 @@
             "drawCallback": function (oSettings) {
                 responsiveHelper_table_source.respond();
             },
-            "order": [[0, "desc"]]
+            "order": []
         });
 
 //        $('head').append('<link rel="stylesheet" href="{{ asset('js/plugin/selectize/css/selectize.bootstrap3.css') }}">');

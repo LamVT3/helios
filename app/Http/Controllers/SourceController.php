@@ -21,7 +21,7 @@ class SourceController extends Controller
         $active = 'mktmanager';
         $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager <span>> Sources</span>";
 
-        $sources = Source::all();
+        $sources = Source::orderBy('created_at', 'desc')->get();
 
         return view('pages.sources', compact(
             'page_title',
