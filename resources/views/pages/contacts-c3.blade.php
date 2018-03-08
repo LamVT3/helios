@@ -127,7 +127,7 @@
                                 <input type="hidden" name="clevel">
                                 <input type="hidden" name="current_level">
                                 <input type="hidden" name="registered_date">
-                                <div style="position: absolute; right: 75px; bottom: 0px;">
+                                <div style="position: absolute; right: 90px; bottom: 0px;">
                                     <button class="btn btn-success" type="submit"
                                             style=""> <i class="fa fa-download"></i> Export
                                     </button>
