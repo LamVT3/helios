@@ -132,8 +132,8 @@ class ReportController extends Controller
     private function prepare_report($results)
     {
         // Conversion rate from 1 USD to VND
-        $rate = 22000;
-        $usd_thb = 31.3;
+        $rate = env('USD_VND');
+        $usd_thb = env('USD_THB');
 
         $request = request();
         $source_name = $team_name = $campaign_name = $marketer_name = 'All';
@@ -235,6 +235,7 @@ class ReportController extends Controller
         foreach ($report as $key => $item) {
             $item->c1_cost = $item->c1 ? round($item->spent * $rate / $item->c1, 2) : '0';
             $item->c2_cost = $item->c2 ? round($item->spent * $rate / $item->c2, 2) : '0';
+            $item->c2_c1 = $item->c1 ? round($item->c2 / $item->c1, 4) * 100 : '0';
             $item->c3_cost = $item->c3 ? round($item->spent * $rate / $item->c3, 2) : '0';
             $item->c3b_cost = $item->c3b ? round($item->spent * $rate / $item->c3b, 2) : '0';
             $item->c3_c2 = $item->c2 ? round($item->c3 / $item->c2, 4) * 100 : '0';

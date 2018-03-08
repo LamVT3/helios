@@ -122,6 +122,7 @@
                                         <th class="long">C1 Cost (VND)</th>
                                         <th>C2</th>
                                         <th class="long">C2 Cost (VND)</th>
+                                        <th>C2/C1 (%)</th>
                                         <th>C3</th>
                                         <th class="long">C3 Cost (VND)</th>
                                         <th>C3B</th>
@@ -151,6 +152,7 @@
                                         <td>{{ number_format($item->c1_cost, 2) }}</td>
                                         <td>{{ number_format($item->c2) }}</td>
                                         <td>{{ number_format($item->c2_cost, 2) }}</td>
+                                        <td>{{ $item->c2_c1 }}</td>
                                         <td>{{ number_format($item->c3) }}</td>
                                         <td>{{ number_format($item->c3_cost, 2) }}</td>
                                         <td>{{ number_format($item->c3b) }}</td>

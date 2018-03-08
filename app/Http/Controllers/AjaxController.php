@@ -164,7 +164,7 @@ class AjaxController extends Controller
 
     public function dashboard()
     {
-        $rate = 22000;
+        $rate = env('USD_VND');
         $request = request();
         /* phan dashboard*/
         $startDate = $request->startDate ? date('Y-m-d', strtotime($request->startDate)) : Date('Y-m-d');
