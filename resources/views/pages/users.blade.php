@@ -9,9 +9,11 @@
 
             @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
                 @if(auth()->user()->role == "Manager")
+                <!-- 2018-04-04 lamvt change button color -->
                 <a href="{{ route('users-create') }}"
-                   class="btn btn-success btn-lg pull-right header-btn hidden-mobile"><i
+                   class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"><i
                             class="fa fa-plus fa-lg"></i> Create User</a>
+                <!-- end 2018-04-04 -->
                 @endif
             @endcomponent
 
