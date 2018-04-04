@@ -38,6 +38,9 @@
                                             Username
                                         </th>
                                         <th>Email</th>
+                                        <!-- 2018-04-04 lamvt add active column -->
+                                        <th>Active</th>
+                                        <!-- end 2018-04-04 -->
                                         <th data-hide="phone,tablet"><i
                                                     class="fa fa-fw fa-calendar txt-color-blue hidden-md hidden-sm hidden-xs"></i>
                                             Created at
@@ -52,6 +55,13 @@
                                             <td>{{ $item->id }}</td>
                                             <td><a href="{{ route('profile-user', $item->username) }}">{{ $item->username }}</a></td>
                                             <td>{{ $item->email }}</td>
+                                            <!-- 2018-04-04 lamvt add active column -->
+                                            @if($item->is_active == 1)
+                                                <td style="color: #00a300;">Acvtive</td>
+                                            @else
+                                                <td style="color: red;">In-Active</td>
+                                            @endif
+                                            <!-- end 2018-04-04 -->
                                             <td>{{ $item->created_at->toFormattedDateString() }}</td>
                                             <td>
                                                 @if(auth()->user()->role == "Manager")
@@ -90,7 +100,7 @@
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                                 &times;
                             </button>
-                            <h3 class="modal-title"> Bạn có chắc chắn xóa userr này?</h3>
+                            <h3 class="modal-title"> Bạn có chắc chắn xóa user này?</h3>
                         </div>
                         <div class="modal-footer">
                             <form method="post" action="{{ route('delete', ['model' => 'User']) }}">

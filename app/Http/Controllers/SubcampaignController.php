@@ -27,7 +27,9 @@ class SubcampaignController extends Controller
         $campaign = Campaign::findOrFail($subcampaign->campaign_id);
 
         $page_title = "Subcampaign: " . $subcampaign->name . " | Helios";
-        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager > Subcampaigns <span>> " . $subcampaign->name . "</span>";
+        // 2018-04-04 lamvt update title
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ads Manager > Subcampaigns <span>> " . $subcampaign->name . "</span>";
+        // end 2018-04-04
 
         $user = auth()->user();
         $team = Team::find($user->team_id);

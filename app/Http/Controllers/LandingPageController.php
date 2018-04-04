@@ -18,7 +18,9 @@ class LandingPageController extends Controller
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active = 'adsmanager-lp';
         $page_title = "Landing Pages | Helios";
-        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager <span>> Landing Pages</span>";
+        // 2018-04-04 lamvt update title
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ads Manager <span>> Landing Pages</span>";
+        // end 2018-04-04
 
         $landing_pages = LandingPage::all();
 

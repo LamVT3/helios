@@ -19,8 +19,10 @@ class SourceController extends Controller
         $page_css = array('selectize.default.css');
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active = 'mktmanager';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager <span>> Sources</span>";
-
+        // 2018-04-04 lamvt update title
+        $breadcrumbs = "<i class=\"fa-fw fa fa-sitemap\"></i> MKT Manager <span>> Sources</span>";
+        // end 2018-04-04
+        
         $sources = Source::orderBy('created_at', 'desc')->get();
 
         return view('pages.sources', compact(

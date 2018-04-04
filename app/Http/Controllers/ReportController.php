@@ -26,7 +26,9 @@ class ReportController extends Controller
         $page_css = array();
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active = 'report';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-child\"></i> Report <span>>Quality Report </span>";
+        // 2018-04-04 lamvt update title
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Quality Report </span>";
+        // end 2018-04-04
 
         // $ads = Ad::pluck('_id')->toArray();
 

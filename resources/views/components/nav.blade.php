@@ -37,7 +37,9 @@
                             class="menu-item-parent">MKT Manager</span></a>
                 <ul>
                     <li class="{{ $active == 'mktmanager' ? 'active' : '' }}">
-                        <a href="{{ route('source') }}"><i class="fa fa-lg fa-fw fa-sitemap"></i> Sources</a>
+                    <!-- 2018-04-04 lamvt update icon -->
+                        <a href="{{ route('source') }}"><i class="fa fa-lg fa-fw fa-list-alt"></i> Sources</a>
+                    <!-- end 2018-04-04 -->
                     </li>
                     <li class="{{ $active == 'mktmanager-teams' ? 'active' : '' }}">
                         <a href="{{ route('team') }}"><i class="fa fa-lg fa-fw fa-group"></i> Teams</a>
@@ -80,21 +82,23 @@
 
             {{--@permission('view-user')--}}
             <li class="{{ $active == 'users' ? 'active' : '' }}">
-                <a href="javascript:void(0)"><i class="fa fa-lg fa-fw fa-user"></i> <span
+                <!-- 2018-04-04 lamvt update icon -->
+                <a href="{{ route('users') }}"><i class="fa fa-lg fa-fw fa-user"></i> <span
                             class="menu-item-parent">Users</span></a>
-                <ul>
-                    <li class="{{ $active == 'users' ? 'active' : '' }}">
-                        <a href="{{ route('users') }}">List</a>
-                    </li>
-                    @if(auth()->user()->role == "Manager")
-                    <li class="{{ $active == 'users-create' ? 'active' : '' }}">
-                        <a href="{{ route('users-create') }}">Add user</a>
-                    </li>
-                    @endif
-                    {{--<li class="{{ $active == 'users-roles' ? 'active' : '' }}">
-                        <a href="{{ route('users-roles') }}">User roles</a>
-                    </li>--}}
-                </ul>
+                <!-- end 2018-04-04 -->
+                {{--<ul>--}}
+                    {{--<li class="{{ $active == 'users' ? 'active' : '' }}">--}}
+                        {{--<a href="{{ route('users') }}">List</a>--}}
+                    {{--</li>--}}
+                    {{--@if(auth()->user()->role == "Manager")--}}
+                    {{--<li class="{{ $active == 'users-create' ? 'active' : '' }}">--}}
+                        {{--<a href="{{ route('users-create') }}">Add user</a>--}}
+                    {{--</li>--}}
+                    {{--@endif--}}
+                    {{--<li class="{{ $active == 'users-roles' ? 'active' : '' }}">--}}
+                        {{--<a href="{{ route('users-roles') }}">User roles</a>--}}
+                    {{--</li>--}}
+                {{--</ul>--}}
             </li>
             {{--@endpermission
 

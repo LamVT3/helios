@@ -20,7 +20,9 @@ class KpiController extends Controller
         $page_css = array();
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active = 'kpis';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager <span>> Kpis</span>";
+        // 2018-04-04 lamvt update title
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ads Manager <span>> Kpis</span>";
+        // end 2018-04-04
 
         return view('pages.kpis', compact(
             'page_title',

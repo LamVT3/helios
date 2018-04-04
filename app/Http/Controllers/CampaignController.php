@@ -24,8 +24,9 @@ class CampaignController extends Controller
         $page_css = array('selectize.default.css');
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active = 'campaigns';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager <span>> Campaigns</span>";
-
+        // 2018-04-04 lamvt update title
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ads Manager <span>> Campaigns</span>";
+        // end 2018-04-04
         $user = auth()->user();
 
         $campaigns = Campaign::where('creator_id', $user->id)->orderBy('created_at', 'desc')->get();
@@ -58,8 +59,9 @@ class CampaignController extends Controller
         $campaign = Campaign::findOrFail($id);
 
         $page_title = "Campaign: " . $campaign->name . " | Helios";
-        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ad Manager > Campaigns <span>> " . $campaign->name . "</span>";
-
+        // 2018-04-04 lamvt update title
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ads Manager > Campaigns <span>> " . $campaign->name . "</span>";
+        // end 2018-04-04
         $user = auth()->user();
         $team = Team::find($user->team_id);
 

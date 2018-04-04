@@ -22,7 +22,10 @@ class TeamController extends Controller
         $page_css = array('selectize.default.css');
         $no_main_header = FALSE;
         $active = 'mktmanager-teams';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i>Ad Mananger <span>> Teams </span>";
+        // 2018-04-04 lamvt update title
+        $breadcrumbs = "<i class=\"fa-fw fa fa-sitemap\"></i> MKT Manager <span>> Teams </span>";
+        // end 2018-04-04
+
         //DB::connection( 'mongodb' )->enableQueryLog();
 
         $teams = Team::orderBy('created_at', 'desc')->get();

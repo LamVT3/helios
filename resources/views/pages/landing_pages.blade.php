@@ -35,9 +35,10 @@
                                 <b>Created at:</b> {{ $campaign->created_at->toDateTimeString() }}
                             </div>
                         @endcomponent--}}
-
+                        <!-- 2018-04-04 lamvt add landing page count -->
                         @component('components.jarviswidget',
-                                                    ['id' => 1, 'icon' => 'fa-table', 'title' => 'Landing Pages'])
+                                                    ['id' => 1, 'icon' => 'fa-table', 'title' => 'Landing Pages (' . $landing_pages->count() . ')'])
+                        <!-- end 2018-04-04 -->
                             <div class="widget-body no-padding">
                                 <table id="table_landing_pages" class="table table-striped table-bordered table-hover"
                                        width="100%">
