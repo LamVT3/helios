@@ -2,6 +2,9 @@ $(".select2").select2({
     placeholder: "Select a State",
     allowClear: true
 });
+
+var __row0 = $('#table_report tr#ad-total');
+
 $(document).ready(function () {
 
     var start = moment();
@@ -53,8 +56,22 @@ $(document).ready(function () {
         },
         "drawCallback": function (oSettings) {
             responsiveHelper_table_report.respond();
+            fixedTotalRow();
         },
-        "order": []
+        "order": [],
+        "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
+            if(iTotal - 1 == 0){
+                return "";
+            }
+            iStart = iStart - 1;
+            if(iStart == 0){
+                iStart = 1;
+            }
+            iEnd = iEnd - 1;
+            iTotal = iTotal - 1;
+            return "Showing " + iStart + " to " + iEnd + " of " + iTotal + " entries";
+        },
+        // "pageLength": 3,
     });
 
 
@@ -217,9 +234,36 @@ $(document).ready(function () {
                 },
                 "drawCallback": function (oSettings) {
                     responsiveHelper_table_report.respond();
+
+                    fixedTotalRow();
                 },
-                order: []
+                'order': [],
+                "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
+                    if(iTotal - 1 == 0){
+                        return "";
+                    }
+                    iStart = iStart - 1;
+                    if(iStart == 0){
+                        iStart = 1;
+                    }
+                    iEnd = iEnd - 1;
+                    iTotal = iTotal - 1;
+                    return "Showing " + iStart + " to " + iEnd + " of " + iTotal + " entries";
+                },
+                // "pageLength": 3,
             });
         });
     });
 });
+
+
+function fixedTotalRow () {
+
+    if ($('#table_report tbody tr').length != 1){
+        if($('#table_report tr#ad-total').length == 1){
+            __row0 = $('#table_report tr#ad-total').remove();
+        }
+
+        $('#table_report tbody tr:first').before(__row0);
+    }
+}
