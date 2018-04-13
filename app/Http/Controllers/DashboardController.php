@@ -54,9 +54,7 @@ class DashboardController extends Controller
                             '$sum' => '$c3'
                         ],
                         'l8' => [
-                            // 2018-04-13 LamVT [HEL-12] update "L8 this month" chart
-                            '$sum' => '$L8'
-                            // end 2018-04-13 LamVT [HEL-12] update "L8 this month" chart
+                            '$sum' => '$l8'
                         ]
                     ]
                 ]
