@@ -196,7 +196,9 @@ class AjaxController extends Controller
 
         if ($period === 'thisweek') {
             $startDate = date('Y-m-d', strtotime('Last Monday', time()));
-            $endDate = date('y-m-d', strtotime('Next Sunday', time()));
+            // 2018-04-13 LamVT [HEL-13] update "Leaderboard" in Dashboard
+            $endDate = date('Y-m-d', strtotime('Next Sunday', time()));
+            // end 2018-04-13 LamVT [HEL-13] update "Leaderboard" in Dashboard
         }
 
         if ($period === 'thismonth') {
