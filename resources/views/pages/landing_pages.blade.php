@@ -61,7 +61,7 @@
                                             <td>{{ $item->platform }}</td>
                                             <td>{{ $item->description }}</td>
                                             <td><a href="{{ $item->url }}" target="_blank">{{ $item->url }}</a></td>
-                                            <td></td>
+                                            <td>{{ $item->creator_name }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
                                             <td>{{ $item->is_active ? "Yes" : 'No' }}</td>
                                             <td>
