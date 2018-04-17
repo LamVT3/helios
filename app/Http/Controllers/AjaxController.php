@@ -376,4 +376,112 @@ class AjaxController extends Controller
 
         return $table;
     }
+
+    // 2018-04-17 [HEL-9] LamVT add dropdown for C3/L8 chart
+    public function getC3Chart(){
+
+        /*  phan date*/
+        $month  = request('month');
+        $year   = date('Y'); /* nam hien tai*/
+        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+        $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
+        $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+        /* end date */
+
+        /*  start Chart*/
+        $query_chart = AdResult::raw(function ($collection) use ($first_day_this_month, $last_day_this_month) {
+            return $collection->aggregate([
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                [
+                    '$group' => [
+                        '_id' => '$date',
+                        'c3' => [
+                            '$sum' => '$c3'
+                        ],
+                    ]
+                ]
+            ]);
+        });
+
+        $array_month = array();
+        for ($i = 1; $i <= $d; $i++) {
+            //$array_month[date($i)] = 0;
+            $timestamp = strtotime($year . "-" . $month . "-" . $i) * 1000;
+            $array_month[$i] = $timestamp;
+        }
+
+        $c3_array = array();
+
+        foreach ($query_chart as $item_result) {
+            $day = explode('-', $item_result['_id']);
+            $c3_array[(int)($day[2])] = $item_result['c3'];
+        }
+
+        /*  lay du lieu c3*/
+        $chart_c3 = array();
+        foreach ($array_month as $key => $timestamp) {
+            if (isset($c3_array[$key])) {
+                $chart_c3[] = [$timestamp, $c3_array[$key]];
+            } else {
+                $chart_c3[] = [$timestamp, 0];
+            }
+        }
+        $chart_c3 = json_encode($chart_c3);
+
+    return $chart_c3;
+    }
+
+    public function getL8Chart(){
+
+        /*  phan date*/
+        $month  = request('month');
+        $year   = date('Y'); /* nam hien tai*/
+        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+        $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
+        $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+
+        /*  start Chart*/
+        $query_chart = AdResult::raw(function ($collection) use ($first_day_this_month, $last_day_this_month) {
+            return $collection->aggregate([
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                [
+                    '$group' => [
+                        '_id' => '$date',
+                        'l8' => [
+                            '$sum' => '$l8'
+                        ]
+                    ]
+                ]
+            ]);
+        });
+
+        $array_month = array();
+        for ($i = 1; $i <= $d; $i++) {
+            //$array_month[date($i)] = 0;
+            $timestamp = strtotime($year . "-" . $month . "-" . $i) * 1000;
+            $array_month[$i] = $timestamp;
+        }
+
+        $l8_array = array();
+
+        foreach ($query_chart as $item_result) {
+            $day = explode('-', $item_result['_id']);
+            $l8_array[(int)($day[2])] = $item_result['l8'];
+        }
+
+        /* lay du lieu l8*/
+        $chart_l8 = array();
+        foreach ($array_month as $key => $timestamp) {
+            if (isset($l8_array[$key])) {
+                $chart_l8[] = [$timestamp, $l8_array[$key]];
+            } else {
+                $chart_l8[] = [$timestamp, 0];
+            }
+        }
+        $chart_l8 = json_encode($chart_l8);
+        /* end l8 */
+
+        return $chart_l8;
+    }
+    // end 2018-04-17 [HEL-9] LamVT add dropdown for C3/L8 chart
 }

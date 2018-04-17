@@ -140,7 +140,7 @@
                     <article class="col-sm-12 col-md-12">
 
                     @component('components.jarviswidget',
-                    ['id' => 'chart', 'icon' => 'fa-line-chart', 'title' => "C3 this month"])
+                    ['id' => 'c3_chart', 'icon' => 'fa-line-chart', 'title' => "C3 in " , 'dropdown' => "true"])
                         <!-- widget content -->
                             <div class="widget-body no-padding">
 
@@ -158,7 +158,7 @@
                     <article class="col-sm-12 col-md-12">
 
                     @component('components.jarviswidget',
-                    ['id' => 'chart', 'icon' => 'fa-line-chart', 'title' => "L8 this month"])
+                    ['id' => 'l8_chart', 'icon' => 'fa-line-chart', 'title' => "L8 in ", 'dropdown' => 'true'])
                         <!-- widget content -->
                             <div class="widget-body no-padding">
 
@@ -279,6 +279,25 @@
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
 
     <script type="text/javascript">
+
+        // 2018-04-17 LamVT [HEL-9] add dropdown for C3/L8 chart
+        /* chart colors default */
+        var $chrt_border_color = "#efefef";
+        var $chrt_grid_color = "#DDD";
+        var $chrt_main = "#E24913";
+        /* red       */
+        var $chrt_second = "#6595b4";
+        /* blue      */
+        var $chrt_third = "#00c01a";
+        /* orange    */
+        var $chrt_fourth = "#7e9d3a";
+        /* green     */
+        var $chrt_fifth = "#BD362F";
+        /* dark red  */
+        var $chrt_mono = "#000";
+        /* site stats chart */
+        // end 2018-04-17 LamVT [HEL-9] add dropdown for C3/L8 chart
+
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
         $(document).ready(function () {
 
@@ -302,24 +321,8 @@
                 },
 
 
-            }, cb);
+            },cb);
             cb(start, end);
-
-            /* chart colors default */
-            var $chrt_border_color = "#efefef";
-            var $chrt_grid_color = "#DDD";
-            var $chrt_main = "#E24913";
-            /* red       */
-            var $chrt_second = "#6595b4";
-            /* blue      */
-            var $chrt_third = "#00c01a";
-            /* orange    */
-            var $chrt_fourth = "#7e9d3a";
-            /* green     */
-            var $chrt_fifth = "#BD362F";
-            /* dark red  */
-            var $chrt_mono = "#000";
-            /* site stats chart */
 
             if ($("#site-stats-c3").length) {
 
@@ -505,5 +508,162 @@
                 });
         }
 
+        // 2018-04-17 LamVT [HEL-9] add dropdown for C3/L8 chart
+        function get_c3_chart(month) {
+
+            if(month < 10){
+                month = "0" + month.toString();
+            }
+            else {
+                month = month.toString();
+            }
+
+            $.get("{{ route('ajax-getC3Chart') }}", {month: month}, function (data) {
+                var obj = jQuery.parseJSON(data);
+                set_c3_chart(obj);
+            }).fail(
+                function (err) {
+                    alert('Cannot connect to server. Please try again later.');
+                });
+        }
+
+        function set_c3_chart(data) {
+            if ($("#site-stats-c3").length) {
+
+                var plot = $.plot($("#site-stats-c3"), [{
+                    data : data,
+                    label : "C3"
+                }], {
+                    series : {
+                        lines : {
+                            show : true,
+                            lineWidth : 1,
+                            fill : true,
+                            fillColor : {
+                                colors : [{
+                                    opacity : 0.1
+                                }, {
+                                    opacity : 0.15
+                                }]
+                            }
+                        },
+                        points : {
+                            show : true
+                        },
+                        shadowSize : 0
+                    },
+                    xaxis : {
+                        mode: "time",
+                        timeformat: "%d/%m",
+                        ticks : 14
+                    },
+
+                    yaxes : [{
+                        ticks : 10,
+                        min : 0,
+                    }],
+                    grid : {
+                        hoverable : true,
+                        clickable : true,
+                        tickColor : $chrt_border_color,
+                        borderWidth : 0,
+                        borderColor : $chrt_border_color,
+                    },
+                    tooltip : true,
+                    tooltipOpts : {
+                        content : "<b>%y C3</b> (%x)",
+                        dateFormat : "%d/%m/%Y",
+                        defaultTheme : false,
+                        shifts: {
+                            x: -50,
+                            y: 20
+                        }
+                    },
+                    colors : [$chrt_main,$chrt_third],
+                });
+
+            }
+            /* end site stats */
+        }
+
+        function get_l8_chart(month) {
+
+            if(month < 10){
+                month = "0" + month.toString();
+            }
+            else {
+                month = month.toString();
+            }
+
+            $.get("{{ route('ajax-getL8Chart') }}", {month: month}, function (data) {
+                var obj = jQuery.parseJSON(data);
+                set_l8_chart(obj);
+            }).fail(
+                function (err) {
+                    alert('Cannot connect to server. Please try again later.');
+                });
+        }
+
+        function set_l8_chart(data) {
+            if ($("#site-stats-l8").length) {
+
+                var plot = $.plot($("#site-stats-l8"), [{
+                    data : data,
+                    label : "L8"
+                }], {
+                    series : {
+                        lines : {
+                            show : true,
+                            lineWidth : 1,
+                            fill : true,
+                            fillColor : {
+                                colors : [{
+                                    opacity : 0.1
+                                }, {
+                                    opacity : 0.15
+                                }]
+                            }
+                        },
+                        points : {
+                            show : true
+                        },
+                        shadowSize : 0
+                    },
+                    xaxis : {
+                        mode: "time",
+                        timeformat: "%d/%m",
+                        ticks : 14
+                    },
+
+                    yaxes : [{
+                        ticks : 10,
+                        min : 0,
+                    }],
+                    grid : {
+                        hoverable : true,
+                        clickable : true,
+                        tickColor : $chrt_border_color,
+                        borderWidth : 0,
+                        borderColor : $chrt_border_color,
+                    },
+                    tooltip : true,
+                    tooltipOpts : {
+                        content : "<b>%y L8</b> (%x)",
+                        dateFormat : "%d/%m/%Y",
+                        defaultTheme : false,
+                        shifts: {
+                            x: -50,
+                            y: 20
+                        }
+                    },
+                    colors : [$chrt_second],
+                });
+
+            }
+            /* end site stats */
+        }
+
     </script>
+    @include('components.script-jarviswidget')
 @endsection
+{{-- end 2018-04-17 LamVT [HEL-9] add dropdown for C3/L8 chart--}}

@@ -88,6 +88,8 @@ Route::group(['prefix' => 'ajax'], function () {
     Route::get('getFilterSource', 'AjaxController@getFilterSource')->name('ajax-getFilterSource');
     Route::get('getFilterTeam', 'AjaxController@getFilterTeam')->name('ajax-getFilterTeam');
     Route::get('getFilterCampaign', 'AjaxController@getFilterCampaign')->name('ajax-getFilterCampaign');
+    Route::get('/getC3Chart', 'AjaxController@getC3Chart')->name('ajax-getC3Chart');
+    Route::get('/getL8Chart', 'AjaxController@getL8Chart')->name('ajax-getL8Chart');
 });
 
 Route::get('/test', 'Test@index')->name('test');
