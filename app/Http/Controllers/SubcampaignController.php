@@ -21,14 +21,14 @@ class SubcampaignController extends Controller
     {
         $page_css = array('selectize.default.css');
         $no_main_header = FALSE; //set true for lock.php and login.php
-        $active = 'adsmanager';
+        $active = 'campaigns';
 
         $subcampaign = Subcampaign::findOrFail($id);
         $campaign = Campaign::findOrFail($subcampaign->campaign_id);
 
         $page_title = "Subcampaign: " . $subcampaign->name . " | Helios";
         // 2018-04-04 lamvt update title
-        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ads Manager > Subcampaigns <span>> " . $subcampaign->name . "</span>";
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ads Manager <span>> Campaigns > " . $campaign->name . " > " . $subcampaign->name . "</span>";
         // end 2018-04-04
 
         $user = auth()->user();
@@ -83,6 +83,7 @@ class SubcampaignController extends Controller
 
     public function get($id = 'all')
     {
+        $active = 'campaigns';
         if($id == 'all'){
             $subcampaign = Subcampaign::orderBy('name', 'asc')->limit(1000)->get();
         }else{

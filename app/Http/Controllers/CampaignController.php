@@ -51,7 +51,7 @@ class CampaignController extends Controller
     {
         $page_css = array('selectize.default.css');
         $no_main_header = FALSE; //set true for lock.php and login.php
-        $active = 'adsmanager';
+        $active = 'campaigns';
 
         if($id == 'all'){
 
@@ -60,7 +60,7 @@ class CampaignController extends Controller
 
         $page_title = "Campaign: " . $campaign->name . " | Helios";
         // 2018-04-04 lamvt update title
-        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ads Manager > Campaigns <span>> " . $campaign->name . "</span>";
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ads Manager <span>> Campaigns > " . $campaign->name . "</span>";
         // end 2018-04-04
         $user = auth()->user();
         $team = Team::find($user->team_id);
