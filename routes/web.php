@@ -112,3 +112,10 @@ Route::group(['prefix' => 'profile'], function () {
 
 Route::post('{related}/{model}/delete', 'Controller@deleteRelated')->name('delete-related');
 Route::post('{model}/delete', 'Controller@delete')->name('delete');
+
+Route::group(['prefix' => 'config'], function () {
+
+    Route::get('/', 'ConfigController@index')->name('config');
+    Route::post('/create', 'ConfigController@store')->name('config-create');
+    Route::get('/get/{id}', 'ConfigController@get')->name('config-get');
+});

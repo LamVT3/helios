@@ -100,6 +100,10 @@
                     {{--</li>--}}
                 {{--</ul>--}}
             </li>
+            <li class="{{ $active == 'config' ? 'active' : '' }}">
+                <a href="{{ route('config') }}"><i class="fa fa-lg fa-fw fa-cog"></i> <span
+                            class="menu-item-parent">Config</span></a>
+            </li>
             {{--@endpermission
 
             @permission('view-report')
