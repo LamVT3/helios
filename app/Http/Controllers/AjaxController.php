@@ -9,11 +9,14 @@ use App\Source;
 use App\Subcampaign;
 use App\Team;
 use App\User;
+use App\Config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AjaxController extends Controller
 {
+    const UNKNOWN = 'unknown';
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -164,7 +167,11 @@ class AjaxController extends Controller
 
     public function dashboard()
     {
-        $rate = env('USD_VND');
+        // 2018-04-18 LamVT [HEL_9] Add more setting for VND/USD conversion
+        $config     = Config::getByKeys(['USD_VND', 'USD_THB']);
+        $rate       = $config['USD_VND'];
+        // end 2018-04-18 LamVT [HEL_9] Add more setting for VND/USD conversion
+
         $request = request();
         /* phan dashboard*/
         $startDate = $request->startDate ? date('Y-m-d', strtotime($request->startDate)) : Date('Y-m-d');
@@ -208,7 +215,7 @@ class AjaxController extends Controller
 
         $query = AdResult::raw(function ($collection) use ($startDate, $endDate) {
             return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate], 'creator_id' => ['$ne' => null]]],
+                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]],
                 [
                     '$group' => [
                         '_id' => '$creator_id',
@@ -235,8 +242,15 @@ class AjaxController extends Controller
 
         foreach ($query as $i => $item) {
             if($i > 4) break;
+            if(!$item->c3) continue;  // not show if c3 = 0
 
             $user = User::find($item->_id);
+            // 2018-04-18 LamVT update leaderboard
+            if(!$user){ // if not found user
+                $user['username']   = self::UNKNOWN;
+                $user['rank']       = self::UNKNOWN;
+            }
+            // end 2018-04-18 LamVT update leaderboard
             $no = $i+1;
             $table .= "<tr>
                                 <th>{$no}</th>
@@ -271,7 +285,7 @@ class AjaxController extends Controller
 
         $query = AdResult::raw(function ($collection) use ($startDate, $endDate) {
             return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate], 'creator_id' => ['$ne' => null]]],
+                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]],
                 [
                     '$group' => [
                         '_id' => '$creator_id',
@@ -298,8 +312,15 @@ class AjaxController extends Controller
 
         foreach ($query as $i => $item) {
             if($i > 4) break;
+            if(!$item->revenue) continue;
 
             $user = User::find($item->_id);
+            // 2018-04-18 LamVT update leaderboard
+            if(!$user){ // if not found user
+                $user['username']   = self::UNKNOWN;
+                $user['rank']       = self::UNKNOWN;
+            }
+            // end 2018-04-18 LamVT update leaderboard
             $no = $i+1;
             $table .= "<tr>
                                 <th>{$no}</th>
@@ -334,7 +355,7 @@ class AjaxController extends Controller
 
         $query = AdResult::raw(function ($collection) use ($startDate, $endDate) {
             return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate], 'creator_id' => ['$ne' => null]]],
+                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]],
                 [
                     '$group' => [
                         '_id' => '$creator_id',
@@ -361,8 +382,15 @@ class AjaxController extends Controller
 
         foreach ($query as $i => $item) {
             if($i > 4) break;
+            if(!$item->spent) continue;
 
             $user = User::find($item->_id);
+            // 2018-04-18 LamVT update leaderboard
+            if(!$user){ // if not found user
+                $user['username']   = self::UNKNOWN;
+                $user['rank']       = self::UNKNOWN;
+            }
+            // end 2018-04-18 LamVT update leaderboard
             $no = $i+1;
             $table .= "<tr>
                                 <th>{$no}</th>

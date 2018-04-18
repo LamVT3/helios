@@ -6,6 +6,7 @@ use App\Ad;
 use App\AdResult;
 use App\Campaign;
 use App\Channel;
+use App\Config;
 use App\Source;
 use App\Team;
 use App\User;
@@ -134,8 +135,11 @@ class ReportController extends Controller
     private function prepare_report($results)
     {
         // Conversion rate from 1 USD to VND
-        $rate = env('USD_VND');
-        $usd_thb = env('USD_THB');
+        // 2018-04-18 LamVT [HEL_9] Add more setting for VND/USD conversion
+        $config     = Config::getByKeys(['USD_VND', 'USD_THB']);
+        $rate       = $config['USD_VND'];
+        $usd_thb    = $config['USD_THB'];
+        // end 2018-04-18 LamVT [HEL_9] Add more setting for VND/USD conversion
 
         $request = request();
         $source_name = $team_name = $campaign_name = $marketer_name = 'All';

@@ -14,6 +14,10 @@ class ConfigController extends Controller
 
     public function index()
     {
+        if(auth()->user()->role != "Manager"){
+            return redirect()->route('dashboard');
+        }
+
         $page_css = array();
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active = 'config';
@@ -36,6 +40,10 @@ class ConfigController extends Controller
 
     public function store()
     {
+        if(auth()->user()->role != "Manager"){
+            return redirect()->route('dashboard');
+        }
+
         /*if (!\Entrust::can('edit-review')) return view('errors.403');*/
         $this->validate(request(), [
             'key'   => 'required',
@@ -65,6 +73,10 @@ class ConfigController extends Controller
 
     public function get($id)
     {
+        if(auth()->user()->role != "Manager"){
+            return redirect()->route('dashboard');
+        }
+
         $config = Config::find($id);
         if ($config) {
             return response()->json(['type' => 'success', 'config' => $config]);
