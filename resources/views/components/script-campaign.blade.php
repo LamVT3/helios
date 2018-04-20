@@ -14,10 +14,12 @@
             highlight: function (element) {
                 $(element).parent().removeClass('state-success').addClass("state-error");
                 $(element).removeClass('valid');
+                rm_success_style();
             },
             unhighlight: function (element) {
                 $(element).parent().removeClass("state-error").addClass('state-success');
                 $(element).addClass('valid');
+                rm_success_style();
             },
 
             // Rules for form validation
@@ -35,6 +37,15 @@
                 },
                 ad_name: {
                     required: true,
+                    alphanumeric: true
+                },
+                mol_link_tracking: {
+                    alphanumeric: true
+                },
+                source: {
+                    alphanumeric: true
+                },
+                landing_page: {
                     alphanumeric: true
                 }
             },
@@ -272,17 +283,23 @@
                     location.href = data.url;
                 }else{
                     btn.removeAttr('disabled');
-                    $('#form-campaign-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
+                    $('#form-campaign-alert').html('<div class="alert alert-danger"> Cannot connect to server. Please try again later. </div>');
                     $('.loading').hide();
                 }
             }).fail(
                 function (err) {
                     console.log(err);
                     btn.removeAttr('disabled');
-                    $('#form-campaign-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
+                    $('#form-campaign-alert').html('<div class="alert alert-danger"> Cannot connect to server. Please try again later. </div>');
                     $('.loading').hide();
             });
         })
+
+        function rm_success_style(){
+            $('#campaign-type').parent('label.state-success').removeClass('state-success');
+            $('#subcampaign-type').parent('label.state-success').removeClass('state-success');
+            $('#select-ad').parent('label.state-success').removeClass('state-success');
+        }
 
     })
 </script>

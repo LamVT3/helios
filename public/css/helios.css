@@ -234,3 +234,12 @@ table#table_contact_details td:last-child {
     margin-bottom: 10px;
     background-color: #eee;
 }
+
+.require_field:after {
+    content:" *";
+    color: red;
+}
+
+.col.col-8 {
+    padding: 0px;
+}

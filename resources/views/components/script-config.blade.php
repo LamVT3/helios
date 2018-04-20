@@ -42,6 +42,43 @@
             }
         })
 
+        var errorClass = 'invalid';
+        var errorElement = 'em';
+
+        $.validator.addMethod( "alphanumeric", function( value, element ) {
+            return this.optional( element ) || /^[\w.]+$/i.test( value );
+        }, "Letters, numbers, dots and underscores only please" );
+
+        $('#form-config').validate({
+            errorClass: errorClass,
+            errorElement: errorElement,
+            highlight: function (element) {
+                $(element).parent().removeClass('state-success').addClass("state-error");
+                $(element).removeClass('valid');
+            },
+            unhighlight: function (element) {
+                $(element).parent().removeClass("state-error").addClass('state-success');
+                $(element).addClass('valid');
+            },
+
+            // Rules for form validation
+            rules: {
+                key: {
+                    required: true,
+                    alphanumeric: true
+                },
+                value: {
+                    required: true,
+                    alphanumeric: true
+                },
+            },
+
+            // Do not change code below
+            errorPlacement: function (error, element) {
+                error.insertAfter(element.parent());
+            }
+        });
+
         $('#form-config').submit(function (e) {
             //console.log('run');
             e.preventDefault();
@@ -54,24 +91,18 @@
             data.active = $(this).find('[name=active]').val();
             data._token = $(this).find('[name=_token]').val();
 
-            if(!data.key || !data.value){
-                $('#form-config-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
-                return false;
-            }
+            if(!$(this).valid()) return false;
+
             $.post($(this).attr('action'), data, function (data) {
                 if(data.type && data.type == 'success'){
-                    /*$('#form-review').find("input, textarea").val("");
-                    $('#form-review-alert').html('<div class="alert alert-success">' + data.message + '</div>');
-                    $('.starrr').find('.glyphicon-star').removeClass('glyphicon-star').addClass('glyphicon-star-empty');
-                    $('#meaning').html('');*/
                     location.href = data.url;
                 }else{
-                    $('#form-config-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
+                    $('#form-config-alert').html('<div class="alert alert-danger"> Cannot connect to server. Please try again later. </div>');
                 }
             }).fail(
                 function (err) {
                     console.log(err);
-                    $('#form-config-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
+                    $('#form-config-alert').html('<div class="alert alert-danger"> Cannot connect to server. Please try again later. </div>');
             });
         })
     })

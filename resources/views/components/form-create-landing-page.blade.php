@@ -14,7 +14,7 @@
                         {{ csrf_field() }}
                         <div id="form-landing-page-alert"></div>
                         <section>
-                            <label class="label" for="name">Name</label>
+                            <label class="label require_field" for="name">Name</label>
                             <label class="input">
                                 <input type="text" name="name" id="name" class="form-control" placeholder="Landing page name..."/>
                             </label>
@@ -31,7 +31,7 @@
                             </label>
                         </section>
                         <section>
-                            <label class="label" for="url">Url</label>
+                            <label class="label require_field" for="url">Url</label>
                             <label class="input">
                                 <input type="text" name="url" id="url" class="form-control" placeholder="Landing page url..."/>
                             </label>

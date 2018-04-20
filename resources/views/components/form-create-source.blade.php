@@ -14,13 +14,13 @@
                         {{ csrf_field() }}
                         <div id="form-source-alert"></div>
                         <section>
-                            <label class="label" for="name">Source Name</label>
+                            <label class="label require_field" for="name">Source Name</label>
                             <label class="input">
                                 <input type="text" name="name" id="name" class="form-control" placeholder="Source name..."/>
                             </label>
                         </section>
                         <section>
-                            <label class="label" for="description">Source Description</label>
+                            <label class="label require_field" for="description">Source Description</label>
                             <label class="textarea">
                                 <textarea name="description" class="form-control" id="description" rows="3"
                                           placeholder="Source Description..."></textarea>

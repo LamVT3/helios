@@ -111,13 +111,13 @@
                     location.href = data.url;
                 }else{
                     btn.removeAttr('disabled');
-                    $('#form-team-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
+                    $('#form-team-alert').html('<div class="alert alert-danger"> Cannot connect to server. Please try again later. </div>');
                 }
             }).fail(
                 function (err) {
                     console.log(err);
                     btn.removeAttr('disabled');
-                    $('#form-team-alert').html('<div class="alert alert-danger"> You haven\'t filled in all required information </div>');
+                    $('#form-team-alert').html('<div class="alert alert-danger"> Cannot connect to server. Please try again later. </div>');
             });
         })
 

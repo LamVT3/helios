@@ -28,35 +28,35 @@
                                     <div class="row">
                                         <div class="smart-form col-lg-12">
                                             <section class="col-lg-12">
-                                                <label class="label">Username *</label>
+                                                <label class="label require_field">Username</label>
                                                 <label class="input">
                                                     <input type="text" name="username" required
                                                            value="{{ old('username') }}">
                                                 </label>
                                             </section>
                                             <section class="col-lg-12">
-                                                <label class="label">Email *</label>
+                                                <label class="label require_field">Email</label>
                                                 <label class="input">
                                                     <input type="text" name="email" required
                                                            value="{{ old('email') }}">
                                                 </label>
                                             </section>
                                             <section class="col-lg-12">
-                                                <label class="label">Password *</label>
+                                                <label class="label require_field">Password</label>
                                                 <label class="input">
                                                     <input type="password" name="password" required
                                                            value="">
                                                 </label>
                                             </section>
                                             <section class="col-lg-12">
-                                                <label class="label">Confirm Password *</label>
+                                                <label class="label require_field">Confirm Password</label>
                                                 <label class="input">
                                                     <input type="password" name="password_confirmation" required
                                                            value="">
                                                 </label>
                                             </section>
                                             <section class="col-lg-12">
-                                                <label class="label">Rank *</label>
+                                                <label class="label">Rank</label>
                                                 <label class="select">
                                                     <select name="rank">
                                                         @for($i = 1; $i <= 8; $i++ )

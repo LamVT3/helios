@@ -20,13 +20,13 @@
                             </label>
                         </section>
                         <section>
-                            <label class="label" for="key">Key</label>
+                            <label class="label require_field" for="key">Key</label>
                             <label class="input">
                                 <input type="text" name="key" id="key" class="form-control" placeholder="Config Key..."/>
                             </label>
                         </section>
                         <section>
-                            <label class="label" for="value">Value</label>
+                            <label class="label require_field" for="value">Value</label>
                             <label class="input">
                                 <input type="text" name="value" id="value" class="form-control" placeholder="Config Value..."/>
                             </label>

@@ -14,13 +14,13 @@
                         {{ csrf_field() }}
                         <div id="form-team-alert"></div>
                         <section>
-                            <label class="label" for="name">Team Name</label>
+                            <label class="label require_field" for="name">Team Name</label>
                             <label class="input">
                                 <input type="text" name="name" id="name" class="form-control" placeholder="Team name..."/>
                             </label>
                         </section>
                         <section>
-                            <label class="label" for="description">Team Description</label>
+                            <label class="label require_field" for="description">Team Description</label>
                             <label class="textarea">
                                 <textarea name="description" class="form-control" id="description" rows="3"
                                           placeholder="Team Description..."></textarea>

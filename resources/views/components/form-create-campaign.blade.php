@@ -20,13 +20,13 @@
                         <fieldset>
                             <div class="row" style="margin: 10px -15px">
                                 <section>
-                                    <strong class="col col-3">Team</strong>
-                                    <div class="col col-9">{{ auth()->user()->team_name }}</div>
+                                    <strong class="col col-4">Team</strong>
+                                    <div class="col col-8">{{ auth()->user()->team_name }}</div>
                                 </section>
                             </div>
                             <div class="row">
                                 <section>
-                                    <label class="label col col-3" for="source">Source</label>
+                                    <label class="label col col-4" for="source">Source</label>
                                     <label class="select col col-8">
                                         <select name="source" id="source">
                                             @foreach($team->sources as $item)
@@ -53,8 +53,8 @@
                             <div id="new-campaign">
                                 <div class="row">
                                     <section>
-                                        <label class="label col col-3" for="campaign_name">Campaign Name</label>
-                                        <label class="input col col-9">
+                                        <label class="label col col-4 require_field" for="campaign_name">Campaign Name</label>
+                                        <label class="input col col-8">
                                             <input type="text" name="campaign_name" id="campaign_name"
                                                    class="form-control"
                                                    placeholder="Enter a campaign name..."/>
@@ -65,8 +65,8 @@
                             <div id="old-campaign" style="display:none">
                                 <div class="row">
                                     <section>
-                                        <label class="label col col-3" for="campaign">Use existing</label>
-                                        <label class="col col-9">
+                                        <label class="label col col-4 require_field" for="campaign">Use existing</label>
+                                        <label class="col col-8">
                                             <input type="text" name="campaign" id="campaign" class=""
                                                    placeholder="Choose a campaign..."/>
                                         </label>
@@ -91,8 +91,8 @@
                             <div id="new-subcampaign" style="display:none">
                                 <div class="row">
                                     <section>
-                                        <label class="label col col-3" for="subcampaign_name">Subcampaign Name</label>
-                                        <label class="input col col-9">
+                                        <label class="label col col-4 require_field" for="subcampaign_name">Subcampaign Name</label>
+                                        <label class="input col col-8">
                                             <input type="text" name="subcampaign_name" id="subcampaign_name"
                                                    class="form-control"
                                                    placeholder="Enter a subcampaign name..."/>
@@ -103,17 +103,12 @@
                             <div id="old-subcampaign" style="display:none">
                                 <div class="row">
                                     <section>
-                                        <label class="label col col-3" for="subcampaign">Use existing</label>
-                                        <label class="col col-9">
+                                        <label class="label col col-4 require_field" for="subcampaign">Use existing</label>
+                                        <label class="col col-8">
                                             <input type="text" name="subcampaign" id="subcampaign" class=""
                                                    placeholder="Choose a subcampaign..."/>
                                         </label>
                                     </section>
-                                </div>
-                                <div class="row">
-                                    <strong class="text-right col col-3">Description</strong>
-                                    <div class="col col-9 subc-desc">
-                                    </div>
                                 </div>
                             </div>
                         </fieldset>
@@ -133,8 +128,8 @@
                             <div id="new-ad" style="display:none">
                                 <div class="row">
                                     <section>
-                                        <label class="label col col-3" for="ad_name">Ad Name</label>
-                                        <label class="input col col-9">
+                                        <label class="label col col-4 require_field" for="ad_name">Ad Name</label>
+                                        <label class="input col col-8">
                                             <input type="text" name="ad_name" id="ad_name" class="form-control"
                                                    placeholder="Enter an ad name..."/>
                                         </label>
@@ -142,8 +137,8 @@
                                 </div>
                                 <div class="row">
                                     <section>
-                                        <label class="label col col-3" for="medium">Medium</label>
-                                        <label class="input col col-9">
+                                        <label class="label col col-4" for="medium">Medium</label>
+                                        <label class="input col col-8">
                                             <input type="text" name="medium" id="medium" class="form-control"
                                                    placeholder="Enter a medium. Ex: Conversion"/>
                                         </label>
@@ -151,17 +146,17 @@
                                 </div>
                                 <div class="row">
                                     <section>
-                                        <label class="label col col-3" for="mol-link-tracking">MOL link tracking</label>
-                                        <label class="input col col-9">
-                                            <input type="text" name="mol_link_tracking" id="mol_link_tracking" class="form-control" required
+                                        <label class="label col col-4" for="mol-link-tracking">MOL link tracking</label>
+                                        <label class="input col col-8">
+                                            <input type="text" name="mol_link_tracking" id="mol_link_tracking" class="form-control"
                                                    placeholder="Ex: id_landingpage=265&code_chanel=BR16_Salary_Englishinyourlife&id_campaign=16&id=25094"/>
                                         </label>
                                     </section>
                                 </div>
                                 <div class="row">
                                     <section>
-                                        <label class="label col col-3" for="landing_page">Landing Page</label>
-                                        <label class="select col col-9">
+                                        <label class="label col col-4" for="landing_page">Landing Page</label>
+                                        <label class="select col col-8">
                                             <select name="landing_page" id="landing_page">
                                                 @foreach ($landing_pages as $item)
                                                     <option value="{{ $item->id }}">{{ $item->url }}</option>
