@@ -17,7 +17,25 @@
     -->
     <header>
         <span class="widget-icon"> <i class="fa {{ $icon }}"></i> </span>
-        <h2> {{ $title }} </h2>
+        {{-- 2018-04-17 [HEL-9] LamVT add dropdown for C3/L8 chart --}}
+        <h2 id="{{ $id }}"> {{ $title }} </h2>
+        @if (isset($dropdown) && $dropdown == "true")
+            <div class="widget-toolbar" role="menu">
+                <div class="btn-group open">
+                    <button id="dropdown" class="btn dropdown-toggle btn-xs btn-warning" data-toggle="dropdown">
+                        Dropdown <i class="fa fa-caret-down"></i>
+                    </button>
+                    <ul class="dropdown-menu pull-right">
+                        @for ($i = 1; $i <= 12; $i++)
+                            <li id="month" value="{{$i}}">
+                                <a href="javascript:void(0);">{{date('F - Y', strtotime('2018-'.$i))}}</a>
+                            </li>
+                        @endfor
+                    </ul>
+                </div>
+            </div>
+        @endif
+        {{-- end 2018-04-17 [HEL-9] LamVT add dropdown for C3/L8 chart --}}
     </header>
 
     <!-- widget div-->
