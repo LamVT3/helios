@@ -8,6 +8,10 @@
             return this.optional( element ) || /^[\w.]+$/i.test( value );
         }, "Letters, numbers, dots and underscores only please" );
 
+        $.validator.addMethod( "mol_tracking", function( value, element ) {
+            return this.optional( element ) || /^[\w.\&\=]+$/i.test( value );
+        }, "Alphanumeric, underscores, ampersand(&) and equal(=) only please" );
+
         $('#form-campaign').validate({
             errorClass: errorClass,
             errorElement: errorElement,
@@ -40,7 +44,7 @@
                     alphanumeric: true
                 },
                 mol_link_tracking: {
-                    alphanumeric: true
+                    mol_tracking: true
                 },
                 source: {
                     alphanumeric: true

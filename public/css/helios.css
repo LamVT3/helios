@@ -196,6 +196,11 @@ fieldset:first-of-type {
     background-color: rgba(255, 247, 0, 0.31);
 }
 
+#table_ads td{
+    max-width: 300px;
+    word-wrap: break-word;
+}
+
 .table-profile {
     margin-top: 20px;
 }
@@ -242,4 +247,9 @@ table#table_contact_details td:last-child {
 
 .col.col-8 {
     padding: 0px;
+}
+
+.show_more, .show_less{
+    margin-left: 10px;
+    display: none;
 }

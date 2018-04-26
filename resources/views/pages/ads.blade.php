@@ -53,6 +53,7 @@
                                         <th>Landing Page</th>
                                         <th>Shorten URL</th>
                                         <th>Link tracking</th>
+                                        <th>MOL Tracking</th>
                                         <th>Creator</th>
                                         <th>Created at</th>
                                         {{--<th>Active?</th>--}}
@@ -73,7 +74,12 @@
                                                 <a class="copy btn btn-default btn-xs" data-id="{{ $item->id }}" href="javascript:void(0)"> <i class='fa fa-copy'></i></a>
                                                 <a id="url-{{ $item->id }}" href="{{ $item->shorten_url }}" target="_blank">{{ $item->shorten_url }}</a>
                                             </td>
-                                            <td><a href="{{ $item->tracking_link }}" target="_blank">{{ $item->tracking_link }}</a></td>
+                                            <td id="tracking_link">
+                                                <a id="tracking_link" href="{{ $item->tracking_link }}" target="_blank">{{ $item->tracking_link }}</a>
+                                                <a class="btn btn-success btn-xs show_more" href="javascript:void(0)" target="_blank">Show more ></a>
+                                                <a class="btn btn-danger btn-xs show_less" href="javascript:void(0)" target="_blank">< Show less</a>
+                                            </td>
+                                            <td><a href="javascript:void(0)" target="_blank">{{ $item->mol_link_tracking }}</a></td>
                                             <td>{{ $item->creator_name }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
                                             {{--<td>{{ $item->is_active ? "Yes" : 'No' }}</td>--}}
@@ -221,7 +227,7 @@
             maxItems: 1
         });
 
-        $('.copy').click(function(e) {
+        $('.copy').click(function() {
 
             // Select some text (you could also create a range)
             selectText("url-" + $(this).data("id"));
@@ -238,7 +244,38 @@
                 console.log('Unsupported Browser!');
             }
         });
-    })
+
+        // add read more toggle
+        var initCnt = 150; //Intial characters to display
+
+        $('a#tracking_link').each(function() {
+            var trackingText = $(this).html();
+
+            if (trackingText.length > initCnt){
+                var shortLink = trackingText.substr(0, initCnt) + '...';
+                $(this).html(shortLink);
+                $(this).siblings('a.show_more').show();
+            }
+        });
+
+        $(".show_more").click(function(){
+            var trackingLink = $(this).siblings('a').attr('href');
+            $(this).siblings('a#tracking_link').html(trackingLink);
+            $(this).siblings('a.show_less').show();
+            $(this).hide();
+        });
+
+        $('.show_less').click(function() {
+            var trackingLink    = $(this).siblings('a').attr('href');
+            var shortLink       = trackingLink.substr(0, initCnt) + '...';
+            $(this).siblings('a#tracking_link').html(shortLink);
+            $(this).siblings('a.show_more').show();
+            $(this).hide();
+        });
+
+
+    });
+
 
 </script>
 @include('components.script-campaign')
