@@ -9,6 +9,7 @@ use App\Contact;
 use App\LandingPage;
 use App\Team;
 use App\User;
+use App\Config;
 use DB;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
@@ -32,9 +33,10 @@ class ContactController extends Controller
         $active = 'contacts';
         $breadcrumbs = "<i class=\"fa-fw fa fa-child\"></i> Contacts <span>> C3</span>";
 
+        $page_size  = Config::getByKey('PAGE_SIZE');
         $contacts = Contact::where('submit_time', '>=', strtotime("midnight")*1000)
             ->where('submit_time', '<', strtotime("tomorrow")*1000)
-            ->orderBy('submit_time', 'desc')->limit(10000)->get();
+            ->orderBy('submit_time', 'desc')->limit((int)$page_size)->get();
         $sources = Source::all();
         $teams = Team::all();
         $marketers = User::all();
@@ -49,7 +51,8 @@ class ContactController extends Controller
             'sources',
             'teams',
             'marketers',
-            'campaigns'
+            'campaigns',
+            'page_size'
         ));
     }
 

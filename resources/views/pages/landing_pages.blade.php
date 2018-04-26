@@ -130,6 +130,7 @@
         <!-- END MAIN CONTENT -->
 
     </div>
+    <input type="hidden" name="page_size" value="{{$page_size}}">
     <!-- END MAIN PANEL -->
 
 @endsection
@@ -149,6 +150,7 @@
     // DO NOT REMOVE : GLOBAL FUNCTIONS!
 
     $(document).ready(function () {
+        var page_size   = $('input[name="page_size"]').val();
 
         /* BASIC ;*/
         var responsiveHelper_table_channel = undefined;
@@ -175,7 +177,8 @@
             "drawCallback": function (oSettings) {
                 responsiveHelper_table_channel.respond();
             },
-            "order": [[0, "desc"]]
+            "order": [[0, "desc"]],
+            "iDisplayLength": page_size,
         });
 
 

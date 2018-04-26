@@ -28,7 +28,7 @@
                     @component('components.jarviswidget',
                     ['id' => 1, 'icon' => 'fa-table', 'title' => 'C3 Produced'])
                     <div class="widget-body">
-                        <form id="search-form-c3" class="smart-form" action="#" url="{!! route('contacts.filter') !!}">
+                        <form id="search-form-c3" class="smart-form" action="#" url="{!! route('ajax-paginate') !!}">
                             <div class="row">
                                 <div id="reportrange" class="pull-left"
                                      style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; margin: 10px 15px">
@@ -127,6 +127,7 @@
                                 <input type="hidden" name="clevel">
                                 <input type="hidden" name="current_level">
                                 <input type="hidden" name="registered_date">
+                                <input type="hidden" name="page_size" value="{{$page_size}}">
                                 <div style="position: absolute; right: 90px; bottom: 0px;">
                                     <button class="btn btn-success" type="submit"
                                             style=""> <i class="fa fa-download"></i> Export
@@ -165,37 +166,37 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($contacts as $item)
-                                    <tr id="contact-{{ $item->_id }}">
-                                        <td><a href="javascript:void(0)" class="name" data-id="{{ $item->_id }}">{{ $item->name }}</a>
-                                        </td>
-                                        <td>{{ $item->email }}</td>
-                                        <td>{{ $item->phone }}</td>
-                                        <td>{{ $item->age }}</td>
-                                        <td>{{ Date('d-m-Y H:i:s', $item->submit_time/1000) }}</td>
-                                        <td>{{ $item->clevel }}</td>
-                                        <td>{{ $item->current_level }}</td>
-                                        <td>{{ $item->source_name or '-100' }}</td>
-                                        <td>{{ $item->team_name or '-100' }}</td>
-                                        <td>{{ $item->marketer_name or '-100' }}</td>
-                                        <td>{{ $item->campaign_name or '-100' }}</td>
-                                        <td>{{ $item->subcampaign_name or '-100' }}</td>
-                                        <td>{{ $item->ad_name or '-100' }}</td>
-                                        <td>{{ $item->landing_page }}</td>
-                                        <td>
+                                    {{--@foreach ($contacts as $item)--}}
+                                    {{--<tr id="contact-{{ $item->_id }}">--}}
+                                        {{--<td><a href="javascript:void(0)" class="name" data-id="{{ $item->_id }}">{{ $item->name }}</a>--}}
+                                        {{--</td>--}}
+                                        {{--<td>{{ $item->email }}</td>--}}
+                                        {{--<td>{{ $item->phone }}</td>--}}
+                                        {{--<td>{{ $item->age }}</td>--}}
+                                        {{--<td>{{ Date('d-m-Y H:i:s', $item->submit_time/1000) }}</td>--}}
+                                        {{--<td>{{ $item->clevel }}</td>--}}
+                                        {{--<td>{{ $item->current_level }}</td>--}}
+                                        {{--<td>{{ $item->source_name or '-100' }}</td>--}}
+                                        {{--<td>{{ $item->team_name or '-100' }}</td>--}}
+                                        {{--<td>{{ $item->marketer_name or '-100' }}</td>--}}
+                                        {{--<td>{{ $item->campaign_name or '-100' }}</td>--}}
+                                        {{--<td>{{ $item->subcampaign_name or '-100' }}</td>--}}
+                                        {{--<td>{{ $item->ad_name or '-100' }}</td>--}}
+                                        {{--<td>{{ $item->landing_page }}</td>--}}
+                                        {{--<td>--}}
                                             {{--@permission('edit-review')--}}
-                                            <a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="{{ $item->_id }}"><i
-                                                        class='fa fa-eye'></i></a>
-                                            {{--<a data-toggle="modal" class='btn btn-xs btn-default'
-                                                   data-target="#deleteModal"
-                                                   data-item-id="{{ $item->_id }}"
-                                                   data-item-name="{{ $item->name }}"
-                                                   data-original-title='Delete Row'><i
-                                                        class='fa fa-times'></i></a>--}}
+                                            {{--<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="{{ $item->_id }}"><i--}}
+                                                        {{--class='fa fa-eye'></i></a>--}}
+                                            {{--<a data-toggle="modal" class='btn btn-xs btn-default'--}}
+                                                   {{--data-target="#deleteModal"--}}
+                                                   {{--data-item-id="{{ $item->_id }}"--}}
+                                                   {{--data-item-name="{{ $item->name }}"--}}
+                                                   {{--data-original-title='Delete Row'><i--}}
+                                                        {{--class='fa fa-times'></i></a>--}}
                                             {{--@endpermission--}}
-                                        </td>
-                                    </tr>
-                                    @endforeach
+                                        {{--</td>--}}
+                                    {{--</tr>--}}
+                                    {{--@endforeach--}}
 
                                 </tbody>
                             </table>
@@ -298,6 +299,11 @@
                 });
         }));
     });
+
+    $(document).ready(function () {
+        initDataTable();
+    });
+
 </script>
 
 @stop

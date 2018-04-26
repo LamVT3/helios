@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Source;
 use App\User;
+use App\Config;
 use Illuminate\Http\Request;
 
 class SourceController extends Controller
@@ -22,6 +23,8 @@ class SourceController extends Controller
         // 2018-04-04 lamvt update title
         $breadcrumbs = "<i class=\"fa-fw fa fa-sitemap\"></i> MKT Manager <span>> Sources</span>";
         // end 2018-04-04
+
+        $page_size  = Config::getByKey('PAGE_SIZE');
         
         $sources = Source::orderBy('created_at', 'desc')->get();
 
@@ -31,7 +34,8 @@ class SourceController extends Controller
             'no_main_header',
             'active',
             'breadcrumbs',
-            'sources'
+            'sources',
+            'page_size'
         ));
     }
 

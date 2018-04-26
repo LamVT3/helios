@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\LandingPage;
+use App\Config;
 use Illuminate\Http\Request;
 
 class LandingPageController extends Controller
@@ -22,7 +23,8 @@ class LandingPageController extends Controller
         $breadcrumbs = "<i class=\"fa-fw fa fa-bullhorn\"></i> Ads Manager <span>> Landing Pages</span>";
         // end 2018-04-04
 
-        $landing_pages = LandingPage::all();
+        $landing_pages  = LandingPage::all();
+        $page_size      = Config::getByKey('PAGE_SIZE');
 
         return view('pages.landing_pages', compact(
             'page_title',
@@ -30,7 +32,8 @@ class LandingPageController extends Controller
             'no_main_header',
             'active',
             'breadcrumbs',
-            'landing_pages'
+            'landing_pages',
+            'page_size'
         ));
     }
 

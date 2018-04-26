@@ -189,6 +189,7 @@
     <!-- END MAIN CONTENT -->
 
 </div>
+<input type="hidden" name="page_size" value="{{$page_size}}">
 <!-- END MAIN PANEL -->
 
 @endsection

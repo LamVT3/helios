@@ -50,6 +50,7 @@ class ReportController extends Controller
         $teams = Team::all();
         $marketers = User::all();
         $campaigns = Campaign::where('is_active', 1)->get();
+        $page_size      = Config::getByKey('PAGE_SIZE');
 
         return view('pages.report-quality', compact(
             'page_title',
@@ -61,7 +62,8 @@ class ReportController extends Controller
             'sources',
             'teams',
             'marketers',
-            'campaigns'
+            'campaigns',
+            'page_size'
         ));
     }
 

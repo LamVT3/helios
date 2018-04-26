@@ -8,6 +8,7 @@ use App\LandingPage;
 use App\Source;
 use App\Subcampaign;
 use App\Team;
+use App\Config;
 use Illuminate\Http\Request;
 use Mbarwick83\Shorty\Facades\Shorty;
 
@@ -32,7 +33,8 @@ class CampaignController extends Controller
         $campaigns = Campaign::where('creator_id', $user->id)->orderBy('created_at', 'desc')->get();
         $team = Team::find($user->team_id);
 
-        $landing_pages = LandingPage::where('is_active', 1)->get();
+        $landing_pages  = LandingPage::where('is_active', 1)->get();
+        $page_size      = Config::getByKey('PAGE_SIZE');
 
         return view('pages.campaigns', compact(
             'page_title',
@@ -43,7 +45,8 @@ class CampaignController extends Controller
             'campaigns',
             'team',
             'landing_pages',
-            'user'
+            'user',
+            'page_size'
         ));
     }
 
@@ -68,6 +71,7 @@ class CampaignController extends Controller
         $campaigns = Campaign::where(['creator_id' => $user->id])->get();
         $subcampaigns = Subcampaign::where('campaign_id', $campaign->id)->get();
         $landing_pages = LandingPage::where('is_active', 1)->get();
+        $page_size     = Config::getByKey('PAGE_SIZE');
 
         return view('pages.subcampaigns', compact(
             'page_title',
@@ -80,7 +84,8 @@ class CampaignController extends Controller
             'campaign',
             'campaign_id',
             'subcampaigns',
-            'landing_pages'
+            'landing_pages',
+            'page_size'
         ));
     }
 

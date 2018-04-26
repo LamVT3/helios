@@ -95,6 +95,8 @@
         <!-- END MAIN CONTENT -->
 
     </div>
+    <input type="hidden" name="page_size" value="{{$page_size}}">
+
     <!-- END MAIN PANEL -->
 
 @endsection
@@ -115,6 +117,8 @@
     // DO NOT REMOVE : GLOBAL FUNCTIONS!
 
     $(document).ready(function () {
+
+        var page_size   = $('input[name="page_size"]').val();
 
         /* BASIC ;*/
         var responsiveHelper_table_source = undefined;
@@ -141,7 +145,8 @@
             "drawCallback": function (oSettings) {
                 responsiveHelper_table_source.respond();
             },
-            "order": []
+            "order": [],
+            "iDisplayLength": page_size,
         });
 
 //        $('head').append('<link rel="stylesheet" href="{{ asset('js/plugin/selectize/css/selectize.bootstrap3.css') }}">');

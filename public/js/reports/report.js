@@ -213,6 +213,7 @@ $(document).ready(function () {
             $('.wrapper_report').html(response);
 
             var responsiveHelper_table_report = undefined;
+            var page_size   = $('input[name="page_size"]').val();
 
             var breakpointDefinition = {
                 tablet: 1024,
@@ -250,12 +251,11 @@ $(document).ready(function () {
                     iTotal = iTotal - 1;
                     return "Showing " + iStart + " to " + iEnd + " of " + iTotal + " entries";
                 },
-                // "pageLength": 3,
+                "iDisplayLength": page_size,
             });
         });
     });
 });
-
 
 function fixedTotalRow () {
 

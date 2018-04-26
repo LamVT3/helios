@@ -31,42 +31,6 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-
-    /* BASIC ;*/
-    var responsiveHelper_table_campaign = undefined;
-
-    var breakpointDefinition = {
-        tablet: 1024,
-        phone: 480
-    };
-
-    $('#table_contacts').dataTable({
-        "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-6 hidden-xs'C>r>" +
-        "<'tb-only't>" +
-        "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-sm-6 col-xs-12'p>>",
-        "autoWidth": true,
-        "preDrawCallback": function () {
-            // Initialize the responsive datatables helper once.
-            if (!responsiveHelper_table_campaign) {
-                responsiveHelper_table_campaign = new ResponsiveDatatablesHelper($('#table_contacts'), breakpointDefinition);
-            }
-        },
-        "rowCallback": function (nRow) {
-            responsiveHelper_table_campaign.createExpandIcon(nRow);
-        },
-        "drawCallback": function (oSettings) {
-            responsiveHelper_table_campaign.respond();
-        },
-        "order": [],
-        "iDisplayLength": 20
-    });
-
-
-//        $('head').append('<link rel="stylesheet" href="{{ asset('js/plugin/selectize/css/selectize.bootstrap3.css') }}">');
-
-    /* END BASIC */
-});
-$(document).ready(function () {
     $('#source_id').change(function (e) {
         var url = $('#source_id').attr('data-url');
         var source_id = $('select[name="source_id"]').val();
@@ -147,106 +111,148 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
+
     $('#search-form-c3').submit(function (e) {
         e.preventDefault();
-        var group = 'all';
-        var url = $('#search-form-c3').attr('url');
-        var source_id = $('select[name="source_id"]').val();
-        var team_id = $('select[name="team_id"]').val();
-        var marketer_id = $('select[name="marketer_id"]').val();
-        var campaign_id = $('select[name="campaign_id"]').val();
-        var clevel = $('select[name="clevel"]').val();
-        var current_level = $('select[name="current_level"]').val();
-        var registered_date = $('.registered_date').text();
-        if (source_id == group) {
-            source_id = '';
-        }
-        else {
-            source_id = source_id;
-        }
-        if (team_id == group) {
-            team_id = '';
-        }
-        else {
-            team_id = team_id;
-        }
-        if (marketer_id == group) {
-            marketer_id = '';
-        } else {
-            marketer_id = marketer_id;
-        }
 
-        if (campaign_id == group) {
-            campaign_id = '';
-        }
-        else {
-            campaign_id = campaign_id;
-        }
-        if (current_level == group) {
-            current_level = '';
-        }
-        else {
-            current_level = current_level;
-        }
-        if (clevel == group) {
-            clevel = '';
-        }
-        else {
-            clevel = clevel;
-        }
-        $('input[name="source_id"]').val(source_id);
-        $('input[name="team_id"]').val(team_id);
-        $('input[name="marketer_id"]').val(marketer_id);
-        $('input[name="campaign_id"]').val(campaign_id);
-        $('input[name="clevel"]').val(clevel);
-        $('input[name="current_level"]').val(current_level);
-        $('input[name="registered_date"]').val(registered_date);
-        // var url = "{!! route('contacts.filter') !!}";
         $('.loading').show();
-        $.ajax({
-            url: url,
-            type: 'GET',
-            data: {
-                source_id: source_id,
-                team_id: team_id,
-                marketer_id: marketer_id,
-                campaign_id: campaign_id,
-                clevel: clevel,
-                current_level: current_level,
-                registered_date: registered_date
-            }
-        }).done(function (response) {
-            $('.loading').hide();
-            $('.wrapper').html(response);
-            /* BASIC ;*/
-            var responsiveHelper_table_campaign = undefined;
+        initDataTable();
+        $('.loading').hide();
 
-            var breakpointDefinition = {
-                tablet: 1024,
-                phone: 480
-            };
-
-            $('#table_contacts').dataTable({
-                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-6 hidden-xs'C>r>" +
-                "<'tb-only't>" +
-                "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-sm-6 col-xs-12'p>>",
-                "autoWidth": true,
-                "preDrawCallback": function () {
-                    // Initialize the responsive datatables helper once.
-                    if (!responsiveHelper_table_campaign) {
-                        responsiveHelper_table_campaign = new ResponsiveDatatablesHelper($('#table_contacts'), breakpointDefinition);
-                    }
-                },
-                "rowCallback": function (nRow) {
-                    responsiveHelper_table_campaign.createExpandIcon(nRow);
-                },
-                "drawCallback": function (oSettings) {
-                    responsiveHelper_table_campaign.respond();
-                },
-                "order": [],
-                "iDisplayLength": 20
-            });
-        });
     });
 });
+
+function initDataTable() {
+
+    var group           = 'all';
+    var url             = $('#search-form-c3').attr('url');
+    var source_id       = $('select[name="source_id"]').val();
+    var team_id         = $('select[name="team_id"]').val();
+    var marketer_id     = $('select[name="marketer_id"]').val();
+    var campaign_id     = $('select[name="campaign_id"]').val();
+    var clevel          = $('select[name="clevel"]').val();
+    var current_level   = $('select[name="current_level"]').val();
+    var registered_date = $('.registered_date').text();
+    var page_size       = $('input[name="page_size"]').val();
+    if (source_id == group) {
+        source_id = '';
+    }
+    else {
+        source_id = source_id;
+    }
+    if (team_id == group) {
+        team_id = '';
+    }
+    else {
+        team_id = team_id;
+    }
+    if (marketer_id == group) {
+        marketer_id = '';
+    } else {
+        marketer_id = marketer_id;
+    }
+
+    if (campaign_id == group) {
+        campaign_id = '';
+    }
+    else {
+        campaign_id = campaign_id;
+    }
+    if (current_level == group) {
+        current_level = '';
+    }
+    else {
+        current_level = current_level;
+    }
+    if (clevel == group) {
+        clevel = '';
+    }
+    else {
+        clevel = clevel;
+    }
+    $('input[name="source_id"]').val(source_id);
+    $('input[name="team_id"]').val(team_id);
+    $('input[name="marketer_id"]').val(marketer_id);
+    $('input[name="campaign_id"]').val(campaign_id);
+    $('input[name="clevel"]').val(clevel);
+    $('input[name="current_level"]').val(current_level);
+    $('input[name="registered_date"]').val(registered_date);
+
+    /* BASIC ;*/
+    var responsiveHelper_table_campaign = undefined;
+
+    var breakpointDefinition = {
+        tablet: 1024,
+        phone: 480
+    };
+
+    $('#table_contacts').dataTable({
+        "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-6 hidden-xs'C>r>" +
+        "<'tb-only't>" +
+        "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-sm-6 col-xs-12'p>>",
+        "autoWidth": true,
+        "preDrawCallback": function () {
+            // Initialize the responsive datatables helper once.
+            if (!responsiveHelper_table_campaign) {
+                responsiveHelper_table_campaign = new ResponsiveDatatablesHelper($('#table_contacts'), breakpointDefinition);
+            }
+        },
+        "rowCallback": function (nRow) {
+            responsiveHelper_table_campaign.createExpandIcon(nRow);
+        },
+        "drawCallback": function (oSettings) {
+            responsiveHelper_table_campaign.respond();
+        },
+        "order": [],
+        "destroy": true,
+        "iDisplayLength": page_size,
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            url: url,
+            type: "GET",
+            data: function (d) {
+                d.source_id         = source_id,
+                d.team_id           = team_id,
+                d.marketer_id       = marketer_id,
+                d.campaign_id       = campaign_id,
+                d.clevel            = clevel,
+                d.current_level     = current_level,
+                d.registered_date   = registered_date
+            }
+        },
+        "columns": [
+            {
+                "data" : 'name',
+                "render": function ( data, type, row, meta ) {
+                    return '<a href="javascript:void(0)" class="name" data-id="' + data[0] + '">' + data[1] + '</a>';
+                }
+            },
+            { "data" : 'email'},
+            { "data" : 'phone'},
+            { "data" : 'age'},
+            { "data" : 'submit_time'},
+            { "data" : 'clevel'},
+            { "data" : 'current_level',     "defaultContent": "-"},
+            { "data" : 'source_name',       "defaultContent": "-"},
+            { "data" : 'team_name',         "defaultContent": "-"},
+            { "data" : 'marketer_name',     "defaultContent": "-"},
+            { "data" : 'campaign_name',     "defaultContent": "-"},
+            { "data" : 'subcampaign_name',  "defaultContent": "-"},
+            { "data" : 'ad_name',           "defaultContent": "-"},
+            { "data" : 'landing_page',      "defaultContent": "-"},
+            {
+                "data" : 'name',
+                "render": function ( data, type, row, meta ) {
+                    return '<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="'+ data[0] +'">' +
+                        '<i class="fa fa-eye"></i></a>';
+                    // + '<a data-toggle="modal" class="btn btn-xs btn-default"' +
+                    // 'data-target="#deleteModal data-item-id="'+ data[0] +'data-item-name="'+ data[1] +'"' +
+                    // 'data-original-title="Delete Row"><i class="fa fa-times"></i></a>';
+                }
+            },
+        ],
+    });
+}
+
 

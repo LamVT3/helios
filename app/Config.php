@@ -26,16 +26,17 @@ class Config extends Eloquent
             ->select('key', 'value')
             ->orderBy('created_at', 'desc')
             ->get();
+        $res = array();
 
         if ($config) {
             foreach ($config as $item){
                 $key    = $item->key;
                 $value  = $item->value;
-                $res[$key] = $value;
+                if(!isset($res[$key])){
+                    $res[$key] = $value;
+                }
             }
-            return $res;
-        } else {
-            return [];
         }
+        return $res;
     }
 }

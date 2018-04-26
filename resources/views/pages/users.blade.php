@@ -126,6 +126,7 @@
         <!-- END MAIN CONTENT -->
 
     </div>
+    <input type="hidden" name="page_size" value="{{$page_size}}">
     <!-- END MAIN PANEL -->
 @endsection
 
@@ -142,6 +143,7 @@
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
 
         $(document).ready(function () {
+            var page_size       = $('input[name="page_size"]').val();
             $('#deleteModal').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget) // Button that triggered the modal
                 var itemName = button.data('item-name') // Extract info from data-* attributes
@@ -163,7 +165,7 @@
             };
 
             $('#dt_basic').dataTable({
-                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-12 hidden-xs'l>r>" +
+                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-12 hidden-xs'C>r>" +
                 "t" +
                 "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-6'p>>",
                 "autoWidth": true,
@@ -179,7 +181,8 @@
                 "drawCallback": function (oSettings) {
                     responsiveHelper_dt_basic.respond();
                 },
-                "order": [[0, "desc"]]
+                "order": [[0, "desc"]],
+                "iDisplayLength": page_size,
             });
 
             /* END BASIC */

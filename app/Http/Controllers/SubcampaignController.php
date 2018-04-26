@@ -8,6 +8,7 @@ use App\Channel;
 use App\LandingPage;
 use App\Subcampaign;
 use App\Team;
+use App\Config;
 use Illuminate\Http\Request;
 
 class SubcampaignController extends Controller
@@ -38,6 +39,7 @@ class SubcampaignController extends Controller
         $subcampaigns = Subcampaign::where('campaign_id', $campaign->id)->get();
         $ads = Ad::where('subcampaign_id', $subcampaign->id)->orderBy('created_at', 'desc')->get();
         $landing_pages = LandingPage::where('is_active', 1)->get();
+        $page_size     = Config::getByKey('PAGE_SIZE');
 
         return view('pages.ads', compact(
             'page_title',
@@ -51,7 +53,8 @@ class SubcampaignController extends Controller
             'campaigns',
             'subcampaigns',
             'ads',
-            'landing_pages'
+            'landing_pages',
+            'page_size'
         ));
     }
 

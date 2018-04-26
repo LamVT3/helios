@@ -7,6 +7,7 @@ use App\Contact;
 use App\Permission;
 use App\Role;
 use App\User;
+use App\Config;
 use DB;
 use App\AdResult;
 use Auth;
@@ -29,6 +30,7 @@ class UserController extends Controller
         $breadcrumbs = "<i class=\"fa-fw fa fa-user\"></i> Users <span>> Users List </span>";
 
         $users = User::all();
+        $page_size  = Config::getByKey('PAGE_SIZE');
 
         return view('pages.users', compact(
             'no_main_header',
@@ -36,7 +38,8 @@ class UserController extends Controller
             'page_css',
             'active',
             'breadcrumbs',
-            'users'
+            'users',
+            'page_size'
         ));
     }
 

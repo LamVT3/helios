@@ -242,7 +242,7 @@ class AjaxController extends Controller
 
         foreach ($query as $i => $item) {
             if($i > 4) break;
-            if(!$item->c3) continue;  // not show if c3 = 0
+//            if(!$item->c3) continue;  // not show if c3 = 0
 
             $user = User::find($item->_id);
             // 2018-04-18 LamVT update leaderboard
@@ -312,7 +312,7 @@ class AjaxController extends Controller
 
         foreach ($query as $i => $item) {
             if($i > 4) break;
-            if(!$item->revenue) continue;
+//            if(!$item->revenue) continue;
 
             $user = User::find($item->_id);
             // 2018-04-18 LamVT update leaderboard
@@ -382,7 +382,7 @@ class AjaxController extends Controller
 
         foreach ($query as $i => $item) {
             if($i > 4) break;
-            if(!$item->spent) continue;
+//            if(!$item->spent) continue;
 
             $user = User::find($item->_id);
             // 2018-04-18 LamVT update leaderboard
@@ -512,4 +512,163 @@ class AjaxController extends Controller
         return $chart_l8;
     }
     // end 2018-04-17 [HEL-9] LamVT add dropdown for C3/L8 chart
+
+    public function getContactPaginate(){
+        $params = \request();
+        $data   = $this->getC3Data();
+
+        $json_data = array(
+            "draw"            => intval( $params['draw'] ),
+            "recordsTotal"    => intval( $data['total'] ),
+            "recordsFiltered" => intval( $data['total']),
+            "data"            => $data['contacts']
+        );
+
+        echo json_encode($json_data);  // send data as json format
+    }
+
+    public function getC3Data()
+    {
+        $request        = request();
+        $columns        = $this->setColumns();
+        $data_where     = $this->getWhereData();
+        $data_search    = $this->getSeachData();
+        $order          = $this->getOrderData();
+
+        $startDate  = strtotime("midnight")*1000;
+        $endDate    = strtotime("tomorrow")*1000;
+
+        if($request->registered_date){
+            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
+
+        $query = Contact::where('submit_time', '>=', $startDate);
+        $query->where('submit_time', '<', $endDate);
+
+        if(count($data_where) > 0){
+            $query->where($data_where);
+        }
+        if($data_search != ''){
+            foreach ($columns as $key => $value){
+                $query->orWhere($value, 'like', "%{$data_search}%");
+            }
+        }
+        if($order){
+            $query->orderBy($columns[$order['column']], $order['type']);
+        } else
+            $query->orderBy('submit_time', 'desc');
+
+        $limit  = intval($request->length);
+        $offset = intval($request->start);
+
+        $total      = $query->get();
+        $contacts   = $query->skip($offset)->take($limit)->get();
+
+        $data['contacts']   = $this->formatRecord($contacts);
+        $data['total']      = count($total);
+
+        return $data;
+    }
+
+    private function getSeachData(){
+        $request        = request();
+
+        if($request['search']['value']){
+            return $request['search']['value'];
+        }
+
+        return '';
+    }
+
+    private function getOrderData(){
+        $request    = request();
+        $order      = array();
+
+        if($request['order'][0]['column'] && $request['order'][0]['dir']){
+            $order['column']    = $request['order'][0]['column'];
+            $order['type']      = $request['order'][0]['dir'];
+        }
+
+        return $order;
+    }
+
+    private function setColumns(){
+        //define index of column
+        $columns = array(
+            0   =>'name',
+            1   =>'email',
+            2   =>'phone',
+            3   =>'age',
+            4   =>'submit_time',
+            5   =>'clevel',
+            6   =>'current_level',
+            7   =>'source_name',
+            8   =>'team_name',
+            9   =>'marketer_name',
+            10  =>'campaign_name',
+            11  =>'subcampaign_name',
+            12  =>'ad_name',
+            13  =>'landing_page',
+        );
+
+        return $columns;
+    }
+
+    private function getWhereData(){
+        $request    = request();
+        $data_where = array();
+        if ($request->source_id) {
+            $data_where['source_id']        = $request->source_id;
+        }
+        if ($request->team_id) {
+            $data_where['team_id']          = $request->team_id;
+        }
+        if ($request->marketer_id) {
+            $data_where['marketer_id']      = $request->marketer_id;
+        }
+        if ($request->campaign_id) {
+            $data_where['campaign_id']      = $request->campaign_id;
+        }
+        if ($request->current_level) {
+            $data_where['current_level']    = $request->current_level;
+        }
+        if ($request->clevel) {
+            $data_where['clevel']           = $request->clevel;
+        }
+
+        return $data_where;
+    }
+
+    private function formatRecord($contacts){
+
+        $name[0] = 11;
+        $name[1] = 22;
+
+        foreach ($contacts as $contact){
+            $arr[0] = $contact['_id'];
+            $arr[1] = $contact['name'];
+
+            $contact['name']                = $contact['name'] ? $arr : "-";
+            $contact['email']               = $contact['email'] ? $contact['email'] : "-";
+            $contact['phone']               = $contact['phone'] ? $contact['phone'] : "-";
+            $contact['age']                 = $contact['age'] ? $contact['age'] : "-";
+            $contact['submit_time']         = $contact['submit_time'] ?
+                date('d-m-Y H:i:s',$contact['submit_time']/1000) : "-";
+            $contact['clevel']              = $contact['clevel']? $contact['clevel'] : "-";
+            $contact['current_level']       = $contact['current_level'] ? $contact['current_level'] : "-";
+            $contact['source_name']         = $contact['source_name'] ? $contact['source_name'] : "-";
+            $contact['team_name']           = $contact['team_name'] ? $contact['team_name'] : "-";
+            $contact['marketer_name']       = $contact['marketer_name'] ? $contact['marketer_name'] : "-";
+            $contact['campaign_name']       = $contact['campaign_name'] ? $contact['campaign_name'] : "-";
+            $contact['subcampaign_name']    = $contact['subcampaign_name'] ? $contact['subcampaign_name'] : "-";
+            $contact['ad_name']             = $contact['ad_name'] ? $contact['ad_name'] : "-";
+            $contact['landing_page']        = $contact['landing_page'] ? $contact['landing_page'] : "-";
+        }
+
+        return $contacts;
+    }
+
 }

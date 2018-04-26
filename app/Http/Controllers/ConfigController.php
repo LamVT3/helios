@@ -27,6 +27,7 @@ class ConfigController extends Controller
         // end 2018-04-04
 
         $config = Config::all();
+        $page_size  = Config::getByKey('PAGE_SIZE');
 
         return view('pages.config', compact(
             'page_title',
@@ -34,7 +35,8 @@ class ConfigController extends Controller
             'no_main_header',
             'active',
             'breadcrumbs',
-            'config'
+            'config',
+            'page_size'
         ));
     }
 

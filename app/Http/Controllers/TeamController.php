@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Source;
 use App\Team;
 use App\User;
+use App\Config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -29,6 +30,7 @@ class TeamController extends Controller
         //DB::connection( 'mongodb' )->enableQueryLog();
 
         $teams = Team::orderBy('created_at', 'desc')->get();
+        $page_size  = Config::getByKey('PAGE_SIZE');
 
         $allSources = Source::all();
         $sources = '';
@@ -51,7 +53,8 @@ class TeamController extends Controller
             'teams',
             'id',
             'allMembers',
-            'members'
+            'members',
+            'page_size'
         ));
     }
 
