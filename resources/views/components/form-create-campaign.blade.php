@@ -146,7 +146,7 @@
                                 </div>
                                 <div class="row">
                                     <section>
-                                        <label class="label col col-4" for="mol-link-tracking">MOL link tracking</label>
+                                        <label class="label col col-4 require_field" for="mol-link-tracking">MOL link tracking</label>
                                         <label class="input col col-8">
                                             <input type="text" name="mol_link_tracking" id="mol_link_tracking" class="form-control"
                                                    placeholder="Ex: id_landingpage=265&code_chanel=BR16_Salary_Englishinyourlife&id_campaign=16&id=25094"/>
@@ -174,7 +174,7 @@
                 </div>
                 <div class="modal-footer">
                     <span class="loading pull-left" style="display:none">
-                        <img id="img_ajax_upload" src="http://helios.com/img/loading/rolling.gif" alt="" style="float:left; width: 20%;">
+                        <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="float:left; width: 20%;">
                     </span>
                     @if(auth()->user()->team_id)
                     <button type="submit" class="btn btn-primary">

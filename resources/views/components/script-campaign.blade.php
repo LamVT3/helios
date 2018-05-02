@@ -44,6 +44,7 @@
                     alphanumeric: true
                 },
                 mol_link_tracking: {
+                    required: true,
                     mol_tracking: true
                 },
                 source: {
