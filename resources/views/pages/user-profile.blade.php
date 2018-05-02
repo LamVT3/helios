@@ -9,11 +9,15 @@
             <div class="well">
                 <div class="row">
                     <div class="col-sm-2">
-                        <img src="{{ asset('img/avatars/sunny-big.png') }}" alt="demo user">
+                        @if(isset($user->avatar) && $user->avatar != '')
+                            <img class="avatar_profile" src="{{  asset(config('constants.AVATARS_URL').$user->avatar) }}" alt="{{$user->username}}">
+                        @else
+                            <img class="avatar_profile" src="{{  asset(config('constants.AVATARS_URL_DEFAULT')) }}" alt="{{$user->username}}">
+                        @endif
                         <div class="padding-10">
                             <h4 class="font-md"><strong>{{ $user->username }}</strong>
                             <br>
-                            <small class="text-danger">Team: <strong>{{ $user->team_name }}</strong></small></h4>
+                            <small class="text-danger">Team: <strong>{{ $user->team_name or 'N/A'}}</strong></small></h4>
                         </div>
                     </div>
                     <div class="col col-sm-10">
@@ -32,7 +36,7 @@
                                 <th>Rank</th>
                                 <th class="text-center hidden-xs hidden-sm">Total C3</th>
                                 <th class="text-center hidden-xs hidden-sm">Total L8</th>
-                                <th class="text-center hidden-xs hidden-sm">Total Revenue</th>
+                                <th class="text-center">Total Revenue</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -48,7 +52,7 @@
                                 <td class="text-center hidden-xs hidden-sm">
                                     <a href="javascript:void(0);">{{ number_format($profile['total_l8']) }}</a>
                                 </td>
-                                <td class="text-center hidden-xs hidden-sm">
+                                <td class="text-center">
                                     <a href="javascript:void(0);">{{ number_format($profile['total_revenue']) . ' VND' }}</a>
                                 </td>
                             </tr>

@@ -71,7 +71,7 @@ class UserController extends Controller
         $page_css = array();
         $no_main_header = FALSE;
         $active = 'users';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-user\"></i>Users<span>> Edit User </span>";
+        $breadcrumbs = "<i class=\"fa-fw fa fa-user\"></i>Users <span>> Edit User </span>";
 
         $user = User::find($id);
         // $roles = Role::all();
@@ -106,6 +106,15 @@ class UserController extends Controller
             if(request('email') == $user->email) $validator['email'] = 'required|email|max:255';
         }
 
+        $newFileName = '';
+        if(\request('avatar')){
+            $extension              = request('avatar')->getClientOriginalExtension();
+            $newFileName            = $user->username.'.'.$extension;
+
+            $user->avatar           = $newFileName;
+            $validator['avatar']    = 'image|required';
+        }
+
         $this->validate(request(), $validator);
 
         // $user = new User();
@@ -117,6 +126,10 @@ class UserController extends Controller
 
         if (request('password') || !request('id'))
             $user->password = bcrypt(request('password'));
+
+        // upload image
+        $this->doUpload($newFileName);
+
         $user->save();
 
         // $user->detachRoles();
@@ -227,5 +240,14 @@ class UserController extends Controller
             'user',
             'profile'
         ));
+    }
+
+    private function doUpload($newFileName)
+    {
+        if(\request('avatar')){
+            $file   = request('avatar');
+            $url    = config('constants.AVATARS_URL');
+            $file->move($url, $newFileName);
+        }
     }
 }

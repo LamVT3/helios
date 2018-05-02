@@ -253,3 +253,14 @@ table#table_contact_details td:last-child {
     margin-left: 10px;
     display: none;
 }
+
+.avatar {
+    margin-bottom: 10px;
+    max-width: 300px;
+    max-height: 300px;
+}
+
+.avatar_profile {
+    max-width: 120px;
+    max-height: 120px;
+}
