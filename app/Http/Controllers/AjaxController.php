@@ -15,8 +15,6 @@ use Illuminate\Support\Facades\DB;
 
 class AjaxController extends Controller
 {
-    const UNKNOWN = 'unknown';
-
     public function __construct()
     {
         $this->middleware('auth');
@@ -247,8 +245,9 @@ class AjaxController extends Controller
             $user = User::find($item->_id);
             // 2018-04-18 LamVT update leaderboard
             if(!$user){ // if not found user
-                $user['username']   = self::UNKNOWN;
-                $user['rank']       = self::UNKNOWN;
+                $unknown            = config('constants.UNKNOWN');
+                $user['username']   = $unknown;
+                $user['rank']       = $unknown;
             }
             // end 2018-04-18 LamVT update leaderboard
             $no = $i+1;
@@ -317,8 +316,9 @@ class AjaxController extends Controller
             $user = User::find($item->_id);
             // 2018-04-18 LamVT update leaderboard
             if(!$user){ // if not found user
-                $user['username']   = self::UNKNOWN;
-                $user['rank']       = self::UNKNOWN;
+                $unknown            = config('constants.UNKNOWN');
+                $user['username']   = $unknown;
+                $user['rank']       = $unknown;
             }
             // end 2018-04-18 LamVT update leaderboard
             $no = $i+1;
@@ -387,8 +387,9 @@ class AjaxController extends Controller
             $user = User::find($item->_id);
             // 2018-04-18 LamVT update leaderboard
             if(!$user){ // if not found user
-                $user['username']   = self::UNKNOWN;
-                $user['rank']       = self::UNKNOWN;
+                $unknown            = config('constants.UNKNOWN');
+                $user['username']   = $unknown;
+                $user['rank']       = $unknown;
             }
             // end 2018-04-18 LamVT update leaderboard
             $no = $i+1;
