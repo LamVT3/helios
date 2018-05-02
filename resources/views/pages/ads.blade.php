@@ -76,8 +76,8 @@
                                             </td>
                                             <td id="tracking_link">
                                                 <a id="tracking_link" href="{{ $item->tracking_link }}" target="_blank">{{ $item->tracking_link }}</a>
-                                                <a class="btn btn-success btn-xs show_more" href="javascript:void(0)" target="_blank">Show more ></a>
-                                                <a class="btn btn-danger btn-xs show_less" href="javascript:void(0)" target="_blank">< Show less</a>
+                                                <a class="btn btn-success btn-xs show_more" href="javascript:void(0)" target="_blank">More ></a>
+                                                <a class="btn btn-danger btn-xs show_less" href="javascript:void(0)" target="_blank">< Less</a>
                                             </td>
                                             <td><a href="javascript:void(0)" target="_blank">{{ $item->mol_link_tracking }}</a></td>
                                             <td>{{ $item->creator_name }}</td>
@@ -249,7 +249,7 @@
         var initCnt = 150; //Intial characters to display
 
         $('a#tracking_link').each(function() {
-            var trackingText = $(this).html();
+            var trackingText = $(this).attr('href');
 
             if (trackingText.length > initCnt){
                 var shortLink = trackingText.substr(0, initCnt) + '...';
@@ -259,14 +259,14 @@
         });
 
         $(".show_more").click(function(){
-            var trackingLink = $(this).siblings('a').attr('href');
+            var trackingLink = $(this).siblings('a#tracking_link').attr('href');
             $(this).siblings('a#tracking_link').html(trackingLink);
             $(this).siblings('a.show_less').show();
             $(this).hide();
         });
 
         $('.show_less').click(function() {
-            var trackingLink    = $(this).siblings('a').attr('href');
+            var trackingLink    = $(this).siblings('a#tracking_link').attr('href');
             var shortLink       = trackingLink.substr(0, initCnt) + '...';
             $(this).siblings('a#tracking_link').html(shortLink);
             $(this).siblings('a.show_more').show();
