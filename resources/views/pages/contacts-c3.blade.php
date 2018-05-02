@@ -301,7 +301,10 @@
     });
 
     $(document).ready(function () {
+        $('.loading').show();
         initDataTable();
+        setTimeout("$('.loading').hide();", 1000);
+
     });
 
 </script>

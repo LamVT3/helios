@@ -117,8 +117,7 @@ $(document).ready(function () {
 
         $('.loading').show();
         initDataTable();
-        $('.loading').hide();
-
+        setTimeout("$('.loading').hide();", 1000);
     });
 });
 
@@ -206,7 +205,7 @@ function initDataTable() {
         "order": [],
         "destroy": true,
         "iDisplayLength": page_size,
-        "processing": true,
+        // "processing": true,
         "serverSide": true,
         "ajax": {
             url: url,
