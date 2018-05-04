@@ -97,8 +97,10 @@ $(document).ready(function () {
                 source_id: source_id
             }
         }).done(function (response) {
-            /*$('#team_id').html(response.content_team);
-            $("#team_id").select2();*/
+            $('#team_id').html(response.content_team);
+            $("#team_id").select2();
+            $('#marketer_id').html(response.content_marketer);
+            $("#marketer_id").select2();
             $('#campaign_id').html(response.content_campaign);
             $("#campaign_id").select2();
         });
@@ -118,12 +120,13 @@ $(document).ready(function () {
             }
         }).done(function (response) {
             if (team_id) {
-                $('#source_id').html(response.content_source);
-                $("#source_id").select2();
-                $('#campaign_id').html(response.content_campaign);
-                $("#campaign_id").select2();
+                // $('#source_id').html(response.content_source);
+                // $("#source_id").select2();
                 $('#marketer_id').html(response.content_marketer);
                 $("#marketer_id").select2();
+                $('#campaign_id').html(response.content_campaign);
+                $("#campaign_id").select2();
+
             }
         });
     })
@@ -146,10 +149,10 @@ $(document).ready(function () {
             }
         }).done(function (response) {
             if (campaign_id) {
-                $('#source_id').html(response.content_source);
-                $("#source_id").select2();
-                $('#team_id').html(response.content_team);
-                $("#team_id").select2();
+                // $('#source_id').html(response.content_source);
+                // $("#source_id").select2();
+                // $('#team_id').html(response.content_team);
+                // $("#team_id").select2();
                 $('#marketer_id').html(response.content_marketer);
                 $("#marketer_id").select2();
             }

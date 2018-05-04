@@ -72,16 +72,26 @@ class AjaxController extends Controller
             $html_campaign .= "<option value=" . $item->id . "> " . $item->name . " </option>";
         }
 
-        $teams = Team::where($data_where)->get();
+        $teams = Team::all();
         $html_team = '<option value=\'all\' selected>All</option>';
-        foreach ($teams as $item) {
-            $html_team .= "<option value=" . $item->id . "> " . $item->name . " </option>";
+        $html_marketer = "<option value='all' selected>All</option>";
+
+        foreach ($teams as $team) {
+            $source = array_keys($team->sources);
+            if(in_array($request->source_id, $source)){
+                $html_team .= "<option value=" . $team->id . "> " . $team->name . " </option>";
+                $marketers = $team->members;
+                foreach ($marketers as $item) {
+                    $html_marketer .= "<option value='" . $item['user_id'] . "'> " . $item['username'] . " </option>";
+                }
+            }
         }
 
         $data_return = array(
             'status'           => TRUE,
             'content_team'     => $html_team,
-            'content_campaign' => $html_campaign
+            'content_campaign' => $html_campaign,
+            'content_marketer' => $html_marketer
         );
         echo json_encode($data_return);
 
