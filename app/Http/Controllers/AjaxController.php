@@ -284,7 +284,7 @@ class AjaxController extends Controller
 
         if ($period === 'thisweek') {
             $startDate = date('Y-m-d', strtotime('Last Monday', time()));
-            $endDate = date('y-m-d', strtotime('Next Sunday', time()));
+            $endDate = date('Y-m-d', strtotime('Next Sunday', time()));
         }
 
         if ($period === 'thismonth') {
@@ -355,7 +355,7 @@ class AjaxController extends Controller
 
         if ($period === 'thisweek') {
             $startDate = date('Y-m-d', strtotime('Last Monday', time()));
-            $endDate = date('y-m-d', strtotime('Next Sunday', time()));
+            $endDate = date('Y-m-d', strtotime('Next Sunday', time()));
         }
 
         if ($period === 'thismonth') {
