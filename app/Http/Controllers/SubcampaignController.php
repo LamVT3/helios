@@ -34,6 +34,7 @@ class SubcampaignController extends Controller
 
         $user = auth()->user();
         $team = Team::find($user->team_id);
+        $max_display = config('constants.MAX_DISPLAY');
 
         $campaigns = Campaign::where(['creator_id' => $user->id])->get();
         $subcampaigns = Subcampaign::where('campaign_id', $campaign->id)->get();
@@ -54,7 +55,8 @@ class SubcampaignController extends Controller
             'subcampaigns',
             'ads',
             'landing_pages',
-            'page_size'
+            'page_size',
+            'max_display'
         ));
     }
 

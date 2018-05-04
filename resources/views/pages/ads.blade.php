@@ -246,7 +246,7 @@
         });
 
         // add read more toggle
-        var initCnt = 150; //Intial characters to display
+        var initCnt = 100; //Intial characters to display
 
         $('a#tracking_link').each(function() {
             var trackingText = $(this).attr('href');
