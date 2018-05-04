@@ -71,7 +71,8 @@ $(document).ready(function () {
             iTotal = iTotal - 1;
             return "Showing " + iStart + " to " + iEnd + " of " + iTotal + " entries";
         },
-        // "pageLength": 3,
+        'scrollY'       : '55vh',
+        'scrollCollapse': true,
     });
 
 
@@ -255,6 +256,8 @@ $(document).ready(function () {
                     return "Showing " + iStart + " to " + iEnd + " of " + iTotal + " entries";
                 },
                 "iDisplayLength": page_size,
+                'scrollY'       : '55vh',
+                'scrollCollapse': true,
             });
         });
     });

@@ -178,6 +178,8 @@
             },
             "order": [],
             "iDisplayLength": page_size,
+            'scrollY'       : '55vh',
+            'scrollCollapse': true,
         });
 
 

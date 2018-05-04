@@ -256,6 +256,8 @@ function initDataTable() {
                 }
             },
         ],
+        'scrollY':        '55vh',
+        'scrollCollapse': true,
     });
 }
 

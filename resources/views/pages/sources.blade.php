@@ -147,6 +147,8 @@
             },
             "order": [],
             "iDisplayLength": page_size,
+            'scrollY'       : '55vh',
+            'scrollCollapse': true,
         });
 
 //        $('head').append('<link rel="stylesheet" href="{{ asset('js/plugin/selectize/css/selectize.bootstrap3.css') }}">');
