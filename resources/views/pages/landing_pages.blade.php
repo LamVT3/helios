@@ -180,6 +180,7 @@
             "order": [[0, "desc"]],
             "iDisplayLength": page_size,
             'scrollY'       : '55vh',
+            "scrollX"       : true,
             'scrollCollapse': true,
         });
 

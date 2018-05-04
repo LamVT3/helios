@@ -256,7 +256,8 @@ function initDataTable() {
                 }
             },
         ],
-        'scrollY':        '55vh',
+        'scrollY'       : '55vh',
+        "scrollX"       : true,
         'scrollCollapse': true,
     });
 }
