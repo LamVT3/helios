@@ -12,6 +12,7 @@ use DB;
 use App\AdResult;
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -109,7 +110,7 @@ class UserController extends Controller
         $newFileName = '';
         if(\request('avatar')){
             $extension              = request('avatar')->getClientOriginalExtension();
-            $newFileName            = $user->username.'.'.$extension;
+            $newFileName            = $user->username.'.'.strtolower($extension);
 
             $user->avatar           = $newFileName;
             $validator['avatar']    = 'image|required';
@@ -247,6 +248,14 @@ class UserController extends Controller
         if(\request('avatar')){
             $file   = request('avatar');
             $url    = config('constants.AVATARS_URL');
+
+            $arr    = explode('.', $newFileName);
+            // get images containing the string username
+            foreach (glob($url.$arr[0].'.*') as $filename) {
+                // Delete a file
+                unlink($filename);
+            }
+            // upload file
             $file->move($url, $newFileName);
         }
     }
