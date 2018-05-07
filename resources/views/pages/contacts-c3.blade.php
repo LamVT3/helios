@@ -95,14 +95,14 @@
                                     <select name="current_level" id="current_level" class="select2"
                                             style="width: 280px">
                                         <option value="all">All</option>
-                                        <option value="L1">L1</option>
-                                        <option value="L2">L2</option>
-                                        <option value="L3">L3</option>
-                                        <option value="L4">L4</option>
-                                        <option value="L5">L5</option>
-                                        <option value="L6">L6</option>
-                                        <option value="L7">L7</option>
-                                        <option value="L8">L8</option>
+                                        <option value="l1">L1</option>
+                                        <option value="l2">L2</option>
+                                        <option value="l3">L3</option>
+                                        <option value="l4">L4</option>
+                                        <option value="l5">L5</option>
+                                        <option value="l6">L6</option>
+                                        <option value="l7">L7</option>
+                                        <option value="l8">L8</option>
                                     </select>
                                     <i></i>
                                 </section>
