@@ -36,6 +36,7 @@ class ContactController extends Controller
         $page_size  = Config::getByKey('PAGE_SIZE');
         $contacts = Contact::where('submit_time', '>=', strtotime("midnight")*1000)
             ->where('submit_time', '<', strtotime("tomorrow")*1000)
+            ->where('clevel', 'c3b')
             ->orderBy('submit_time', 'desc')->limit((int)$page_size)->get();
         $sources = Source::all();
         $teams = Team::all();

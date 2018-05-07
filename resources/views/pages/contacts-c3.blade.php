@@ -86,7 +86,7 @@
                                             style="width: 280px">
                                         <option value="all">All</option>
                                         <option value="c3a">C3A</option>
-                                        <option value="c3b">C3B</option>
+                                        <option value="c3b" selected>C3B</option>
                                     </select>
                                     <i></i>
                                 </section>
