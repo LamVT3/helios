@@ -46,7 +46,7 @@
         var errorElement = 'em';
 
         $.validator.addMethod( "alphanumeric", function( value, element ) {
-            return this.optional( element ) || /^[\w.]+$/i.test( value );
+            return this.optional( element ) || /^[\w./:]+$/i.test( value );
         }, "Letters, numbers, dots and underscores only please" );
 
         $('#form-landing-page').validate({
