@@ -36,12 +36,16 @@
                                     <span class="registered_date"></span> <b class="caret"></b>
                                 </div>
                             </div>
-                            <div class="row">
+                            <fieldset>
+                                <legend>Filter
+                                    <a id="filter" href="javascript:void(0)"><i class="fa fa-angle-down fa-lg"></i></a>
+                                </legend>
+                                <div class="row" id="filter">
                                 <section class="col col-2">
                                     <label class="label">Source</label>
                                     <select name="source_id" class="select2" style="width: 280px" id="source_id"
                                             data-url="{!! route('ajax-getFilterSource') !!}">
-                                        <option value="all">All</option>
+                                        <option value="">All</option>
                                         @foreach($sources as $item)
                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
                                         @endforeach
@@ -52,7 +56,7 @@
                                     <label class="label">Team</label>
                                     <select name="team_id" class="select2" style="width: 280px" id="team_id"
                                             data-url="{!! route('ajax-getFilterTeam') !!}">
-                                        <option value="all">All</option>
+                                        <option value="">All</option>
                                         @foreach($teams as $item)
                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
                                         @endforeach
@@ -61,8 +65,9 @@
                                 </section>
                                 <section class="col col-2">
                                     <label class="label">Marketer</label>
-                                    <select name="marketer_id" id="marketer_id" class="select2" style="width: 280px">
-                                        <option value="all">All</option>
+                                    <select name="marketer_id" id="marketer_id" class="select2" style="width: 280px"
+                                            data-url="{!! route('ajax-getFilterMaketer') !!}">
+                                        <option value="">All</option>
                                         @foreach($marketers as $item)
                                         <option value="{{ $item->id }}">{{ $item->username }}</option>
                                         @endforeach
@@ -73,7 +78,7 @@
                                     <label class="label">Campaign</label>
                                     <select name="campaign_id" id="campaign_id" class="select2" style="width: 280px"
                                             data-url="{!! route('ajax-getFilterCampaign') !!}">
-                                        <option value="all">All</option>
+                                        <option value="">All</option>
                                         @foreach($campaigns as $item)
                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
                                         @endforeach
@@ -81,33 +86,48 @@
                                     <i></i>
                                 </section>
                                 <section class="col col-2">
-                                    <label class="label">CLevel</label>
-                                    <select name="clevel" id="clevel" class="select2"
-                                            style="width: 280px">
-                                        <option value="all">All</option>
-                                        <option value="c3a">C3A</option>
-                                        <option value="c3b" selected>C3B</option>
+                                    <label class="label">Sub Campaign</label>
+                                    <select name="subcampaign_id" id="subcampaign_id" class="select2" style="width: 280px"
+                                            data-url="">
+                                        <option value="">All</option>
+                                        @foreach($subcampaigns as $item)
+                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                        @endforeach
                                     </select>
                                     <i></i>
                                 </section>
-                                <section class="col col-2">
-                                    <label class="label">CRM Level</label>
-                                    <select name="current_level" id="current_level" class="select2"
-                                            style="width: 280px">
-                                        <option value="all">All</option>
-                                        <option value="l1">L1</option>
-                                        <option value="l2">L2</option>
-                                        <option value="l3">L3</option>
-                                        <option value="l4">L4</option>
-                                        <option value="l5">L5</option>
-                                        <option value="l6">L6</option>
-                                        <option value="l7">L7</option>
-                                        <option value="l8">L8</option>
-                                    </select>
-                                    <i></i>
-                                </section>
-
                             </div>
+                                <div class="row" id="filter">
+                                    <section class="col col-2">
+                                        <label class="label">CLevel</label>
+                                        <select name="clevel" id="clevel" class="select2"
+                                                style="width: 280px">
+                                            <option value="">All</option>
+                                            <option value="c3a">C3A</option>
+                                            <option value="c3b" selected>C3B</option>
+                                        </select>
+                                        <i></i>
+                                    </section>
+                                    <section class="col col-2">
+                                        <label class="label">CRM Level</label>
+                                        <select name="current_level" id="current_level" class="select2"
+                                                style="width: 280px">
+                                            <option value="">All</option>
+                                            <option value="l1">L1</option>
+                                            <option value="l2">L2</option>
+                                            <option value="l3">L3</option>
+                                            <option value="l4">L4</option>
+                                            <option value="l5">L5</option>
+                                            <option value="l6">L6</option>
+                                            <option value="l7">L7</option>
+                                            <option value="l8">L8</option>
+                                        </select>
+                                        <i></i>
+                                    </section>
+                                </div>
+                            </fieldset>
+
+
                             <div class="row">
                                 <div class="col-md-12 text-right">
                                     <button class="btn btn-primary btn-sm" type="submit" style="margin-right: 15px">

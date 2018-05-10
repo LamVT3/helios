@@ -7,6 +7,7 @@ use App\AdResult;
 use App\Campaign;
 use App\Contact;
 use App\LandingPage;
+use App\Subcampaign;
 use App\Team;
 use App\User;
 use App\Config;
@@ -42,6 +43,7 @@ class ContactController extends Controller
         $teams = Team::all();
         $marketers = User::all();
         $campaigns = Campaign::where('is_active', 1)->get();
+        $subcampaigns = Subcampaign::where('is_active', 1)->get();
         return view('pages.contacts-c3', compact(
             'page_title',
             'page_css',
@@ -53,7 +55,8 @@ class ContactController extends Controller
             'teams',
             'marketers',
             'campaigns',
-            'page_size'
+            'page_size',
+            'subcampaigns'
         ));
     }
 

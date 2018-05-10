@@ -33,52 +33,68 @@
                                     <span class="registered_date"></span> <b class="caret"></b>
                                 </div>
                             </div>
-                            <div class="row">
-                                <section class="col col-2">
-                                    <label class="label">Source</label>
-                                    <select name="source_id" class="select2" style="width: 280px" id="source_id" tabindex="1" autofocus
-                                            data-url="{!! route('ajax-getFilterSource') !!}">
-                                        <option value="all">All</option>
-                                        @foreach($sources as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    <i></i>
-                                </section>
-                                <section class="col col-2">
-                                    <label class="label">Team</label>
-                                    <select name="team_id" class="select2" id="team_id" style="width: 280px" tabindex="2"
-                                            data-url="{!! route('ajax-getFilterTeam') !!}">
-                                        <option value="all">All</option>
-                                        @foreach($teams as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    <i></i>
-                                </section>
-                                <section class="col col-2">
-                                    <label class="label">Marketer</label>
-                                    <select name="marketer_id" id="marketer_id" class="select2" style="width: 280px" tabindex="3">
-                                        <option value="all">All</option>
-                                        @foreach($marketers as $item)
-                                        <option value="{{ $item->id }}">{{ $item->username }}</option>
-                                        @endforeach
-                                    </select>
-                                    <i></i>
-                                </section>
-                                <section class="col col-2">
-                                    <label class="label">Campaign</label>
-                                    <select name="campaign_id" id="campaign_id" class="select2" style="width: 280px" tabindex="4"
-                                            data-url="{!! route('ajax-getFilterCampaign') !!}">
-                                        <option value="all">All</option>
-                                        @foreach($campaigns as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    <i></i>
-                                </section>
-                            </div>
-                            <div class="row">
+                            <fieldset>
+                                <legend>Filter
+                                    <a id="filter" href="javascript:void(0)"><i class="fa fa-angle-down fa-lg"></i></a>
+                                </legend>
+                                <div class="row" id="filter">
+                                    <section class="col col-2">
+                                        <label class="label">Source</label>
+                                        <select name="source_id" class="select2" style="width: 280px" id="source_id" tabindex="1" autofocus
+                                                data-url="{!! route('ajax-getFilterSource') !!}">
+                                            <option value="">All</option>
+                                            @foreach($sources as $item)
+                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <i></i>
+                                    </section>
+                                    <section class="col col-2">
+                                        <label class="label">Team</label>
+                                        <select name="team_id" class="select2" id="team_id" style="width: 280px" tabindex="2"
+                                                data-url="{!! route('ajax-getFilterTeam') !!}">
+                                            <option value="">All</option>
+                                            @foreach($teams as $item)
+                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <i></i>
+                                    </section>
+                                    <section class="col col-2">
+                                        <label class="label">Marketer</label>
+                                        <select name="marketer_id" id="marketer_id" class="select2" style="width: 280px"
+                                                data-url="{!! route('ajax-getFilterMaketer') !!}" tabindex="3">
+                                            <option value="">All</option>
+                                            @foreach($marketers as $item)
+                                            <option value="{{ $item->id }}">{{ $item->username }}</option>
+                                            @endforeach
+                                        </select>
+                                        <i></i>
+                                    </section>
+                                    <section class="col col-2">
+                                        <label class="label">Campaign</label>
+                                        <select name="campaign_id" id="campaign_id" class="select2" style="width: 280px" tabindex="4"
+                                                data-url="{!! route('ajax-getFilterCampaign') !!}">
+                                            <option value="">All</option>
+                                            @foreach($campaigns as $item)
+                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <i></i>
+                                    </section>
+                                    <section class="col col-2">
+                                        <label class="label">Sub Campaign</label>
+                                        <select name="subcampaign_id" id="subcampaign_id" class="select2" style="width: 280px"
+                                                data-url="">
+                                            <option value="">All</option>
+                                            @foreach($subcampaigns as $item)
+                                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <i></i>
+                                    </section>
+                                </div>
+                                <div class="row">
                                 <div class="col-md-12 text-right">
                                     <button class="btn btn-primary btn-sm" type="submit" style="margin-right: 15px">
                                         <i class="fa fa-filter"></i>
@@ -86,6 +102,7 @@
                                     </button>
                                 </div>
                             </div>
+                            </fieldset>
                         </form>
                         {{--<div style="position: relative">
                             <form action="{{ route('report.export')}}" enctype="multipart/form-data">

@@ -85,11 +85,6 @@ $(document).ready(function () {
     $('#source_id').change(function (e) {
         var url = $('#source_id').attr('data-url');
         var source_id = $('select[name="source_id"]').val();
-        if (source_id == 'all') {
-            source_id = '';
-        } else {
-            source_id = source_id;
-        }
         $.ajax({
             url: url,
             type: 'GET',
@@ -105,6 +100,8 @@ $(document).ready(function () {
             $("#marketer_id").select2();
             $('#campaign_id').html(response.content_campaign);
             $("#campaign_id").select2();
+            $('#subcampaign_id').html(response.content_subcampaign);
+            $("#subcampaign_id").select2();
         });
     })
 
@@ -122,13 +119,34 @@ $(document).ready(function () {
             }
         }).done(function (response) {
             if (team_id) {
-                // $('#source_id').html(response.content_source);
-                // $("#source_id").select2();
                 $('#marketer_id').html(response.content_marketer);
                 $("#marketer_id").select2();
                 $('#campaign_id').html(response.content_campaign);
                 $("#campaign_id").select2();
+                $('#subcampaign_id').html(response.content_subcampaign);
+                $("#subcampaign_id").select2();
+            }
+        });
+    })
 
+    $('#marketer_id').change(function (e) {
+        var url = $('#marketer_id').attr('data-url');
+        var creator_id = $('select[name="marketer_id"]').val();
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            contentType: "application/json",
+            dataType: "json",
+            data: {
+                creator_id: creator_id
+            }
+        }).done(function (response) {
+            if (creator_id) {
+                $('#campaign_id').html(response.content_campaign);
+                $("#campaign_id").select2();
+                $('#subcampaign_id').html(response.content_subcampaign);
+                $("#subcampaign_id").select2();
             }
         });
     })
@@ -136,11 +154,6 @@ $(document).ready(function () {
     $('#campaign_id').change(function (e) {
         var url = $('#campaign_id').attr('data-url');
         var campaign_id = $('select[name="campaign_id"]').val();
-        if (campaign_id == 'all') {
-            campaign_id = '';
-        } else {
-            campaign_id = campaign_id;
-        }
         $.ajax({
             url: url,
             type: 'GET',
@@ -151,12 +164,8 @@ $(document).ready(function () {
             }
         }).done(function (response) {
             if (campaign_id) {
-                // $('#source_id').html(response.content_source);
-                // $("#source_id").select2();
-                // $('#team_id').html(response.content_team);
-                // $("#team_id").select2();
-                $('#marketer_id').html(response.content_marketer);
-                $("#marketer_id").select2();
+                $('#subcampaign_id').html(response.content_subcampaign);
+                $("#subcampaign_id").select2();
             }
         });
     })
@@ -274,4 +283,41 @@ function fixedTotalRow () {
 
         $('#table_report tbody tr:first').before(__row0);
     }
+}
+
+$(document).ready(function () {
+    disableSelect();
+    $('div#filter').hide();
+    $('a#filter').click(function (e) {
+        e.preventDefault();
+
+        if( $('a#filter i').hasClass('fa-angle-down')){
+            $('a#filter i').removeClass('fa-angle-down');
+            $('a#filter i').addClass('fa-angle-up');
+            $('div#filter').show(500);
+            enableSelect();
+        }
+        else{
+            $('a#filter i').removeClass('fa-angle-up');
+            $('a#filter i').addClass('fa-angle-down');
+            $('div#filter').hide(500);
+            disableSelect();
+        }
+    });
+});
+
+function disableSelect() {
+    $('#source_id').prop('disabled', 'disabled');
+    $('#team_id').prop('disabled', 'disabled');
+    $('#marketer_id').prop('disabled', 'disabled');
+    $('#campaign_id').prop('disabled', 'disabled');
+    $('#subcampaign_id').prop('disabled', 'disabled');
+}
+
+function enableSelect() {
+    $('#source_id').prop('disabled', false);
+    $('#team_id').prop('disabled', false);
+    $('#marketer_id').prop('disabled', false);
+    $('#campaign_id').prop('disabled', false);
+    $('#subcampaign_id').prop('disabled', false);
 }

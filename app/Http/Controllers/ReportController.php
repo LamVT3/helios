@@ -10,6 +10,7 @@ use App\Config;
 use App\Source;
 use App\Team;
 use App\User;
+use App\Subcampaign;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -46,11 +47,12 @@ class ReportController extends Controller
             $report = $this->prepare_report($results);
         }
 
-        $sources = Source::all();
-        $teams = Team::all();
-        $marketers = User::all();
-        $campaigns = Campaign::where('is_active', 1)->get();
+        $sources        = Source::all();
+        $teams          = Team::all();
+        $marketers      = User::all();
+        $campaigns      = Campaign::where('is_active', 1)->get();
         $page_size      = Config::getByKey('PAGE_SIZE');
+        $subcampaigns   = Subcampaign::where('is_active', 1)->get();
 
         return view('pages.report-quality', compact(
             'page_title',
@@ -63,7 +65,8 @@ class ReportController extends Controller
             'teams',
             'marketers',
             'campaigns',
-            'page_size'
+            'page_size',
+            'subcampaigns'
         ));
     }
 
