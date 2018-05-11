@@ -67,14 +67,12 @@ $(document).ready(function () {
                 team_id: team_id
             }
         }).done(function (response) {
-            if (team_id) {
-                $('#marketer_id').html(response.content_marketer);
-                $("#marketer_id").select2();
-                $('#campaign_id').html(response.content_campaign);
-                $("#campaign_id").select2();
-                $('#subcampaign_id').html(response.content_subcampaign);
-                $("#subcampaign_id").select2();
-            }
+            $('#marketer_id').html(response.content_marketer);
+            $("#marketer_id").select2();
+            $('#campaign_id').html(response.content_campaign);
+            $("#campaign_id").select2();
+            $('#subcampaign_id').html(response.content_subcampaign);
+            $("#subcampaign_id").select2();
         });
     })
 
@@ -91,12 +89,10 @@ $(document).ready(function () {
                 creator_id: creator_id
             }
         }).done(function (response) {
-            if (creator_id) {
-                $('#campaign_id').html(response.content_campaign);
-                $("#campaign_id").select2();
-                $('#subcampaign_id').html(response.content_subcampaign);
-                $("#subcampaign_id").select2();
-            }
+            $('#campaign_id').html(response.content_campaign);
+            $("#campaign_id").select2();
+            $('#subcampaign_id').html(response.content_subcampaign);
+            $("#subcampaign_id").select2();
         });
     })
 
@@ -112,10 +108,8 @@ $(document).ready(function () {
                 campaign_id: campaign_id
             }
         }).done(function (response) {
-            if (campaign_id) {
-                $('#subcampaign_id').html(response.content_subcampaign);
-                $("#subcampaign_id").select2();
-            }
+            $('#subcampaign_id').html(response.content_subcampaign);
+            $("#subcampaign_id").select2();
         });
     })
 });
@@ -133,7 +127,6 @@ $(document).ready(function () {
 
 function initDataTable() {
 
-    var group           = 'all';
     var url             = $('#search-form-c3').attr('url');
     var source_id       = $('select[name="source_id"]').val();
     var team_id         = $('select[name="team_id"]').val();
@@ -143,49 +136,20 @@ function initDataTable() {
     var current_level   = $('select[name="current_level"]').val();
     var registered_date = $('.registered_date').text();
     var page_size       = $('input[name="page_size"]').val();
-    if (source_id == group) {
-        source_id = '';
-    }
-    else {
-        source_id = source_id;
-    }
-    if (team_id == group) {
-        team_id = '';
-    }
-    else {
-        team_id = team_id;
-    }
-    if (marketer_id == group) {
-        marketer_id = '';
-    } else {
-        marketer_id = marketer_id;
-    }
+    var subcampaign_id  = $('select[name="subcampaign_id"]').val();
+    var is_export       = $('select[name="is_export"]').val();
+    var limit           = $('select[name="count"]').val();
 
-    if (campaign_id == group) {
-        campaign_id = '';
-    }
-    else {
-        campaign_id = campaign_id;
-    }
-    if (current_level == group) {
-        current_level = '';
-    }
-    else {
-        current_level = current_level;
-    }
-    if (clevel == group) {
-        clevel = '';
-    }
-    else {
-        clevel = clevel;
-    }
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
     $('input[name="marketer_id"]').val(marketer_id);
     $('input[name="campaign_id"]').val(campaign_id);
+    $('input[name="subcampaign_id"]').val(subcampaign_id);
     $('input[name="clevel"]').val(clevel);
     $('input[name="current_level"]').val(current_level);
     $('input[name="registered_date"]').val(registered_date);
+    $('input[name="is_export"]').val(is_export);
+    $('input[name="count"]').val(count);
 
     /* BASIC ;*/
     var responsiveHelper_table_campaign = undefined;
@@ -227,14 +191,17 @@ function initDataTable() {
                 d.campaign_id       = campaign_id,
                 d.clevel            = clevel,
                 d.current_level     = current_level,
-                d.registered_date   = registered_date
+                d.subcampaign_id    = subcampaign_id,
+                d.is_export         = is_export,
+                d.registered_date   = registered_date,
+                d.limit             = limit
             }
         },
         "columns": [
             {
                 "data" : 'name',
                 "render": function ( data, type, row, meta ) {
-                    return '<a href="javascript:void(0)" class="name" data-id="' + data[0] + '">' + data[1] + '</a>';
+                    return '<a href="javascript:void(0)" class="name name_link" data-id="' + data[0] + '">' + data[1] + '</a>';
                 }
             },
             { "data" : 'email'},
@@ -264,11 +231,23 @@ function initDataTable() {
         'scrollY'       : '55vh',
         "scrollX"       : true,
         'scrollCollapse': true,
+        "createdRow": function ( row, data, index ) {
+            if(data['is_export']){
+                $(row).addClass('is_export');
+            }
+        },
+        // "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
+        //     var exported    = $('input[name="exported"]').val();
+        //     var count_str   = '';
+        //     if(exported > 0){
+        //         count_str   = '<span class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
+        //     }
+        //     return "Showing " + iStart + " to " + iEnd + " of " + iTotal + " entries" + count_str;
+        // },
     });
 }
 
 $(document).ready(function () {
-    disableSelect();
     $('div#filter').hide();
     $('a#filter').click(function (e) {
         e.preventDefault();
@@ -277,35 +256,47 @@ $(document).ready(function () {
             $('a#filter i').removeClass('fa-angle-down');
             $('a#filter i').addClass('fa-angle-up');
             $('div#filter').show(500);
-            enableSelect();
         }
         else{
             $('a#filter i').removeClass('fa-angle-up');
             $('a#filter i').addClass('fa-angle-down');
             $('div#filter').hide(500);
-            disableSelect();
         }
     });
+
 });
 
-function disableSelect() {
-    $('#source_id').prop('disabled', 'disabled');
-    $('#team_id').prop('disabled', 'disabled');
-    $('#marketer_id').prop('disabled', 'disabled');
-    $('#campaign_id').prop('disabled', 'disabled');
-    $('#subcampaign_id').prop('disabled', 'disabled');
-    $('#clevel').prop('disabled', 'disabled');
-    $('#current_level').prop('disabled', 'disabled');
+function countExported() {
+    var url             = $('input[name="exported_url"]').val();
+    var source_id       = $('select[name="source_id"]').val();
+    var team_id         = $('select[name="team_id"]').val();
+    var marketer_id     = $('select[name="marketer_id"]').val();
+    var campaign_id     = $('select[name="campaign_id"]').val();
+    var clevel          = $('select[name="clevel"]').val();
+    var current_level   = $('select[name="current_level"]').val();
+    var registered_date = $('.registered_date').text();
+    var page_size       = $('input[name="page_size"]').val();
+    var subcampaign_id  = $('select[name="subcampaign_id"]').val();
+
+    var data = {};
+    data.source_id         = source_id,
+    data.team_id           = team_id,
+    data.marketer_id       = marketer_id,
+    data.campaign_id       = campaign_id,
+    data.clevel            = clevel,
+    data.current_level     = current_level,
+    data.subcampaign_id    = subcampaign_id,
+    data.registered_date   = registered_date,
+
+    $.get(url, data, function (data) {
+        $('input[name="exported"]').val(data);
+    }).fail(
+        function (err) {
+            alert('Cannot connect to server. Please try again later.');
+        });
 }
 
-function enableSelect() {
-    $('#source_id').prop('disabled', false);
-    $('#team_id').prop('disabled', false);
-    $('#marketer_id').prop('disabled', false);
-    $('#campaign_id').prop('disabled', false);
-    $('#subcampaign_id').prop('disabled', false);
-    $('#clevel').prop('disabled', false);
-    $('#current_level').prop('disabled', false);
-}
+
+
 
 

@@ -62,10 +62,10 @@ class AjaxController extends Controller
     {
         $data_where = array();
         $request = request();
-        $html_team          = "<option value='all' selected>All</option>";
-        $html_marketer      = "<option value='all' selected>All</option>";
-        $html_campaign      = "<option value='all' selected>All</option>";
-        $html_subcampaign   = "<option value='all' selected>All</option>";
+        $html_team          = "<option value='' selected>All</option>";
+        $html_marketer      = "<option value='' selected>All</option>";
+        $html_campaign      = "<option value='' selected>All</option>";
+        $html_subcampaign   = "<option value='' selected>All</option>";
 
         if ($request->source_id) {
             $data_where['source_id'] = $request->source_id;
@@ -128,9 +128,9 @@ class AjaxController extends Controller
         $request = request();
         DB::connection( 'mongodb' )->enableQueryLog();
 
-        $html_campaign      = "<option value='all'>All</option>";
-        $html_marketer      = "<option value='all'>All</option>";
-        $html_subcampaign   = "<option value='all' selected>All</option>";
+        $html_campaign      = "<option value=''>All</option>";
+        $html_marketer      = "<option value=''>All</option>";
+        $html_subcampaign   = "<option value='' selected>All</option>";
 
         if ($request->team_id) {
             $data_where['team_id'] = $request->team_id;
@@ -168,8 +168,8 @@ class AjaxController extends Controller
     public function getFilterMaketer()
     {
         $request = request();
-        $html_campaign      = "<option value='all' selected>All</option>";
-        $html_subcampaign   = "<option value='all' selected>All</option>";
+        $html_campaign      = "<option value='' selected>All</option>";
+        $html_subcampaign   = "<option value='' selected>All</option>";
 
         if ($request->creator_id) {
             $data_where['creator_id'] = $request->creator_id;
@@ -200,7 +200,7 @@ class AjaxController extends Controller
     {
         $request = request();
 
-        $html_subcampaign   = "<option value='all' selected>All</option>";
+        $html_subcampaign   = "<option value='' selected>All</option>";
 
         if ($request->campaign_id) {
             $subcampaign    = Subcampaign::where('campaign_id', $request->campaign_id)->get();
@@ -579,7 +579,7 @@ class AjaxController extends Controller
             "draw"            => intval( $params['draw'] ),
             "recordsTotal"    => intval( $data['total'] ),
             "recordsFiltered" => intval( $data['total']),
-            "data"            => $data['contacts']
+            "data"            => $data['contacts'],
         );
 
         echo json_encode($json_data);  // send data as json format
@@ -690,11 +690,17 @@ class AjaxController extends Controller
         if ($request->campaign_id) {
             $data_where['campaign_id']      = $request->campaign_id;
         }
+        if ($request->subcampaign_id) {
+            $data_where['subcampaign_id']   = $request->subcampaign_id;
+        }
         if ($request->current_level) {
             $data_where['current_level']    = $request->current_level;
         }
         if ($request->clevel) {
             $data_where['clevel']           = $request->clevel;
+        }
+        if ($request->is_export) {
+            $data_where['is_export'] = (int)$request->is_export;
         }
 
         return $data_where;

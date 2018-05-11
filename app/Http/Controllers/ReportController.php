@@ -102,6 +102,9 @@ class ReportController extends Controller
         if ($request->campaign_id) {
             $data_where['campaign_id'] = $request->campaign_id;
         }
+        if ($request->subcampaign_id) {
+            $data_where['subcampaign_id'] = $request->subcampaign_id;
+        }
 
         $startDate = Date('Y-m-d');
         $endDate = Date('Y-m-d');
@@ -167,10 +170,10 @@ class ReportController extends Controller
 
         $report = [
             'total' => (object)[
-                'source' => $source_name,
-                'team' => $team_name,
-                'marketer' => $marketer_name,
-                'campaign' => $campaign_name,
+                'source' => 'All',
+                'team' => 'All',
+                'marketer' => 'All',
+                'campaign' => 'All',
                 'subcampaign' => 'All',
                 'ad' => 'All',
                 'c1' => 0,

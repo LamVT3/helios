@@ -280,11 +280,11 @@ fieldset
 
 legend
 {
-    font-size:20px;
+    font-size:15px;
     font-style: italic;
     color: darkgrey;
     margin-bottom: 5px;
-    width: 7%;
+    width: 9%;
     border: 1px solid #ddd;
     border-radius: 4px;
     padding: 5px!important;
@@ -301,4 +301,13 @@ legend a
 legend a:hover a:visited a:focus
 {
     color: darkgrey;
+}
+tr.is_export
+{
+    background-color: #739e73!important;
+    color: white;
+}
+tr.is_export a.name_link
+{
+    color: white;
 }

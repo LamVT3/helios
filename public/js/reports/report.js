@@ -118,14 +118,12 @@ $(document).ready(function () {
                 team_id: team_id
             }
         }).done(function (response) {
-            if (team_id) {
-                $('#marketer_id').html(response.content_marketer);
-                $("#marketer_id").select2();
-                $('#campaign_id').html(response.content_campaign);
-                $("#campaign_id").select2();
-                $('#subcampaign_id').html(response.content_subcampaign);
-                $("#subcampaign_id").select2();
-            }
+            $('#marketer_id').html(response.content_marketer);
+            $("#marketer_id").select2();
+            $('#campaign_id').html(response.content_campaign);
+            $("#campaign_id").select2();
+            $('#subcampaign_id').html(response.content_subcampaign);
+            $("#subcampaign_id").select2();
         });
     })
 
@@ -142,12 +140,10 @@ $(document).ready(function () {
                 creator_id: creator_id
             }
         }).done(function (response) {
-            if (creator_id) {
-                $('#campaign_id').html(response.content_campaign);
-                $("#campaign_id").select2();
-                $('#subcampaign_id').html(response.content_subcampaign);
-                $("#subcampaign_id").select2();
-            }
+            $('#campaign_id').html(response.content_campaign);
+            $("#campaign_id").select2();
+            $('#subcampaign_id').html(response.content_subcampaign);
+            $("#subcampaign_id").select2();
         });
     })
 
@@ -163,10 +159,8 @@ $(document).ready(function () {
                 campaign_id: campaign_id
             }
         }).done(function (response) {
-            if (campaign_id) {
-                $('#subcampaign_id').html(response.content_subcampaign);
-                $("#subcampaign_id").select2();
-            }
+            $('#subcampaign_id').html(response.content_subcampaign);
+            $("#subcampaign_id").select2();
         });
     })
 });
@@ -174,53 +168,33 @@ $(document).ready(function () {
 $(document).ready(function () {
     $('#search-form-report').submit(function (e) {
         e.preventDefault();
-        var group = 'all';
         var url = $('#search-form-report').attr('url');
         var source_id = $('select[name="source_id"]').val();
         var team_id = $('select[name="team_id"]').val();
         var marketer_id = $('select[name="marketer_id"]').val();
         var campaign_id = $('select[name="campaign_id"]').val();
+        var subcampaign_id = $('select[name="subcampaign_id"]').val();
         var registered_date = $('.registered_date').text();
-        if (source_id == group) {
-            source_id = '';
-        }
-        else {
-            source_id = source_id;
-        }
-        if (team_id == group) {
-            team_id = '';
-        }
-        else {
-            team_id = team_id;
-        }
-        if (marketer_id == group) {
-            marketer_id = '';
-        } else {
-            marketer_id = marketer_id;
-        }
 
-        if (campaign_id == group) {
-            campaign_id = '';
-        }
-        else {
-            campaign_id = campaign_id;
-        }
         $('input[name="source_id"]').val(source_id);
         $('input[name="team_id"]').val(team_id);
         $('input[name="marketer_id"]').val(marketer_id);
         $('input[name="campaign_id"]').val(campaign_id);
+        $('input[name="subcampaign_id"]').val(subcampaign_id);
         $('input[name="registered_date"]').val(registered_date);
+
         // var url = "{!! route('contacts.filter') !!}";
         $('.loading').show();
         $.ajax({
             url: url,
             type: 'GET',
             data: {
-                source_id: source_id,
-                team_id: team_id,
-                marketer_id: marketer_id,
-                campaign_id: campaign_id,
-                registered_date: registered_date
+                source_id       : source_id,
+                team_id         : team_id,
+                marketer_id     : marketer_id,
+                campaign_id     : campaign_id,
+                subcampaign_id  : subcampaign_id,
+                registered_date : registered_date
             }
         }).done(function (response) {
             $('.loading').hide();

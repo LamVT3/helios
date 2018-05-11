@@ -125,6 +125,10 @@
         <td>Platform</td>
         <td>{{ $contact->platform or '' }}</td>
     </tr>
+    <tr>
+        <td>Exported</td>
+        <td>{{ $contact->is_export ? 'Yes' : 'No' }}</td>
+    </tr>
     </tbody>
 </table>
 

@@ -28,22 +28,24 @@ class ContactController extends Controller
 
     public function index()
     {
-        $page_title = "Contacts | Helios";
-        $page_css = array();
+        $page_title     = "Contacts | Helios";
+        $page_css       = array();
         $no_main_header = FALSE; //set true for lock.php and login.php
-        $active = 'contacts';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-child\"></i> Contacts <span>> C3</span>";
+        $active         = 'contacts';
+        $breadcrumbs    = "<i class=\"fa-fw fa fa-child\"></i> Contacts <span>> C3</span>";
 
         $page_size  = Config::getByKey('PAGE_SIZE');
-        $contacts = Contact::where('submit_time', '>=', strtotime("midnight")*1000)
+        $contacts   = Contact::where('submit_time', '>=', strtotime("midnight")*1000)
             ->where('submit_time', '<', strtotime("tomorrow")*1000)
             ->where('clevel', 'c3b')
             ->orderBy('submit_time', 'desc')->limit((int)$page_size)->get();
-        $sources = Source::all();
-        $teams = Team::all();
-        $marketers = User::all();
-        $campaigns = Campaign::where('is_active', 1)->get();
-        $subcampaigns = Subcampaign::where('is_active', 1)->get();
+        $sources        = Source::all();
+        $teams          = Team::all();
+        $marketers      = User::all();
+        $campaigns      = Campaign::where('is_active', 1)->get();
+        $subcampaigns   = Subcampaign::where('is_active', 1)->get();
+        $exported       = $this->countExported();
+
         return view('pages.contacts-c3', compact(
             'page_title',
             'page_css',
@@ -56,7 +58,8 @@ class ContactController extends Controller
             'marketers',
             'campaigns',
             'page_size',
-            'subcampaigns'
+            'subcampaigns',
+            'exported'
         ));
     }
 
@@ -92,26 +95,8 @@ class ContactController extends Controller
 
     public function getC3Data()
     {
-        $data_where = array();
+        $data_where = $this->getWhereData();
         $request = request();
-        if ($request->source_id) {
-            $data_where['source_id'] = $request->source_id;
-        }
-        if ($request->team_id) {
-            $data_where['team_id'] = $request->team_id;
-        }
-        if ($request->marketer_id) {
-            $data_where['marketer_id'] = $request->marketer_id;
-        }
-        if ($request->campaign_id) {
-            $data_where['campaign_id'] = $request->campaign_id;
-        }
-        if ($request->current_level) {
-            $data_where['current_level'] = $request->current_level;
-        }
-        if ($request->clevel) {
-            $data_where['clevel'] = $request->clevel;
-        }
 
         // DB::connection( 'mongodb' )->enableQueryLog();
 
@@ -131,57 +116,162 @@ class ContactController extends Controller
             $query->where($data_where);
         }
 
-        $contacts = $query->orderBy('submit_time', 'desc')->limit(20000)->get();
+        if($request->limit)
+        {
+            $query->limit((int)$request->limit);
+        }
+        $contacts = $query->orderBy('submit_time', 'desc')->get();
         // DB::connection('mongodb')->getQueryLog();
         $data = $data_where;
         $data['contacts'] = $contacts;
+
         return $data;
+    }
+
+    public function countExported()
+    {
+        $data_where = $this->getWhereData();
+        $request = request();
+
+        // DB::connection( 'mongodb' )->enableQueryLog();
+
+        $startDate = strtotime("midnight")*1000;
+        $endDate = strtotime("tomorrow")*1000;
+        if($request->registered_date){
+            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_arr = explode(' ', str_replace('/', '-', $date_place));
+            $startDate = strtotime($date_arr[0])*1000;
+            // $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
+            $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
+        $data_where['is_export'] = 1;
+
+        $query = Contact::where('submit_time', '>=', $startDate);
+        $query->where('submit_time', '<', $endDate);
+        $query->where($data_where);
+        $count = $query->count();
+
+        return $count;
     }
 
     public function export()
     {
-        $data = $this->getC3Data();
-        $contacts = $data['contacts'];
-        if (count($contacts) >= 1) {
-            Excel::create('contacts_c3', function ($excel) {
-                $excel->sheet('contacts_c3', function ($sheet) {
-                    $data = $this->getC3Data();
-                    $count = 1;
-                    $contacts = $data['contacts'];
-                    foreach ($contacts as $item) {
-                        $datas[] = array(
-                            $count++,
-                            $item->name,
-                            $item->email,
-                            $item->phone,
-                            $item->age,
-                            Date('Y-m-d H:i:s', $item->submit_time/1000),
-                            $item->current_level,
-                            $item->marketer_name,
-                            $item->campaign_name,
-                            $item->subcampaign_name,
-                            $item->ad_name,
-                            $item->landing_page,
-                            $item->contact_id,
-                            $item->ads_link
-                        );
+//        $data = $this->getC3Data();
+//        $contacts = $data['contacts'];
+//        if (count($contacts) >= 1) {
+        $date = \request('registered_date');
+        $date = str_replace('/','',$date);
+        $file_name = 'Contact_C3_' . $date;
+        Excel::create($file_name, function ($excel) {
+            $excel->sheet('contacts_c3', function ($sheet) {
+                $data = $this->getC3Data();
+                $count = 1;
+                $contacts = $data['contacts'];
+                $datas = array();
+                foreach ($contacts as $item) {
+                    if($item->is_export){
+                        continue;
                     }
-                    $sheet->fromArray($datas, NULL, 'A1', FALSE, FALSE);
-                    $headings = array('STT', 'Name', 'Email', 'Phone', 'Age', 'Time', 'Current level', 'Marketer', 'Campaign', 'Subcampaign', 'Ads', 'Landing page', 'ContactID', 'Link Tracking');
-                    $sheet->prependRow(1, $headings);
-                    $sheet->cells('A1:N1', function ($cells) {
-                        $cells->setBackground('#191919');
-                        $cells->setFontColor('#DBAC69');
-                        $cells->setFontSize(12);
-                        $cells->setFontWeight('bold');
-                    });
+                    $datas[] = array(
+                        $count++,
+                        $item->name,
+                        $item->email,
+                        $item->phone,
+                        $item->age,
+                        Date('Y-m-d H:i:s', $item->submit_time/1000),
+                        $item->current_level,
+                        $item->marketer_name,
+                        $item->campaign_name,
+                        $item->subcampaign_name,
+                        $item->ad_name,
+                        $item->landing_page,
+                        $item->contact_id,
+                        $item->ads_link
+                    );
+                }
+                $sheet->fromArray($datas, NULL, 'A1', FALSE, FALSE);
+                $headings = array('STT', 'Name', 'Email', 'Phone', 'Age', 'Time', 'Current level', 'Marketer', 'Campaign', 'Subcampaign', 'Ads', 'Landing page', 'ContactID', 'Link Tracking');
+                $sheet->prependRow(1, $headings);
+                $sheet->cells('A1:N1', function ($cells) {
+                    $cells->setBackground('#191919');
+                    $cells->setFontColor('#DBAC69');
+                    $cells->setFontSize(12);
+                    $cells->setFontWeight('bold');
                 });
 
-            })->export('xls');
-        } else {
-            return back();
+            });
+            $this->updateStatusExport();
+        })->export('xls');
+
+//        } else {
+//            return back();
+//        }
+    }
+
+    private function getWhereData(){
+        $request    = request();
+        $data_where = array();
+        if ($request->source_id) {
+            $data_where['source_id']        = $request->source_id;
+        }
+        if ($request->team_id) {
+            $data_where['team_id']          = $request->team_id;
+        }
+        if ($request->marketer_id) {
+            $data_where['marketer_id']      = $request->marketer_id;
+        }
+        if ($request->campaign_id) {
+            $data_where['campaign_id']      = $request->campaign_id;
+        }
+        if ($request->subcampaign_id) {
+            $data_where['subcampaign_id']   = $request->subcampaign_id;
+        }
+        if ($request->current_level) {
+            $data_where['current_level']    = $request->current_level;
+        }
+        if ($request->clevel) {
+            $data_where['clevel']           = $request->clevel;
+        }
+        if ($request->is_export) {
+            $data_where['is_export']        = (int)$request->is_export;
+        }
+
+        return $data_where;
+    }
+
+    private function updateStatusExport(){
+        $data_where = $this->getWhereData();
+
+        $request = request();
+
+        // DB::connection( 'mongodb' )->enableQueryLog();
+
+        $startDate = strtotime("midnight")*1000;
+        $endDate = strtotime("tomorrow")*1000;
+        if($request->registered_date){
+            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_arr = explode(' ', str_replace('/', '-', $date_place));
+            $startDate = strtotime($date_arr[0])*1000;
+            // $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
+            $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
+        $query = Contact::where('submit_time', '>=', $startDate);
+        $query->where('submit_time', '<', $endDate);
+
+        if(count($data_where) > 0){
+            $query->where($data_where);
+        }
+        if ($request->limit) {
+            $query->limit((int)$request->limit);
+        }
+        $contacts = $query->orderBy('submit_time', 'desc')->get();
+        foreach ($contacts as $contact)
+        {
+            $contact->is_export = 1;
+            $contact->save();
         }
     }
+
 
     public function import(Request $request)
     {
