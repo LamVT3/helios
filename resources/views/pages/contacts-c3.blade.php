@@ -146,6 +146,7 @@
                                         <i></i>
                                     </section>
                                 </div>
+                                <!-- HEL-34 time period as condition to filter C3BG contacts -->
                                 <div class="row" id="filter">
                                     <section class="col col-3">
                                         <label class="label"><input type="checkbox" name="c3bg" style="margin: 5px">C3BG</label>

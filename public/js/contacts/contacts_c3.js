@@ -7,6 +7,7 @@ $(document).ready(function () {
     var start = moment();
     var end = moment();
 
+    // time for contact filter
     function reportrange_span(start, end) {
         $('#reportrange span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
     }
@@ -29,6 +30,7 @@ $(document).ready(function () {
         }
     }, reportrange_span);
 
+    // time period as condition to filter C3BG contact
     function c3range_span(start, end) {
         $('#c3range span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
     }
