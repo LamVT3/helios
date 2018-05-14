@@ -587,12 +587,7 @@ class AjaxController extends Controller
 
     public function getC3Data()
     {
-        $request        = request();
-        $columns        = $this->setColumns();
-        $data_where     = $this->getWhereData();
-        $data_search    = $this->getSeachData();
-        $order          = $this->getOrderData();
-
+        $request    = request();
         $startDate  = strtotime("midnight")*1000;
         $endDate    = strtotime("tomorrow")*1000;
 
@@ -602,6 +597,40 @@ class AjaxController extends Controller
             $startDate  = strtotime($date_arr[0])*1000;
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
+
+        $query  = getQuery($startDate, $endDate, $this->setColumns());
+        $limit  = intval($request->length);
+        $offset = intval($request->start);
+        $total  = $query->get();
+
+        if($request->checked_date){
+            $date_place = str_replace('-', ' ', $request->checked_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
+
+        $query = getQuery($startDate, $endDate, array('phone');
+        $checkedContacts = $query->get();
+
+        $array = array();
+        foreach ($total as $contact) {
+            if(!in_array($contact->phone, $checkedContacts) {
+                array_push($array, $contact);
+            }
+        }
+
+        $contacts = array_slice($array, $offset, $limit);
+        $data['contacts']   = $this->formatRecord($contacts);
+        $data['total']      = count($total);
+
+        return $data;
+    }
+
+    public function getQuery($startDate, $endDate, $columns){
+        $data_where     = $this->getWhereData();
+        $data_search    = $this->getSeachData();
+        $order          = $this->getOrderData();
 
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
@@ -616,19 +645,11 @@ class AjaxController extends Controller
         }
         if($order){
             $query->orderBy($columns[$order['column']], $order['type']);
-        } else
+        } else {
             $query->orderBy('submit_time', 'desc');
+        }
 
-        $limit  = intval($request->length);
-        $offset = intval($request->start);
-
-        $total      = $query->get();
-        $contacts   = $query->skip($offset)->take($limit)->get();
-
-        $data['contacts']   = $this->formatRecord($contacts);
-        $data['total']      = count($total);
-
-        return $data;
+        return $query;
     }
 
     private function getSeachData(){
@@ -699,7 +720,7 @@ class AjaxController extends Controller
         if ($request->clevel) {
             $data_where['clevel']           = $request->clevel;
         }
-        if ($request->is_export) {
+        if (isset($request->is_export)) {
             $data_where['is_export'] = (int)$request->is_export;
         }
 
