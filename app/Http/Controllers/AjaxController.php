@@ -599,11 +599,9 @@ class AjaxController extends Controller
         }
 
         $query  = getQuery($startDate, $endDate, $this->setColumns());
-
         $limit  = intval($request->length);
         $offset = intval($request->start);
-
-        $total    = $query->get();
+        $total  = $query->get();
 
         if($request->checked_date){
             $date_place = str_replace('-', ' ', $request->checked_date);
@@ -614,15 +612,15 @@ class AjaxController extends Controller
 
         $query = getQuery($startDate, $endDate, array('phone');
         $checkedContacts = $query->get();
-        $array = json_decode(json_encode($checkedContacts), true);
 
+        $array = array();
         foreach ($total as $contact) {
-            if(in_array($contact->phone, $array) {
-
+            if(!in_array($contact->phone, $checkedContacts) {
+                array_push($array, $contact);
             }
         }
 
-        $contacts = array_slice($total, $offset, $limit);
+        $contacts = array_slice($array, $offset, $limit);
         $data['contacts']   = $this->formatRecord($contacts);
         $data['total']      = count($total);
 
