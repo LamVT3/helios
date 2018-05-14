@@ -136,9 +136,10 @@
                                     </section>
                                     <section class="col col-2">
                                         <label class="label">Export</label>
-                                        <select name="count" id="count" class="select2"
+                                        <select name="limit" id="limit" class="select2"
                                                 style="width: 280px">
                                             <option value="">All</option>
+                                            <option value="3">3</option>
                                             <option value="100">100</option>
                                             <option value="500">500</option>
                                             <option value="1000">1000</option>
@@ -159,7 +160,7 @@
                         </form>
 
                         <div style="position: relative">
-                            <form action="{{ route('contacts.export')}}" enctype="multipart/form-data">
+                            <form id="export-form-c3" action="{{ route('contacts.export')}}" enctype="multipart/form-data">
                                 <input type="hidden" name="source_id">
                                 <input type="hidden" name="marketer_id">
                                 <input type="hidden" name="campaign_id">
@@ -167,9 +168,8 @@
                                 <input type="hidden" name="clevel">
                                 <input type="hidden" name="current_level">
                                 <input type="hidden" name="registered_date">
-                                <input type="hidden" name="page_size" value="{{$page_size}}">
-                                <input type="hidden" name="exported" value="{{$exported}}">
-                                <input type="hidden" name="exported_url" value="{{route("contacts.countExported")}}">
+                                <input type="hidden" name="limit">
+
 
                                 <div style="position: absolute; right: 90px; bottom: 0px;">
                                     <button id="export" class="btn btn-success" type="submit"
@@ -310,6 +310,9 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div>
+<input type="hidden" name="page_size" value="{{$page_size}}">
+<input type="hidden" name="exported" value="{{$exported}}">
+<input type="hidden" name="exported_url" value="{{route("contacts.countExported")}}">
 @endsection
 
 @section('script')
