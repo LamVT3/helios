@@ -598,7 +598,12 @@ class AjaxController extends Controller
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
 
-        $contacts   = getContacts($startDate, $endDate);
+        $query  = getQuery($startDate, $endDate, $this->setColumns());
+
+        $limit  = intval($request->length);
+        $offset = intval($request->start);
+
+        $total    = $query->get();
 
         if($request->checked_date){
             $date_place = str_replace('-', ' ', $request->checked_date);
@@ -607,19 +612,24 @@ class AjaxController extends Controller
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
 
-        $checkedContacts = getContacts($request->checked_date);
-        foreach ($contacts as $contact) {`
-            
+        $query = getQuery($startDate, $endDate, array('phone');
+        $checkedContacts = $query->get();
+        $array = json_decode(json_encode($checkedContacts), true);
+
+        foreach ($total as $contact) {
+            if(in_array($contact->phone, $array) {
+
+            }
         }
 
+        $contacts = array_slice($total, $offset, $limit);
         $data['contacts']   = $this->formatRecord($contacts);
         $data['total']      = count($total);
 
         return $data;
     }
 
-    public function getContacts($startDate, $endDate){
-        $columns        = $this->setColumns();
+    public function getQuery($startDate, $endDate, $columns){
         $data_where     = $this->getWhereData();
         $data_search    = $this->getSeachData();
         $order          = $this->getOrderData();
@@ -641,11 +651,7 @@ class AjaxController extends Controller
             $query->orderBy('submit_time', 'desc');
         }
 
-        $limit  = intval($request->length);
-        $offset = intval($request->start);
-
-        $total  = $query->get();
-        return $query->skip($offset)->take($limit)->get();
+        return $query;
     }
 
     private function getSeachData(){
