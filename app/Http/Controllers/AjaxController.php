@@ -699,7 +699,7 @@ class AjaxController extends Controller
         if ($request->clevel) {
             $data_where['clevel']           = $request->clevel;
         }
-        if ($request->is_export) {
+        if (isset($request->is_export)) {
             $data_where['is_export'] = (int)$request->is_export;
         }
 

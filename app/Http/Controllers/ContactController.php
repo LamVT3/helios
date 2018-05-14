@@ -116,10 +116,10 @@ class ContactController extends Controller
             $query->where($data_where);
         }
 
-        if($request->limit)
-        {
-            $query->limit((int)$request->limit);
-        }
+//        if($request->limit)
+//        {
+//            $query->limit((int)$request->limit);
+//        }
         $contacts = $query->orderBy('submit_time', 'desc')->get();
         // DB::connection('mongodb')->getQueryLog();
         $data = $data_where;
@@ -145,7 +145,6 @@ class ContactController extends Controller
             $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
         $data_where['is_export'] = 1;
-
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
         $query->where($data_where);
@@ -164,11 +163,17 @@ class ContactController extends Controller
         $file_name = 'Contact_C3_' . $date;
         Excel::create($file_name, function ($excel) {
             $excel->sheet('contacts_c3', function ($sheet) {
-                $data = $this->getC3Data();
-                $count = 1;
-                $contacts = $data['contacts'];
-                $datas = array();
+                $data       = $this->getC3Data();
+                $count      = 1;
+                $contacts   = $data['contacts'];
+                $datas      = array();
+                $limit      = 500;
+                $updateCnt  = 0;
+                if(\request('limit')){
+                    $limit = \request('limit');
+                }
                 foreach ($contacts as $item) {
+                    $updateCnt++;
                     if($item->is_export){
                         continue;
                     }
@@ -188,6 +193,9 @@ class ContactController extends Controller
                         $item->contact_id,
                         $item->ads_link
                     );
+                    if($count > $limit){
+                        break;
+                    }
                 }
                 $sheet->fromArray($datas, NULL, 'A1', FALSE, FALSE);
                 $headings = array('STT', 'Name', 'Email', 'Phone', 'Age', 'Time', 'Current level', 'Marketer', 'Campaign', 'Subcampaign', 'Ads', 'Landing page', 'ContactID', 'Link Tracking');
@@ -198,9 +206,8 @@ class ContactController extends Controller
                     $cells->setFontSize(12);
                     $cells->setFontWeight('bold');
                 });
-
+                $this->updateStatusExport($updateCnt);
             });
-            $this->updateStatusExport();
         })->export('xls');
 
 //        } else {
@@ -232,14 +239,14 @@ class ContactController extends Controller
         if ($request->clevel) {
             $data_where['clevel']           = $request->clevel;
         }
-        if ($request->is_export) {
-            $data_where['is_export']        = (int)$request->is_export;
+        if (isset($request->is_export)) {
+            $data_where['is_export'] = (int)$request->is_export;
         }
 
         return $data_where;
     }
 
-    private function updateStatusExport(){
+    private function updateStatusExport($limit){
         $data_where = $this->getWhereData();
 
         $request = request();
@@ -261,9 +268,7 @@ class ContactController extends Controller
         if(count($data_where) > 0){
             $query->where($data_where);
         }
-        if ($request->limit) {
-            $query->limit((int)$request->limit);
-        }
+        $query->limit($limit);
         $contacts = $query->orderBy('submit_time', 'desc')->get();
         foreach ($contacts as $contact)
         {

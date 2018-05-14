@@ -112,17 +112,40 @@ $(document).ready(function () {
             $("#subcampaign_id").select2();
         });
     })
+
+    // $('select#is_export').change(function (e) {
+    //     var status = $('select#is_export').val();
+    //     $('input[name="status"]').val(status);
+    // })
+
+    $('select#limit').change(function (e) {
+        var limit = $('select#limit').val();
+        $('input[name="limit"]').val(limit);
+    })
+
 });
 
 $(document).ready(function () {
 
     $('#search-form-c3').submit(function (e) {
         e.preventDefault();
+        countExported();
 
         $('.loading').show();
-        initDataTable();
-        setTimeout("$('.loading').hide();", 1000);
+        setTimeout(function(){
+            // initDataTable();
+            $('.loading').hide();
+            }, 1000);
     });
+
+    $('button#export').click(function (e) {
+        e.preventDefault();
+       console.log('export-form-c3');
+        $('#export-form-c3').submit();
+        countExported();
+
+    });
+
 });
 
 function initDataTable() {
@@ -138,7 +161,7 @@ function initDataTable() {
     var page_size       = $('input[name="page_size"]').val();
     var subcampaign_id  = $('select[name="subcampaign_id"]').val();
     var is_export       = $('select[name="is_export"]').val();
-    var limit           = $('select[name="count"]').val();
+    var limit           = $('select[name="limit"]').val();
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -149,7 +172,7 @@ function initDataTable() {
     $('input[name="current_level"]').val(current_level);
     $('input[name="registered_date"]').val(registered_date);
     $('input[name="is_export"]').val(is_export);
-    $('input[name="count"]').val(count);
+    $('input[name="limit"]').val(limit);
 
     /* BASIC ;*/
     var responsiveHelper_table_campaign = undefined;
@@ -236,14 +259,16 @@ function initDataTable() {
                 $(row).addClass('is_export');
             }
         },
-        // "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
-        //     var exported    = $('input[name="exported"]').val();
-        //     var count_str   = '';
-        //     if(exported > 0){
-        //         count_str   = '<span class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
-        //     }
-        //     return "Showing " + iStart + " to " + iEnd + " of " + iTotal + " entries" + count_str;
-        // },
+        "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
+            if(iTotal == 0){
+                return "";
+            }
+
+            var exported    = $('input[name="exported"]').val();
+            var count_str   = '<span class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
+
+            return "Showing " + iStart + " to " + iEnd + " of " + iTotal + " entries" + count_str;
+        },
     });
 }
 
@@ -267,6 +292,12 @@ $(document).ready(function () {
 });
 
 function countExported() {
+    var status = $('select[name="is_export"]').val();
+    if(status == '0'){
+        $('input[name="exported"]').val(0);
+        return;
+    }
+
     var url             = $('input[name="exported_url"]').val();
     var source_id       = $('select[name="source_id"]').val();
     var team_id         = $('select[name="team_id"]').val();
@@ -275,28 +306,27 @@ function countExported() {
     var clevel          = $('select[name="clevel"]').val();
     var current_level   = $('select[name="current_level"]').val();
     var registered_date = $('.registered_date').text();
-    var page_size       = $('input[name="page_size"]').val();
     var subcampaign_id  = $('select[name="subcampaign_id"]').val();
 
     var data = {};
-    data.source_id         = source_id,
-    data.team_id           = team_id,
-    data.marketer_id       = marketer_id,
-    data.campaign_id       = campaign_id,
-    data.clevel            = clevel,
-    data.current_level     = current_level,
-    data.subcampaign_id    = subcampaign_id,
-    data.registered_date   = registered_date,
+    data.source_id         = source_id;
+    data.team_id           = team_id;
+    data.marketer_id       = marketer_id;
+    data.campaign_id       = campaign_id;
+    data.clevel            = clevel;
+    data.current_level     = current_level;
+    data.subcampaign_id    = subcampaign_id;
+    data.registered_date   = registered_date;
 
     $.get(url, data, function (data) {
-        $('input[name="exported"]').val(data);
+        setTimeout(function(){
+            $('input[name="exported"]').val(data);
+            console.log( $('input[name="exported"]').val());
+            initDataTable();
+        }, 2000);
+
     }).fail(
         function (err) {
             alert('Cannot connect to server. Please try again later.');
         });
 }
-
-
-
-
-
