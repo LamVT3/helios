@@ -124,3 +124,8 @@ Route::group(['prefix' => 'config'], function () {
     Route::post('/create', 'ConfigController@store')->name('config-create');
     Route::get('/get/{id}', 'ConfigController@get')->name('config-get');
 });
+
+Route::group(['prefix' => 'tracking-inventory'], function () {
+    Route::get('/', 'TrackingController@index')->name('tracking-inventory-index');
+    Route::get('/show/{id}', 'TrackingController@show')->name('tracking-inventory-show');
+});
