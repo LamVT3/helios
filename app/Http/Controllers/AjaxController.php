@@ -587,12 +587,7 @@ class AjaxController extends Controller
 
     public function getC3Data()
     {
-        $request        = request();
-        $columns        = $this->setColumns();
-        $data_where     = $this->getWhereData();
-        $data_search    = $this->getSeachData();
-        $order          = $this->getOrderData();
-
+        $request    = request();
         $startDate  = strtotime("midnight")*1000;
         $endDate    = strtotime("tomorrow")*1000;
 
@@ -602,6 +597,32 @@ class AjaxController extends Controller
             $startDate  = strtotime($date_arr[0])*1000;
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
+
+        $contacts   = getContacts($startDate, $endDate);
+
+        if($request->checked_date){
+            $date_place = str_replace('-', ' ', $request->checked_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
+
+        $checkedContacts = getContacts($request->checked_date);
+        foreach ($contacts as $contact) {`
+            
+        }
+
+        $data['contacts']   = $this->formatRecord($contacts);
+        $data['total']      = count($total);
+
+        return $data;
+    }
+
+    public function getContacts($startDate, $endDate){
+        $columns        = $this->setColumns();
+        $data_where     = $this->getWhereData();
+        $data_search    = $this->getSeachData();
+        $order          = $this->getOrderData();
 
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
@@ -616,19 +637,15 @@ class AjaxController extends Controller
         }
         if($order){
             $query->orderBy($columns[$order['column']], $order['type']);
-        } else
+        } else {
             $query->orderBy('submit_time', 'desc');
+        }
 
         $limit  = intval($request->length);
         $offset = intval($request->start);
 
-        $total      = $query->get();
-        $contacts   = $query->skip($offset)->take($limit)->get();
-
-        $data['contacts']   = $this->formatRecord($contacts);
-        $data['total']      = count($total);
-
-        return $data;
+        $total  = $query->get();
+        return $query->skip($offset)->take($limit)->get();
     }
 
     private function getSeachData(){
