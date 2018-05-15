@@ -179,6 +179,7 @@ function initDataTable() {
     var clevel          = $('select[name="clevel"]').val();
     var current_level   = $('select[name="current_level"]').val();
     var registered_date = $('.registered_date').text();
+    var c3bg_checkbox   = $('input[name="c3bg"]').prop('checked');
     var checked_date    = $('.checked_date').text();
     var page_size       = $('input[name="page_size"]').val();
     var subcampaign_id  = $('select[name="subcampaign_id"]').val();
@@ -194,6 +195,7 @@ function initDataTable() {
     $('input[name="current_level"]').val(current_level);
     $('input[name="registered_date"]').val(registered_date);
     $('input[name="checked_date"]').val(checked_date);
+    $('input[name="c3bg"]').val(c3bg_checkbox);
     $('input[name="is_export"]').val(is_export);
     $('input[name="limit"]').val(limit);
 
@@ -231,7 +233,7 @@ function initDataTable() {
             url: url,
             type: "GET",
             data: function (d) {
-                d.source_id         = source_id,
+                    d.source_id         = source_id,
                     d.team_id           = team_id,
                     d.marketer_id       = marketer_id,
                     d.campaign_id       = campaign_id,
@@ -241,6 +243,7 @@ function initDataTable() {
                     d.is_export         = is_export,
                     d.registered_date   = registered_date,
                     d.checked_date      = checked_date,
+                    d.c3bg_checkbox     = c3bg_checkbox,
                     d.limit             = limit
             }
         },

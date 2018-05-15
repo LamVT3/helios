@@ -651,6 +651,10 @@ class AjaxController extends Controller
         }
         */
 
+        if($request->c3bg_checkbox){
+            echo "<script type='text/javascript'>alert(':)))');</script>";
+        }
+
         $limit    = intval($request->length);
         $offset   = intval($request->start);
         $contacts = $query->skip($offset)->take($limit)->get();
