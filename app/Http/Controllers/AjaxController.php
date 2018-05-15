@@ -640,20 +640,22 @@ class AjaxController extends Controller
             $startDate  = strtotime($date_arr[0])*1000;
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
+
+        $array = (array) $total;
         if($request->c3bg_checkbox == "true") {
+            $array = array();
             $query = $this->getQuery($startDate, $endDate, array('phone'));
             $checkedContacts = $query->get();
-        }
-        $array = array();
-        foreach ($total as $contact) {
-            if(!in_array($contact->phone, $checkedContacts)) {
-                //array_push($array, $contact);
+            foreach ($total as $contact) {
+                if(!in_array($contact->phone, $checkedContacts)) {
+                    array_push($array, $contact);
+                }
             }
         }
 
         $limit    = intval($request->length);
         $offset   = intval($request->start);
-        $contacts = $query->skip($offset)->take($limit)->get();
+        $contacts = array_slice($array, $offset, $limit);
 
         $data['contacts']   = $this->formatRecord($contacts);
         $data['total']      = count($total);
