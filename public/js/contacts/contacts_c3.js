@@ -179,8 +179,8 @@ function initDataTable() {
     var clevel          = $('select[name="clevel"]').val();
     var current_level   = $('select[name="current_level"]').val();
     var registered_date = $('.registered_date').text();
-    var c3bg_checkbox   = $('input[name="c3bg"]').val();
     var checked_date    = $('.checked_date').text();
+    var c3bg_checkbox   = $('input[name="c3bg"]').prop('checked');
     var page_size       = $('input[name="page_size"]').val();
     var subcampaign_id  = $('select[name="subcampaign_id"]').val();
     var is_export       = $('select[name="is_export"]').val();
