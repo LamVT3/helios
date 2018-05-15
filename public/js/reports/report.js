@@ -260,8 +260,6 @@ function fixedTotalRow () {
 }
 
 $(document).ready(function () {
-    disableSelect();
-    $('div#filter').hide();
     $('a#filter').click(function (e) {
         e.preventDefault();
 
@@ -269,29 +267,12 @@ $(document).ready(function () {
             $('a#filter i').removeClass('fa-angle-down');
             $('a#filter i').addClass('fa-angle-up');
             $('div#filter').show(500);
-            enableSelect();
         }
         else{
             $('a#filter i').removeClass('fa-angle-up');
             $('a#filter i').addClass('fa-angle-down');
             $('div#filter').hide(500);
-            disableSelect();
         }
     });
 });
 
-function disableSelect() {
-    $('#source_id').prop('disabled', 'disabled');
-    $('#team_id').prop('disabled', 'disabled');
-    $('#marketer_id').prop('disabled', 'disabled');
-    $('#campaign_id').prop('disabled', 'disabled');
-    $('#subcampaign_id').prop('disabled', 'disabled');
-}
-
-function enableSelect() {
-    $('#source_id').prop('disabled', false);
-    $('#team_id').prop('disabled', false);
-    $('#marketer_id').prop('disabled', false);
-    $('#campaign_id').prop('disabled', false);
-    $('#subcampaign_id').prop('disabled', false);
-}

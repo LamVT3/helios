@@ -7,11 +7,9 @@ $(document).ready(function () {
     var start = moment();
     var end = moment();
 
-    function reportrange_span(start, end) {
+    function cb(start, end) {
         $('#reportrange span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
     }
-
-    reportrange_span(start, end);
 
     $('#reportrange').daterangepicker({
         startDate: start,
@@ -27,29 +25,9 @@ $(document).ready(function () {
             'This Month': [moment().startOf('month'), moment().endOf('month')],
             'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         }
-    }, reportrange_span);
+    }, cb);
 
-    function c3range_span(start, end) {
-        $('#c3range span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
-    }
-
-    c3range_span(start, end);
-
-    $('#c3range').daterangepicker({
-        startDate: start,
-        endDate: end,
-        opens: 'right',
-        ranges: {
-            'Today': [moment(), moment()],
-            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-            "This Week":[moment().startOf("isoWeek"),moment().endOf("isoWeek")],
-            "Last Week": [moment().subtract(1, "week").startOf("isoWeek"), moment().subtract(1, "week").endOf("isoWeek")],
-            'This Month': [moment().startOf('month'), moment().endOf('month')],
-            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-        }
-    }, c3range_span);
+    cb(start, end);
 });
 
 $(document).ready(function () {
@@ -134,43 +112,40 @@ $(document).ready(function () {
             $("#subcampaign_id").select2();
         });
     })
-<<<<<<< HEAD
-=======
-
-    // $('select#is_export').change(function (e) {
-    //     var status = $('select#is_export').val();
-    //     $('input[name="status"]').val(status);
-    // })
-
     $('select#limit').change(function (e) {
         var limit = $('select#limit').val();
         $('input[name="limit"]').val(limit);
     })
-
->>>>>>> parent of 8048793... revert source
+    $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+        var registered_date = $('.registered_date').text();
+        $('input[name="registered_date"]').val(registered_date);
+    });
 });
 
 $(document).ready(function () {
 
     $('#search-form-c3').submit(function (e) {
         e.preventDefault();
+        countExported();
 
         $('.loading').show();
-        initDataTable();
-        setTimeout("$('.loading').hide();", 1000);
+        setTimeout(function(){
+            // initDataTable();
+            $('.loading').hide();
+            }, 1000);
     });
-<<<<<<< HEAD
-=======
 
     $('button#export').click(function (e) {
         e.preventDefault();
        console.log('export-form-c3');
         $('#export-form-c3').submit();
         countExported();
+        setTimeout(function(){
+            countExported();
+        }, 2000);
 
     });
 
->>>>>>> parent of 8048793... revert source
 });
 
 function initDataTable() {
@@ -183,11 +158,10 @@ function initDataTable() {
     var clevel          = $('select[name="clevel"]').val();
     var current_level   = $('select[name="current_level"]').val();
     var registered_date = $('.registered_date').text();
-    var checked_date = $('.checked_date').text();
     var page_size       = $('input[name="page_size"]').val();
     var subcampaign_id  = $('select[name="subcampaign_id"]').val();
     var is_export       = $('select[name="is_export"]').val();
-    var limit           = $('select[name="count"]').val();
+    var limit           = $('select[name="limit"]').val();
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -196,9 +170,9 @@ function initDataTable() {
     $('input[name="subcampaign_id"]').val(subcampaign_id);
     $('input[name="clevel"]').val(clevel);
     $('input[name="current_level"]').val(current_level);
-    $('input[name="checked_date"]').val(checked_date);
+    $('input[name="registered_date"]').val(registered_date);
     $('input[name="is_export"]').val(is_export);
-    $('input[name="count"]').val(count);
+    $('input[name="limit"]').val(limit);
 
     /* BASIC ;*/
     var responsiveHelper_table_campaign = undefined;
@@ -243,7 +217,6 @@ function initDataTable() {
                 d.subcampaign_id    = subcampaign_id,
                 d.is_export         = is_export,
                 d.registered_date   = registered_date,
-                d.checked_date      = checked_date,
                 d.limit             = limit
             }
         },
@@ -286,32 +259,19 @@ function initDataTable() {
                 $(row).addClass('is_export');
             }
         },
-<<<<<<< HEAD
-        // "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
-        //     var exported    = $('input[name="exported"]').val();
-        //     var count_str   = '';
-        //     if(exported > 0){
-        //         count_str   = '<span class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
-        //     }
-        //     return "Showing " + iStart + " to " + iEnd + " of " + iTotal + " entries" + count_str;
-        // },
-=======
         "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
             if(iTotal == 0){
                 return "";
             }
-
             var exported    = $('input[name="exported"]').val();
             var count_str   = '<span class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
 
             return "Showing " + iStart + " to " + iEnd + " of " + iTotal + " entries" + count_str;
         },
->>>>>>> parent of 8048793... revert source
     });
 }
 
 $(document).ready(function () {
-    $('div#filter').hide();
     $('a#filter').click(function (e) {
         e.preventDefault();
 
@@ -330,15 +290,9 @@ $(document).ready(function () {
 });
 
 function countExported() {
-<<<<<<< HEAD
-=======
     var status = $('select[name="is_export"]').val();
-    if(status == '0'){
-        $('input[name="exported"]').val(0);
-        return;
-    }
 
->>>>>>> parent of 8048793... revert source
+
     var url             = $('input[name="exported_url"]').val();
     var source_id       = $('select[name="source_id"]').val();
     var team_id         = $('select[name="team_id"]').val();
@@ -347,37 +301,29 @@ function countExported() {
     var clevel          = $('select[name="clevel"]').val();
     var current_level   = $('select[name="current_level"]').val();
     var registered_date = $('.registered_date').text();
-    var page_size       = $('input[name="page_size"]').val();
     var subcampaign_id  = $('select[name="subcampaign_id"]').val();
 
     var data = {};
-    data.source_id         = source_id,
-    data.team_id           = team_id,
-    data.marketer_id       = marketer_id,
-    data.campaign_id       = campaign_id,
-    data.clevel            = clevel,
-    data.current_level     = current_level,
-    data.subcampaign_id    = subcampaign_id,
-    data.registered_date   = registered_date,
+    data.source_id         = source_id;
+    data.team_id           = team_id;
+    data.marketer_id       = marketer_id;
+    data.campaign_id       = campaign_id;
+    data.clevel            = clevel;
+    data.current_level     = current_level;
+    data.subcampaign_id    = subcampaign_id;
+    data.registered_date   = registered_date;
 
     $.get(url, data, function (data) {
-<<<<<<< HEAD
-        $('input[name="exported"]').val(data);
-=======
         setTimeout(function(){
             $('input[name="exported"]').val(data);
-            console.log( $('input[name="exported"]').val());
+            if(status == '0'){
+                $('input[name="exported"]').val(0);
+            }
             initDataTable();
         }, 2000);
 
->>>>>>> parent of 8048793... revert source
     }).fail(
         function (err) {
             alert('Cannot connect to server. Please try again later.');
         });
 }
-
-
-
-
-

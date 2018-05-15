@@ -585,41 +585,15 @@ class AjaxController extends Controller
         echo json_encode($json_data);  // send data as json format
     }
 
-<<<<<<< HEAD
-    public function getQuery($startDate, $endDate, $columns) {
-=======
     public function getC3Data()
     {
         $request        = request();
+        $status         = \request('is_export');
         $columns        = $this->setColumns();
->>>>>>> parent of 8048793... revert source
         $data_where     = $this->getWhereData();
         $data_search    = $this->getSeachData();
         $order          = $this->getOrderData();
 
-        $query = Contact::where('submit_time', '>=', $startDate);
-        $query->where('submit_time', '<', $endDate);
-
-        if(count($data_where) > 0){
-            $query->where($data_where);
-        }
-        if($data_search != ''){
-            foreach ($columns as $key => $value){
-                $query->orWhere($value, 'like', "%{$data_search}%");
-            }
-        }
-        if($order){
-            $query->orderBy($columns[$order['column']], $order['type']);
-        } else
-            $query->orderBy('submit_time', 'desc');
-
-        return $query;
-    }
-
-    public function getC3Data()
-    {
-        $request    = request();
-        $columns    = $this->setColumns();
         $startDate  = strtotime("midnight")*1000;
         $endDate    = strtotime("tomorrow")*1000;
 
@@ -630,22 +604,35 @@ class AjaxController extends Controller
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
 
-        $query  = $this->getQuery($startDate, $endDate, $columns);
-        $total      = json_decode(json_encode($query->get()), true);
+        $query = Contact::where('submit_time', '>=', $startDate);
+        $query->where('submit_time', '<', $endDate);
 
-        $query = $this->getQuery($startDate, $endDate, array('phone'));
-        $checkedContacts = json_decode(json_encode($query->get()), true);
+        if(count($data_where) > 0){
+            $query->where($data_where);
+        }
+        if($status == '1'){
+            $query->where('is_export', 1);
+        }
+        if($status == '0'){
+            $query->where('is_export', '<>', 1);
+        }
 
-        $array = array();
-        foreach ($total as $contact) {
-            if(!in_array($contact->phone, $checkedContacts)) {
-                array_push($array, $contact);
+        if($data_search != ''){
+            foreach ($columns as $key => $value){
+                $query->orWhere($value, 'like', "%{$data_search}%");
             }
         }
+        if($order){
+            $query->orderBy($columns[$order['column']], $order['type']);
+        } else
+            $query->orderBy('submit_time', 'desc');
 
         $limit  = intval($request->length);
         $offset = intval($request->start);
-        $contacts   = array_slice($total, $offset, $limit);
+
+        $total      = $query->get();
+        $contacts   = $query->skip($offset)->take($limit)->get();
+
         $data['contacts']   = $this->formatRecord($contacts);
         $data['total']      = count($total);
 
@@ -719,13 +706,6 @@ class AjaxController extends Controller
         }
         if ($request->clevel) {
             $data_where['clevel']           = $request->clevel;
-        }
-<<<<<<< HEAD
-        if ($request->is_export) {
-=======
-        if (isset($request->is_export)) {
->>>>>>> parent of 8048793... revert source
-            $data_where['is_export'] = (int)$request->is_export;
         }
 
         return $data_where;
