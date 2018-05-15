@@ -641,7 +641,6 @@ class AjaxController extends Controller
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
         if($request->c3bg_checkbox) {
-            echo $request->c3bg_checkbox;
             $query = $this->getQuery($startDate, $endDate, array('phone'));
             $total = $query->get();
         }
