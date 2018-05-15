@@ -636,11 +636,11 @@ class AjaxController extends Controller
         $query  = $this->getQuery($startDate, $endDate, $columns);
         $total  = json_decode(json_encode($query->get()), true);
 
-        echo "total...";
+        print "total...";
         $query = $this->getQuery($startDate, $endDate, array('phone'));
         $checkedContacts = json_decode(json_encode($query->get()), true);
 
-        echo "checkedContacts...";
+        print "checkedContacts...";
         $array = array();
         foreach ($total as $contact) {
             if(!in_array($contact->phone, $checkedContacts)) {
@@ -648,12 +648,12 @@ class AjaxController extends Controller
             }
         }
 
-        echo "array contacts...";
+        print "array contacts...";
         $limit  = intval($request->length);
         $offset = intval($request->start);
         $contacts   = array_slice($total, $offset, $limit);
 
-        echo "contacts slice...";
+        print "contacts slice...";
         $data['contacts']   = $this->formatRecord($contacts);
         $data['total']      = count($total);
 
