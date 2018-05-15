@@ -634,15 +634,15 @@ class AjaxController extends Controller
         $query  = $this->getQuery($startDate, $endDate, $columns);
         $total  = $query->get();
 
-        /*if($request->checked_date){
+        if($request->checked_date){
             $date_place = str_replace('-', ' ', $request->checked_date);
             $date_arr   = explode(' ', str_replace('/', '-', $date_place));
             $startDate  = strtotime($date_arr[0])*1000;
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
         $query = $this->getQuery($startDate, $endDate, array('phone'));
-        $checkedContacts = $this->objectToArray($query->get());
-
+        $checkedContacts = $query->get();
+        /*
         $array = array();
         foreach ($total as $contact) {
             if(!in_array($contact->phone, $checkedContacts)) {
