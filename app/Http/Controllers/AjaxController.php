@@ -585,7 +585,14 @@ class AjaxController extends Controller
         echo json_encode($json_data);  // send data as json format
     }
 
+<<<<<<< HEAD
     public function getQuery($startDate, $endDate, $columns) {
+=======
+    public function getC3Data()
+    {
+        $request        = request();
+        $columns        = $this->setColumns();
+>>>>>>> parent of 8048793... revert source
         $data_where     = $this->getWhereData();
         $data_search    = $this->getSeachData();
         $order          = $this->getOrderData();
@@ -713,7 +720,11 @@ class AjaxController extends Controller
         if ($request->clevel) {
             $data_where['clevel']           = $request->clevel;
         }
+<<<<<<< HEAD
         if ($request->is_export) {
+=======
+        if (isset($request->is_export)) {
+>>>>>>> parent of 8048793... revert source
             $data_where['is_export'] = (int)$request->is_export;
         }
 

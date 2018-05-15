@@ -134,6 +134,20 @@ $(document).ready(function () {
             $("#subcampaign_id").select2();
         });
     })
+<<<<<<< HEAD
+=======
+
+    // $('select#is_export').change(function (e) {
+    //     var status = $('select#is_export').val();
+    //     $('input[name="status"]').val(status);
+    // })
+
+    $('select#limit').change(function (e) {
+        var limit = $('select#limit').val();
+        $('input[name="limit"]').val(limit);
+    })
+
+>>>>>>> parent of 8048793... revert source
 });
 
 $(document).ready(function () {
@@ -145,6 +159,18 @@ $(document).ready(function () {
         initDataTable();
         setTimeout("$('.loading').hide();", 1000);
     });
+<<<<<<< HEAD
+=======
+
+    $('button#export').click(function (e) {
+        e.preventDefault();
+       console.log('export-form-c3');
+        $('#export-form-c3').submit();
+        countExported();
+
+    });
+
+>>>>>>> parent of 8048793... revert source
 });
 
 function initDataTable() {
@@ -260,6 +286,7 @@ function initDataTable() {
                 $(row).addClass('is_export');
             }
         },
+<<<<<<< HEAD
         // "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
         //     var exported    = $('input[name="exported"]').val();
         //     var count_str   = '';
@@ -268,6 +295,18 @@ function initDataTable() {
         //     }
         //     return "Showing " + iStart + " to " + iEnd + " of " + iTotal + " entries" + count_str;
         // },
+=======
+        "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
+            if(iTotal == 0){
+                return "";
+            }
+
+            var exported    = $('input[name="exported"]').val();
+            var count_str   = '<span class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
+
+            return "Showing " + iStart + " to " + iEnd + " of " + iTotal + " entries" + count_str;
+        },
+>>>>>>> parent of 8048793... revert source
     });
 }
 
@@ -291,6 +330,15 @@ $(document).ready(function () {
 });
 
 function countExported() {
+<<<<<<< HEAD
+=======
+    var status = $('select[name="is_export"]').val();
+    if(status == '0'){
+        $('input[name="exported"]').val(0);
+        return;
+    }
+
+>>>>>>> parent of 8048793... revert source
     var url             = $('input[name="exported_url"]').val();
     var source_id       = $('select[name="source_id"]').val();
     var team_id         = $('select[name="team_id"]').val();
@@ -313,7 +361,16 @@ function countExported() {
     data.registered_date   = registered_date,
 
     $.get(url, data, function (data) {
+<<<<<<< HEAD
         $('input[name="exported"]').val(data);
+=======
+        setTimeout(function(){
+            $('input[name="exported"]').val(data);
+            console.log( $('input[name="exported"]').val());
+            initDataTable();
+        }, 2000);
+
+>>>>>>> parent of 8048793... revert source
     }).fail(
         function (err) {
             alert('Cannot connect to server. Please try again later.');
