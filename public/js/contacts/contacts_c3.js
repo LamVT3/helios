@@ -154,17 +154,16 @@ $(document).ready(function () {
         setTimeout(function(){
             // initDataTable();
             $('.loading').hide();
-            }, 1000);
+        }, 1000);
     });
 
     $('button#export').click(function (e) {
         e.preventDefault();
-       console.log('export-form-c3');
         $('#export-form-c3').submit();
         countExported();
         setTimeout(function(){
             countExported();
-        }, 3000);
+        }, 2000);
 
     });
 
@@ -180,6 +179,7 @@ function initDataTable() {
     var clevel          = $('select[name="clevel"]').val();
     var current_level   = $('select[name="current_level"]').val();
     var registered_date = $('.registered_date').text();
+    var checked_date    = $('.checked_date').text();
     var page_size       = $('input[name="page_size"]').val();
     var subcampaign_id  = $('select[name="subcampaign_id"]').val();
     var is_export       = $('select[name="is_export"]').val();
@@ -193,6 +193,7 @@ function initDataTable() {
     $('input[name="clevel"]').val(clevel);
     $('input[name="current_level"]').val(current_level);
     $('input[name="registered_date"]').val(registered_date);
+    $('input[name="checked_date"]').val(checked_date);
     $('input[name="is_export"]').val(is_export);
     $('input[name="limit"]').val(limit);
 
@@ -231,15 +232,16 @@ function initDataTable() {
             type: "GET",
             data: function (d) {
                 d.source_id         = source_id,
-                d.team_id           = team_id,
-                d.marketer_id       = marketer_id,
-                d.campaign_id       = campaign_id,
-                d.clevel            = clevel,
-                d.current_level     = current_level,
-                d.subcampaign_id    = subcampaign_id,
-                d.is_export         = is_export,
-                d.registered_date   = registered_date,
-                d.limit             = limit
+                    d.team_id           = team_id,
+                    d.marketer_id       = marketer_id,
+                    d.campaign_id       = campaign_id,
+                    d.clevel            = clevel,
+                    d.current_level     = current_level,
+                    d.subcampaign_id    = subcampaign_id,
+                    d.is_export         = is_export,
+                    d.registered_date   = registered_date,
+                    d.checked_date      = checked_date,
+                    d.limit             = limit
             }
         },
         "columns": [
