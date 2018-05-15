@@ -585,24 +585,11 @@ class AjaxController extends Controller
         echo json_encode($json_data);  // send data as json format
     }
 
-    public function getC3Data()
-    {
-        $request        = request();
+    public function getQuery($startDate, $endDate, $columns) {
         $status         = \request('is_export');
-        $columns        = $this->setColumns();
         $data_where     = $this->getWhereData();
         $data_search    = $this->getSeachData();
         $order          = $this->getOrderData();
-
-        $startDate  = strtotime("midnight")*1000;
-        $endDate    = strtotime("tomorrow")*1000;
-
-        if($request->registered_date){
-            $date_place = str_replace('-', ' ', $request->registered_date);
-            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
-            $startDate  = strtotime($date_arr[0])*1000;
-            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
-        }
 
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
@@ -624,14 +611,44 @@ class AjaxController extends Controller
         }
         if($order){
             $query->orderBy($columns[$order['column']], $order['type']);
-        } else
+        } else {
             $query->orderBy('submit_time', 'desc');
+        }
+
+        return $query;
+    }
+
+    public function getC3Data()
+    {
+        $request        = request();
+        $columns        = $this->setColumns();
+
+        $startDate  = strtotime("midnight")*1000;
+        $endDate    = strtotime("tomorrow")*1000;
+
+        if($request->registered_date){
+            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
+
+        $query  = $this->getQuery($startDate, $endDate, $columns);
+        $total      = json_decode(json_encode($query->get()), true);
+
+        $query = $this->getQuery($startDate, $endDate, array('phone'));
+        $checkedContacts = json_decode(json_encode($query->get()), true);
+
+        $array = array();
+        foreach ($total as $contact) {
+            if(!in_array($contact->phone, $checkedContacts)) {
+                array_push($array, $contact);
+            }
+        }
 
         $limit  = intval($request->length);
         $offset = intval($request->start);
-
-        $total      = $query->get();
-        $contacts   = $query->skip($offset)->take($limit)->get();
+        $contacts   = array_slice($total, $offset, $limit);
 
         $data['contacts']   = $this->formatRecord($contacts);
         $data['total']      = count($total);
