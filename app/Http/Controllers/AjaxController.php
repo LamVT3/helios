@@ -620,9 +620,8 @@ class AjaxController extends Controller
 
     public function getC3Data()
     {
-        $request        = request();
-        $columns        = $this->setColumns();
-
+        $request    = request();
+        $columns    = $this->setColumns();
         $startDate  = strtotime("midnight")*1000;
         $endDate    = strtotime("tomorrow")*1000;
 
@@ -632,15 +631,18 @@ class AjaxController extends Controller
             $startDate  = strtotime($date_arr[0])*1000;
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
-
         $query  = $this->getQuery($startDate, $endDate, $columns);
         $total  = json_decode(json_encode($query->get()), true);
 
-        print "total...";
+        if($request->checked_date){
+            $date_place = str_replace('-', ' ', $request->checked_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
         $query = $this->getQuery($startDate, $endDate, array('phone'));
         $checkedContacts = json_decode(json_encode($query->get()), true);
 
-        print "checkedContacts...";
         $array = array();
         foreach ($total as $contact) {
             if(!in_array($contact->phone, $checkedContacts)) {
@@ -648,12 +650,10 @@ class AjaxController extends Controller
             }
         }
 
-        print "array contacts...";
-        $limit  = intval($request->length);
-        $offset = intval($request->start);
-        $contacts   = array_slice($total, $offset, $limit);
+        $limit    = intval($request->length);
+        $offset   = intval($request->start);
+        $contacts = array_slice($total, $offset, $limit);
 
-        print "contacts slice...";
         $data['contacts']   = $this->formatRecord($contacts);
         $data['total']      = count($total);
 
