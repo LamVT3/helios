@@ -38,7 +38,7 @@
                             </div>
                             <fieldset>
                                 <legend>Filter
-                                    <a id="filter" href="javascript:void(0)"><i class="fa fa-angle-down fa-lg"></i></a>
+                                    <a id="filter" href="javascript:void(0)"><i class="fa fa-angle-up fa-lg"></i></a>
                                 </legend>
                                 <div class="row" id="filter">
                                     <section class="col col-2">

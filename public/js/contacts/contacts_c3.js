@@ -112,17 +112,14 @@ $(document).ready(function () {
             $("#subcampaign_id").select2();
         });
     })
-
-    // $('select#is_export').change(function (e) {
-    //     var status = $('select#is_export').val();
-    //     $('input[name="status"]').val(status);
-    // })
-
     $('select#limit').change(function (e) {
         var limit = $('select#limit').val();
         $('input[name="limit"]').val(limit);
     })
-
+    $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+        var registered_date = $('.registered_date').text();
+        $('input[name="registered_date"]').val(registered_date);
+    });
 });
 
 $(document).ready(function () {
@@ -143,6 +140,9 @@ $(document).ready(function () {
        console.log('export-form-c3');
         $('#export-form-c3').submit();
         countExported();
+        setTimeout(function(){
+            countExported();
+        }, 3000);
 
     });
 
@@ -263,7 +263,6 @@ function initDataTable() {
             if(iTotal == 0){
                 return "";
             }
-
             var exported    = $('input[name="exported"]').val();
             var count_str   = '<span class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
 
@@ -273,7 +272,6 @@ function initDataTable() {
 }
 
 $(document).ready(function () {
-    $('div#filter').hide();
     $('a#filter').click(function (e) {
         e.preventDefault();
 
@@ -293,10 +291,7 @@ $(document).ready(function () {
 
 function countExported() {
     var status = $('select[name="is_export"]').val();
-    if(status == '0'){
-        $('input[name="exported"]').val(0);
-        return;
-    }
+
 
     var url             = $('input[name="exported_url"]').val();
     var source_id       = $('select[name="source_id"]').val();
@@ -321,7 +316,9 @@ function countExported() {
     $.get(url, data, function (data) {
         setTimeout(function(){
             $('input[name="exported"]').val(data);
-            console.log( $('input[name="exported"]').val());
+            if(status == '0'){
+                $('input[name="exported"]').val(0);
+            }
             initDataTable();
         }, 2000);
 

@@ -588,6 +588,7 @@ class AjaxController extends Controller
     public function getC3Data()
     {
         $request        = request();
+        $status         = \request('is_export');
         $columns        = $this->setColumns();
         $data_where     = $this->getWhereData();
         $data_search    = $this->getSeachData();
@@ -609,6 +610,13 @@ class AjaxController extends Controller
         if(count($data_where) > 0){
             $query->where($data_where);
         }
+        if($status == '1'){
+            $query->where('is_export', 1);
+        }
+        if($status == '0'){
+            $query->where('is_export', '<>', 1);
+        }
+
         if($data_search != ''){
             foreach ($columns as $key => $value){
                 $query->orWhere($value, 'like', "%{$data_search}%");
@@ -698,9 +706,6 @@ class AjaxController extends Controller
         }
         if ($request->clevel) {
             $data_where['clevel']           = $request->clevel;
-        }
-        if (isset($request->is_export)) {
-            $data_where['is_export'] = (int)$request->is_export;
         }
 
         return $data_where;

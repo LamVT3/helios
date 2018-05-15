@@ -33,10 +33,10 @@
                                     <span class="registered_date"></span> <b class="caret"></b>
                                 </div>
                             </div>
-                            <fieldset>
-                                <legend>Filter
-                                    <a id="filter" href="javascript:void(0)"><i class="fa fa-angle-down fa-lg"></i></a>
-                                </legend>
+                            {{--<fieldset>--}}
+                                {{--<legend>Filter--}}
+                                    {{--<a id="filter" href="javascript:void(0)"><i class="fa fa-angle-up fa-lg"></i></a>--}}
+                                {{--</legend>--}}
                                 <div class="row" id="filter">
                                     <section class="col col-2">
                                         <label class="label">Source</label>
@@ -102,7 +102,7 @@
                                     </button>
                                 </div>
                             </div>
-                            </fieldset>
+                            {{--</fieldset>--}}
                         </form>
                         {{--<div style="position: relative">
                             <form action="{{ route('report.export')}}" enctype="multipart/form-data">
