@@ -632,32 +632,53 @@ class AjaxController extends Controller
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
         $query  = $this->getQuery($startDate, $endDate, $columns);
-        $total  = json_decode(json_encode($query->get()), true);
+        $total  = $query->get();
 
-        //if($request->checked_date){
-        //    $date_place = str_replace('-', ' ', $request->checked_date);
-        //    $date_arr   = explode(' ', str_replace('/', '-', $date_place));
-        //    $startDate  = strtotime($date_arr[0])*1000;
-        //    $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
-        //}
-        //$query = $this->getQuery($startDate, $endDate, array('phone'));
-        //$checkedContacts = json_decode(json_encode($query->get()), true);
+        if($request->checked_date){
+            $date_place = str_replace('-', ' ', $request->checked_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
+        $query = $this->getQuery($startDate, $endDate, array('phone'));
+        $checkedContacts = $this->objectToArray($query->get());
 
-        //$array = array();
-        //foreach ($total as $contact) {
-         //   if(!in_array($contact->phone, $checkedContacts)) {
-         //       array_push($array, $contact);
-         //   }
-        //}
+        $array = array();
+        foreach ($total as $contact) {
+            if(!in_array($contact->phone, $checkedContacts)) {
+                array_push($array, $contact);
+            }
+        }
 
         $limit    = intval($request->length);
         $offset   = intval($request->start);
-        $contacts = json_decode(json_encode($query->skip($offset)->take($limit)->get()), true);
+        $contacts = $this->arrayToObject(array_slice($array, $offset, $limit));
 
         $data['contacts']   = $this->formatRecord($contacts);
         $data['total']      = count($total);
 
         return $data;
+    }
+
+    public function objectToArray($d) {
+        if (is_object($d)) {
+            $d = get_object_vars($d);
+        }
+        if (is_array($d)) {
+            return array_map(__FUNCTION__, $d);
+        }
+        else {
+            return $d;
+        }
+    }
+
+    function arrayToObject($d) {
+        if (is_array($d)) {
+            return (object) array_map(__FUNCTION__, $d);
+        }
+        else {
+            return $d;
+        }
     }
 
     private function getSeachData(){
