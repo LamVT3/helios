@@ -150,7 +150,7 @@
                                 <div class="row" id="filter">
                                     <section class="col col-3">
                                         <label class="checkbox">
-                                            <input type="checkbox" id="c3bg" name="c3bg">
+                                            <input type="checkbox" id="c3bg" name="c3bg"/>
                                             <i></i>C3BG</label>
                                         <div id="c3range" class="pull-left"
                                              style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; /*margin: 10px 15px*/">
