@@ -634,7 +634,7 @@ class AjaxController extends Controller
         $query  = $this->getQuery($startDate, $endDate, $columns);
         $total  = $query->get();
 
-        if($request->checked_date){
+        /*if($request->checked_date){
             $date_place = str_replace('-', ' ', $request->checked_date);
             $date_arr   = explode(' ', str_replace('/', '-', $date_place));
             $startDate  = strtotime($date_arr[0])*1000;
@@ -649,10 +649,11 @@ class AjaxController extends Controller
                 array_push($array, $contact);
             }
         }
+        */
 
         $limit    = intval($request->length);
         $offset   = intval($request->start);
-        $contacts = $this->arrayToObject(array_slice($array, $offset, $limit));
+        $contacts = array_slice($total, $offset, $limit);
 
         $data['contacts']   = $this->formatRecord($contacts);
         $data['total']      = count($total);
