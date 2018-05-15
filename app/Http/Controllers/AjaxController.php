@@ -672,7 +672,7 @@ class AjaxController extends Controller
         }
     }
 
-    function arrayToObject($d) {
+    public function arrayToObject($d) {
         if (is_array($d)) {
             return (object) array_map(__FUNCTION__, $d);
         }
