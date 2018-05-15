@@ -647,7 +647,7 @@ class AjaxController extends Controller
         $array = array();
         foreach ($total as $contact) {
             if(!in_array($contact->phone, $checkedContacts)) {
-                array_push($array, $contact);
+                //array_push($array, $contact);
             }
         }
 
