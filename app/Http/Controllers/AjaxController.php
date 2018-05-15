@@ -655,7 +655,7 @@ class AjaxController extends Controller
 
         $limit    = intval($request->length);
         $offset   = intval($request->start);
-        $contacts = array_slice($array, $offset, $limit);
+        $contacts = $this->arrayToObject(array_slice($array, $offset, $limit));
 
         $data['contacts']   = $this->formatRecord($contacts);
         $data['total']      = count($total);
