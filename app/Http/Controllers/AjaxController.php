@@ -634,21 +634,21 @@ class AjaxController extends Controller
         $query  = $this->getQuery($startDate, $endDate, $columns);
         $total  = json_decode(json_encode($query->get()), true);
 
-        if($request->checked_date){
-            $date_place = str_replace('-', ' ', $request->checked_date);
-            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
-            $startDate  = strtotime($date_arr[0])*1000;
-            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
-        }
-        $query = $this->getQuery($startDate, $endDate, array('phone'));
-        $checkedContacts = json_decode(json_encode($query->get()), true);
+        //if($request->checked_date){
+        //    $date_place = str_replace('-', ' ', $request->checked_date);
+        //    $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+        //    $startDate  = strtotime($date_arr[0])*1000;
+        //    $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        //}
+        //$query = $this->getQuery($startDate, $endDate, array('phone'));
+        //$checkedContacts = json_decode(json_encode($query->get()), true);
 
-        $array = array();
-        foreach ($total as $contact) {
-            if(!in_array($contact->phone, $checkedContacts)) {
-                array_push($array, $contact);
-            }
-        }
+        //$array = array();
+        //foreach ($total as $contact) {
+         //   if(!in_array($contact->phone, $checkedContacts)) {
+         //       array_push($array, $contact);
+         //   }
+        //}
 
         $limit    = intval($request->length);
         $offset   = intval($request->start);
