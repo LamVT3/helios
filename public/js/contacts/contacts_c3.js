@@ -137,7 +137,6 @@ $(document).ready(function () {
 
     $('button#export').click(function (e) {
         e.preventDefault();
-       console.log('export-form-c3');
         $('#export-form-c3').submit();
         countExported();
         setTimeout(function(){
