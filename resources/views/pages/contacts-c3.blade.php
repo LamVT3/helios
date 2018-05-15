@@ -146,6 +146,18 @@
                                         <i></i>
                                     </section>
                                 </div>
+                                <div class="row" id="filter">
+                                    <section class="col col-3">
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="c3bg">
+                                            <i></i>C3BG</label>
+                                        <div id="c3range" class="pull-left"
+                                             style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; /*margin: 10px 15px*/">
+                                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                                            <span class="checked_date"></span> <b class="caret"></b>
+                                        </div>
+                                    </section>
+                                </div>
                             </fieldset>
 
                             <div class="row">
