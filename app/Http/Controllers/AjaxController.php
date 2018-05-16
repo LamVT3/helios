@@ -619,20 +619,20 @@ class AjaxController extends Controller
 
         if($request->c3bg_checkbox == "true") {
             if($request->checked_date){
-                $date_place = str_replace('-', ' ', $request->checked_date);
-                $date_arr   = explode(' ', str_replace('/', '-', $date_place));
-                $startDate  = strtotime($date_arr[0])*1000;
-                $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+                $date_place1 = str_replace('-', ' ', $request->checked_date);
+                $date_arr1   = explode(' ', str_replace('/', '-', $date_place1));
+                $startDate1  = strtotime($date_arr1[0])*1000;
+                $endDate1    = strtotime("+1 day", strtotime($date_arr1[1]))*1000;
             }
-            $queryC3bg = Contact::where('submit_time', '>=', $startDate);
-            $queryC3bg->where('submit_time', '<', $endDate);
+            $queryC3bg = Contact::where('submit_time', '>=', $startDate1);
+            $queryC3bg->where('submit_time', '<', $endDate1);
             $checkedContacts = $queryC3bg->get();
             $phoneArr = array();
-            foreach($checkedContacts as $c) {
-                array_push($phoneArr, $c->phone);
+            foreach($checkedContacts as $contact) {
+                array_push($phoneArr, $contact['phone']);
             }
             $arr_as_string = implode( ',', $phoneArr);
-            $query->where('phone', 'in', $arr_as_string);
+            $query->where('phone', 'not in', $arr_as_string);
         }
 
         if($data_search != ''){
