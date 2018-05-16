@@ -588,9 +588,14 @@ class AjaxController extends Controller
 
     public function getC3Data()
     {
-        $request    = request();
-        $startDate  = strtotime("midnight")*1000;
-        $endDate    = strtotime("tomorrow")*1000;
+        $request     = request();
+        $status      = \request('is_export');
+        $columns     = $this->setColumns();
+        $data_where  = $this->getWhereData();
+        $data_search = $this->getSeachData();
+        $order       = $this->getOrderData();
+        $startDate   = strtotime("midnight")*1000;
+        $endDate     = strtotime("tomorrow")*1000;
 
         if($request->registered_date){
             $date_place = str_replace('-', ' ', $request->registered_date);
@@ -598,48 +603,6 @@ class AjaxController extends Controller
             $startDate  = strtotime($date_arr[0])*1000;
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
-        $query  = $this->getQuery($startDate, $endDate);
-        $total  = $query->get();
-
-        var_dump($total);die();
-
-        if($request->checked_date){
-            $date_place = str_replace('-', ' ', $request->checked_date);
-            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
-            $startDate  = strtotime($date_arr[0])*1000;
-            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
-        }
-
-        $mContacts = new stdClass;
-        if($request->c3bg_checkbox == "true") {
-            $checkedContacts = $this->getQuery($startDate, $endDate)->get();
-            $phoneArr = array();
-            foreach($checkedContacts as $c) {
-                array_push($phoneArr, $c->phone);
-            }
-            foreach ($total as $contact) {
-                if(!in_array($contact->phone, $phoneArr)) {
-                    //array_push($array, $contact);
-                }
-            }
-        }
-
-        $limit    = intval($request->length);
-        $offset   = intval($request->start);
-        $contacts = $query->skip($offset)->take($limit)->get();
-
-        $data['contacts']   = $this->formatRecord($contacts);
-        $data['total']      = count($total);
-
-        return $data;
-    }
-
-    public function getQuery($startDate, $endDate) {
-        $status         = \request('is_export');
-        $columns        = $this->setColumns();
-        $data_where     = $this->getWhereData();
-        $data_search    = $this->getSeachData();
-        $order          = $this->getOrderData();
 
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
@@ -654,6 +617,23 @@ class AjaxController extends Controller
             $query->where('is_export', '<>', 1);
         }
 
+        if($request->c3bg_checkbox == "true") {
+            if($request->checked_date){
+                $date_place = str_replace('-', ' ', $request->checked_date);
+                $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+                $startDate  = strtotime($date_arr[0])*1000;
+                $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+            }
+            $queryC3bg = Contact::where('submit_time', '>=', $startDate);
+            $queryC3bg->where('submit_time', '<', $endDate);
+            $checkedContacts = $queryC3bg->get();
+            $phoneArr = array();
+            foreach($checkedContacts as $c) {
+                array_push($phoneArr, $c->phone);
+            }
+            $query->where('phone', 'not in', $phoneArr);
+        }
+
         if($data_search != ''){
             foreach ($columns as $key => $value){
                 $query->orWhere($value, 'like', "%{$data_search}%");
@@ -664,29 +644,15 @@ class AjaxController extends Controller
         } else {
             $query->orderBy('submit_time', 'desc');
         }
+        $total    = $query->get();
+        $limit    = intval($request->length);
+        $offset   = intval($request->start);
+        $contacts = $query->skip($offset)->take($limit)->get();
 
-        return $query;
-    }
+        $data['contacts']   = $this->formatRecord($contacts);
+        $data['total']      = count($total);
 
-    public function objectToArray($d) {
-        if (is_object($d)) {
-            $d = get_object_vars($d);
-        }
-        if (is_array($d)) {
-            return array_map(__FUNCTION__, $d);
-        }
-        else {
-            return $d;
-        }
-    }
-
-    public function arrayToObject($d) {
-        if (is_array($d)) {
-            return (object) array_map(__FUNCTION__, $d);
-        }
-        else {
-            return $d;
-        }
+        return $data;
     }
 
     private function getSeachData(){
