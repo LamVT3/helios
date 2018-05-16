@@ -12,6 +12,7 @@ use App\User;
 use App\Config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Expr\Cast\Object_;
 
 class AjaxController extends Controller
 {
@@ -600,6 +601,8 @@ class AjaxController extends Controller
         $query  = $this->getQuery($startDate, $endDate);
         $total  = $query->get();
 
+        var_dump($total);die();
+
         if($request->checked_date){
             $date_place = str_replace('-', ' ', $request->checked_date);
             $date_arr   = explode(' ', str_replace('/', '-', $date_place));
@@ -607,6 +610,7 @@ class AjaxController extends Controller
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
 
+        $mContacts = new stdClass;
         if($request->c3bg_checkbox == "true") {
             $checkedContacts = $this->getQuery($startDate, $endDate)->get();
             $phoneArr = array();
