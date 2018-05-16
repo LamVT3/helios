@@ -650,7 +650,7 @@ class AjaxController extends Controller
         $offset   = intval($request->start);
         $contacts = $query->skip($offset)->take($limit)->get();
 
-        $data['contacts']   = $this->formatRecord($contacts);
+        $data['contacts']   = $contacts;
         $data['total']      = count($total);
 
         return $data;
@@ -728,7 +728,7 @@ class AjaxController extends Controller
         return $data_where;
     }
 
-    private function formatRecord($contacts){
+    private function formatRecord($contacts, $query){
 
         $name[0] = 11;
         $name[1] = 22;
