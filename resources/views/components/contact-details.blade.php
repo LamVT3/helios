@@ -166,3 +166,48 @@
 
     </tbody>
 </table>
+
+<h3>Duplicated Contacts</h3>
+<table id="table_call_history" class="table table-striped table-bordered table-hover"
+       width="100%">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Age</th>
+        <th>Registered At</th>
+        <th>CLevel</th>
+        <th>CRM Level</th>
+        <th>Source</th>
+        <th>Team</th>
+        <th>Marketer</th>
+        <th>Campaign</th>
+        <th>SubCampaign</th>
+        <th>Ads</th>
+        <th>Landing Page</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if($duplicatedContacts)
+        @foreach ($duplicatedContacts as $c)
+            <tr id="">
+                <td>{{ $c->name }}</td>
+                <td>{{ $c->email }}</td>
+                <td>{{ $c->phone }}</td>
+                <td>{{ $c->age }}</td>
+                <td>{{ Date('d-m-Y H:i:s', $c->submit_time/1000) }}</td>
+                <td>{{ $c->clevel }}</td>
+                <td>{{ $c->current_level }}</td>
+                <td>{{ $c->source_name or '-100' }}</td>
+                <td>{{ $c->team_name or '-100' }}</td>
+                <td>{{ $c->marketer_name or '-100' }}</td>
+                <td>{{ $c->campaign_name or '-100' }}</td>
+                <td>{{ $c->subcampaign_name or '-100' }}</td>
+                <td>{{ $c->ad_name or '-100' }}</td>
+                <td>{{ $c->landing_page }}</td>
+            </tr>
+        @endforeach
+    @endif
+    </tbody>
+</table>
