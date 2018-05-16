@@ -631,7 +631,8 @@ class AjaxController extends Controller
             foreach($checkedContacts as $c) {
                 array_push($phoneArr, $c->phone);
             }
-            $query->where('phone', 'not in', $phoneArr);
+            $arr_as_string = implode( ',', $phoneArr);
+            $query->where('phone', 'not in', $arr_as_string);
         }
 
         if($data_search != ''){
