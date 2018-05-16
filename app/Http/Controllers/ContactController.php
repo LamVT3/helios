@@ -167,7 +167,7 @@ class ContactController extends Controller
                 $count = 1;
                 $contacts = $data['contacts'];
                 $datas = array();
-                $limit = 500;
+                $limit = config('constants.DEFAULT_EXPORT');
                 $updateCnt = 0;
                 if(\request('limit')){
                     $limit = \request('limit');
@@ -206,7 +206,10 @@ class ContactController extends Controller
                     $cells->setFontSize(12);
                     $cells->setFontWeight('bold');
                 });
-                $this->updateStatusExport($updateCnt);
+                $is_update = \request('mark_exported');
+                if($is_update){
+                    $this->updateStatusExport($updateCnt);
+                }
             });
 
         })->export('xls');

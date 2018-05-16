@@ -18,7 +18,12 @@
 
         <!-- widget grid -->
         <section id="widget-grid" class="">
-
+            <div class="alert alert-block alert-success">
+                <a class="close" data-dismiss="alert" href="#">×</a>
+                <p>
+                    Contacts has been exported successfully.
+                </p>
+            </div>
             <!-- row -->
 
             <div class="row">
@@ -136,29 +141,23 @@
                                     </section>
                                     <section class="col col-2">
                                         <label class="label">Export</label>
-                                        <select name="limit" id="limit" class="select2"
-                                                style="width: 280px">
-                                            <option value="">All</option>
-                                            <option value="3">3</option>
-                                            <option value="100">100</option>
-                                            <option value="500">500</option>
-                                            <option value="1000">1000</option>
-                                        </select>
+                                        <div class="col-xs-6">
+                                            <input class="form-control" id="limit" type="number"
+                                                   placeholder="{{config('constants.DEFAULT_EXPORT')}}" max="1000" min="1">
+                                        </div>
+                                        <div class="col-xs-4 export_label" id="">
+                                            <label class="export_label" for="limit"> entries</label>
+                                        </div>
                                         <i></i>
                                     </section>
                                 </div>
-                                {{--<div class="row" id="filter">--}}
-                                    {{--<section class="col col-3">--}}
-                                        {{--<label class="checkbox">--}}
-                                            {{--<input type="checkbox" name="c3bg">--}}
-                                            {{--<i></i>C3BG</label>--}}
-                                        {{--<div id="c3range" class="pull-left"--}}
-                                             {{--style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; /*margin: 10px 15px*/">--}}
-                                            {{--<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;--}}
-                                            {{--<span class="checked_date"></span> <b class="caret"></b>--}}
-                                        {{--</div>--}}
-                                    {{--</section>--}}
-                                {{--</div>--}}
+                                <div class="row" id="filter">
+                                    <section class="col col-3">
+                                        <label class="checkbox">
+                                            <input type="checkbox" id="mark_exported"/>
+                                            <i></i>Mark contact is exported</label>
+                                    </section>
+                                </div>
                             </fieldset>
 
                             <div class="row">
@@ -181,10 +180,11 @@
                                 <input type="hidden" name="current_level">
                                 <input type="hidden" name="registered_date">
                                 <input type="hidden" name="limit">
+                                <input type="hidden" name="mark_exported" value="0">
 
                                 <div style="position: absolute; right: 90px; bottom: 0px;">
-                                    <button id="export" class="btn btn-success" type="submit"
-                                            style=""> <i class="fa fa-download"></i> Export
+                                    <button id="export" class="btn btn-success" type="button"
+                                            style="" data-toggle="modal" data-target="#myModal"> <i class="fa fa-download"></i> Export
                                     </button>
                                 </div>
                             </form>
@@ -320,6 +320,28 @@
 
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
+</div>
+
+<!-- Export Modal -->
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title">Confirm Export</h3>
+            </div>
+            <div class="modal-body">
+                <h4>{{config('constants.CONFIRM_EXPORT')}}</h4>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm_export" type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <input type="hidden" name="page_size" value="{{$page_size}}">

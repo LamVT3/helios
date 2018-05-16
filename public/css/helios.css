@@ -311,3 +311,8 @@ tr.is_export a.name_link
 {
     color: white;
 }
+label.export_label
+{
+    text-align: center;
+    padding: 7px 0px 0px 5px;
+}

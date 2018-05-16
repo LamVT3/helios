@@ -7,9 +7,11 @@ $(document).ready(function () {
     var start = moment();
     var end = moment();
 
-    function cb(start, end) {
+    function reportrange_span(start, end) {
         $('#reportrange span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
     }
+
+    reportrange_span(start, end);
 
     $('#reportrange').daterangepicker({
         startDate: start,
@@ -25,9 +27,29 @@ $(document).ready(function () {
             'This Month': [moment().startOf('month'), moment().endOf('month')],
             'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         }
-    }, cb);
+    }, reportrange_span);
 
-    cb(start, end);
+    function c3range_span(start, end) {
+        $('#c3range span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
+    }
+
+    c3range_span(start, end);
+
+    $('#c3range').daterangepicker({
+        startDate: start,
+        endDate: end,
+        opens: 'right',
+        ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            "This Week":[moment().startOf("isoWeek"),moment().endOf("isoWeek")],
+            "Last Week": [moment().subtract(1, "week").startOf("isoWeek"), moment().subtract(1, "week").endOf("isoWeek")],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+    }, c3range_span);
 });
 
 $(document).ready(function () {
@@ -112,17 +134,42 @@ $(document).ready(function () {
             $("#subcampaign_id").select2();
         });
     })
-    $('select#limit').change(function (e) {
-        var limit = $('select#limit').val();
-        $('input[name="limit"]').val(limit);
+
+    $('input#limit').change(function (e) {
+        var limit = $('input#limit').val();
+        if(limit == '' || limit < 0){
+            $('input#limit').val(100);
+            $('input[name="limit"]').val(100);
+        }
+        else if(limit > 1000){
+            $('input#limit').val(1000);
+            $('input[name="limit"]').val(1000);
+        }
+        else{
+            $('input[name="limit"]').val(limit);
+        }
     })
+
     $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
         var registered_date = $('.registered_date').text();
         $('input[name="registered_date"]').val(registered_date);
     });
+
+    $('input#mark_exported').change(function (e) {
+        if ($('input#mark_exported').is(":checked"))
+        {
+            $('input[name="mark_exported"]').val(1);
+        }
+        else
+        {
+            $('input[name="mark_exported"]').val(0);
+        }
+    });
 });
 
 $(document).ready(function () {
+
+    $('div.alert-success').hide();
 
     $('#search-form-c3').submit(function (e) {
         e.preventDefault();
@@ -132,15 +179,15 @@ $(document).ready(function () {
         setTimeout(function(){
             // initDataTable();
             $('.loading').hide();
-            }, 1000);
+        }, 1000);
     });
 
-    $('button#export').click(function (e) {
+    $('button#confirm_export').click(function (e) {
         e.preventDefault();
         $('#export-form-c3').submit();
-        countExported();
         setTimeout(function(){
             countExported();
+            $('div.alert-success').show();
         }, 2000);
 
     });
@@ -157,10 +204,12 @@ function initDataTable() {
     var clevel          = $('select[name="clevel"]').val();
     var current_level   = $('select[name="current_level"]').val();
     var registered_date = $('.registered_date').text();
+    var checked_date    = $('.checked_date').text();
+    var c3bg_checkbox   = $('input[name="c3bg"]').prop('checked');
     var page_size       = $('input[name="page_size"]').val();
     var subcampaign_id  = $('select[name="subcampaign_id"]').val();
     var is_export       = $('select[name="is_export"]').val();
-    var limit           = $('select[name="limit"]').val();
+    var limit           = $('input#limit').val();
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -170,6 +219,8 @@ function initDataTable() {
     $('input[name="clevel"]').val(clevel);
     $('input[name="current_level"]').val(current_level);
     $('input[name="registered_date"]').val(registered_date);
+    $('input[name="checked_date"]').val(checked_date);
+    $('input[name="c3bg"]').val(c3bg_checkbox);
     $('input[name="is_export"]').val(is_export);
     $('input[name="limit"]').val(limit);
 
@@ -208,15 +259,17 @@ function initDataTable() {
             type: "GET",
             data: function (d) {
                 d.source_id         = source_id,
-                d.team_id           = team_id,
-                d.marketer_id       = marketer_id,
-                d.campaign_id       = campaign_id,
-                d.clevel            = clevel,
-                d.current_level     = current_level,
-                d.subcampaign_id    = subcampaign_id,
-                d.is_export         = is_export,
-                d.registered_date   = registered_date,
-                d.limit             = limit
+                    d.team_id           = team_id,
+                    d.marketer_id       = marketer_id,
+                    d.campaign_id       = campaign_id,
+                    d.clevel            = clevel,
+                    d.current_level     = current_level,
+                    d.subcampaign_id    = subcampaign_id,
+                    d.is_export         = is_export,
+                    d.registered_date   = registered_date,
+                    d.checked_date      = checked_date,
+                    d.c3bg_checkbox     = c3bg_checkbox,
+                    d.limit             = limit
             }
         },
         "columns": [
@@ -320,7 +373,6 @@ function countExported() {
             }
             initDataTable();
         }, 2000);
-
     }).fail(
         function (err) {
             alert('Cannot connect to server. Please try again later.');
