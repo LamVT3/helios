@@ -168,7 +168,8 @@
 </table>
 
 <h3>Duplicated Contacts</h3>
-<table id="table_duplicated_contacts" class="table table-striped table-bordered table-hover table-responsive">
+<table id="table_duplicated_contacts" class="table table-striped table-bordered table-hover"
+       width="100%">
     <thead>
     <tr>
         <th>Name</th>
