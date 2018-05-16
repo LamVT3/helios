@@ -650,7 +650,7 @@ class AjaxController extends Controller
         $offset   = intval($request->start);
         $contacts = $query->skip($offset)->take($limit)->get();
 
-        $data['contacts']   = $contacts;
+        $data['contacts']   = $query->__toString();
         $data['total']      = count($total);
 
         return $data;
