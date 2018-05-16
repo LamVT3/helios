@@ -619,13 +619,13 @@ class AjaxController extends Controller
 
         if($request->c3bg_checkbox == "true") {
             if($request->checked_date){
-                $date_place1 = str_replace('-', ' ', $request->checked_date);
-                $date_arr1   = explode(' ', str_replace('/', '-', $date_place1));
-                $startDate1  = strtotime($date_arr1[0])*1000;
-                $endDate1    = strtotime("+1 day", strtotime($date_arr1[1]))*1000;
+                $date_place = str_replace('-', ' ', $request->checked_date);
+                $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+                $startDate  = strtotime($date_arr[0])*1000;
+                $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
             }
-            $queryC3bg = Contact::where('submit_time', '>=', $startDate1);
-            $queryC3bg->where('submit_time', '<', $endDate1);
+            $queryC3bg = Contact::where('submit_time', '>=', $startDate);
+            $queryC3bg->where('submit_time', '<', $endDate);
             $checkedContacts = $queryC3bg->get();
             $phoneArr = array();
             foreach($checkedContacts as $contact) {
@@ -645,6 +645,7 @@ class AjaxController extends Controller
         } else {
             $query->orderBy('submit_time', 'desc');
         }
+        echo $query;
         $total    = $query->get();
         $limit    = intval($request->length);
         $offset   = intval($request->start);
