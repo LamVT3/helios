@@ -314,5 +314,9 @@ tr.is_export a.name_link
 label.export_label
 {
     text-align: center;
-    padding: 7px 0px 0px 5px;
+    padding: 7px 0px 0px 10px;
+}
+input#limit
+{
+    padding-left: 3px;
 }
