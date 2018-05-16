@@ -738,6 +738,7 @@ class AjaxController extends Controller
             $contact['subcampaign_name']    = $contact['subcampaign_name'] ? $contact['subcampaign_name'] : "-";
             $contact['ad_name']             = $contact['ad_name'] ? $contact['ad_name'] : "-";
             $contact['landing_page']        = $contact['landing_page'] ? $contact['landing_page'] : "-";
+            $contact['duplicate_number']    = count(Contact::where('_id', '<>', $contact['_id'])->where('phone', $contact['phone'])->get());
         }
 
         return $contacts;
