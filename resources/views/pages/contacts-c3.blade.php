@@ -141,20 +141,22 @@
                                     </section>
                                 </div>
                                 <div class="row" id="filter">
-                                    <section class="col col-3">
+                                    <section class="col col-2" style="margin: 0px;">
                                         <label class="label">Export</label>
-                                        <div style="display: inline-block">
-                                            <div class="col-xs-6">
-                                                <input class="form-control" id="limit" type="number"
-                                                       placeholder="{{config('constants.DEFAULT_EXPORT')}}" max="1000" min="1">
-                                            </div>
-                                            <div class="col-xs-4 export_label" id="">
-                                                <label class="export_label" for="limit"> entries</label>
-                                            </div>
-                                        </div>
+                                    </section>
+                                </div>
+                                <div class="row" id="filter">
+                                    <section class="col col-3">
                                         <label class="checkbox">
                                             <input type="checkbox" id="mark_exported"/>
                                             <i></i>Mark contact is exported</label>
+                                        <div class="col-xs-6">
+                                            <input class="form-control" id="limit" type="number"
+                                                   placeholder="{{config('constants.DEFAULT_EXPORT')}}" max="1000" min="1">
+                                        </div>
+                                        <div class="col-xs-4 export_label" id="">
+                                            <label class="export_label" style="margin: 7px" for="limit"> entries</label>
+                                        </div>
                                     </section>
                                     <section class="col col-3">
                                         <label class="checkbox">
