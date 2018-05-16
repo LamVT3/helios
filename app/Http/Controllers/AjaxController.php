@@ -729,7 +729,7 @@ class AjaxController extends Controller
         return $data_where;
     }
 
-    private function formatRecord($contacts, $query){
+    private function formatRecord($contacts){
 
         $name[0] = 11;
         $name[1] = 22;
