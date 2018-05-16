@@ -134,17 +134,42 @@ $(document).ready(function () {
             $("#subcampaign_id").select2();
         });
     })
-    $('select#limit').change(function (e) {
-        var limit = $('select#limit').val();
-        $('input[name="limit"]').val(limit);
+
+    $('input#limit').change(function (e) {
+        var limit = $('input#limit').val();
+        if(limit == '' || limit < 0){
+            $('input#limit').val(100);
+            $('input[name="limit"]').val(100);
+        }
+        else if(limit > 1000){
+            $('input#limit').val(1000);
+            $('input[name="limit"]').val(1000);
+        }
+        else{
+            $('input[name="limit"]').val(limit);
+        }
     })
+
     $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
         var registered_date = $('.registered_date').text();
         $('input[name="registered_date"]').val(registered_date);
     });
+
+    $('input#mark_exported').change(function (e) {
+        if ($('input#mark_exported').is(":checked"))
+        {
+            $('input[name="mark_exported"]').val(1);
+        }
+        else
+        {
+            $('input[name="mark_exported"]').val(0);
+        }
+    });
 });
 
 $(document).ready(function () {
+
+    $('div.alert-success').hide();
 
     $('#search-form-c3').submit(function (e) {
         e.preventDefault();
@@ -157,12 +182,12 @@ $(document).ready(function () {
         }, 1000);
     });
 
-    $('button#export').click(function (e) {
+    $('button#confirm_export').click(function (e) {
         e.preventDefault();
         $('#export-form-c3').submit();
-        countExported();
         setTimeout(function(){
             countExported();
+            $('div.alert-success').show();
         }, 2000);
 
     });
@@ -184,7 +209,7 @@ function initDataTable() {
     var page_size       = $('input[name="page_size"]').val();
     var subcampaign_id  = $('select[name="subcampaign_id"]').val();
     var is_export       = $('select[name="is_export"]').val();
-    var limit           = $('select[name="limit"]').val();
+    var limit           = $('input#limit').val();
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -233,7 +258,7 @@ function initDataTable() {
             url: url,
             type: "GET",
             data: function (d) {
-                    d.source_id         = source_id,
+                d.source_id         = source_id,
                     d.team_id           = team_id,
                     d.marketer_id       = marketer_id,
                     d.campaign_id       = campaign_id,
@@ -348,7 +373,6 @@ function countExported() {
             }
             initDataTable();
         }, 2000);
-
     }).fail(
         function (err) {
             alert('Cannot connect to server. Please try again later.');
