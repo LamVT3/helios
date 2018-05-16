@@ -697,6 +697,7 @@ class AjaxController extends Controller
             11  =>'subcampaign_name',
             12  =>'ad_name',
             13  =>'landing_page',
+            14  =>'duplicate_number',
         );
 
         return $columns;
