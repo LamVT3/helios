@@ -139,16 +139,10 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                </div>
+                                <div class="row" id="filter">
+                                    <section class="col col-2" style="margin: 0px;">
                                         <label class="label">Export</label>
-                                        <div class="col-xs-6">
-                                            <input class="form-control" id="limit" type="number"
-                                                   placeholder="{{config('constants.DEFAULT_EXPORT')}}" max="1000" min="1">
-                                        </div>
-                                        <div class="col-xs-4 export_label" id="">
-                                            <label class="export_label" for="limit"> entries</label>
-                                        </div>
-                                        <i></i>
                                     </section>
                                 </div>
                                 <div class="row" id="filter">
@@ -156,14 +150,23 @@
                                         <label class="checkbox">
                                             <input type="checkbox" id="mark_exported"/>
                                             <i></i>Mark contact is exported</label>
-                                    <label class="checkbox">
-                                        <input type="checkbox" id="c3bg" name="c3bg"/>
-                                        <i></i>C3BG</label>
-                                    <div id="c3range" class="pull-left"
-                                         style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; /*margin: 10px 15px*/">
-                                        <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
-                                        <span class="checked_date"></span> <b class="caret"></b>
-                                    </div>
+                                        <div class="col-xs-6">
+                                            <input class="form-control" id="limit" type="number"
+                                                   placeholder="{{config('constants.DEFAULT_EXPORT')}}" max="1000" min="1">
+                                        </div>
+                                        <div class="col-xs-4 export_label" id="">
+                                            <label class="export_label" for="limit"> entries</label>
+                                        </div>
+                                    </section>
+                                    <section class="col col-3">
+                                        <label class="checkbox">
+                                            <input type="checkbox" id="c3bg" name="c3bg"/>
+                                            <i></i>C3BG</label>
+                                        <div id="c3range" class="pull-left"
+                                             style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; /*margin: 10px 15px*/">
+                                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                                            <span class="checked_date"></span> <b class="caret"></b>
+                                        </div>
                                     </section>
                                 </div>
                             </fieldset>
