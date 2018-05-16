@@ -645,7 +645,7 @@ class AjaxController extends Controller
         } else {
             $query->orderBy('submit_time', 'desc');
         }
-        echo $query;
+        print $query;
         $total    = $query->get();
         $limit    = intval($request->length);
         $offset   = intval($request->start);
