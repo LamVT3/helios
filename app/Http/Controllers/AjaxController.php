@@ -645,13 +645,12 @@ class AjaxController extends Controller
         } else {
             $query->orderBy('submit_time', 'desc');
         }
-        print $query;
         $total    = $query->get();
         $limit    = intval($request->length);
         $offset   = intval($request->start);
         $contacts = $query->skip($offset)->take($limit)->get();
 
-        $data['contacts']   = $this->formatRecord($contacts);
+        $data['contacts']   = $query;
         $data['total']      = count($total);
 
         return $data;
