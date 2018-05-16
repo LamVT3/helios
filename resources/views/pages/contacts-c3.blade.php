@@ -251,7 +251,7 @@
                                         {{--<td>--}}
                                             {{--@permission('edit-review')--}}
                                             {{--<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="{{ $item->_id }}"><i--}}
-                                                        {{--class='fa fa-eye'></i>$item->duplicate_number</a>--}}
+                                                        {{--class='fa fa-eye'></i></a>--}}
                                             {{--<a data-toggle="modal" class='btn btn-xs btn-default'--}}
                                                    {{--data-target="#deleteModal"--}}
                                                    {{--data-item-id="{{ $item->_id }}"--}}
@@ -260,6 +260,7 @@
                                                         {{--class='fa fa-times'></i></a>--}}
                                             {{--@endpermission--}}
                                         {{--</td>--}}
+                                        {{--<td>{{ $item->duplicate_number }}</td>--}}
                                     {{--</tr>--}}
                                     {{--@endforeach--}}
 
