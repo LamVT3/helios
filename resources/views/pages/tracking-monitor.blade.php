@@ -20,7 +20,7 @@
 
                         @component('components.jarviswidget',
                             ['id' => 0, 'icon' => 'fa-table', 'title' => 'History'])
-                            <div class="widget-body no-padding">
+                            <div class="widget-body">
                                 <table id="dt_basic" class="table table-striped table-bordered table-hover"
                                        width="100%">
                                     <thead>
@@ -43,6 +43,7 @@
                                     @endforeach
                                     </tbody>
                                 </table>
+                                <div class="pull-right">{{ $jobs->links() }}</div>
                             </div>
                         @endcomponent
 
@@ -77,55 +78,6 @@
     <script type="text/javascript">
 
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
-
-        $(document).ready(function () {
-            var page_size       = $('input[name="page_size"]').val();
-            $('#deleteModal').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget) // Button that triggered the modal
-                var itemName = button.data('item-name') // Extract info from data-* attributes
-                var itemId = button.data('item-id')
-                // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-                // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-                var modal = $(this)
-                modal.find('.modal-title').text('Bạn có chắc chắn xóa user "' + itemName + '"?')
-                modal.find('input[name=id]').val(itemId)
-            })
-
-            /* BASIC ;*/
-            var responsiveHelper_dt_basic = undefined;
-
-
-            var breakpointDefinition = {
-                tablet: 1024,
-                phone: 480
-            };
-
-            $('#dt_basic').dataTable({
-                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-12 hidden-xs'C>r>" +
-                "t" +
-                "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-6'p>>",
-                "autoWidth": true,
-                "preDrawCallback": function () {
-                    // Initialize the responsive datatables helper once.
-                    if (!responsiveHelper_dt_basic) {
-                        responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($('#dt_basic'), breakpointDefinition);
-                    }
-                },
-                "rowCallback": function (nRow) {
-                    responsiveHelper_dt_basic.createExpandIcon(nRow);
-                },
-                "drawCallback": function (oSettings) {
-                    responsiveHelper_dt_basic.respond();
-                },
-                "order": [[0, "desc"]],
-                "iDisplayLength": page_size,
-                'scrollY'       : '55vh',
-                "scrollX"       : true,
-                'scrollCollapse': true,
-            });
-
-            /* END BASIC */
-        })
 
     </script>
 @stop
