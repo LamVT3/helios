@@ -652,7 +652,6 @@ class AjaxController extends Controller
 
         $data['contacts']   = $this->formatRecord($contacts);
         $data['total']      = count($total);
-        Log::info($query->toSql());
 
         return $data;
     }
