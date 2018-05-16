@@ -54,8 +54,11 @@ class AjaxController extends Controller
     {
         $contact = Contact::findOrFail($id);
 
+        $duplicatedContacts = Contact::where('phone', $contact->phone)->get();
+
         return view('components.contact-details', compact(
-            'contact'
+            'contact',
+            'duplicatedContacts'
         ));
     }
 
