@@ -597,7 +597,7 @@ class AjaxController extends Controller
             $startDate  = strtotime($date_arr[0])*1000;
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
-        $query  = $this->getQuery($startDate, $endDate, $columns);
+        $query  = $this->getQuery($startDate, $endDate);
         $total  = $query->get();
 
         if($request->checked_date){
