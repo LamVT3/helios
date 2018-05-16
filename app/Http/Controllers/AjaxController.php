@@ -632,7 +632,7 @@ class AjaxController extends Controller
                 array_push($phoneArr, $c->phone);
             }
             $arr_as_string = implode( ',', $phoneArr);
-            $query->where('phone', 'not in', $arr_as_string);
+            $query->where('phone', 'in', $arr_as_string);
         }
 
         if($data_search != ''){
