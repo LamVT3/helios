@@ -30,14 +30,14 @@
                                     </thead>
                                     <tbody>
 
-                                    @foreach ($success_phone_paged as $item)
+                                    @foreach ($phone_paged as $item)
                                         <tr>
                                             <td>{{ $item }}</td>
                                         </tr>
                                     @endforeach
                                     </tbody>
                                 </table>
-                                <div class="pull-right">{{ $success_phone_paged->links() }}</div>
+                                <div class="pull-right">{{ $phone_paged->links() }}</div>
                             </div>
                         @endcomponent
 

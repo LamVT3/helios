@@ -28,7 +28,8 @@
                                         <th data-hide="phone">Time run</th>
                                         <th>Total Success</th>
                                         <th>Total Duplicate</th>
-                                        <th>Actions</th>
+                                        <th></th>
+                                        <th></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -38,7 +39,12 @@
                                             <td>{{ $item['date'] }}</td>
                                             <td>{{ $item['total_success'] }}</td>
                                             <td>{{ $item['total_duplicate'] }}</td>
-                                            <td><a href="{{route('tracking-inventory-show', $item['_id'])}}">Detail</a></td>
+                                            <td>
+                                                <a href="{{route('tracking-inventory-success', $item['_id'])}}">List Success</a>
+                                            </td>
+                                            <td>
+                                                <a href="{{route('tracking-inventory-duplicate', $item['_id'])}}">List Duplicate</a>
+                                            </td>
                                         </tr>
                                     @endforeach
                                     </tbody>

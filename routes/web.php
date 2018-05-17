@@ -127,5 +127,6 @@ Route::group(['prefix' => 'config'], function () {
 
 Route::group(['prefix' => 'tracking-inventory'], function () {
     Route::get('/', 'TrackingController@index')->name('tracking-inventory-index');
-    Route::get('/show/{id}', 'TrackingController@show')->name('tracking-inventory-show');
+    Route::get('/show/success/{id}', 'TrackingController@showSuccess')->name('tracking-inventory-success');
+    Route::get('/show/duplicate/{id}', 'TrackingController@showDuplicate')->name('tracking-inventory-duplicate');
 });
