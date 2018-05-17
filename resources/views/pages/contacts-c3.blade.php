@@ -251,7 +251,7 @@
                                         {{--<td>--}}
                                             {{--@permission('edit-review')--}}
                                             {{--<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="{{ $item->_id }}"><i--}}
-                                                        {{--class='fa fa-eye'>{{ $item->duplicate_number }}</i></a>--}}
+                                                        {{--class='fa fa-eye'></i>{{ $item->duplicate_number }}</a>--}}
                                             {{--<a data-toggle="modal" class='btn btn-xs btn-default'--}}
                                                    {{--data-target="#deleteModal"--}}
                                                    {{--data-item-id="{{ $item->_id }}"--}}
