@@ -239,7 +239,6 @@ function initDataTable() {
             { "data" : 'subcampaign_name',  "defaultContent": "-"},
             { "data" : 'ad_name',           "defaultContent": "-"},
             { "data" : 'landing_page',      "defaultContent": "-"},
-            //{ "data" : 'duplicate_number',  "defaultContent": "-"},
             {
                 "data" : 'name',
                 "render": function ( data, type, row, meta ) {
