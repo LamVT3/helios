@@ -320,3 +320,7 @@ input#limit
 {
     padding-left: 3px;
 }
+
+.modal-dialog {
+    width: 1000px;
+}
