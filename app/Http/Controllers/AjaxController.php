@@ -735,10 +735,14 @@ class AjaxController extends Controller
 
         $name[0] = 11;
         $name[1] = 22;
+        $name[2] = 33;
 
         foreach ($contacts as $contact){
             $arr[0] = $contact['_id'];
             $arr[1] = $contact['name'];
+            $duplicatedNumbers = Contact::where('_id', '<>', $contact['_id'])
+                ->where('phone', $contact['phone'])->count();
+            $arr[2] = "(".$duplicatedNumbers.")";
 
             $contact['name']                = $contact['name'] ? $arr : "-";
             $contact['email']               = $contact['email'] ? $contact['email'] : "-";
@@ -755,9 +759,6 @@ class AjaxController extends Controller
             $contact['subcampaign_name']    = $contact['subcampaign_name'] ? $contact['subcampaign_name'] : "-";
             $contact['ad_name']             = $contact['ad_name'] ? $contact['ad_name'] : "-";
             $contact['landing_page']        = $contact['landing_page'] ? $contact['landing_page'] : "-";
-            $duplicatedNumbers = Contact::where('_id', '<>', $contact['_id'])
-                ->where('phone', $contact['phone'])->count();
-            $contact['duplicate_number']    = "(".$duplicatedNumbers.")";
         }
 
         return $contacts;
