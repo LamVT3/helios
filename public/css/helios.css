@@ -311,3 +311,7 @@ tr.is_export a.name_link
 {
     color: white;
 }
+
+.modal-dialog {
+    width: 1000px;
+}
