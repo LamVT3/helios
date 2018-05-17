@@ -169,7 +169,7 @@
 
 <h3>Duplicated Contacts</h3>
 <div class="container-table-contacts">
-    <div class="wrapper">
+    <div class="wrapper" style="overflow: auto">
         <table id="table_duplicated_contacts" class="table table-striped table-bordered table-hover"
                width="100%">
             <thead>
