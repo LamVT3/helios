@@ -727,7 +727,7 @@ class AjaxController extends Controller
             $arr[1] = $contact['name'];
             $duplicatedNumbers = Contact::where('_id', '<>', $contact['_id'])
                 ->where('phone', $contact['phone'])->count();
-            $arr[2] = "(".$duplicatedNumbers.")";
+            $arr[2] = $duplicatedNumbers;
 
             $contact['name']                = $contact['name'] ? $arr : "-";
             $contact['email']               = $contact['email'] ? $contact['email'] : "-";
