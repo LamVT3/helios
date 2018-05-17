@@ -227,7 +227,6 @@
                                         <th>Subcampaign</th>
                                         <th>Ads</th>
                                         <th>Landing page</th>
-                                        <th>Numof Duplicate</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -249,7 +248,6 @@
                                         {{--<td>{{ $item->subcampaign_name or '-100' }}</td>--}}
                                         {{--<td>{{ $item->ad_name or '-100' }}</td>--}}
                                         {{--<td>{{ $item->landing_page }}</td>--}}
-                                        {{--<td>{{ $item->duplicate_number }}</td>--}}
                                         {{--<td>--}}
                                             {{--@permission('edit-review')--}}
                                             {{--<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="{{ $item->_id }}"><i--}}
