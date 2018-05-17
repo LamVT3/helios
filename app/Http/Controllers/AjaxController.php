@@ -760,8 +760,6 @@ class AjaxController extends Controller
             $contact['duplicate_number']    = "(".$duplicatedNumbers.")";
         }
 
-        var_dump($contacts);die;
-
         return $contacts;
     }
 
