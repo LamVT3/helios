@@ -18,7 +18,7 @@
 
         <!-- widget grid -->
         <section id="widget-grid" class="">
-            <div class="alert alert-block alert-success">
+            <div class="alert alert-block alert-success" style="display: none">
                 <a class="close" data-dismiss="alert" href="#">×</a>
                 <p>
                     Contacts has been exported successfully.
@@ -149,8 +149,8 @@
                                     <section class="col col-3">
                                         <label class="checkbox">
                                             <input type="checkbox" id="mark_exported"/>
-                                            <i></i>Mark contact is exported</label>
-                                        <div class="col-xs-6">
+                                            <i></i>Mark contact as “Exported”</label>
+                                        <div class="col-xs-4">
                                             <input class="form-control" id="limit" type="number"
                                                    placeholder="{{config('constants.DEFAULT_EXPORT')}}" max="1000" min="1">
                                         </div>
@@ -172,7 +172,19 @@
                             </fieldset>
 
                             <div class="row">
-                                <div class="col-md-12 text-right">
+                                <div class="col-md-10 text-right">
+                                    <button id="update_contact" class="btn btn-warning btn-sm" type="button"
+                                            style="" data-toggle="modal" data-target="#myUpdateModal">
+                                        <i class="fa fa-edit"></i>
+                                        Update
+                                    </button>
+                                </div>
+                                <div class="col-md-1 text-right">
+                                    <button id="export" class="btn btn-success btn-sm" type="button" style="margin-right: 2px"
+                                            style="" data-toggle="modal" data-target="#myExportModal"> <i class="fa fa-download"></i> Export
+                                    </button>
+                                </div>
+                                <div class="col-md-1 text-right">
                                     <button id="filter" class="btn btn-primary btn-sm" type="submit" style="margin-right: 15px">
                                         <i class="fa fa-filter"></i>
                                         Filter
@@ -192,12 +204,6 @@
                                 <input type="hidden" name="registered_date">
                                 <input type="hidden" name="limit">
                                 <input type="hidden" name="mark_exported" value="0">
-
-                                <div style="position: absolute; right: 90px; bottom: 0px;">
-                                    <button id="export" class="btn btn-success" type="button"
-                                            style="" data-toggle="modal" data-target="#myModal"> <i class="fa fa-download"></i> Export
-                                    </button>
-                                </div>
                             </form>
                         </div>
 
@@ -213,6 +219,7 @@
                                    width="100%">
                                 <thead>
                                     <tr>
+                                        <th><input type="checkbox" id="update_all" value="all"/></th>
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Phone</th>
@@ -227,7 +234,7 @@
                                         <th>Subcampaign</th>
                                         <th>Ads</th>
                                         <th>Landing page</th>
-                                        <th>Action</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -334,7 +341,7 @@
 </div>
 
 <!-- Export Modal -->
-<div class="modal fade" id="myModal" role="dialog">
+<div class="modal fade" id="myExportModal" role="dialog">
     <div class="modal-dialog">
 
         <!-- Modal content-->
@@ -355,9 +362,32 @@
     </div>
 </div>
 
+<!-- Update Modal -->
+<div class="modal fade" id="myUpdateModal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title">Update status export</h3>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button id="confirm_update" type="button" class="btn btn-warning" data-dismiss="modal">Update</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 <input type="hidden" name="page_size" value="{{$page_size}}">
 <input type="hidden" name="exported" value="{{$exported}}">
 <input type="hidden" name="exported_url" value="{{route("contacts.countExported")}}">
+<input type="hidden" name="update_all" value="0">
 @endsection
 
 @section('script')

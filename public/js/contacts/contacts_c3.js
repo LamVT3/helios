@@ -165,6 +165,24 @@ $(document).ready(function () {
             $('input[name="mark_exported"]').val(0);
         }
     });
+
+    $('input[id=update_all]').click(function () {
+        var is_checked = this.checked;
+        if(is_checked){
+            $('input[name="update_all"]').val(1);
+        }else{
+            $('input[name="update_all"]').val(0);
+        }
+
+        $('input:checkbox[id=is_update]').prop('checked', this.checked);
+
+        $("input:checkbox[id=is_update]:checked").each(function () {
+            console.log("Id: " + $(this).attr("id") + " Value: " + $(this).val());
+        });
+    });
+
+
+
 });
 
 $(document).ready(function () {
@@ -189,6 +207,16 @@ $(document).ready(function () {
             countExported();
             $('div.alert-success').show();
         }, 2000);
+
+    });
+
+    $('button#update_contact').click(function (e) {
+        e.preventDefault();
+        var is_checked = $('#table_contacts input:checkbox').is(':checked');
+
+        if(!is_checked){
+            alert('Contacts is not selected !!!');
+        }
 
     });
 
@@ -276,6 +304,13 @@ function initDataTable() {
             {
                 "data" : 'name',
                 "render": function ( data, type, row, meta ) {
+                    return '<input type="checkbox" class="is_update" id="is_update" value="' + data[0] + '"/>';
+                },
+                "orderable": false
+            },
+            {
+                "data" : 'name',
+                "render": function ( data, type, row, meta ) {
                     return '<a href="javascript:void(0)" class="name name_link" data-id="' + data[0] + '">' + data[1] + '</a>';
                 }
             },
@@ -292,15 +327,15 @@ function initDataTable() {
             { "data" : 'subcampaign_name',  "defaultContent": "-"},
             { "data" : 'ad_name',           "defaultContent": "-"},
             { "data" : 'landing_page',      "defaultContent": "-"},
+            // {
+            //     "data" : 'name',
+            //     "render": function ( data, type, row, meta ) {
+            //         return '<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="'+ data[0] +'">' +
+            //             '<i class="fa fa-eye"></i></a>';
+            //     }
+            // },
             {
-                "data" : 'name',
-                "render": function ( data, type, row, meta ) {
-                    return '<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="'+ data[0] +'">' +
-                        '<i class="fa fa-eye"></i></a>';
-                    // + '<a data-toggle="modal" class="btn btn-xs btn-default"' +
-                    // 'data-target="#deleteModal data-item-id="'+ data[0] +'data-item-name="'+ data[1] +'"' +
-                    // 'data-original-title="Delete Row"><i class="fa fa-times"></i></a>';
-                }
+                "data" : 'is_export',       "defaultContent": "0",
             },
         ],
         'scrollY'       : '55vh',

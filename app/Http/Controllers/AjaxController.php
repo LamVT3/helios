@@ -729,9 +729,6 @@ class AjaxController extends Controller
 
     private function formatRecord($contacts){
 
-        $name[0] = 11;
-        $name[1] = 22;
-
         foreach ($contacts as $contact){
             $arr[0] = $contact['_id'];
             $arr[1] = $contact['name'];
