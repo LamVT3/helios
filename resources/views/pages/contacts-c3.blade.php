@@ -231,6 +231,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    {{ $contacts }}
                                     {{--@foreach ($contacts as $item)--}}
                                     {{--<tr id="contact-{{ $item->_id }}">--}}
                                         {{--<td><a href="javascript:void(0)" class="name" data-id="{{ $item->_id }}">{{ $item->name }}</a>--}}
