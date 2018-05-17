@@ -173,19 +173,31 @@ $(document).ready(function () {
         }else{
             $('input[name="update_all"]').val(0);
         }
-
         $('input:checkbox[id=is_update]').prop('checked', this.checked);
-
-        $("input:checkbox[id=is_update]:checked").each(function () {
-            console.log("Id: " + $(this).attr("id") + " Value: " + $(this).val());
+        enable_update();
+        $("input:checkbox[id=is_update]").each(function () {
+           edit(this, 'all');
         });
     });
-
-
 
 });
 
 $(document).ready(function () {
+
+    $('a#filter').click(function (e) {
+        e.preventDefault();
+
+        if( $('a#filter i').hasClass('fa-angle-down')){
+            $('a#filter i').removeClass('fa-angle-down');
+            $('a#filter i').addClass('fa-angle-up');
+            $('div#filter').show(500);
+        }
+        else{
+            $('a#filter i').removeClass('fa-angle-up');
+            $('a#filter i').addClass('fa-angle-down');
+            $('div#filter').hide(500);
+        }
+    });
 
     $('div.alert-success').hide();
 
@@ -212,11 +224,9 @@ $(document).ready(function () {
 
     $('button#update_contact').click(function (e) {
         e.preventDefault();
-        var is_checked = $('#table_contacts input:checkbox').is(':checked');
+        
 
-        if(!is_checked){
-            alert('Contacts is not selected !!!');
-        }
+
 
     });
 
@@ -304,7 +314,7 @@ function initDataTable() {
             {
                 "data" : 'name',
                 "render": function ( data, type, row, meta ) {
-                    return '<input type="checkbox" class="is_update" id="is_update" value="' + data[0] + '"/>';
+                    return '<input type="checkbox" class="is_update" id="is_update" onclick="enable_update();edit(this);" value="' + data[0] + '"/>';
                 },
                 "orderable": false
             },
@@ -335,7 +345,14 @@ function initDataTable() {
             //     }
             // },
             {
-                "data" : 'is_export',       "defaultContent": "0",
+                "data"      : 'is_export',
+                'className' : "status",
+                "render"    : function ( data, type, row, meta ) {
+                    if(data == 1){
+                        return '<span id="status">Exported</span><input type="hidden" id="old_status" value="1">';
+                    }
+                    return '<span id="status" >Not Exported</span><input type="hidden" id="old_status" value="0">';
+                }
             },
         ],
         'scrollY'       : '55vh',
@@ -357,24 +374,6 @@ function initDataTable() {
         },
     });
 }
-
-$(document).ready(function () {
-    $('a#filter').click(function (e) {
-        e.preventDefault();
-
-        if( $('a#filter i').hasClass('fa-angle-down')){
-            $('a#filter i').removeClass('fa-angle-down');
-            $('a#filter i').addClass('fa-angle-up');
-            $('div#filter').show(500);
-        }
-        else{
-            $('a#filter i').removeClass('fa-angle-up');
-            $('a#filter i').addClass('fa-angle-down');
-            $('div#filter').hide(500);
-        }
-    });
-
-});
 
 function countExported() {
     var status = $('select[name="is_export"]').val();
@@ -412,4 +411,62 @@ function countExported() {
         function (err) {
             alert('Cannot connect to server. Please try again later.');
         });
+}
+
+function enable_update() {
+    var is_checked = false;
+    $("input:checkbox[id=is_update]:checked").each(function () {
+        is_checked = this.checked;
+    });
+
+    if(is_checked){
+        $('button#update_contact').prop('disabled', false);
+        $('button#update_contact').removeClass('disabled');
+    }else{
+        $('button#update_contact').prop('disabled', true);
+        $('button#update_contact').addClass('disabled');
+    }
+}
+
+function edit(item, mode){
+    $statusCell = $(item).parents().siblings('td.status');
+    $status = $($statusCell).find('input#old_status').val();
+    $($statusCell).find('select#status_update').remove();
+    var is_checked = $(item).is(':checked');
+    if(is_checked){
+        $($statusCell).find('span#status').hide();
+        if($status == 1){
+            $($statusCell).append('' +
+                '<select id="status_update" onchange="setAll(this);">' +
+                '<option value="1" selected>Exported</option>' +
+                '<option value="0">Not Export</option>' +
+                '</select>' +
+                '');
+        }else{
+            $($statusCell).append('' +
+                '<select id="status_update" onchange="setAll();">' +
+                '<option value="1">Exported</option>' +
+                '<option value="0" selected>Not Export</option>' +
+                '</select>' +
+                '');
+        }
+        if(mode == 'all'){
+            $('select#status_update').first().focus(500);
+        }else{
+            $($statusCell).find('select#status_update').focus(500);
+        }
+    }else{
+        $($statusCell).find('span#status').show();
+        $($statusCell).find('select#status_update').remove();
+    }
+}
+
+function setAll(item){
+    $update_all = $('input[name="update_all"]').val();
+    if($update_all){
+        $value = $(item).val();
+        $("select#status_update").each(function () {
+            $(this).val($value);
+        });
+    }
 }
