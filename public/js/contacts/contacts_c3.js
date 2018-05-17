@@ -243,7 +243,7 @@ function initDataTable() {
                 "data" : 'name',
                 "render": function ( data, type, row, meta ) {
                     return '<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="'+ data[0] +'">' +
-                        '<i class="fa fa-eye"></i></a>';
+                        '<i class="fa fa-eye"></i><b>data[2]</b></a>';
                     // + '<a data-toggle="modal" class="btn btn-xs btn-default"' +
                     // 'data-target="#deleteModal data-item-id="'+ data[0] +'data-item-name="'+ data[1] +'"' +
                     // 'data-original-title="Delete Row"><i class="fa fa-times"></i></a>';
