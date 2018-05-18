@@ -320,3 +320,10 @@ input#limit
 {
     padding-left: 3px;
 }
+.is_export select
+{
+    color: #739e73!important;
+}
+#table_contacts th:last-child{
+    min-width: 80px;
+}
