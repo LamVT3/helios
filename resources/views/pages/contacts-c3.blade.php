@@ -240,7 +240,7 @@
                                         <th>Subcampaign</th>
                                         <th>Ads</th>
                                         <th>Landing page</th>
-                                        <th>Thien</th>
+                                        <th>Action</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
