@@ -85,7 +85,7 @@
                                                     <select name="role">
                                                         <option value="Marketer" {{ old('role', isset($user->role) ? $user->role : "Manager") == "Marketer" ? 'selected' : '' }}>Marketer</option>
                                                         <option value="Manager" {{ old('role', isset($user->role) ? $user->role : "Manager") != "Marketer" ? 'selected' : '' }}>Manager</option>
-                                                        @if(auth()->user()->role == "Admin")
+                                                        @if(auth()->user()->role == "Admin" && isset($user->role) && $user->role == 'Admin')
                                                             <option value="Admin" selected>Admin</option>
                                                         @endif
                                                     </select>
