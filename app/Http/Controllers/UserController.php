@@ -46,7 +46,7 @@ class UserController extends Controller
 
     public function create()
     {
-        if(auth()->user()->role !== "Manager") return view('errors.403');
+        if(auth()->user()->role !== "Manager" && auth()->user()->role !== "Admin") return view('errors.403');
         $page_title = "Create User | Helios";
         $page_css = array();
         $no_main_header = FALSE;
@@ -67,7 +67,7 @@ class UserController extends Controller
 
     public function edit($id)
     {
-        if(auth()->user()->role !== "Manager") return view('errors.403');
+        if(auth()->user()->role !== "Manager" && auth()->user()->role !== "Admin") return view('errors.403');
         $page_title = "Edit User | Helios";
         $page_css = array();
         $no_main_header = FALSE;
@@ -90,7 +90,7 @@ class UserController extends Controller
 
     public function store()
     {
-        if(auth()->user()->role !== "Manager") return view('errors.403');
+        if(auth()->user()->role !== "Manager" && auth()->user()->role !== "Admin") return view('errors.403');
         $validator = [
             'username' => 'required|alpha_dash|unique:users',
             'email' => 'required|email|max:255|unique:users'
