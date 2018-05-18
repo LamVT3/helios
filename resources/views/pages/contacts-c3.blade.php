@@ -18,10 +18,16 @@
 
         <!-- widget grid -->
         <section id="widget-grid" class="">
-            <div class="alert alert-block alert-success">
+            <div id="export_success" class="alert alert-block alert-success" style="display: none">
                 <a class="close" data-dismiss="alert" href="#">×</a>
                 <p>
                     Contacts has been exported successfully.
+                </p>
+            </div>
+            <div id="update_success" class="alert alert-block alert-success" style="display: none">
+                <a class="close" data-dismiss="alert" href="#">×</a>
+                <p>
+                    Contacts has been updated successfully.
                 </p>
             </div>
             <!-- row -->
@@ -149,8 +155,8 @@
                                     <section class="col col-3">
                                         <label class="checkbox">
                                             <input type="checkbox" id="mark_exported"/>
-                                            <i></i>Mark contact is exported</label>
-                                        <div class="col-xs-6">
+                                            <i></i>Mark contact as “Exported”</label>
+                                        <div class="col-xs-4">
                                             <input class="form-control" id="limit" type="number"
                                                    placeholder="{{config('constants.DEFAULT_EXPORT')}}" max="1000" min="1">
                                         </div>
@@ -172,7 +178,19 @@
                             </fieldset>
 
                             <div class="row">
-                                <div class="col-md-12 text-right">
+                                <div class="col-md-10 text-right">
+                                    <button id="update_contact" class="btn btn-warning btn-sm disabled" disabled type="button"
+                                            style="" data-toggle="modal" data-target="#myUpdateModal">
+                                        <i class="fa fa-edit"></i>
+                                        Update
+                                    </button>
+                                </div>
+                                <div class="col-md-1 text-right">
+                                    <button id="export" class="btn btn-success btn-sm" type="button" style="margin-right: 2px"
+                                            style="" data-toggle="modal" data-target="#myExportModal"> <i class="fa fa-download"></i> Export
+                                    </button>
+                                </div>
+                                <div class="col-md-1 text-right">
                                     <button id="filter" class="btn btn-primary btn-sm" type="submit" style="margin-right: 15px">
                                         <i class="fa fa-filter"></i>
                                         Filter
@@ -192,12 +210,6 @@
                                 <input type="hidden" name="registered_date">
                                 <input type="hidden" name="limit">
                                 <input type="hidden" name="mark_exported" value="0">
-
-                                <div style="position: absolute; right: 90px; bottom: 0px;">
-                                    <button id="export" class="btn btn-success" type="button"
-                                            style="" data-toggle="modal" data-target="#myModal"> <i class="fa fa-download"></i> Export
-                                    </button>
-                                </div>
                             </form>
                         </div>
 
@@ -213,6 +225,7 @@
                                    width="100%">
                                 <thead>
                                     <tr>
+                                        <th><input type="checkbox" id="update_all" value="all"/></th>
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Phone</th>
@@ -227,7 +240,8 @@
                                         <th>Subcampaign</th>
                                         <th>Ads</th>
                                         <th>Landing page</th>
-                                        <th>Action</th>
+                                        <th>Thien</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -334,7 +348,7 @@
 </div>
 
 <!-- Export Modal -->
-<div class="modal fade" id="myModal" role="dialog">
+<div class="modal fade" id="myExportModal" role="dialog">
     <div class="modal-dialog">
 
         <!-- Modal content-->
@@ -358,6 +372,9 @@
 <input type="hidden" name="page_size" value="{{$page_size}}">
 <input type="hidden" name="exported" value="{{$exported}}">
 <input type="hidden" name="exported_url" value="{{route("contacts.countExported")}}">
+<input type="hidden" name="update_status_export" value="{{route("ajax-updateStatusExport")}}">
+<input type="hidden" name="update_all" value="0">
+<input type="hidden" name="status_update_all" value="">
 @endsection
 
 @section('script')
@@ -369,10 +386,16 @@
 <script src="{{ asset('js/plugin/datatables/dataTables.tableTools.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatables/dataTables.bootstrap.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatable-responsive/datatables.responsive.min.js') }}"></script>
+
 <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
 <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+
+<script type="text/javascript" src="//cdn.datatables.net/fixedcolumns/3.2.4/js/dataTables.fixedColumns.min.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/fixedcolumns/3.2.4/css/fixedColumns.dataTables.min.css"/>
+
+
 <script type="text/javascript">
     $(document).ready(function(){
         $('.container-table-contacts').on('click', '.name', (function(){
