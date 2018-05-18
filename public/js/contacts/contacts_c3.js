@@ -217,17 +217,32 @@ $(document).ready(function () {
         $('#export-form-c3').submit();
         setTimeout(function(){
             countExported();
-            $('div.alert-success').show();
+            $('div#export_success').show();
+            $('div#update_success').hide();
+            $('input#update_all').prop('checked', false); // Unchecks checkbox all
         }, 2000);
 
     });
 
     $('button#update_contact').click(function (e) {
         e.preventDefault();
-        
+        $('.loading').show();
+        var is_update_all   = $('input[id=update_all]').is(':checked');
+        var new_status      = $('input[name=status_update_all]').val();
+        if(is_update_all){
+            updateStatusExport('', new_status);
+        }else{
+            var id      = {};
+            var status  = {};
+            $("input:checkbox[id=is_update]:checked").each(function () {
 
-
-
+                $statusCell = $(this).parent().siblings('td.status')
+                var is_export = $($statusCell).find('select#status_update').val();
+                id[$(this).val()] = is_export;
+            });
+            console.log(id);
+            updateStatusExport(id, status);
+        }
     });
 
 });
@@ -359,7 +374,7 @@ function initDataTable() {
         "scrollX"       : true,
         'scrollCollapse': true,
         "createdRow": function ( row, data, index ) {
-            if(data['is_export']){
+            if(data['is_export'] == 1){
                 $(row).addClass('is_export');
             }
         },
@@ -376,8 +391,7 @@ function initDataTable() {
 }
 
 function countExported() {
-    var status = $('select[name="is_export"]').val();
-
+    var status          = $('select[name="is_export"]').val();
 
     var url             = $('input[name="exported_url"]').val();
     var source_id       = $('select[name="source_id"]').val();
@@ -401,10 +415,10 @@ function countExported() {
 
     $.get(url, data, function (data) {
         setTimeout(function(){
+            // if(status == '0'){
+            //     $('input[name="exported"]').val(0);
+            // }
             $('input[name="exported"]').val(data);
-            if(status == '0'){
-                $('input[name="exported"]').val(0);
-            }
             initDataTable();
         }, 2000);
     }).fail(
@@ -444,7 +458,7 @@ function edit(item, mode){
                 '');
         }else{
             $($statusCell).append('' +
-                '<select id="status_update" onchange="setAll();">' +
+                '<select id="status_update" onchange="setAll(this);">' +
                 '<option value="1">Exported</option>' +
                 '<option value="0" selected>Not Export</option>' +
                 '</select>' +
@@ -463,10 +477,73 @@ function edit(item, mode){
 
 function setAll(item){
     $update_all = $('input[name="update_all"]').val();
-    if($update_all){
+    if($update_all == 1){
         $value = $(item).val();
         $("select#status_update").each(function () {
             $(this).val($value);
         });
+        $('input[name="status_update_all"]').val($value);
     }
+}
+
+function updateStatusExport(id, new_status) {
+    var status          = $('input[name=status_update_all]').val();
+    var url             = $('input[name="update_status_export"]').val();
+    var source_id       = $('select[name="source_id"]').val();
+    var team_id         = $('select[name="team_id"]').val();
+    var marketer_id     = $('select[name="marketer_id"]').val();
+    var campaign_id     = $('select[name="campaign_id"]').val();
+    var clevel          = $('select[name="clevel"]').val();
+    var current_level   = $('select[name="current_level"]').val();
+    var registered_date = $('.registered_date').text();
+    var subcampaign_id  = $('select[name="subcampaign_id"]').val();
+    var old_status      = $('select[name="is_export"]').val();
+
+    if(id == '' && status == ''){
+        setTimeout(function(){
+            // if(old_status == '0'){
+            //     $('input[name="exported"]').val(0);
+            // }
+            $('input#update_all').prop('checked', false); // Unchecks checkbox all
+            countExported();
+            $('.loading').hide();
+            $('div#update_success').show();
+        }, 2000);
+    }
+    if(id){
+        status          = new_status;
+    }
+
+    var data = {};
+    data.id                = id;
+    data.source_id         = source_id;
+    data.team_id           = team_id;
+    data.marketer_id       = marketer_id;
+    data.campaign_id       = campaign_id;
+    data.clevel            = clevel;
+    data.current_level     = current_level;
+    data.subcampaign_id    = subcampaign_id;
+    data.registered_date   = registered_date;
+    data.old_status        = old_status;
+    data.new_status        = status;
+
+    $.get(url, data, function (data) {
+        setTimeout(function(){
+            // if(old_status == '0'){
+            //     $('input[name="exported"]').val(0);
+            // }
+            $('input#update_all').prop('checked', false); // Unchecks checkbox all
+            countExported();
+            $('.loading').hide();
+            $('div#update_success').show();
+            $('div#export_success').hide();
+        }, 2000);
+    }).fail(
+        function (err) {
+            $('.loading').hide();
+            alert('Cannot connect to server. Please try again later.');
+        });
+
+    enable_update();
+
 }

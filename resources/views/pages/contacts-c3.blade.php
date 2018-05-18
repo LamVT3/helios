@@ -18,10 +18,16 @@
 
         <!-- widget grid -->
         <section id="widget-grid" class="">
-            <div class="alert alert-block alert-success" style="display: none">
+            <div id="export_success" class="alert alert-block alert-success" style="display: none">
                 <a class="close" data-dismiss="alert" href="#">×</a>
                 <p>
                     Contacts has been exported successfully.
+                </p>
+            </div>
+            <div id="update_success" class="alert alert-block alert-success" style="display: none">
+                <a class="close" data-dismiss="alert" href="#">×</a>
+                <p>
+                    Contacts has been updated successfully.
                 </p>
             </div>
             <!-- row -->
@@ -365,7 +371,9 @@
 <input type="hidden" name="page_size" value="{{$page_size}}">
 <input type="hidden" name="exported" value="{{$exported}}">
 <input type="hidden" name="exported_url" value="{{route("contacts.countExported")}}">
+<input type="hidden" name="update_status_export" value="{{route("ajax-updateStatusExport")}}">
 <input type="hidden" name="update_all" value="0">
+<input type="hidden" name="status_update_all" value="">
 @endsection
 
 @section('script')
