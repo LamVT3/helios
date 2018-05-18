@@ -30,7 +30,13 @@ class CampaignController extends Controller
         // end 2018-04-04
         $user = auth()->user();
 
-        $campaigns = Campaign::where('creator_id', $user->id)->orderBy('created_at', 'desc')->get();
+        if ($user->role == 'Admin'){
+	        $campaigns = Campaign::orderBy('created_at', 'desc')->get();
+        }
+        else{
+	        $campaigns = Campaign::where('creator_id', $user->id)->orderBy('created_at', 'desc')->get();
+        }
+
         $team = Team::find($user->team_id);
 
         $landing_pages  = LandingPage::where('is_active', 1)->get();

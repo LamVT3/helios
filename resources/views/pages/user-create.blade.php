@@ -81,6 +81,9 @@
                                                     <select name="role">
                                                         <option value="Marketer">Marketer</option>
                                                         <option value="Manager">Manager</option>
+                                                        @if(auth()->user()->role == "Admin")
+                                                        <option value="Admin">Admin</option>
+                                                        @endif
                                                     </select>
                                                     <i></i>
                                                 </label>

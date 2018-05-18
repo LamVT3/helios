@@ -101,7 +101,7 @@
                 {{--</ul>--}}
             </li>
             {{--2018-04-18 LamVT [HEL_9] Add more setting for VND/USD conversion--}}
-            @if(auth()->user()->role == "Manager")
+            @if(auth()->user()->role == "Manager" || auth()->user()->role == "Admin")
             <li class="{{ $active == 'config' ? 'active' : '' }}">
                 <a href="{{ route('config') }}"><i class="fa fa-lg fa-fw fa-cog"></i> <span
                             class="menu-item-parent">Config</span></a>

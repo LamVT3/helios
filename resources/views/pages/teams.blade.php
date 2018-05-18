@@ -8,7 +8,7 @@
         <div id="content">
 
             @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
-                @if(auth()->user()->role == "Manager")
+                @if(auth()->user()->role == "Manager" || auth()->user()->role == "Admin")
                 <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
                    data-toggle="modal"
                    data-target="#createTeamModal"><i
@@ -72,7 +72,7 @@
                                             <td>{{ $item->creator_name or '' }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
                                             <td>
-                                                @if(auth()->user()->role == "Manager")
+                                                @if(auth()->user()->role == "Manager" || auth()->user()->role == "Admin")
                                                 <a data-toggle="modal" class='btn btn-xs btn-default'
                                                    data-target="#createTeamModal"
                                                    data-item-id="{{ $item->id }}"

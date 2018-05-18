@@ -8,7 +8,7 @@
         <div id="content">
 
             @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
-                @if(auth()->user()->role == "Manager")
+                @if(auth()->user()->role == "Manager" || auth()->user()->role == "Admin")
                 <!-- 2018-04-04 lamvt change button color -->
                 <a href="{{ route('users-create') }}"
                    class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"><i
@@ -66,7 +66,7 @@
                                             <!-- end 2018-04-04 -->
                                             <td>{{ $item->created_at->toFormattedDateString() }}</td>
                                             <td>
-                                                @if(auth()->user()->role == "Manager")
+                                                @if(auth()->user()->role == "Manager" || auth()->user()->role == "Admin")
                                                 <a class='btn btn-xs btn-default'
                                                    href="{{ route('users-edit', ['id' => $item->id]) }}"
                                                    data-original-title='Edit Row'><i
