@@ -210,6 +210,8 @@
                                 <input type="hidden" name="registered_date">
                                 <input type="hidden" name="limit">
                                 <input type="hidden" name="mark_exported" value="0">
+                                <input type="hidden" name="status">
+
                             </form>
                         </div>
 

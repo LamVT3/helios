@@ -150,6 +150,11 @@ $(document).ready(function () {
         }
     })
 
+    $('select#is_export').change(function (e) {
+        var status = $('select#is_export').val();
+        $('input[id="status"]').val(status);
+    })
+
     $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
         var registered_date = $('.registered_date').text();
         $('input[name="registered_date"]').val(registered_date);
@@ -220,7 +225,7 @@ $(document).ready(function () {
             $('div#export_success').show();
             $('div#update_success').hide();
             $('input#update_all').prop('checked', false); // Unchecks checkbox all
-        }, 2000);
+        }, 1000);
 
     });
 
@@ -229,19 +234,19 @@ $(document).ready(function () {
         $('.loading').show();
         var is_update_all   = $('input[id=update_all]').is(':checked');
         var new_status      = $('input[name=status_update_all]').val();
-        if(is_update_all){
-            updateStatusExport('', new_status);
-        }else{
-            var id      = {};
-            var status  = {};
-            $("input:checkbox[id=is_update]:checked").each(function () {
+        // if(is_update_all){
+        //     updateStatusExport('', new_status);
+        // }else{
+        var id      = {};
+        $("input:checkbox[id=is_update]:checked").each(function () {
 
-                $statusCell = $(this).parent().siblings('td.status')
-                var is_export = $($statusCell).find('select#status_update').val();
-                id[$(this).val()] = is_export;
-            });
-            updateStatusExport(id, status);
-        }
+            $statusCell = $(this).parent().siblings('td.status');
+            var is_export = $($statusCell).find('select#status_update').val();
+            id[$(this).val()] = is_export;
+        });
+        console.log(id);
+        updateStatusExport(id);
+        // }
     });
 
 });
@@ -429,7 +434,7 @@ function countExported() {
             // }
             $('input[name="exported"]').val(data);
             initDataTable();
-        }, 2000);
+        }, 1000);
     }).fail(
         function (err) {
             alert('Cannot connect to server. Please try again later.');
@@ -495,18 +500,18 @@ function setAll(item){
     }
 }
 
-function updateStatusExport(id, new_status) {
+function updateStatusExport(id) {
     var status          = $('input[name=status_update_all]').val();
     var url             = $('input[name="update_status_export"]').val();
-    var source_id       = $('select[name="source_id"]').val();
-    var team_id         = $('select[name="team_id"]').val();
-    var marketer_id     = $('select[name="marketer_id"]').val();
-    var campaign_id     = $('select[name="campaign_id"]').val();
-    var clevel          = $('select[name="clevel"]').val();
-    var current_level   = $('select[name="current_level"]').val();
+    var source_id       = $('input[name="source_id"]').val();
+    var team_id         = $('input[name="team_id"]').val();
+    var marketer_id     = $('input[name="marketer_id"]').val();
+    var campaign_id     = $('input[name="campaign_id"]').val();
+    var clevel          = $('input[name="clevel"]').val();
+    var current_level   = $('input[name="current_level"]').val();
     var registered_date = $('.registered_date').text();
-    var subcampaign_id  = $('select[name="subcampaign_id"]').val();
-    var old_status      = $('select[name="is_export"]').val();
+    var subcampaign_id  = $('input[name="subcampaign_id"]').val();
+    var old_status      = $('input[name="status"]').val();
 
     if(id == '' && status == ''){
         setTimeout(function(){
@@ -517,10 +522,7 @@ function updateStatusExport(id, new_status) {
             countExported();
             $('.loading').hide();
             $('div#update_success').show();
-        }, 2000);
-    }
-    if(id){
-        status          = new_status;
+        }, 1000);
     }
 
     var data = {};
@@ -546,7 +548,7 @@ function updateStatusExport(id, new_status) {
             $('.loading').hide();
             $('div#update_success').show();
             $('div#export_success').hide();
-        }, 2000);
+        }, 1000);
     }).fail(
         function (err) {
             $('.loading').hide();
