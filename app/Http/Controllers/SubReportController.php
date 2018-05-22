@@ -27,7 +27,7 @@ class SubReportController extends Controller
         $page_css = array();
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active = 'sub-report-line';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-bar-chart-o\"></i>Sub Report <span>> Line Chart </span>";
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Line Chart </span>";
 
         $sources        = Source::all();
         $teams          = Team::all();
