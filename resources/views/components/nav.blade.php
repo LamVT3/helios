@@ -70,9 +70,19 @@
                 </ul>
             </li>
 
-            <li class="{{ $active == 'report' ? 'active' : '' }}">
-                <a href="{{ route('report') }}"><i class="fa fa-lg fa-fw fa-bar-chart-o"></i> <span
+            <li class="{{ $active == 'sadsadasd' ? 'active' : '' }}">
+                <a href="javascript:void(0)"><i class="fa fa-lg fa-fw fa-bar-chart-o"></i> <span
                             class="menu-item-parent">Report</span></a>
+                <ul>
+{{--                    <li class="{{ $active == 'sub_report_line' ? 'active' : '' }}">--}}
+                    <li class="{{ $active == 'report' ? 'active' : '' }}">
+                        <a href="{{ route('report') }}"><i class="fa fa-lg fa-fw fa-align-justify"></i> Quality Report</a>
+                    </li>
+
+                    <li class="{{ $active == 'sub-report-line' ? 'active' : '' }}">
+                        <a href="{{ route('sub-report-line') }}"><i class="fa fa-lg fa-fw fa-line-chart"></i> Line Chart</a>
+                    </li>
+                </ul>
             </li>
 
             <li class="{{ $active == 'contacts' ? 'active' : '' }}">

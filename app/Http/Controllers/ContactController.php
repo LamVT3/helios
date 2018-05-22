@@ -37,7 +37,7 @@ class ContactController extends Controller
         $page_size  = Config::getByKey('PAGE_SIZE');
         $contacts   = Contact::where('submit_time', '>=', strtotime("midnight")*1000)
             ->where('submit_time', '<', strtotime("tomorrow")*1000)
-            ->where('clevel', 'c3b')
+            ->where('clevel', 'like', '%c3b%')
             ->orderBy('submit_time', 'desc')->limit((int)$page_size)->get();
         $sources        = Source::all();
         $teams          = Team::all();
@@ -113,6 +113,10 @@ class ContactController extends Controller
         $query->where('submit_time', '<', $endDate);
 
         if(count($data_where) > 0){
+            if($data_where['clevel'] == 'c3b'){
+                $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }
             $query->where($data_where);
         }
 //        if($request->limit)
@@ -147,7 +151,15 @@ class ContactController extends Controller
 
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
-        $query->where($data_where);
+
+        if(count($data_where) > 0){
+            if(@$data_where['clevel'] == 'c3b'){
+                $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }
+            $query->where($data_where);
+        }
+
         $count = $query->count();
 
         return $count;
@@ -270,6 +282,10 @@ class ContactController extends Controller
         $query->where('submit_time', '<', $endDate);
 
         if(count($data_where) > 0){
+            if($data_where['clevel'] == 'c3b'){
+                $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }
             $query->where($data_where);
         }
         $query->limit(($limit));

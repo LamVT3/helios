@@ -23,7 +23,7 @@
             rules: {
                 name: {
                     required: true,
-                    alphanumeric: true
+                    // alphanumeric: true
                 },
                 description: {
                     required: true,

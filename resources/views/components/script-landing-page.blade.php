@@ -65,11 +65,11 @@
             rules: {
                 name: {
                     required: true,
-                    alphanumeric: true
+                    // alphanumeric: true
                 },
                 url: {
                     required: true,
-                    alphanumeric: true
+                    // alphanumeric: true
                 }
             },
 

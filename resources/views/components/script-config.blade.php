@@ -65,11 +65,11 @@
             rules: {
                 key: {
                     required: true,
-                    alphanumeric: true
+                    // alphanumeric: true
                 },
                 value: {
                     required: true,
-                    alphanumeric: true
+                    // alphanumeric: true
                 },
             },
 

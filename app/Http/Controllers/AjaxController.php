@@ -611,6 +611,10 @@ class AjaxController extends Controller
         $query->where('submit_time', '<', $endDate);
 
         if(count($data_where) > 0){
+            if($data_where['clevel'] == 'c3b'){
+                $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }
             $query->where($data_where);
         }
         if($status == '1'){
@@ -783,6 +787,10 @@ class AjaxController extends Controller
         $query->where('submit_time', '<', $endDate);
 
         if(count($data_where) > 0){
+            if($data_where['clevel'] == 'c3b'){
+                $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }
             $query->where($data_where);
         }
         $id = [];

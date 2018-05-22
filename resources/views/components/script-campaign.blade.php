@@ -30,28 +30,28 @@
             rules: {
                 campaign_name: {
                     required: true,
-                    alphanumeric: true
+                    // alphanumeric: true
                 },
                 medium: {
-                    alphanumeric: true
+                    // alphanumeric: true
                 },
                 subcampaign_name: {
                     required: true,
-                    alphanumeric: true
+                    // alphanumeric: true
                 },
                 ad_name: {
                     required: true,
-                    alphanumeric: true
+                    // alphanumeric: true
                 },
                 mol_link_tracking: {
                     required: true,
-                    mol_tracking: true
+                    // mol_tracking: true
                 },
                 source: {
-                    alphanumeric: true
+                    // alphanumeric: true
                 },
                 landing_page: {
-                    alphanumeric: true
+                    // alphanumeric: true
                 }
             },
 

@@ -183,10 +183,10 @@
                         required: true
                     },
                     rank: {
-                        alphanumeric: true
+                        // alphanumeric: true
                     },
                     role: {
-                        alphanumeric: true
+                        // alphanumeric: true
                     },
                     // avatar: {
                     //     required: true,
