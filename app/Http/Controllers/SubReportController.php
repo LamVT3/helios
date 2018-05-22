@@ -213,8 +213,8 @@ class SubReportController extends Controller
                 [
                     '$group' => [
                         '_id'   => '$date',
-                        'c3b'   => ['$sum' => '$spent'],
-                        'c3bg'  => ['$sum' => '$revenue'],
+                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3bg'  => ['$sum' => '$c3bg'],
                         'l1'    => ['$sum' => '$l1'],
                         'l3'    => ['$sum' => '$l3'],
                         'l6'    => ['$sum' => '$l6'],
@@ -300,8 +300,8 @@ class SubReportController extends Controller
                 [
                     '$group' => [
                         '_id'   => '$date',
-                        'c3b'   => ['$sum' => '$spent'],
-                        'c3bg'  => ['$sum' => '$revenue'],
+                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3bg'  => ['$sum' => '$c3bg'],
                         'l1'    => ['$sum' => '$l1'],
                         'l3'    => ['$sum' => '$l3'],
                         'l6'    => ['$sum' => '$l6'],

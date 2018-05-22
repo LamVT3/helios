@@ -77,7 +77,7 @@ $.fn.UseBudgetTooltip = function () {
                 showTooltip(item.pageX,
                     item.pageY,
                     color,
-                    "<strong>" + item.series.label + "</strong><br>" + monthNames[month] + " : <strong>" + numberWithCommas(y) + "</strong> (VND)");
+                    "<strong>" + item.series.label + "</strong><br>" + monthNames[month] + " : <strong>" + numberWithDots(y) + "</strong> (VND)");
             }
         } else {
             $("#tooltip").remove();
@@ -103,7 +103,7 @@ $.fn.UseQuantityTooltip = function () {
                 showTooltip(item.pageX,
                     item.pageY,
                     color,
-                    "<strong>" + item.series.label + "</strong><br>" + monthNames[month] + " : <strong>" + y + "</strong>");
+                    "<strong>" + item.series.label + "</strong><br>" + monthNames[month] + " : <strong>" + numberWithCommas(y) + "</strong>");
             }
         } else {
             $("#tooltip").remove();
@@ -162,6 +162,12 @@ function cb(start, end) {
 }
 
 function numberWithCommas(number) {
+    var parts = number.toFixed().split(".");;
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
+}
+
+function numberWithDots(number) {
     var parts = number.toFixed().split(".");;
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     return parts.join(".");
