@@ -259,7 +259,7 @@
         $.get("{{ route('ajax-getReportMonthly') }}", {month: month}, function (data) {
             document.getElementById("report_monthly").innerHTML = data;
         }).fail( function () {
-            alert('Cannot connect to server. Please try again later.');
+            alert('Cannot connect to server. Please try again later...');
         }).complete(function () {
 
         });
