@@ -36,7 +36,7 @@
                     <th>Week 4</th>
                     <th>Week 5</th>
                     <th>Total</th>
-                    <th>Range Time</th>
+                    <th>Range Date</th>
                     <th>Forecast</th>
                 </tr>
                 <tr>
@@ -49,10 +49,10 @@
                     <th>(29-31)</th>
                     <th></th>
                     <th>
-                        <div id="rangetime" class="pull-left"
+                        <div id="rangedate" class="pull-left"
                              style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc;/* margin: 10px 15px*/">
                             <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
-                            <span class="rangetime"></span> <b class="caret"></b>
+                            <span class="rangedate"></span> <b class="caret"></b>
                         </div>
                     </th>
                     <th></th>

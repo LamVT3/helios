@@ -615,7 +615,7 @@ class AjaxController extends Controller
             ]);
         });
 
-        $resultW5 = [(object)[]];
+        $resultW5 = (object)[];
         if($month != "02" || $days >= 29) {
             $startDate   = date('Y-' . $month .'-29');
             $endStart    = date('Y-' . $month .'-t');
@@ -626,8 +626,8 @@ class AjaxController extends Controller
             });
         }
 
-        if(request()->rangetime){
-            $date_place = str_replace('-', ' ', request()->rangetime);
+        if(request()->rangedate){
+            $date_place = str_replace('-', ' ', request()->rangedate);
             $date_arr = explode(' ', str_replace('/', '-', $date_place));
             $startDate = Date('Y-m-d', strtotime($date_arr[0]));
             $endDate = Date('Y-m-d', strtotime($date_arr[1]));
