@@ -15,7 +15,6 @@
             <ul id="tabs" class="nav nav-tabs">
                 <li><a href="#report" data-toggle="tab"><strong>Report</strong></a></li>
                 <li class="active"><a href="#monthly" data-toggle="tab"><strong>Monthly Marketing Report</strong></a></li>
-                <li><a href="#chart" data-toggle="tab"><strong>Chart Report</strong></a></li>
             </ul>
             <div class="tab-content mb30">
                 <div id="report" class="tab-pane">
@@ -222,8 +221,6 @@
                     </section>
                 </div>
 
-                <div class="tab-pane " id="chart">
-                </div>
             </div>
         </div>
 
@@ -239,7 +236,7 @@
 @section('script')
 
 <!-- PAGE RELATED PLUGIN(S) -->
-{{--<script src="{{ asset('js/reports/report.js') }}"></script>--}}
+<script src="{{ asset('js/reports/report.js') }}"></script>
 <script src="{{ asset('js/plugin/datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatables/dataTables.colVis.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatables/dataTables.tableTools.min.js') }}"></script>
@@ -261,12 +258,13 @@
 
         $.get("{{ route('ajax-getReportMonthly') }}", {month: month}, function (data) {
             document.getElementById("report_monthly").innerHTML = data;
-        }).fail( function (e) {
+        }).fail( function () {
             alert('Cannot connect to server. Please try again later.');
         }).complete(function () {
-            var m = month;
-            $.getScript("{{ asset('js/reports/report.js') }}");
+            rangetime_span(moment(), moment());
         });
+
+        $( "#monthly" ).click();
     }
 </script>
 
