@@ -621,7 +621,6 @@ class AjaxController extends Controller
 
         $resultW5 = (object)[];
         if($days >= 29) {
-            var_dump("abc".$days);
             $startDate   = date('Y-' . $month .'-29');
             $endStart    = date('Y-' . $month .'-t');
             $resultW5 = AdResult::raw(function ($collection) use ($startDate, $endStart) {
@@ -630,9 +629,6 @@ class AjaxController extends Controller
                 ]);
             });
         }
-
-        var_dump($resultW5);
-        die;
 
         if(request()->rangedate){
             $date_place = str_replace('-', ' ', request()->rangedate);
@@ -677,7 +673,8 @@ class AjaxController extends Controller
                 'c3b_cost' => 0,
                 'c3bg_cost' => 0,
             ];
-            if(isset($value)) {
+            var_dump($value);
+            if (isset($value)) {
                 foreach ($value as $item) {
                     $report[$key]->c1 += isset($item->c1) ? $item->c1 : 0;
                     $report[$key]->c2 += isset($item->c2) ? $item->c2 : 0;
@@ -699,6 +696,9 @@ class AjaxController extends Controller
                 }
             }
         }
+
+        var_dump($report);
+        die;
 
         $report['config'] = $config;
 
