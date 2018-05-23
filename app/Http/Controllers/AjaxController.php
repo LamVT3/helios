@@ -630,6 +630,9 @@ class AjaxController extends Controller
             });
         }
 
+        var_dump($resultW5);
+        die;
+
         if(request()->rangedate){
             $date_place = str_replace('-', ' ', request()->rangedate);
             $date_arr = explode(' ', str_replace('/', '-', $date_place));
