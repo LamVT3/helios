@@ -618,6 +618,9 @@ class AjaxController extends Controller
             ]);
         });
 
+        var_dump("=========>>>>>>>>>".$resultW4);
+        die;
+
         $resultW5 = [];
         if($days >= 29) {
             $startDate   = date('Y-' . $month .'-29');
@@ -629,8 +632,6 @@ class AjaxController extends Controller
             });
         }
 
-        var_dump("=========>>>>>>>>>".$resultW5);
-        die;
         $reportArr = array('total' => $results,
             'week1' => $resultW1,
             'week2' => $resultW2,
