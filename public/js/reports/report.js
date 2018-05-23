@@ -34,22 +34,22 @@ $(document).ready(function () {
 
     var year = (new Date()).getFullYear();
 
-    function rangetime_span(start, end) {
-        $('#rangetime span').html(start.format('DD') + '-' + end.format('DD'));
+    function rangedate_span(start, end) {
+        $('#rangedate span').html(start.format('DD') + '-' + end.format('DD'));
     }
 
-    $('#rangetime').daterangepicker({
+    $('#rangedate').daterangepicker({
         startDate: start,
         endDate: end.add(1, 'days'),
         opens: 'left',
         minDate: new Date(year, month, 1),
         maxDate: new Date(year, month + 1, 0),
     }, function(startDate, endDate){
-        rangetime_span(startDate, endDate);
+        rangedate_span(startDate, endDate);
         get_report_monthly(month + 1);
     });
 
-    rangetime_span(start, end);
+    rangedate_span(start, end);
 
     /* BASIC ;*/
     var responsiveHelper_table_report = undefined;

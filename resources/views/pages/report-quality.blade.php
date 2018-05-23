@@ -261,11 +261,12 @@
         }).fail( function () {
             alert('Cannot connect to server. Please try again later.');
         }).complete(function () {
-            rangetime_span(moment(), moment());
+
         });
 
         $( "#monthly" ).click();
     }
+
 </script>
 
 @include('components.script-jarviswidget')
