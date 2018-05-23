@@ -27,7 +27,7 @@ class TrackingController extends Controller {
 		$breadcrumbs    = "<i class=\"fa-fw fa fa-monitor\"></i> <span> Monitor Cron Jobs </span>";
 
 		$page_size = (int) Config::getByKey( 'PAGE_SIZE' );
-		$jobs      = DB::table( 'tracking_inventory' )->paginate( $page_size );
+		$jobs      = DB::table( 'tracking_inventory' )->orderBy('_id','DESC')->paginate( $page_size );
 
 		return view( 'pages.tracking-monitor', compact(
 			'no_main_header',
