@@ -619,7 +619,7 @@ class AjaxController extends Controller
             ]);
         });
 
-        $resultW5 = (object)[];
+        $resultW5 = [];
         if($days >= 29) {
             $startDate   = date('Y-' . $month .'-29');
             $endStart    = date('Y-' . $month .'-t');
