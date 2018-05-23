@@ -578,7 +578,6 @@ class AjaxController extends Controller
     public function getReportMonthly() {
 
         $month       = request('month');
-        var_dump("=========>>>>>>>>>".$month);
         $startDate   = date('Y-' . $month .'-01');
         $endStart    = date('Y-' . $month .'-t');
         $year   = date('Y'); /* nam hien tai*/
@@ -631,8 +630,6 @@ class AjaxController extends Controller
             });
         }
 
-        var_dump("=========>>>>>>>>>".$resultW5);
-
         $reportArr = array('total' => $results,
             'week1' => $resultW1,
             'week2' => $resultW2,
@@ -640,9 +637,6 @@ class AjaxController extends Controller
             'week4' => $resultW4,
             'week5' => $resultW5);
 
-
-        var_dump("=========>>>>>>>>>".$reportArr['week5']);
-        die;
         $data['report'] = $this->prepare_report($reportArr);
         return view('pages.table_report_monthly', $data);
     }
