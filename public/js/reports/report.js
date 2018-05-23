@@ -32,7 +32,7 @@ $(document).ready(function () {
 
     cb(start, end);
 
-    var y = start.year(), m = start.month();
+    var y = start.year();
 
     function rangetime_span(start, end) {
         $('#rangetime span').html(start.format('DD') + '-' + end.format('DD'));
