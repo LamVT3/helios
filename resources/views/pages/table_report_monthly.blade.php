@@ -1,31 +1,33 @@
 <div class="widget-body no-padding">
     <?php $usd_vnd = $report['config']['USD_VND'] ?>
     <?php $usd_thb = $report['config']['USD_THB'] ?>
-    <table class="table" width="100%">
-        <tr>
-            <h1 style="text-align: center; font-weight: bold">MARKETING_INDEX REPORT</h1>
-        </tr>
-        <tr style="font-weight: bold; font-size: large">
-            <td>Budget :</td>
-            <td></td>
-            <td>Target L1 :</td>
-            <td></td>
-            <td>L3/C3B :</td>
-            <td></td>
-        </tr>
-        <tr style="font-weight: bold; font-size: medium">
-            <td>Spent :</td>
-            <td>{{ $report['total']->spent }} USD</td>
-            <td>Produced (L1):</td>
-            <td>{{ $report['total']->l1 }} </td>
-            <td>Actual (L3/C3B) : </td>
-            <td>{{ ($report['total']->c3b != 0) ? round($report['total']->l3 / $report['total']->c3b,4)*100 : 0 }}%</td>
-        </tr>
-    </table>
+    <div style="margin: 20px auto;">
+        <table class="table" width="100%">
+            <tr>
+                <div style="text-align: center; font-weight: bold; font-size: xx-large; margin: 20px auto;">MARKETING_INDEX REPORT</div>
+            </tr>
+            <tr style="font-weight: bold; font-size: x-large">
+                <td>Budget :</td>
+                <td></td>
+                <td>Target L1 :</td>
+                <td></td>
+                <td>L3/C3B :</td>
+                <td></td>
+            </tr>
+            <tr style="font-weight: bold; font-size: large">
+                <td>Spent :</td>
+                <td>{{ $report['total']->spent }} USD</td>
+                <td>Produced (L1):</td>
+                <td>{{ $report['total']->l1 }} </td>
+                <td>Actual (L3/C3B) : </td>
+                <td>{{ ($report['total']->c3b != 0) ? round($report['total']->l3 / $report['total']->c3b,4)*100 : 0 }}%</td>
+            </tr>
+        </table>
+    </div>
     <div class="wrapper_report">
         <table id="table_report" class="table" width="100%">
             <thead>
-                <tr>
+                <tr style="font-size: medium">
                     <th></th>
                     <th></th>
                     <th>Week 1</th>
@@ -47,20 +49,20 @@
                     <th>(29-31)</th>
                     <th></th>
                     <th>
-                        {{--<div id="rangetime" class="pull-left"
+                        <div id="rangetime" class="pull-left"
                              style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc;/* margin: 10px 15px*/">
                             <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
                             <span class="rangetime"></span> <b class="caret"></b>
-                        </div>--}}
+                        </div>
                     </th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td style="font-weight: bold; background-color: #2ea8e5">BUDGET</td>
+                    <td style="font-weight: bold; background-color: #2ea8e5; font-size: medium">BUDGET</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr style="font-weight: bold; font-size: medium">
                     <td style="background-color: #ba871f">Actual</td>
                     <td>ME/RE %</td>
                     <td>{{ ($report['week1']->revenue != 0) ? round($report['week1']->spent * $usd_thb / $report['week1']->revenue,4)*100 : 0 }}%</td>
@@ -169,9 +171,9 @@
                     <td>0</td>
                 </tr>
                 <tr>
-                    <td style="font-weight: bold; background-color: #2ea8e5">QUANTITY</td>
+                    <td style="font-weight: bold; background-color: #2ea8e5; font-size: medium">QUANTITY</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr style="font-weight: bold; font-size: medium">
                     <td style="background-color: #ba871f">Actual</td>
                     <td>C3B</td>
                     <td>{{ $report['week1']->c3b }}</td>
@@ -244,9 +246,9 @@
                     <td>0</td>
                 </tr>
                 <tr>
-                    <td style="font-weight: bold; background-color: #2ea8e5">QUALITY</td>
+                    <td style="font-weight: bold; background-color: #2ea8e5; font-size: medium">QUALITY</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr style="font-weight: bold; font-size: medium">
                     <td style="background-color: #ba871f">Actual</td>
                     <td>L3/C3B %</td>
                     <td>{{ ($report['week1']->c3b != 0) ? round($report['week1']->l3 / $report['week1']->c3b,4)*100 : 0 }}%</td>
