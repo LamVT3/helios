@@ -32,7 +32,7 @@ $(document).ready(function () {
 
     cb(start, end);
 
-    var y = start.year();
+    var year = (new Date()).getFullYear();
 
     function rangetime_span(start, end) {
         $('#rangetime span').html(start.format('DD') + '-' + end.format('DD'));
@@ -42,11 +42,11 @@ $(document).ready(function () {
         startDate: start,
         endDate: end.add(1, 'days'),
         opens: 'left',
-        minDate: new Date(y, m, 1),
-        maxDate: new Date(y, m + 1, 0),
+        minDate: new Date(year, month, 1),
+        maxDate: new Date(year, month + 1, 0),
     }, function(startDate, endDate){
         rangetime_span(startDate, endDate);
-        get_report_monthly(m + 1);
+        get_report_monthly(month + 1);
     });
 
     rangetime_span(start, end);
