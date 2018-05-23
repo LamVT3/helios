@@ -250,7 +250,7 @@
 
     function get_report_monthly(month) {
 
-        if(month < 10){
+        if (month < 10) {
             month = "0" + month.toString();
         } else {
             month = month.toString();
@@ -259,7 +259,7 @@
         $.get("{{ route('ajax-getReportMonthly') }}", {month: month}, function (data) {
             document.getElementById("report_monthly").innerHTML = data;
         }).fail( function () {
-            alert('Cannot connect to server. Please try again later...');
+            alert('Cannot connect to server. Please try again later.');
         }).complete(function () {
 
         });
