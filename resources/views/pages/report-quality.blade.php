@@ -255,6 +255,9 @@
         } else {
             month = month.toString();
         }
+        
+        var_dump("=========>>>>>>>>>".month);
+        die;
 
         $.get("{{ route('ajax-getReportMonthly') }}", {month: month}, function (data) {
             document.getElementById("report_monthly").innerHTML = data;
