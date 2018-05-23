@@ -673,9 +673,10 @@ class AjaxController extends Controller
                 'c3b_cost' => 0,
                 'c3bg_cost' => 0,
             ];
-            var_dump($value);
             if (isset($value)) {
                 foreach ($value as $item) {
+                    var_dump($item->c3b);
+                    die;
                     $report[$key]->c1 += isset($item->c1) ? $item->c1 : 0;
                     $report[$key]->c2 += isset($item->c2) ? $item->c2 : 0;
                     $report[$key]->c3 += isset($item->c3) ? $item->c3 : 0;
@@ -696,9 +697,6 @@ class AjaxController extends Controller
                 }
             }
         }
-
-        var_dump($report);
-        die;
 
         $report['config'] = $config;
 
