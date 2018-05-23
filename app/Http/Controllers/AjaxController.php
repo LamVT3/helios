@@ -587,9 +587,6 @@ class AjaxController extends Controller
                 ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endStart]]]
             ]);
         });
-
-        var_dump("=========>>>>>>>>>".$month);
-        die;
         $endStart    = date('Y-' . $month .'-07');
         $resultW1 = AdResult::raw(function ($collection) use ($startDate, $endStart) {
             return $collection->aggregate([
@@ -631,6 +628,9 @@ class AjaxController extends Controller
                 ]);
             });
         }
+
+        var_dump("=========>>>>>>>>>".$month);
+        die;
 
         $reportArr = array('total' => $results,
             'week1' => $resultW1,
