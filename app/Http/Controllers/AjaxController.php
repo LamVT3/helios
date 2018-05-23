@@ -645,7 +645,7 @@ class AjaxController extends Controller
             'week5' => $resultW5);
 
 
-        var_dump("=========>>>>>>>>>".$reportArr);
+        var_dump("=========>>>>>>>>>".$reportArr['week1']);
         die;
         $data['report'] = $this->prepare_report($reportArr);
         return view('pages.table_report_monthly', $data);
