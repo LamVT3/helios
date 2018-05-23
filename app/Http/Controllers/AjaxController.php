@@ -578,6 +578,7 @@ class AjaxController extends Controller
     public function getReportMonthly() {
 
         $month       = request('month');
+        var_dump("=========>>>>>>>>>".$month);
         $startDate   = date('Y-' . $month .'-01');
         $endStart    = date('Y-' . $month .'-t');
         $year   = date('Y'); /* nam hien tai*/
