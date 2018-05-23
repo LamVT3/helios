@@ -92,6 +92,7 @@ Route::group(['prefix' => 'ajax'], function () {
     Route::get('getFilterCampaign', 'AjaxController@getFilterCampaign')->name('ajax-getFilterCampaign');
     Route::get('/getC3Chart', 'AjaxController@getC3Chart')->name('ajax-getC3Chart');
     Route::get('/getL8Chart', 'AjaxController@getL8Chart')->name('ajax-getL8Chart');
+    Route::get('/getReportMonthly', 'AjaxController@getReportMonthly')->name('ajax-getReportMonthly');
     Route::get('/paginate', 'AjaxController@getContactPaginate')->name('ajax-paginate');
     Route::get('/getFilterMaketer', 'AjaxController@getFilterMaketer')->name('ajax-getFilterMaketer');
     Route::get('updateStatusExport', 'AjaxController@updateStatusExport')->name('ajax-updateStatusExport');

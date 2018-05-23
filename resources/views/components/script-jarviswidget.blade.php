@@ -8,6 +8,7 @@
         dropdown.html(__arr_month[current_month]);
         $('h2#c3_chart').html('C3 in ' + dropdown.html());
         $('h2#l8_chart').html('L8 in ' + dropdown.html());
+        $('h2#monthly_chart').html('Report month ' + dropdown.html());
     });
 
     $('li#month').click(function() {
@@ -23,7 +24,9 @@
         } else if (title_id == 'l8_chart'){
             title.html('L8 in ' + dropdown.html());
             get_l8_chart(month);
-            //get_l8_chart(month);
+        } else if (title_id == 'monthly_chart'){
+            title.html('Report month ' + dropdown.html());
+            get_report_monthly(month);
         }
     });
 
