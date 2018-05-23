@@ -255,11 +255,11 @@
         } else {
             month = month.toString();
         }
-        
-        var_dump("=========>>>>>>>>>".month);
-        die;
+
+        console.log(month+ "========");
 
         $.get("{{ route('ajax-getReportMonthly') }}", {month: month}, function (data) {
+            console.log(month);
             document.getElementById("report_monthly").innerHTML = data;
         }).fail( function () {
             alert('Cannot connect to server. Please try again later.');
