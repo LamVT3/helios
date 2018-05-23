@@ -58,44 +58,40 @@ class SubReportController extends Controller
         ));
     }
 
-    public function getBudget(){
-        $request = request();
-        if($request->month){
-            $month  = request('month');
-            $year   = date('Y'); /* nam hien tai*/
-            $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-            $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-            $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+    public function getBudget($budget_month = null){
+        // get start date and end date
+        list($year, $month, $d, $first_day_this_month, $last_day_this_month) = $this->getDate($budget_month);
+
+        $match = [
+            ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+            [
+                '$group' => [
+                    '_id'   => '$date',
+                    'me'    => ['$sum' => '$spent'],
+                    're'    => ['$sum' => '$revenue'],
+                    'c3b'   => ['$sum' => '$c3b'],
+                    'c3bg'  => ['$sum' => '$c3bg'],
+                    'l1'    => ['$sum' => '$l1'],
+                    'l3'    => ['$sum' => '$l3'],
+                    'l6'    => ['$sum' => '$l6'],
+                    'l8'    => ['$sum' => '$l8'],
+                ]
+            ]
+        ];
+
+        // get Ad id
+        $id = $this->getAdIds();
+
+        if(count($id) > 1){
+            $match[] = ['$match' => ['_id' => ['$in' => $id]]];
         }
-        else {
-            $month  = date('m'); /* thang hien tai */
-            $year   = date('Y'); /* nam hien tai*/
-            $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-            $first_day_this_month = date('Y-m-01'); /* ngày đàu tiên của tháng */
-            $last_day_this_month = date('Y-m-t'); /* ngày cuối cùng của tháng */
-        }
-        /* end date */
 
         /*  start Chart*/
-        $query_chart = AdResult::raw(function ($collection) use ($first_day_this_month, $last_day_this_month) {
-            return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
-                [
-                    '$group' => [
-                        '_id'   => '$date',
-                        'me'    => ['$sum' => '$spent'],
-                        're'    => ['$sum' => '$revenue'],
-                        'c3b'   => ['$sum' => '$c3b'],
-                        'c3bg'  => ['$sum' => '$c3bg'],
-                        'l1'    => ['$sum' => '$l1'],
-                        'l3'    => ['$sum' => '$l3'],
-                        'l6'    => ['$sum' => '$l6'],
-                        'l8'    => ['$sum' => '$l8'],
-                    ]
-                ]
-            ]);
+        $query_chart = AdResult::raw(function ($collection) use ($match) {
+            return $collection->aggregate($match);
         });
 
+//        var_dump($query_chart);die;
         $array_month = array();
         for ($i = 1; $i <= $d; $i++) {
             //$array_month[date($i)] = 0;
@@ -183,45 +179,40 @@ class SubReportController extends Controller
         $result['l3']       = json_encode($l3_result);
         $result['l6']       = json_encode($l6_result);
         $result['l8']       = json_encode($l8_result);
-        $result['me_re']    = round ($me_re / $d, 2);
+        $result['me_re']    = $me_re;
 
         return $result;
     }
 
-    public function getQuantity(){
-        $request = request();
-        if($request->month){
-            $month  = request('month');
-            $year   = date('Y'); /* nam hien tai*/
-            $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-            $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-            $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+    public function getQuantity($quantity_month = null){
+        // get start date and end date
+        list($year, $month, $d, $first_day_this_month, $last_day_this_month) = $this->getDate($quantity_month);
+
+        $match = [
+            ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+            [
+                '$group' => [
+                    '_id'   => '$date',
+                    'c3b'   => ['$sum' => '$c3b'],
+                    'c3bg'  => ['$sum' => '$c3bg'],
+                    'l1'    => ['$sum' => '$l1'],
+                    'l3'    => ['$sum' => '$l3'],
+                    'l6'    => ['$sum' => '$l6'],
+                    'l8'    => ['$sum' => '$l8'],
+                ]
+            ]
+        ];
+
+        // get Ad id
+        $id = $this->getAdIds();
+
+        if(count($id) > 1){
+            $match[] = ['$match' => ['_id' => ['$in' => $id]]];
         }
-        else {
-            $month  = date('m'); /* thang hien tai */
-            $year   = date('Y'); /* nam hien tai*/
-            $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-            $first_day_this_month = date('Y-m-01'); /* ngày đàu tiên của tháng */
-            $last_day_this_month = date('Y-m-t'); /* ngày cuối cùng của tháng */
-        }
-        /* end date */
 
         /*  start Chart*/
-        $query_chart = AdResult::raw(function ($collection) use ($first_day_this_month, $last_day_this_month) {
-            return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
-                [
-                    '$group' => [
-                        '_id'   => '$date',
-                        'c3b'   => ['$sum' => '$c3b'],
-                        'c3bg'  => ['$sum' => '$c3bg'],
-                        'l1'    => ['$sum' => '$l1'],
-                        'l3'    => ['$sum' => '$l3'],
-                        'l6'    => ['$sum' => '$l6'],
-                        'l8'    => ['$sum' => '$l8'],
-                    ]
-                ]
-            ]);
+        $query_chart = AdResult::raw(function ($collection) use ($match) {
+            return $collection->aggregate($match);
         });
 
         $array_month = array();
@@ -275,40 +266,35 @@ class SubReportController extends Controller
         return $result;
     }
 
-    public function getQuality(){
-        $request = request();
-        if($request->month){
-            $month  = request('month');
-            $year   = date('Y'); /* nam hien tai*/
-            $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-            $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-            $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+    public function getQuality($quality_month = null){
+
+        // get start date and end date
+        list($year, $month, $d, $first_day_this_month, $last_day_this_month) = $this->getDate($quality_month);
+
+        $match = [
+            ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+            [
+                '$group' => [
+                    '_id'   => '$date',
+                    'c3b'   => ['$sum' => '$c3b'],
+                    'c3bg'  => ['$sum' => '$c3bg'],
+                    'l1'    => ['$sum' => '$l1'],
+                    'l3'    => ['$sum' => '$l3'],
+                    'l6'    => ['$sum' => '$l6'],
+                    'l8'    => ['$sum' => '$l8'],
+                ]
+            ]
+        ];
+
+        // get Ad id
+        $id = $this->getAdIds();
+        if(count($id) > 1){
+            $match[] = ['$match' => ['_id' => ['$in' => $id]]];
         }
-        else {
-            $month  = date('m'); /* thang hien tai */
-            $year   = date('Y'); /* nam hien tai*/
-            $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-            $first_day_this_month = date('Y-m-01'); /* ngày đàu tiên của tháng */
-            $last_day_this_month = date('Y-m-t'); /* ngày cuối cùng của tháng */
-        }
-        /* end date */
 
         /*  start Chart*/
-        $query_chart = AdResult::raw(function ($collection) use ($first_day_this_month, $last_day_this_month) {
-            return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
-                [
-                    '$group' => [
-                        '_id'   => '$date',
-                        'c3b'   => ['$sum' => '$c3b'],
-                        'c3bg'  => ['$sum' => '$c3bg'],
-                        'l1'    => ['$sum' => '$l1'],
-                        'l3'    => ['$sum' => '$l3'],
-                        'l6'    => ['$sum' => '$l6'],
-                        'l8'    => ['$sum' => '$l8'],
-                    ]
-                ]
-            ]);
+        $query_chart = AdResult::raw(function ($collection) use ($match) {
+            return $collection->aggregate($match);
         });
 
         $array_month = array();
@@ -373,4 +359,81 @@ class SubReportController extends Controller
 
         return $result;
     }
+
+    private function getWhereData(){
+        $request    = request();
+        $data_where = array();
+        if ($request->source_id) {
+            $data_where['source_id']        = $request->source_id;
+        }
+        if ($request->team_id) {
+            $data_where['team_id']          = $request->team_id;
+        }
+        if ($request->marketer_id) {
+            $data_where['marketer_id']      = $request->marketer_id;
+        }
+        if ($request->campaign_id) {
+            $data_where['campaign_id']      = $request->campaign_id;
+        }
+        if ($request->subcampaign_id) {
+            $data_where['subcampaign_id']   = $request->subcampaign_id;
+        }
+
+        return $data_where;
+    }
+
+    private function getAdIds(){
+
+        $data_where = $this->getWhereData();
+
+        $ads = array();
+        if (count($data_where) >= 1) {
+            $ads = Ad::where($data_where)->pluck('_id')->toArray();
+        }
+
+        return $ads;
+    }
+
+    public function getFilter(){
+        $request        = request();
+        $budget_month   = $request->budget_month;
+        $quantity_month = $request->quantity_month;
+        $quality_month  = $request->quality_month;
+
+        $budget     = $this->getBudget($budget_month);
+        $quantity   = $this->getQuantity($quantity_month);
+        $quality    = $this->getQuality($quality_month);
+
+        $result['budget']   = $budget;
+        $result['quantity'] = $quantity;
+        $result['quality']  = $quality;
+
+        return $result;
+    }
+
+    private function getDate($month){
+        $request = request();
+
+        if($month){
+            $year   = date('Y'); /* nam hien tai*/
+            $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+            $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
+            $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+        }else if($request->month){
+            $month  = request('month');
+            $year   = date('Y'); /* nam hien tai*/
+            $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+            $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
+            $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+        }else {
+            $month  = date('m'); /* thang hien tai */
+            $year   = date('Y'); /* nam hien tai*/
+            $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+            $first_day_this_month = date('Y-m-01'); /* ngày đàu tiên của tháng */
+            $last_day_this_month = date('Y-m-t'); /* ngày cuối cùng của tháng */
+        }
+
+        return [$year, $month, $d, $first_day_this_month, $last_day_this_month];
+    }
+
 }

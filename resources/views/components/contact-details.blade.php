@@ -63,7 +63,7 @@
     </tr>--}}
     <tr>
         <td>Is Valid</td>
-        <td>{!!  $contact->clevel === "c3b" ? "<strong class='text-success'>Valid</strong>" : "<strong class='text-danger'>Invalid</strong>" !!}</td>
+        <td>{!!  $contact->clevel === "c3b" || $contact->clevel === "c3bg" ? "<strong class='text-success'>Valid</strong>" : "<strong class='text-danger'>Invalid</strong>" !!}</td>
     </tr>
     <tr>
         <td>Invalid Reason</td>

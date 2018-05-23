@@ -138,4 +138,5 @@ Route::group(['prefix' => 'sub_report'], function () {
     Route::get('/getReport', 'SubReportController@getBudget')->name('get-budget');
     Route::get('/getQuantity', 'SubReportController@getQuantity')->name('get-quantity');
     Route::get('/getQuality', 'SubReportController@getQuality')->name('get-quality');
+    Route::get('/filter', 'SubReportController@getFilter')->name('line-chart.filter');
 });

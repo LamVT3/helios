@@ -24,15 +24,15 @@
                     ['id' => 1, 'icon' => 'fa-table', 'title' => 'Report'])
                     <div class="widget-body">
 
-                        <form id="search-form-report" class="smart-form" action="#"
-                              url="{!! route('report.filter') !!}">
-                            <div class="row">
-                                <div id="reportrange" class="pull-left"
-                                     style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; margin: 10px 15px">
-                                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
-                                    <span class="registered_date"></span> <b class="caret"></b>
-                                </div>
-                            </div>
+                        <form id="search-form-sub-report" class="smart-form" action="#"
+                              url="{!! route('line-chart.filter') !!}">
+                            {{--<div class="row">--}}
+                                {{--<div id="sub_reportrange" class="pull-left"--}}
+                                     {{--style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; margin: 10px 15px">--}}
+                                    {{--<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;--}}
+                                    {{--<span class="registered_date"></span> <b class="caret"></b>--}}
+                                {{--</div>--}}
+                            {{--</div>--}}
                                 <div class="row" id="filter">
                                     <section class="col col-2">
                                         <label class="label">Source</label>
@@ -164,7 +164,19 @@
     <!-- END MAIN CONTENT -->
 
 </div>
+<input type="hidden" name="source_id">
+<input type="hidden" name="marketer_id">
+<input type="hidden" name="team_id">
+<input type="hidden" name="campaign_id">
+<input type="hidden" name="subcampaign_id">
+<input type="hidden" name="registered_date">
 <input type="hidden" name="page_size" value="{{$page_size}}">
+<input type="hidden" name="budget_url" value="{{route('get-budget')}}">
+<input type="hidden" name="quantity_url" value="{{route('get-quantity')}}">
+<input type="hidden" name="quality_url" value="{{route('get-quality')}}">
+<input type="hidden" name="budget_month">
+<input type="hidden" name="quantity_month">
+<input type="hidden" name="quality_month">
 <!-- END MAIN PANEL -->
 
 @endsection
@@ -184,22 +196,6 @@
 
 <script type="text/javascript">
 
-/* chart colors default */
-var $chrt_border_color = "#efefef";
-var $chrt_grid_color = "#DDD";
-var $chrt_main = "#E24913";
-/* red       */
-var $chrt_second = "#6595b4";
-/* blue      */
-var $chrt_third = "#00c01a";
-/* orange    */
-var $chrt_fourth = "#7e9d3a";
-/* green     */
-var $chrt_fifth = "#BD362F";
-/* dark red  */
-var $chrt_mono = "#000";
-/* site stats chart */
-
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
 $(document).ready(function () {
     initBudget();
@@ -208,384 +204,52 @@ $(document).ready(function () {
 
 });
 
-function get_budget(month) {
-
-    if(month < 10){
-        month = "0" + month.toString();
-    }
-    else {
-        month = month.toString();
-    }
-
-    $.get("{{ route('get-budget') }}", {month: month}, function (data) {
-
-        set_budget_chart(data);
-    }).fail(
-        function (err) {
-            alert('Cannot connect to server. Please try again later.');
-        });
-}
-
-function get_quantity(month) {
-
-    if(month < 10){
-        month = "0" + month.toString();
-    }
-    else {
-        month = month.toString();
-    }
-
-    $.get("{{ route('get-quantity') }}", {month: month}, function (data) {
-
-        set_quantity_chart(data);
-    }).fail(
-        function (err) {
-            alert('Cannot connect to server. Please try again later.');
-        });
-}
-
-function get_quality(month) {
-
-    if(month < 10){
-        month = "0" + month.toString();
-    }
-    else {
-        month = month.toString();
-    }
-
-    $.get("{{ route('get-quality') }}", {month: month}, function (data) {
-        set_quality_chart(data);
-    }).fail(
-        function (err) {
-            alert('Cannot connect to server. Please try again later.');
-        });
-}
-
-
-function set_budget_chart(data) {
-    $('span#me_re').text(data.me_re);
-    if ($("#budget_chart").length) {
-
-        $.plot($("#budget_chart"),
-            [
-                {data : jQuery.parseJSON(data.me), label : "ME"},
-                {data : jQuery.parseJSON(data.re), label : "RE"},
-                {data : jQuery.parseJSON(data.c3b), label : "C3B"},
-                {data : jQuery.parseJSON(data.c3bg), label : "C3BG"},
-                {data : jQuery.parseJSON(data.l1), label : "L1"},
-                {data : jQuery.parseJSON(data.l3), label : "L3"},
-                {data : jQuery.parseJSON(data.l6), label : "L6"},
-                {data : jQuery.parseJSON(data.l8), label : "L8"},
-            ], {
-                series : {
-                    lines : {
-                        show : true,
-                        lineWidth : 1,
-                        fill : true,
-                        fillColor : {
-                            colors : [{
-                                opacity : 0.1
-                            }, {
-                                opacity : 0.15
-                            }]
-                        }
-                    },
-                    points : {
-                        show : true
-                    },
-                    shadowSize : 0
-                },
-                xaxis : {
-                    mode: "time",
-                    timeformat: "%d/%m",
-                    ticks : 14
-                },
-                yaxes : [{
-                    ticks : 10,
-                    min : 0,
-                }],
-                grid : {
-                    hoverable : true,
-                    clickable : true,
-                    tickColor : $chrt_border_color,
-                    borderWidth : 0,
-                    borderColor : $chrt_border_color,
-                },
-                colors : [$chrt_main,$chrt_third],
-            });
-        $("#budget_chart").UseBudgetTooltip();
-    }
-    /* end site stats */
-}
-
-
-function set_quantity_chart(data) {
-    if ($("#quantity_chart").length) {
-        $.plot($("#quantity_chart"),
-            [
-                {data : jQuery.parseJSON(data.c3b), label : "C3B"},
-                {data : jQuery.parseJSON(data.c3bg), label : "C3BG"},
-                {data : jQuery.parseJSON(data.l1), label : "L1"},
-                {data : jQuery.parseJSON(data.l3), label : "L3"},
-                {data : jQuery.parseJSON(data.l6), label : "L6"},
-                {data : jQuery.parseJSON(data.l8), label : "L8"},
-            ], {
-                series : {
-                    lines : {
-                        show : true,
-                        lineWidth : 1,
-                        fill : true,
-                        fillColor : {
-                            colors : [{
-                                opacity : 0.1
-                            }, {
-                                opacity : 0.15
-                            }]
-                        }
-                    },
-                    points : {
-                        show : true
-                    },
-                    shadowSize : 0
-                },
-                xaxis : {
-                    mode: "time",
-                    timeformat: "%d/%m",
-                    ticks : 14
-                },
-                yaxes : [{
-                    ticks : 10,
-                    min : 0,
-                }],
-                grid : {
-                    hoverable : true,
-                    clickable : true,
-                    tickColor : $chrt_border_color,
-                    borderWidth : 0,
-                    borderColor : $chrt_border_color,
-                },
-                colors : [$chrt_main,$chrt_third],
-            });
-        $("#quantity_chart").UseQuantityTooltip();
-    }
-    /* end site stats */
-}
-
-
-function set_quality_chart(data) {
-    if ($("#quality_chart").length) {
-        $.plot($("#quality_chart"),
-            [
-                {data : jQuery.parseJSON(data.l3_c3b),      label : "L3 / C3B"},
-                {data : jQuery.parseJSON(data.l3_c3bg),     label : "L3 / C3BG"},
-                {data : jQuery.parseJSON(data.l3_l1),       label : "L3 / L1"},
-                {data : jQuery.parseJSON(data.l1_c3bg),     label : "L1 / C3BG"},
-                {data : jQuery.parseJSON(data.c3bg_c3b),    label : "C3BG / C3B"},
-                {data : jQuery.parseJSON(data.l6_l3),       label : "L6 / L3"},
-                {data : jQuery.parseJSON(data.l8_l6),       label : "L8 / L6"},
-            ], {
-                series : {
-                    lines : {
-                        show : true,
-                        lineWidth : 1,
-                        fill : true,
-                        fillColor : {
-                            colors : [{
-                                opacity : 0.1
-                            }, {
-                                opacity : 0.15
-                            }]
-                        }
-                    },
-                    points : {
-                        show : true
-                    },
-                    shadowSize : 0
-                },
-                xaxis : {
-                    mode: "time",
-                    timeformat: "%d/%m",
-                    ticks : 14
-                },
-                yaxes : [{
-                    ticks : 10,
-                    min : 0,
-                }],
-                grid : {
-                    hoverable : true,
-                    clickable : true,
-                    tickColor : $chrt_border_color,
-                    borderWidth : 0,
-                    borderColor : $chrt_border_color,
-                },
-                colors : [$chrt_main,$chrt_third],
-            });
-        $("#quality_chart").UseQualityTooltip();
-    }
-    /* end site stats */
-}
-
-
 function initBudget(){
-    if ($("#budget_chart").length) {
-        $.plot($("#budget_chart"),
-            [
-                {data : {{ $budget["me"] }},    label : "ME"},
-                {data : {{ $budget["re"] }},    label : "RE"},
-                {data : {{ $budget["c3b"] }},   label : "C3B"},
-                {data : {{ $budget["c3bg"] }},  label : "C3BG"},
-                {data : {{ $budget["l1"] }},    label : "L1"},
-                {data : {{ $budget["l3"] }},    label : "L3"},
-                {data : {{ $budget["l6"] }},    label : "L6"},
-                {data : {{ $budget["l8"] }},    label : "L8"},
-            ], {
-                series : {
-                    lines : {
-                        show : true,
-                        lineWidth : 1,
-                        fill : true,
-                        fillColor : {
-                            colors : [{
-                                opacity : 0.1
-                            }, {
-                                opacity : 0.15
-                            }]
-                        }
-                    },
-                    points : {
-                        show : true
-                    },
-                    shadowSize : 0
-                },
-                xaxis : {
-                    mode: "time",
-                    timeformat: "%d/%m",
-                    ticks : 14
-                },
+    var item = $("#budget_chart");
+    var data = [
+        {data : {{ $budget["me"] }},    label : "ME"},
+        {data : {{ $budget["re"] }},    label : "RE"},
+        {data : {{ $budget["c3b"] }},   label : "C3B"},
+        {data : {{ $budget["c3bg"] }},  label : "C3BG"},
+        {data : {{ $budget["l1"] }},    label : "L1"},
+        {data : {{ $budget["l3"] }},    label : "L3"},
+        {data : {{ $budget["l6"] }},    label : "L6"},
+        {data : {{ $budget["l8"] }},    label : "L8"},
+    ];
 
-                yaxes : [{
-                    ticks : 10,
-                    min : 0,
-                }],
-                grid : {
-                    hoverable : true,
-                    clickable : true,
-                    tickColor : $chrt_border_color,
-                    borderWidth : 0,
-                    borderColor : $chrt_border_color,
-                },
-                colors : [$chrt_main,$chrt_third],
-            });
-        $("#budget_chart").UseBudgetTooltip();
-    }
-    /* end site stats */
+    initChart(item, data);
+    item.UseBudgetTooltip();
 }
 
 function initQuantity(){
-    if ($("#quantity_chart").length) {
-        $.plot($("#quantity_chart"),
-            [
-                {data : {{ $quantity["c3b"] }},     label : "C3B"},
-                {data : {{ $quantity["c3bg"] }},    label : "C3BG"},
-                {data : {{ $quantity["l1"] }},      label : "L1"},
-                {data : {{ $quantity["l3"] }},      label : "L3"},
-                {data : {{ $quantity["l6"] }},      label : "L6"},
-                {data : {{ $quantity["l8"] }},      label : "L8"},
-            ], {
-                series : {
-                    lines : {
-                        show : true,
-                        lineWidth : 1,
-                        fill : true,
-                        fillColor : {
-                            colors : [{
-                                opacity : 0.1
-                            }, {
-                                opacity : 0.15
-                            }]
-                        }
-                    },
-                    points : {
-                        show : true
-                    },
-                    shadowSize : 0
-                },
-                xaxis : {
-                    mode: "time",
-                    timeformat: "%d/%m",
-                    ticks : 14
-                },
+    var item = $("#quantity_chart");
+    var data =  [
+        {data : {{ $quantity["c3b"] }},     label : "C3B"},
+        {data : {{ $quantity["c3bg"] }},    label : "C3BG"},
+        {data : {{ $quantity["l1"] }},      label : "L1"},
+        {data : {{ $quantity["l3"] }},      label : "L3"},
+        {data : {{ $quantity["l6"] }},      label : "L6"},
+        {data : {{ $quantity["l8"] }},      label : "L8"},
+    ];
 
-                yaxes : [{
-                    ticks : 10,
-                    min : 0,
-                }],
-                grid : {
-                    hoverable : true,
-                    clickable : true,
-                    tickColor : $chrt_border_color,
-                    borderWidth : 0,
-                    borderColor : $chrt_border_color,
-                },
-                colors : [$chrt_main,$chrt_third],
-            });
-        $("#quantity_chart").UseQuantityTooltip();
-    }
-    /* end site stats */
+    initChart(item, data);
+    $("#quantity_chart").UseQuantityTooltip();
 }
 
 function initQuality(){
-    if ($("#quality_chart").length) {
-        $.plot($("#quality_chart"),
-            [
-                {data : {{ $quality["l3_c3b"] }},      label : "L3 / C3B"},
-                {data : {{ $quality["l3_c3bg"] }},     label : "L3 / C3BG"},
-                {data : {{ $quality["l3_l1"] }},       label : "L3 / L1"},
-                {data : {{ $quality["l1_c3bg"] }},     label : "L1 / C3BG"},
-                {data : {{ $quality["c3bg_c3b"] }},    label : "C3BG / C3B"},
-                {data : {{ $quality["l6_l3"] }},       label : "L6 / L3"},
-                {data : {{ $quality["l8_l6"] }},       label : "L8 / L6"},
-            ], {
-                series : {
-                    lines : {
-                        show : true,
-                        lineWidth : 1,
-                        fill : true,
-                        fillColor : {
-                            colors : [{
-                                opacity : 0.1
-                            }, {
-                                opacity : 0.15
-                            }]
-                        }
-                    },
-                    points : {
-                        show : true
-                    },
-                    shadowSize : 0
-                },
-                xaxis : {
-                    mode: "time",
-                    timeformat: "%d/%m",
-                    ticks : 14
-                },
+    var item = $("#quality_chart");
+    var data =  [
+        {data : {{ $quality["l3_c3b"] }},      label : "L3/C3B"},
+        {data : {{ $quality["l3_c3bg"] }},     label : "L3/C3BG"},
+        {data : {{ $quality["l3_l1"] }},       label : "L3/L1"},
+        {data : {{ $quality["l1_c3bg"] }},     label : "L1/C3BG"},
+        {data : {{ $quality["c3bg_c3b"] }},    label : "C3BG/C3B"},
+        {data : {{ $quality["l6_l3"] }},       label : "L6/L3"},
+        {data : {{ $quality["l8_l6"] }},       label : "L8/L6"},
+    ];
 
-                yaxes : [{
-                    ticks : 10,
-                    min : 0,
-                }],
-                grid : {
-                    hoverable : true,
-                    clickable : true,
-                    tickColor : $chrt_border_color,
-                    borderWidth : 0,
-                    borderColor : $chrt_border_color,
-                },
-                colors : [$chrt_main,$chrt_third],
-            });
-        $("#quality_chart").UseQualityTooltip();
-    }
-    /* end site stats */
+    initChart(item, data);
+    $("#quality_chart").UseQualityTooltip();
 }
 
     </script>
