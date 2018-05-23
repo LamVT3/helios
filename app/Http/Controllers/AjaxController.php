@@ -626,6 +626,13 @@ class AjaxController extends Controller
             });
         }
 
+        if(request()->rangetime){
+            $date_place = str_replace('-', ' ', request()->rangetime);
+            $date_arr = explode(' ', str_replace('/', '-', $date_place));
+            $startDate = Date('Y-m-d', strtotime($date_arr[0]));
+            $endDate = Date('Y-m-d', strtotime($date_arr[1]));
+        }
+
         $reportArr = array('total' => $results,
             'week1' => $resultW1,
             'week2' => $resultW2,

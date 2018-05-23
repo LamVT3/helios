@@ -362,26 +362,16 @@
 </div>
 
 <style>
-    tr:nth-child(even) {background: #fafafa}
-    tr:nth-child(odd) {background: #ffffff}
-    col:first-child {background: #2ea8e5}
+    tr:nth-child(even) {
+        background: #fafafa
+    }
+    tr:nth-child(odd) {
+        background: #ffffff
+    }
+    col:first-child {
+        background: #2ea8e5
+    }
+    #table_report th {
+        vertical-align:middle
+    }
 </style>
-
-<script type="text/javascript">
-    $(document).ready(function () {
-        var start = moment();
-        var end = moment();
-
-        function rangetime_span(start, end) {
-            $('#rangetime span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
-        }
-
-        rangetime_span(start, end);
-
-        $('#rangetime').daterangepicker({
-            startDate: start,
-            endDate: end,
-            opens: 'right',
-        }, rangetime_span);
-    });
-</script>

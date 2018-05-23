@@ -219,7 +219,6 @@
                             @endcomponent
                             </article>
                         </div>
-
                     </section>
                 </div>
 
@@ -240,7 +239,7 @@
 @section('script')
 
 <!-- PAGE RELATED PLUGIN(S) -->
-<script src="{{ asset('js/reports/report.js') }}"></script>
+{{--<script src="{{ asset('js/reports/report.js') }}"></script>--}}
 <script src="{{ asset('js/plugin/datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatables/dataTables.colVis.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatables/dataTables.tableTools.min.js') }}"></script>
@@ -251,6 +250,7 @@
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 <script type="text/javascript">
     get_report_monthly(new Date().getMonth() + 1);
+
     function get_report_monthly(month) {
 
         if(month < 10){
@@ -263,6 +263,8 @@
             document.getElementById("report_monthly").innerHTML = data;
         }).fail( function (e) {
                 alert('Cannot connect to server. Please try again later.');
+        }).complete(function () {
+            $.getScript("{{ asset('js/reports/report.js') }}");
         });
     }
 </script>

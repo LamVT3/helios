@@ -32,6 +32,25 @@ $(document).ready(function () {
 
     cb(start, end);
 
+    var y = start.year(), m = start.month();
+
+    function rangetime_span(start, end) {
+        $('#rangetime span').html(start.format('DD') + '-' + end.format('DD'));
+    }
+
+    $('#rangetime').daterangepicker({
+        startDate: start,
+        endDate: end.add(1, 'days'),
+        opens: 'left',
+        minDate: new Date(y, m, 1),
+        maxDate: new Date(y, m + 1, 0),
+    }, function(startDate, endDate){
+        rangetime_span(startDate, endDate);
+        get_report_monthly(m + 1);
+    });
+
+    rangetime_span(start, end);
+
     /* BASIC ;*/
     var responsiveHelper_table_report = undefined;
 
@@ -275,4 +294,3 @@ $(document).ready(function () {
         }
     });
 });
-
