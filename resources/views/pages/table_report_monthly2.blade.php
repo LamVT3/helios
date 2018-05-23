@@ -108,17 +108,17 @@
         var start = moment();
         var end = moment();
 
-        function rangetime_span(start, end) {
-            $('#rangetime span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
+        function rangedate_span(start, end) {
+            $('#rangedate span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
         }
 
-        rangetime_span(start, end);
+        rangedate_span(start, end);
 
-        $('#rangetime').daterangepicker({
+        $('#rangedate').daterangepicker({
             startDate: start,
             endDate: end,
             opens: 'right',
-        }, rangetime_span);
+        }, rangedate_span);
     });
 
 </script>
