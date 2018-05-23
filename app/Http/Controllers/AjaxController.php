@@ -675,8 +675,6 @@ class AjaxController extends Controller
             ];
             if (isset($value)) {
                 foreach ($value as $item) {
-                    var_dump($item->c3b);
-                    die;
                     $report[$key]->c1 += isset($item->c1) ? $item->c1 : 0;
                     $report[$key]->c2 += isset($item->c2) ? $item->c2 : 0;
                     $report[$key]->c3 += isset($item->c3) ? $item->c3 : 0;
@@ -698,6 +696,8 @@ class AjaxController extends Controller
             }
         }
 
+        var_dump($report);
+        die;
         $report['config'] = $config;
 
         return $report;
