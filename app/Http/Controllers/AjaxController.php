@@ -654,6 +654,9 @@ class AjaxController extends Controller
 
         $report = [];
 
+        var_dump($reportArr['week5']->c3b);
+        die;
+
         foreach ($reportArr as $key => $value) {
             $report[$key] = (object)[
                 'c1' => 0,
@@ -695,9 +698,6 @@ class AjaxController extends Controller
                 }
             }
         }
-
-        var_dump($report);
-        die;
         $report['config'] = $config;
 
         return $report;
