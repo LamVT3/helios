@@ -616,7 +616,7 @@ class AjaxController extends Controller
         });
 
         $resultW5 = (object)[];
-        if($month != "02" || $days >= 29) {
+        if($days >= 29) {
             $startDate   = date('Y-' . $month .'-29');
             $endStart    = date('Y-' . $month .'-t');
             $resultW5 = AdResult::raw(function ($collection) use ($startDate, $endStart) {
