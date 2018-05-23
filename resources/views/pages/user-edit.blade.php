@@ -183,16 +183,16 @@
                         email: true
                     },
                     password: {
-                        alphanumeric: true
+                        // alphanumeric: true
                     },
                     password_confirmation: {
-                        alphanumeric: true
+                        // alphanumeric: true
                     },
                     rank: {
-                        alphanumeric: true
+                        // alphanumeric: true
                     },
                     role: {
-                        alphanumeric: true
+                        // alphanumeric: true
                     }
                 },
 

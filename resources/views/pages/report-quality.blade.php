@@ -6,201 +6,226 @@
 
     <!-- MAIN CONTENT -->
     <div id="content">
-
+{{-- --}}
         @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
 
         @endcomponent
 
-        <!-- widget grid -->
-        <section id="widget-grid" class="">
+        <div class="tab-v1">
+            <ul id="tabs" class="nav nav-tabs">
+                <li><a href="#report" data-toggle="tab"><strong>Report</strong></a></li>
+                <li class="active"><a href="#monthly" data-toggle="tab"><strong>Monthly Marketing Report</strong></a></li>
+                <li><a href="#chart" data-toggle="tab"><strong>Chart Report</strong></a></li>
+            </ul>
+            <div class="tab-content mb30">
+                <div id="report" class="tab-pane">
+                    <!-- widget grid -->
+                    <section id="widget-grid" class="">
+                        <!-- row -->
+                        <div class="row">
+                            <article class="col-sm-12 col-md-12">
+                                @component('components.jarviswidget',
+                                ['id' => 1, 'icon' => 'fa-table', 'title' => 'Report'])
+                                <div class="widget-body">
 
-            <!-- row -->
+                                    <form id="search-form-report" class="smart-form" action="#"
+                                          url="{!! route('report.filter') !!}">
+                                        <div class="row">
+                                            <div id="reportrange" class="pull-left"
+                                                 style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; margin: 10px 15px">
+                                                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                                                <span class="registered_date"></span> <b class="caret"></b>
+                                            </div>
+                                        </div>
+                                        {{--<fieldset>--}}
+                                            {{--<legend>Filter--}}
+                                                {{--<a id="filter" href="javascript:void(0)"><i class="fa fa-angle-up fa-lg"></i></a>--}}
+                                            {{--</legend>--}}
+                                            <div class="row" id="filter">
+                                                <section class="col col-2">
+                                                    <label class="label">Source</label>
+                                                    <select name="source_id" class="select2" style="width: 280px" id="source_id" tabindex="1" autofocus
+                                                            data-url="{!! route('ajax-getFilterSource') !!}">
+                                                        <option value="">All</option>
+                                                        @foreach($sources as $item)
+                                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <i></i>
+                                                </section>
+                                                <section class="col col-2">
+                                                    <label class="label">Team</label>
+                                                    <select name="team_id" class="select2" id="team_id" style="width: 280px" tabindex="2"
+                                                            data-url="{!! route('ajax-getFilterTeam') !!}">
+                                                        <option value="">All</option>
+                                                        @foreach($teams as $item)
+                                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <i></i>
+                                                </section>
+                                                <section class="col col-2">
+                                                    <label class="label">Marketer</label>
+                                                    <select name="marketer_id" id="marketer_id" class="select2" style="width: 280px"
+                                                            data-url="{!! route('ajax-getFilterMaketer') !!}" tabindex="3">
+                                                        <option value="">All</option>
+                                                        @foreach($marketers as $item)
+                                                        <option value="{{ $item->id }}">{{ $item->username }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <i></i>
+                                                </section>
+                                                <section class="col col-2">
+                                                    <label class="label">Campaign</label>
+                                                    <select name="campaign_id" id="campaign_id" class="select2" style="width: 280px" tabindex="4"
+                                                            data-url="{!! route('ajax-getFilterCampaign') !!}">
+                                                        <option value="">All</option>
+                                                        @foreach($campaigns as $item)
+                                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <i></i>
+                                                </section>
+                                                <section class="col col-2">
+                                                    <label class="label">Sub Campaign</label>
+                                                    <select name="subcampaign_id" id="subcampaign_id" class="select2" style="width: 280px"
+                                                            data-url="">
+                                                        <option value="">All</option>
+                                                        @foreach($subcampaigns as $item)
+                                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <i></i>
+                                                </section>
+                                            </div>
+                                            <div class="row">
+                                            <div class="col-md-12 text-right">
+                                                <button class="btn btn-primary btn-sm" type="submit" style="margin-right: 15px">
+                                                    <i class="fa fa-filter"></i>
+                                                    Filter
+                                                </button>
+                                            </div>
+                                        </div>
+                                        {{--</fieldset>--}}
+                                    </form>
+                                    {{--<div style="position: relative">
+                                        <form action="{{ route('report.export')}}" enctype="multipart/form-data">
+                                            <input type="hidden" name="source_id">
+                                            <input type="hidden" name="marketer_id">
+                                            <input type="hidden" name="campaign_id">
+                                            <input type="hidden" name="team_id">
+                                            <input type="hidden" name="registered_date">
+                                            <div style="position: absolute; right: 75px; bottom: 0px;">
+                                                <button class="btn btn-success" type="submit"
+                                                        style="background-color: #3276b1;border-color: #2c699d;">Export Excel
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>--}}
+                                    <div class="loading" style="display: none">
+                                        <div class="col-md-12 text-center">
+                                            <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="wrapper_report">
+                                        <table id="table_report" class="table "
+                                               width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Source</th>
+                                                    <th>Team</th>
+                                                    <th>MKTer</th>
+                                                    <th>Campaign</th>
+                                                    <th>Subcampaign</th>
+                                                    <th>Ad</th>
+                                                    <th>C1</th>
+                                                    <th class="long">C1 Cost (VND)</th>
+                                                    <th>C2</th>
+                                                    <th class="long">C2 Cost (VND)</th>
+                                                    <th>C2/C1 (%)</th>
+                                                    <th>C3</th>
+                                                    <th class="long">C3 Cost (VND)</th>
+                                                    <th>C3B</th>
+                                                    <th class="long">C3B Cost (VND)</th>
+                                                    <th>C3/C2 (%)</th>
+                                                    <th>L1</th>
+                                                    <th>L3</th>
+                                                    <th>L8</th>
+                                                    <th>L3/L1 (%)</th>
+                                                    <th>L8/L1 (%)</th>
+                                                    <th class="long">Spent (USD)</th>
+                                                    <th class="long">Revenue (THB)</th>
+                                                    <th>ME/RE (%)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            @foreach ($report as $id => $item)
 
-            <div class="row">
+                                                <tr id="ad-{{ $id }}">
+                                                    <td>{{ $item->source }}</td>
+                                                    <td>{{ $item->team }}</td>
+                                                    <td>{{ $item->marketer }}</td>
+                                                    <td>{{ $item->campaign }}</td>
+                                                    <td>{{ $item->subcampaign }}</td>
+                                                    <td>{{ $item->ad }}</td>
+                                                    <td>{{ number_format($item->c1) }}</td>
+                                                    <td>{{ number_format($item->c1_cost, 2) }}</td>
+                                                    <td>{{ number_format($item->c2) }}</td>
+                                                    <td>{{ number_format($item->c2_cost, 2) }}</td>
+                                                    <td>{{ $item->c2_c1 }}</td>
+                                                    <td>{{ number_format($item->c3) }}</td>
+                                                    <td>{{ number_format($item->c3_cost, 2) }}</td>
+                                                    <td>{{ number_format($item->c3b) }}</td>
+                                                    <td>{{ number_format($item->c3b_cost, 2) }}</td>
+                                                    <td>{{ $item->c3_c2 }}</td>
+                                                    <td>{{ $item->l1 }}</td>
+                                                    <td>{{ $item->l3 }}</td>
+                                                    <td>{{ $item->l8 }}</td>
+                                                    <td>{{ $item->l3_l1 }}</td>
+                                                    <td>{{ $item->l8_l1 }}</td>
+                                                    <td>{{ number_format($item->spent, 2) }}</td>
+                                                    <td>{{ number_format($item->revenue) }}</td>
+                                                    <td>{{ $item->me_re }}</td>
+                                                </tr>
 
-                <article class="col-sm-12 col-md-12">
+                                            @endforeach
 
-                    @component('components.jarviswidget',
-                    ['id' => 1, 'icon' => 'fa-table', 'title' => 'Report'])
-                    <div class="widget-body">
-
-                        <form id="search-form-report" class="smart-form" action="#"
-                              url="{!! route('report.filter') !!}">
-                            <div class="row">
-                                <div id="reportrange" class="pull-left"
-                                     style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; margin: 10px 15px">
-                                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
-                                    <span class="registered_date"></span> <b class="caret"></b>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
-                            {{--<fieldset>--}}
-                                {{--<legend>Filter--}}
-                                    {{--<a id="filter" href="javascript:void(0)"><i class="fa fa-angle-up fa-lg"></i></a>--}}
-                                {{--</legend>--}}
-                                <div class="row" id="filter">
-                                    <section class="col col-2">
-                                        <label class="label">Source</label>
-                                        <select name="source_id" class="select2" style="width: 280px" id="source_id" tabindex="1" autofocus
-                                                data-url="{!! route('ajax-getFilterSource') !!}">
-                                            <option value="">All</option>
-                                            @foreach($sources as $item)
-                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        <i></i>
-                                    </section>
-                                    <section class="col col-2">
-                                        <label class="label">Team</label>
-                                        <select name="team_id" class="select2" id="team_id" style="width: 280px" tabindex="2"
-                                                data-url="{!! route('ajax-getFilterTeam') !!}">
-                                            <option value="">All</option>
-                                            @foreach($teams as $item)
-                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        <i></i>
-                                    </section>
-                                    <section class="col col-2">
-                                        <label class="label">Marketer</label>
-                                        <select name="marketer_id" id="marketer_id" class="select2" style="width: 280px"
-                                                data-url="{!! route('ajax-getFilterMaketer') !!}" tabindex="3">
-                                            <option value="">All</option>
-                                            @foreach($marketers as $item)
-                                            <option value="{{ $item->id }}">{{ $item->username }}</option>
-                                            @endforeach
-                                        </select>
-                                        <i></i>
-                                    </section>
-                                    <section class="col col-2">
-                                        <label class="label">Campaign</label>
-                                        <select name="campaign_id" id="campaign_id" class="select2" style="width: 280px" tabindex="4"
-                                                data-url="{!! route('ajax-getFilterCampaign') !!}">
-                                            <option value="">All</option>
-                                            @foreach($campaigns as $item)
-                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        <i></i>
-                                    </section>
-                                    <section class="col col-2">
-                                        <label class="label">Sub Campaign</label>
-                                        <select name="subcampaign_id" id="subcampaign_id" class="select2" style="width: 280px"
-                                                data-url="">
-                                            <option value="">All</option>
-                                            @foreach($subcampaigns as $item)
-                                                <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        <i></i>
-                                    </section>
-                                </div>
-                                <div class="row">
-                                <div class="col-md-12 text-right">
-                                    <button class="btn btn-primary btn-sm" type="submit" style="margin-right: 15px">
-                                        <i class="fa fa-filter"></i>
-                                        Filter
-                                    </button>
-                                </div>
-                            </div>
-                            {{--</fieldset>--}}
-                        </form>
-                        {{--<div style="position: relative">
-                            <form action="{{ route('report.export')}}" enctype="multipart/form-data">
-                                <input type="hidden" name="source_id">
-                                <input type="hidden" name="marketer_id">
-                                <input type="hidden" name="campaign_id">
-                                <input type="hidden" name="team_id">
-                                <input type="hidden" name="registered_date">
-                                <div style="position: absolute; right: 75px; bottom: 0px;">
-                                    <button class="btn btn-success" type="submit"
-                                            style="background-color: #3276b1;border-color: #2c699d;">Export Excel
-                                    </button>
-                                </div>
-                            </form>
-                        </div>--}}
-                        <div class="loading" style="display: none">
-                            <div class="col-md-12 text-center">
-                                <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
-                            </div>
+                                @endcomponent
+
+                            </article>
                         </div>
-                        <hr>
-                        <div class="wrapper_report">
-                            <table id="table_report" class="table "
-                                   width="100%">
-                                <thead>
-                                    <tr>
-                                        <th>Source</th>
-                                        <th>Team</th>
-                                        <th>MKTer</th>
-                                        <th>Campaign</th>
-                                        <th>Subcampaign</th>
-                                        <th>Ad</th>
-                                        <th>C1</th>
-                                        <th class="long">C1 Cost (VND)</th>
-                                        <th>C2</th>
-                                        <th class="long">C2 Cost (VND)</th>
-                                        <th>C2/C1 (%)</th>
-                                        <th>C3</th>
-                                        <th class="long">C3 Cost (VND)</th>
-                                        <th>C3B</th>
-                                        <th class="long">C3B Cost (VND)</th>
-                                        <th>C3/C2 (%)</th>
-                                        <th>L1</th>
-                                        <th>L3</th>
-                                        <th>L8</th>
-                                        <th>L3/L1 (%)</th>
-                                        <th>L8/L1 (%)</th>
-                                        <th class="long">Spent (USD)</th>
-                                        <th class="long">Revenue (THB)</th>
-                                        <th>ME/RE (%)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                @foreach ($report as $id => $item)
+                        <!-- end row -->
+                    </section>
+                    <!-- end widget grid -->
+                </div>
 
-                                    <tr id="ad-{{ $id }}">
-                                        <td>{{ $item->source }}</td>
-                                        <td>{{ $item->team }}</td>
-                                        <td>{{ $item->marketer }}</td>
-                                        <td>{{ $item->campaign }}</td>
-                                        <td>{{ $item->subcampaign }}</td>
-                                        <td>{{ $item->ad }}</td>
-                                        <td>{{ number_format($item->c1) }}</td>
-                                        <td>{{ number_format($item->c1_cost, 2) }}</td>
-                                        <td>{{ number_format($item->c2) }}</td>
-                                        <td>{{ number_format($item->c2_cost, 2) }}</td>
-                                        <td>{{ $item->c2_c1 }}</td>
-                                        <td>{{ number_format($item->c3) }}</td>
-                                        <td>{{ number_format($item->c3_cost, 2) }}</td>
-                                        <td>{{ number_format($item->c3b) }}</td>
-                                        <td>{{ number_format($item->c3b_cost, 2) }}</td>
-                                        <td>{{ $item->c3_c2 }}</td>
-                                        <td>{{ $item->l1 }}</td>
-                                        <td>{{ $item->l3 }}</td>
-                                        <td>{{ $item->l8 }}</td>
-                                        <td>{{ $item->l3_l1 }}</td>
-                                        <td>{{ $item->l8_l1 }}</td>
-                                        <td>{{ number_format($item->spent, 2) }}</td>
-                                        <td>{{ number_format($item->revenue) }}</td>
-                                        <td>{{ $item->me_re }}</td>
-                                    </tr>
-
-                                @endforeach
-
-                                </tbody>
-                            </table>
+                <div class="tab-pane active" id="monthly">
+                    <section id="widget-grid">
+                        <div class="row">
+                            <article class="col-sm-12 col-md-12">
+                            @component('components.jarviswidget',
+                            ['id' => 'monthly_chart', 'icon' => 'fa-line-chart', 'title' => "Report month " , 'dropdown' => "true"])
+                                <div class="loading" style="display: none">
+                                    <div class="col-md-12 text-center">
+                                        <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
+                                    </div>
+                                </div>
+                                <div id="report_monthly"></div>
+                            @endcomponent
+                            </article>
                         </div>
-                    </div>
-                    @endcomponent
+                    </section>
+                </div>
 
-                </article>
-
+                <div class="tab-pane " id="chart">
+                </div>
             </div>
-
-            <!-- end row -->
-
-        </section>
-        <!-- end widget grid -->
+        </div>
 
     </div>
     <!-- END MAIN CONTENT -->
@@ -214,7 +239,7 @@
 @section('script')
 
 <!-- PAGE RELATED PLUGIN(S) -->
-<script src="{{ asset('js/reports/report.js') }}"></script>
+{{--<script src="{{ asset('js/reports/report.js') }}"></script>--}}
 <script src="{{ asset('js/plugin/datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatables/dataTables.colVis.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatables/dataTables.tableTools.min.js') }}"></script>
@@ -223,11 +248,28 @@
 <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
-
 <script type="text/javascript">
+    get_report_monthly(new Date().getMonth() + 1);
 
-    // DO NOT REMOVE : GLOBAL FUNCTIONS!
+    function get_report_monthly(month) {
 
+        if(month < 10){
+            month = "0" + month.toString();
+        } else {
+            month = month.toString();
+        }
+
+        $.get("{{ route('ajax-getReportMonthly') }}", {month: month}, function (data) {
+            document.getElementById("report_monthly").innerHTML = data;
+        }).fail( function (e) {
+            alert('Cannot connect to server. Please try again later.');
+        }).complete(function () {
+            var m = month;
+            $.getScript("{{ asset('js/reports/report.js') }}");
+        });
+    }
 </script>
+
+@include('components.script-jarviswidget')
 
 @stop

@@ -172,7 +172,7 @@
 
                 </div>
                 <!-- row -->
-                <h1><i class="glyphicon glyphicon-calendar fa fa-line-chart"></i> <b>Leaderboard</b></h1>
+                <h1><i class="glyphicon glyphicon-calendar fa fa-trophy"></i> <b>Leaderboard</b></h1>
                 <div class="row">
 
                     <article class="col-sm-12 col-md-12 col-lg-4">

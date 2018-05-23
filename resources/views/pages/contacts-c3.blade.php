@@ -116,6 +116,7 @@
                                             <option value="">All</option>
                                             <option value="c3a">C3A</option>
                                             <option value="c3b" selected>C3B</option>
+                                            <option value="c3bg">C3BG</option>
                                         </select>
                                         <i></i>
                                     </section>
@@ -164,16 +165,16 @@
                                             <label class="export_label" for="limit"> entries</label>
                                         </div>
                                     </section>
-                                    <section class="col col-3">
-                                        <label class="checkbox">
-                                            <input type="checkbox" id="c3bg" name="c3bg"/>
-                                            <i></i>C3BG</label>
-                                        <div id="c3range" class="pull-left"
-                                             style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; /*margin: 10px 15px*/">
-                                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
-                                            <span class="checked_date"></span> <b class="caret"></b>
-                                        </div>
-                                    </section>
+                                    {{--<section class="col col-3">--}}
+                                        {{--<label class="checkbox">--}}
+                                            {{--<input type="checkbox" id="c3bg" name="c3bg"/>--}}
+                                            {{--<i></i>C3BG</label>--}}
+                                        {{--<div id="c3range" class="pull-left"--}}
+                                             {{--style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; /*margin: 10px 15px*/">--}}
+                                            {{--<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;--}}
+                                            {{--<span class="checked_date"></span> <b class="caret"></b>--}}
+                                        {{--</div>--}}
+                                    {{--</section>--}}
                                 </div>
                             </fieldset>
 
