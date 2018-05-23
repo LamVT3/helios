@@ -694,9 +694,6 @@ class AjaxController extends Controller
 
         $report['config'] = $config;
 
-        var_dump($report['week5']->c3b);
-        die;
-
         return $report;
     }
 
