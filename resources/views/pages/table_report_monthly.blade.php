@@ -17,7 +17,7 @@
             <tr style="font-weight: bold; font-size: large">
                 <td>Spent :</td>
                 <td>{{ $report['total']->spent }} USD</td>
-                <td>Produced (L1):</td>
+                <td>Produced (L1) :</td>
                 <td>{{ $report['total']->l1 }} </td>
                 <td>Actual (L3/C3B) : </td>
                 <td>{{ ($report['total']->c3b != 0) ? round($report['total']->l3 / $report['total']->c3b,4)*100 : 0 }}%</td>
