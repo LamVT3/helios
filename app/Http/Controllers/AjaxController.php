@@ -581,86 +581,125 @@ class AjaxController extends Controller
         $startRange  = request('startDate');
         $endRange    = request('endDate');
         $startDate   = date('Y-' . $month .'-01');
-        $endStart    = date('Y-' . $month .'-t');
         $year        = date('Y'); /* nam hien tai*/
         $days        = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+        $endDate    = date('Y-' . $month .'-'.$days);
 
         $startDayRange = explode(" ", $startRange)[2];
         $endDayRange = explode(" ", $endRange)[2];
 
-        $results = AdResult::raw(function ($collection) use ($startDate, $endStart) {
+        $daysInFirstWeek = 8 - date('N',strtotime($startDate));
+        $rangeTotal = "from ".date('d',strtotime($startDate))." to ".date('d',strtotime($endDate));
+        $results = AdResult::raw(function ($collection) use ($startDate, $endDate) {
             return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endStart]]]
+                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
             ]);
         });
 
-        $endStart = date('Y-' . $month .'-07');
-        $resultW1 = AdResult::raw(function ($collection) use ($startDate, $endStart) {
+        $endDate = date('Y-' . $month .'-0'.$daysInFirstWeek);
+        $rangeW1 = "from ".date('d',strtotime($startDate))." to ".date('d',strtotime($endDate));
+        $resultW1 = AdResult::raw(function ($collection) use ($startDate, $endDate) {
             return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endStart]]]
+                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
             ]);
         });
 
-        $startDate   = date('Y-' . $month .'-08');
-        $endStart    = date('Y-' . $month .'-14');
-        $resultW2 = AdResult::raw(function ($collection) use ($startDate, $endStart) {
+        $startDate   = date('Y-m-d', strtotime($endDate. ' + 1 days'));
+        $endDate    = date('Y-m-d', strtotime($startDate. ' + 6 days'));
+        $rangeW2 = "from ".date('d',strtotime($startDate))." to ".date('d',strtotime($endDate));
+        $resultW2 = AdResult::raw(function ($collection) use ($startDate, $endDate) {
             return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endStart]]]
+                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
             ]);
         });
 
-        $startDate   = date('Y-' . $month .'-15');
-        $endStart    = date('Y-' . $month .'-21');
-        $resultW3 = AdResult::raw(function ($collection) use ($startDate, $endStart) {
+        $startDate = date('Y-m-d', strtotime($endDate. ' + 1 days'));
+        $endDate  = date('Y-m-d', strtotime($startDate. ' + 6 days'));
+        $rangeW3   = "from ".date('d',strtotime($startDate))." to ".date('d',strtotime($endDate));
+        $resultW3  = AdResult::raw(function ($collection) use ($startDate, $endDate) {
             return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endStart]]]
+                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
             ]);
         });
 
-        $startDate   = date('Y-' . $month .'-22');
-        $endStart    = date('Y-' . $month .'-28');
-        $resultW4 = AdResult::raw(function ($collection) use ($startDate, $endStart) {
+        $startDate   = date('Y-m-d', strtotime($endDate. ' + 1 days'));
+        $endDate    = date('Y-m-d', strtotime($startDate. ' + 6 days'));
+        $rangeW4 = "from ".date('d',strtotime($startDate))." to ".date('d',strtotime($endDate));
+        $resultW4 = AdResult::raw(function ($collection) use ($startDate, $endDate) {
             return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endStart]]]
+                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
             ]);
         });
 
-        $resultW5 = (object)[];
-        if($days >= 29) {
-            $startDate   = date('Y-' . $month .'-29');
-            $endStart    = date('Y-' . $month .'-t');
-            $resultW5 = AdResult::raw(function ($collection) use ($startDate, $endStart) {
+        $resultW5 = null;
+        $rangeW5 = null;
+        $remainDays = $days - date('d',strtotime($endDate));
+        if($remainDays > 0){
+            $startDate   = date('Y-m-d', strtotime($endDate. ' + 1 days'));
+            if ($remainDays > 7) {
+                $remainDays -= 7;
+                $endDate    = date('Y-m-d', strtotime($startDate. ' + 6 days'));
+            } else {
+                $endDate    = date('Y-m-d', strtotime($startDate. ' + '.($remainDays-1).' days'));
+                $remainDays = 0;
+            }
+            $rangeW5 = "from ".date('d',strtotime($startDate))." to ".date('d',strtotime($endDate));
+            $resultW5 = AdResult::raw(function ($collection) use ($startDate, $endDate) {
                 return $collection->aggregate([
-                    ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endStart]]]
+                    ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
+                ]);
+            });
+        }
+
+        $resultW6 = null;
+        $rangeW6 = null;
+        if($remainDays > 0){
+            $startDate   = date('Y-m-d', strtotime($endDate. ' + 1 days'));
+            $endDate    = date('Y-m-d', strtotime($startDate. ' + '.($remainDays-1).' days'));
+            $rangeW6 = "from ".date('d',strtotime($startDate))." to ".date('d',strtotime($endDate));
+            $resultW6 = AdResult::raw(function ($collection) use ($startDate, $endDate) {
+                return $collection->aggregate([
+                    ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
                 ]);
             });
         }
 
         $startDate   = date('Y-' . $month .'-'. $startDayRange);
-        $endStart    = date('Y-' . $month .'-'. $endDayRange);
-        $resultRange = AdResult::raw(function ($collection) use ($startDate, $endStart) {
+        $endDate    = date('Y-' . $month .'-'. $endDayRange);
+        $rangeDate = "from ".date('d',strtotime($startDate))." to ".date('d',strtotime($endDate));
+        $resultRange = AdResult::raw(function ($collection) use ($startDate, $endDate) {
             return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endStart]]]
+                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
             ]);
         });
 
-        $reportArr = array('total' => $results,
+        $rangeArr = array('total' => $rangeTotal,
+            'week1' => $rangeW1,
+            'week2' => $rangeW2,
+            'week3' => $rangeW3,
+            'week4' => $rangeW4,
+            'week5' => $rangeW5,
+            'week6' => $rangeW6,
+            'rangeDate' => $rangeDate);
+
+        $resultsArr = array('total' => $results,
             'week1' => $resultW1,
             'week2' => $resultW2,
             'week3' => $resultW3,
             'week4' => $resultW4,
             'week5' => $resultW5,
+            'week6' => $resultW6,
             'rangeDate' => $resultRange);
 
-        $data['report'] = $this->prepare_report($reportArr, $days);
+        $data['report'] = $this->prepare_report($resultsArr, $rangeArr);
         return view('pages.table_report_monthly', $data);
     }
 
-    private function prepare_report($reportArr, $days) {
-        $config  = Config::getByKeys(['USD_VND', 'USD_THB']);
-        $report = [];
+    private function prepare_report($resultsArr, $rangeArr) {
+        $config = Config::getByKeys(['USD_VND', 'USD_THB']);
+        $report = array('config' => $config);
 
-        foreach ($reportArr as $key => $value) {
+        foreach ($resultsArr as $key => $value) {
             $report[$key] = (object)[
                 'c1' => 0,
                 'c2' => 0,
@@ -673,9 +712,11 @@ class AjaxController extends Controller
                 'l6' => 0,
                 'l8' => 0,
                 'revenue' => 0,
+                'range' => "---",
             ];
 
-            if (isset($value)) {
+            $report[$key]->range = isset($rangeArr[$key]) ? $rangeArr[$key] : NULL;
+            if(isset($value) && $value != null) {
                 foreach ($value as $item) {
                     $report[$key]->c1 += isset($item->c1) ? $item->c1 : 0;
                     $report[$key]->c2 += isset($item->c2) ? $item->c2 : 0;
@@ -691,9 +732,6 @@ class AjaxController extends Controller
                 }
             }
         }
-
-        $report['days'] = $days;
-        $report['config'] = $config;
 
         return $report;
     }
