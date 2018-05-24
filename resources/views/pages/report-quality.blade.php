@@ -246,26 +246,52 @@
 <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 <script type="text/javascript">
-    get_report_monthly(new Date().getMonth() + 1);
+    get_report_monthly(new Date().getMonth() + 1, new Date(), new Date());
 
-    function get_report_monthly(month) {
+    function get_report_monthly(month, startDate, endDate) {
 
-        if (month < 10) {
+        month = "" + month;
+
+        console.log("month = " + month.length);
+
+        if (month < 10 && month.length == 1) {
             month = "0" + month.toString();
         } else {
             month = month.toString();
         }
 
-        $.get("{{ route('ajax-getReportMonthly') }}", {month: month}, function (data) {
+       $.get("{{ route('ajax-getReportMonthly') }}", {month: month, startDate: startDate, endDate: endDate}, function (data) {
             document.getElementById("report_monthly").innerHTML = data;
         }).fail( function () {
             alert('Cannot connect to server. Please try again later.');
         }).complete(function () {
+           var year = startDate.getFullYear();
+           console.log("year script = " + year);
+           rangedate_span(startDate, endDate);
 
+           $('#rangedate').daterangepicker({
+               startDate: startDate.getDate(),
+               endDate: endDate.getDate(),
+               opens: 'right',
+               minDate: new Date(year, month-1, 1),
+               maxDate: new Date(year, month, 0),
+           }, function(startDate, endDate){
+               let start = new Date(startDate);
+               let end = new Date(endDate);
+               rangedate_span(start, end);
+               get_report_monthly(month, start, end);
+           });
         });
 
         $( "#monthly" ).click();
     }
+
+    function rangedate_span(startDate, endDate) {
+        console.log("start date = " + startDate);
+        console.log("end date = " + endDate);
+        $('#rangedate span').html(startDate.getDate() + '-' + endDate.getDate());
+    }
+
 </script>
 
 @include('components.script-jarviswidget')

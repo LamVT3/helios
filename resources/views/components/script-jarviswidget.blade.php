@@ -26,7 +26,7 @@
             get_l8_chart(month);
         } else if (title_id == 'monthly_chart'){
             title.html('Report month ' + dropdown.html());
-            get_report_monthly(month);
+            get_report_monthly(month, new Date(), new Date());
         }
     });
 

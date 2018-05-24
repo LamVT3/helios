@@ -32,25 +32,6 @@ $(document).ready(function () {
 
     cb(start, end);
 
-    var year = (new Date()).getFullYear();
-
-    function rangedate_span(start, end) {
-        $('#rangedate span').html(start.format('DD') + '-' + end.format('DD'));
-    }
-
-    $('#rangedate').daterangepicker({
-        startDate: start,
-        endDate: end.add(1, 'days'),
-        opens: 'left',
-        minDate: new Date(year, month, 1),
-        maxDate: new Date(year, month + 1, 0),
-    }, function(startDate, endDate){
-        rangedate_span(startDate, endDate);
-        get_report_monthly(month + 1);
-    });
-
-    rangedate_span(start, end);
-
     /* BASIC ;*/
     var responsiveHelper_table_report = undefined;
 

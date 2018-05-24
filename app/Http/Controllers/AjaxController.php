@@ -574,17 +574,25 @@ class AjaxController extends Controller
     public function getReportMonthly() {
 
         $month       = request('month');
+        $startRange  = request('startDate');
+        $endRange    = request('endDate');
         $startDate   = date('Y-' . $month .'-01');
         $endStart    = date('Y-' . $month .'-t');
-        $year   = date('Y'); /* nam hien tai*/
-        $days      = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+        $year        = date('Y'); /* nam hien tai*/
+        $days        = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+
+        var_dump($month);
+
+        $startDayRange = explode(" ", $startRange)[2];
+        $endDayRange = explode(" ", $endRange)[2];
+
         $results = AdResult::raw(function ($collection) use ($startDate, $endStart) {
             return $collection->aggregate([
                 ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endStart]]]
             ]);
         });
 
-        $endStart    = date('Y-' . $month .'-07');
+        $endStart = date('Y-' . $month .'-07');
         $resultW1 = AdResult::raw(function ($collection) use ($startDate, $endStart) {
             return $collection->aggregate([
                 ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endStart]]]
@@ -626,19 +634,21 @@ class AjaxController extends Controller
             });
         }
 
-        if(request()->rangedate){
-            $date_place = str_replace('-', ' ', request()->rangedate);
-            $date_arr = explode(' ', str_replace('/', '-', $date_place));
-            $startDate = Date('Y-m-d', strtotime($date_arr[0]));
-            $endDate = Date('Y-m-d', strtotime($date_arr[1]));
-        }
+        $startDate   = date('Y-' . $month .'-'. $startDayRange);
+        $endStart    = date('Y-' . $month .'-'. $endDayRange);
+        $resultRange = AdResult::raw(function ($collection) use ($startDate, $endStart) {
+            return $collection->aggregate([
+                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endStart]]]
+            ]);
+        });
 
         $reportArr = array('total' => $results,
             'week1' => $resultW1,
             'week2' => $resultW2,
             'week3' => $resultW3,
             'week4' => $resultW4,
-            'week5' => $resultW5);
+            'week5' => $resultW5,
+            'rangeDate' => $resultRange);
 
         $data['report'] = $this->prepare_report($reportArr);
         return view('pages.table_report_monthly', $data);
