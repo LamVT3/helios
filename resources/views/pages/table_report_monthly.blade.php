@@ -46,7 +46,13 @@
                     <th>(8-14)</th>
                     <th>(15-21)</th>
                     <th>(22-28)</th>
-                    <th>(29-31)</th>
+                    <th>
+                    @if ($report['days'] >= 29)
+                            (29-{{$report['days']}})
+                    @else
+                            ---
+                    @endif
+                    </th>
                     <th></th>
                     <th>
                         <div id="rangedate" class="pull-left"
@@ -101,25 +107,25 @@
                 <tr style="font-weight: bold">
                     <td></td>
                     <td style="text-align: center">C3B</td>
-                    <td>{{ $report['week1']->c3b_cost }}</td>
-                    <td>{{ $report['week2']->c3b_cost }}</td>
-                    <td>{{ $report['week3']->c3b_cost }}</td>
-                    <td>{{ $report['week4']->c3b_cost }}</td>
-                    <td>{{ $report['week5']->c3b_cost }}</td>
-                    <td>{{ $report['total']->c3b_cost }}</td>
-                    <td>{{ $report['rangeDate']->c3b_cost }}</td>
+                    <td>{{ ($report['week1']->c3b != 0) ? round($report['week1']->spent * $usd_vnd / $report['week1']->c3b) : 0 }}</td>
+                    <td>{{ ($report['week2']->c3b != 0) ? round($report['week2']->spent * $usd_vnd / $report['week2']->c3b) : 0 }}</td>
+                    <td>{{ ($report['week3']->c3b != 0) ? round($report['week3']->spent * $usd_vnd / $report['week3']->c3b) : 0 }}</td>
+                    <td>{{ ($report['week4']->c3b != 0) ? round($report['week4']->spent * $usd_vnd / $report['week4']->c3b) : 0 }}</td>
+                    <td>{{ ($report['week5']->c3b != 0) ? round($report['week5']->spent * $usd_vnd / $report['week5']->c3b) : 0 }}</td>
+                    <td>{{ ($report['total']->c3b != 0) ? round($report['total']->spent * $usd_vnd / $report['total']->c3b) : 0 }}</td>
+                    <td>{{ ($report['rangeDate']->c3b != 0) ? round($report['rangeDate']->spent * $usd_vnd / $report['rangeDate']->c3b) : 0 }}</td>
                     <td>0</td>
                 </tr>
                 <tr style="font-weight: bold">
                     <td></td>
                     <td style="text-align: center">C3BG</td>
-                    <td>{{ $report['week1']->c3bg_cost }}</td>
-                    <td>{{ $report['week2']->c3bg_cost }}</td>
-                    <td>{{ $report['week3']->c3bg_cost }}</td>
-                    <td>{{ $report['week4']->c3bg_cost }}</td>
-                    <td>{{ $report['week5']->c3bg_cost }}</td>
-                    <td>{{ $report['total']->c3bg_cost }}</td>
-                    <td>{{ $report['rangeDate']->c3bg_cost }}</td>
+                    <td>{{ ($report['week1']->c3bg != 0) ? round($report['week1']->spent * $usd_vnd / $report['week1']->c3bg) : 0 }}</td>
+                    <td>{{ ($report['week2']->c3bg != 0) ? round($report['week2']->spent * $usd_vnd / $report['week2']->c3bg) : 0 }}</td>
+                    <td>{{ ($report['week3']->c3bg != 0) ? round($report['week3']->spent * $usd_vnd / $report['week3']->c3bg) : 0 }}</td>
+                    <td>{{ ($report['week4']->c3bg != 0) ? round($report['week4']->spent * $usd_vnd / $report['week4']->c3bg) : 0 }}</td>
+                    <td>{{ ($report['week5']->c3bg != 0) ? round($report['week5']->spent * $usd_vnd / $report['week5']->c3bg) : 0 }}</td>
+                    <td>{{ ($report['total']->c3bg != 0) ? round($report['total']->spent * $usd_vnd / $report['total']->c3bg) : 0 }}</td>
+                    <td>{{ ($report['rangeDate']->c3bg != 0) ? round($report['rangeDate']->spent * $usd_vnd / $report['rangeDate']->c3bg) : 0 }}</td>
                     <td>0</td>
                 </tr>
                 <tr style="font-weight: bold">

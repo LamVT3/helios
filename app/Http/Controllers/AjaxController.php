@@ -652,14 +652,12 @@ class AjaxController extends Controller
             'week5' => $resultW5,
             'rangeDate' => $resultRange);
 
-        $data['report'] = $this->prepare_report($reportArr);
+        $data['report'] = $this->prepare_report($reportArr, $days);
         return view('pages.table_report_monthly', $data);
     }
 
-    private function prepare_report($reportArr) {
+    private function prepare_report($reportArr, $days) {
         $config  = Config::getByKeys(['USD_VND', 'USD_THB']);
-        $usd_vnd  = $config['USD_VND'];
-
         $report = [];
 
         foreach ($reportArr as $key => $value) {
@@ -675,11 +673,6 @@ class AjaxController extends Controller
                 'l6' => 0,
                 'l8' => 0,
                 'revenue' => 0,
-                'c1_cost' => 0,
-                'c2_cost' => 0,
-                'c3_cost' => 0,
-                'c3b_cost' => 0,
-                'c3bg_cost' => 0,
             ];
 
             if (isset($value)) {
@@ -689,85 +682,18 @@ class AjaxController extends Controller
                     $report[$key]->c3 += isset($item->c3) ? $item->c3 : 0;
                     $report[$key]->c3b += isset($item->c3b) ? $item->c3b : 0;
                     $report[$key]->c3bg += isset($item->c3bg) ? $item->c3b : 0;
-                    $spent = isset($item->spent) ? $item->spent : 0;
-                    $report[$key]->spent += $spent;
+                    $report[$key]->spent += isset($item->spent) ? $item->spent : 0;
                     $report[$key]->l1 += isset($item->l1) ? $item->l1 : 0;
                     $report[$key]->l3 += isset($item->l3) ? $item->l3 : 0;
                     $report[$key]->l6 += isset($item->l6) ? $item->l6 : 0;
                     $report[$key]->l8 += isset($item->l8) ? $item->l8 : 0;
                     $report[$key]->revenue += isset($item->revenue) ? $item->revenue : 0;
-                    $report[$key]->c1_cost += isset($item->c1) ? round($spent * $usd_vnd / $item->c1, 2) : 0;
-                    $report[$key]->c2_cost += isset($item->c2) ? round($spent * $usd_vnd / $item->c2, 2) : 0;
-                    $report[$key]->c3_cost += isset($item->c3) ? round($spent * $usd_vnd / $item->c3, 2) : 0;
-                    $report[$key]->c3b_cost += isset($item->c3b) ? round($spent * $usd_vnd / $item->c3b, 2) : 0;
-                    $report[$key]->c3bg_cost += isset($item->c3bg) ? round($spent * $usd_vnd / $item->c3bg, 2) : 0;
                 }
             }
         }
 
+        $report['days'] = $days;
         $report['config'] = $config;
-
-        return $report;
-    }
-
-    public function getReportMonthly2() {
-
-        $month       = request('month');
-        $year   = date('Y'); /* nam hien tai */
-        $days      = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-        $reportArr = array();
-
-        for ($i = 0;$i<$days; $i++ ){
-            if($i < 10) {
-                $i = '0'.$i;
-            }
-            $results = AdResult::raw(function ($collection) use ($month, $i) {
-                return $collection->aggregate([
-                    ['$match' => ['date' => ['$eq' => date('Y-' . $month .'-'.$i)]]]
-                ]);
-            });
-            $reportArr[$i] = $results;
-        }
-
-        $data['report'] = $this->prepare_report2($reportArr);
-        $data['config'] = Config::getByKeys(['USD_VND', 'USD_THB']);
-        return view('pages.table_report_monthly2', $data);
-    }
-
-    private function prepare_report2($reportArr) {
-
-        $report = array();
-        foreach ($reportArr as $key => $value) {
-            $report[$key] = (object)[
-                'c1' => 0,
-                'c2' => 0,
-                'c3' => 0,
-                'c3b' => 0,
-                'c3bg' => 0,
-                'spent' => 0,
-                'l1' => 0,
-                'l3' => 0,
-                'l6' => 0,
-                'l8' => 0,
-                'revenue' => 0,
-            ];
-            if(isset($value)) {
-                foreach ($value as $item) {
-                    $report[$key]->c1 += isset($item->c1) ? $item->c1 : 0;
-                    $report[$key]->c2 += isset($item->c2) ? $item->c2 : 0;
-                    $report[$key]->c3 += isset($item->c3) ? $item->c3 : 0;
-                    $report[$key]->c3b += isset($item->c3b) ? $item->c3b : 0;
-                    $report[$key]->c3bg += isset($item->c3bg) ? $item->c3b : 0;
-                    $spent = isset($item->spent) ? $item->spent : 0;
-                    $report[$key]->spent += $spent;
-                    $report[$key]->l1 += isset($item->l1) ? $item->l1 : 0;
-                    $report[$key]->l3 += isset($item->l3) ? $item->l3 : 0;
-                    $report[$key]->l6 += isset($item->l6) ? $item->l6 : 0;
-                    $report[$key]->l8 += isset($item->l8) ? $item->l8 : 0;
-                    $report[$key]->revenue += isset($item->revenue) ? $item->revenue : 0;
-                }
-            }
-        }
 
         return $report;
     }
