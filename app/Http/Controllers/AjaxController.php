@@ -585,8 +585,6 @@ class AjaxController extends Controller
         $year        = date('Y'); /* nam hien tai*/
         $days        = cal_days_in_month(CAL_GREGORIAN, $month, $year);
 
-        var_dump($month);
-
         $startDayRange = explode(" ", $startRange)[2];
         $endDayRange = explode(" ", $endRange)[2];
 
