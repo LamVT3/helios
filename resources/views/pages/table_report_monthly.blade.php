@@ -6,7 +6,7 @@
             <tr>
                 <div style="text-align: center; font-weight: bold; font-size: xx-large; margin: 20px auto;">MARKETING_INDEX REPORT</div>
             </tr>
-            <tr style="font-weight: bold; font-size: x-large">
+            <tr style="font-weight: bold; font-size: x-large; font-style: italic">
                 <td>Budget :</td>
                 <td></td>
                 <td>Target L1 :</td>
