@@ -585,7 +585,7 @@ class AjaxController extends Controller
         $endDayRange = explode(" ", $endRange)[2];
 
         $daysInFirstWeek = 8 - date('N',strtotime($startDate));
-        $rangeTotal = "from ".date('d',strtotime($startDate))." to ".date('d',strtotime($endDate));
+        $rangeTotal = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
         $results = AdResult::raw(function ($collection) use ($startDate, $endDate) {
             return $collection->aggregate([
                 ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
@@ -593,7 +593,7 @@ class AjaxController extends Controller
         });
 
         $endDate = date('Y-' . $month .'-0'.$daysInFirstWeek);
-        $rangeW1 = "from ".date('d',strtotime($startDate))." to ".date('d',strtotime($endDate));
+        $rangeW1 = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
         $resultW1 = AdResult::raw(function ($collection) use ($startDate, $endDate) {
             return $collection->aggregate([
                 ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
@@ -602,7 +602,7 @@ class AjaxController extends Controller
 
         $startDate   = date('Y-m-d', strtotime($endDate. ' + 1 days'));
         $endDate    = date('Y-m-d', strtotime($startDate. ' + 6 days'));
-        $rangeW2 = "from ".date('d',strtotime($startDate))." to ".date('d',strtotime($endDate));
+        $rangeW2 = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
         $resultW2 = AdResult::raw(function ($collection) use ($startDate, $endDate) {
             return $collection->aggregate([
                 ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
@@ -611,7 +611,7 @@ class AjaxController extends Controller
 
         $startDate = date('Y-m-d', strtotime($endDate. ' + 1 days'));
         $endDate  = date('Y-m-d', strtotime($startDate. ' + 6 days'));
-        $rangeW3   = "from ".date('d',strtotime($startDate))." to ".date('d',strtotime($endDate));
+        $rangeW3   = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
         $resultW3  = AdResult::raw(function ($collection) use ($startDate, $endDate) {
             return $collection->aggregate([
                 ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
@@ -620,7 +620,7 @@ class AjaxController extends Controller
 
         $startDate   = date('Y-m-d', strtotime($endDate. ' + 1 days'));
         $endDate    = date('Y-m-d', strtotime($startDate. ' + 6 days'));
-        $rangeW4 = "from ".date('d',strtotime($startDate))." to ".date('d',strtotime($endDate));
+        $rangeW4 = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
         $resultW4 = AdResult::raw(function ($collection) use ($startDate, $endDate) {
             return $collection->aggregate([
                 ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
@@ -639,7 +639,7 @@ class AjaxController extends Controller
                 $endDate    = date('Y-m-d', strtotime($startDate. ' + '.($remainDays-1).' days'));
                 $remainDays = 0;
             }
-            $rangeW5 = "from ".date('d',strtotime($startDate))." to ".date('d',strtotime($endDate));
+            $rangeW5 = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
             $resultW5 = AdResult::raw(function ($collection) use ($startDate, $endDate) {
                 return $collection->aggregate([
                     ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
@@ -652,7 +652,7 @@ class AjaxController extends Controller
         if($remainDays > 0){
             $startDate   = date('Y-m-d', strtotime($endDate. ' + 1 days'));
             $endDate    = date('Y-m-d', strtotime($startDate. ' + '.($remainDays-1).' days'));
-            $rangeW6 = "from ".date('d',strtotime($startDate))." to ".date('d',strtotime($endDate));
+            $rangeW6 = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
             $resultW6 = AdResult::raw(function ($collection) use ($startDate, $endDate) {
                 return $collection->aggregate([
                     ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
@@ -662,7 +662,7 @@ class AjaxController extends Controller
 
         $startDate   = date('Y-' . $month .'-'. $startDayRange);
         $endDate    = date('Y-' . $month .'-'. $endDayRange);
-        $rangeDate = "from ".date('d',strtotime($startDate))." to ".date('d',strtotime($endDate));
+        $rangeDate = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
         $resultRange = AdResult::raw(function ($collection) use ($startDate, $endDate) {
             return $collection->aggregate([
                 ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
