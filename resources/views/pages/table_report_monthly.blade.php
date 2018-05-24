@@ -24,7 +24,7 @@
             </tr>
         </table>
     </div>
-    <div class="wrapper_report">
+    <div class="wrapper_report_monthly">
         <table id="table_report" class="table" width="100%">
             <thead>
                 <tr style="font-size: medium">
