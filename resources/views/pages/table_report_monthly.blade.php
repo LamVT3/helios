@@ -143,7 +143,7 @@
                     <td>{{ ($report['week4']->l3 != 0) ? round($report['week4']->spent * $usd_vnd / $report['week4']->l3) : 0 }}</td>
                     <td>{{ ($report['week5']->l3 != 0) ? round($report['week5']->spent * $usd_vnd / $report['week5']->l3) : 0 }}</td>
                     <td>{{ ($report['total']->l3 != 0) ? round($report['total']->spent * $usd_vnd / $report['total']->l3) : 0 }}</td>
-                    <td>{{ ($report['total']->l3 != 0) ? round($report['total']->spent * $usd_vnd / $report['total']->l3) : 0 }}</td>
+                    <td>{{ ($report['rangeDate']->l3 != 0) ? round($report['rangeDate']->spent * $usd_vnd / $report['rangeDate']->l3) : 0 }}</td>
                     <td>0</td>
                 </tr>
                 <tr style="font-weight: bold">
