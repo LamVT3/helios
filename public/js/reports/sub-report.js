@@ -327,10 +327,25 @@ $(document).ready(function () {
         $('.loading').hide();
     })
 
+    $('#budget_chk input[type=checkbox]').change(function (e){
+        var month = $('input[name="budget_month"]').val();
+        get_budget(month);
+    })
+
+    $('#quantity_chk input[type=checkbox]').change(function (e){
+        var month = $('input[name="quantity_month"]').val();
+        get_quantity(month);
+    })
+
+    $('#quality_chk input[type=checkbox]').change(function (e){
+        var month = $('input[name="quality_month"]').val();
+        get_quality(month);
+    })
+
 });
 
 function get_budget(month) {
-    var url             =  $('input[name="budget_url"]').val();
+    var url             = $('input[name="budget_url"]').val();
     var source_id       = $('select[name="source_id"]').val();
     var team_id         = $('select[name="team_id"]').val();
     var marketer_id     = $('select[name="marketer_id"]').val();
@@ -345,7 +360,15 @@ function get_budget(month) {
     $('input[name="subcampaign_id"]').val(subcampaign_id);
     $('input[name="registered_date"]').val(registered_date);
 
-    $.get(url, {month: month}, function (data) {
+    var data = {};
+    data.source_id          = source_id;
+    data.team_id            = team_id;
+    data.marketer_id        = marketer_id;
+    data.campaign_id        = campaign_id;
+    data.subcampaign_id     = subcampaign_id;
+    data.month              = month;
+
+    $.get(url, data, function (data) {
         set_budget_chart(data);
     }).fail(
         function (err) {
@@ -354,9 +377,30 @@ function get_budget(month) {
 }
 
 function get_quantity(month) {
-    var url =  $('input[name="quantity_url"]').val();
+    var url             =  $('input[name="quantity_url"]').val();
+    var source_id       = $('select[name="source_id"]').val();
+    var team_id         = $('select[name="team_id"]').val();
+    var marketer_id     = $('select[name="marketer_id"]').val();
+    var campaign_id     = $('select[name="campaign_id"]').val();
+    var subcampaign_id  = $('select[name="subcampaign_id"]').val();
+    var registered_date = $('.registered_date').text();
 
-    $.get(url, {month: month}, function (data) {
+    $('input[name="source_id"]').val(source_id);
+    $('input[name="team_id"]').val(team_id);
+    $('input[name="marketer_id"]').val(marketer_id);
+    $('input[name="campaign_id"]').val(campaign_id);
+    $('input[name="subcampaign_id"]').val(subcampaign_id);
+    $('input[name="registered_date"]').val(registered_date);
+
+    var data = {};
+    data.source_id          = source_id;
+    data.team_id            = team_id;
+    data.marketer_id        = marketer_id;
+    data.campaign_id        = campaign_id;
+    data.subcampaign_id     = subcampaign_id;
+    data.month              = month;
+
+    $.get(url, data, function (data) {
 
         set_quantity_chart(data);
     }).fail(
@@ -366,9 +410,30 @@ function get_quantity(month) {
 }
 
 function get_quality(month) {
-    var url =  $('input[name="quality_url"]').val();
+    var url             =  $('input[name="quality_url"]').val();
+    var source_id       = $('select[name="source_id"]').val();
+    var team_id         = $('select[name="team_id"]').val();
+    var marketer_id     = $('select[name="marketer_id"]').val();
+    var campaign_id     = $('select[name="campaign_id"]').val();
+    var subcampaign_id  = $('select[name="subcampaign_id"]').val();
+    var registered_date = $('.registered_date').text();
 
-    $.get(url, {month: month}, function (data) {
+    $('input[name="source_id"]').val(source_id);
+    $('input[name="team_id"]').val(team_id);
+    $('input[name="marketer_id"]').val(marketer_id);
+    $('input[name="campaign_id"]').val(campaign_id);
+    $('input[name="subcampaign_id"]').val(subcampaign_id);
+    $('input[name="registered_date"]').val(registered_date);
+
+    var data = {};
+    data.source_id          = source_id;
+    data.team_id            = team_id;
+    data.marketer_id        = marketer_id;
+    data.campaign_id        = campaign_id;
+    data.subcampaign_id     = subcampaign_id;
+    data.month              = month;
+
+    $.get(url, data, function (data) {
         set_quality_chart(data);
     }).fail(
         function (err) {
@@ -379,52 +444,155 @@ function get_quality(month) {
 function set_budget_chart(data) {
     $('span#me_re').text(data.me_re);
 
-    var item    = $("#budget_chart");
-    var dataSet = [
-        {data : jQuery.parseJSON(data.me),      label : "ME"},
-        {data : jQuery.parseJSON(data.re),      label : "RE"},
-        {data : jQuery.parseJSON(data.c3b),     label : "C3B"},
-        {data : jQuery.parseJSON(data.c3bg),    label : "C3BG"},
-        {data : jQuery.parseJSON(data.l1),      label : "L1"},
-        {data : jQuery.parseJSON(data.l3),      label : "L3"},
-        {data : jQuery.parseJSON(data.l6),      label : "L6"},
-        {data : jQuery.parseJSON(data.l8),      label : "L8"},
-    ];
+    var item        = $("#budget_chart");
+    var dataSet     = [];
+    var arr_color   = [];
 
-    initChart(item, dataSet);
+    var data_l1     = {data : jQuery.parseJSON(data.l1),      label : "L1"};
+    var data_l3     = {data : jQuery.parseJSON(data.l3),      label : "L3"};
+    var data_l6     = {data : jQuery.parseJSON(data.l6),      label : "L6"};
+    var data_l8     = {data : jQuery.parseJSON(data.l8),      label : "L8"};
+    var data_c3b    = {data : jQuery.parseJSON(data.c3b),     label : "C3B"};
+    var data_c3bg   = {data : jQuery.parseJSON(data.c3bg),    label : "C3BG"};
+    var data_me     = {data : jQuery.parseJSON(data.me),      label : "ME"};
+    var data_re     = {data : jQuery.parseJSON(data.re),      label : "RE"};
+
+    var lst_checkbox = $('#budget_chk').find('input[type=checkbox]:checked');
+    jQuery.each(lst_checkbox, function(index, checkbox) {
+        $label = $(checkbox).val();
+        if($label == 'L1'){
+            dataSet.push(data_l1);
+            arr_color.push('#800000');
+        }
+        if($label == 'L3'){
+            dataSet.push(data_l3);
+            arr_color.push('#6A5ACD')
+        }
+        if($label == 'L6'){
+            dataSet.push(data_l6);
+            arr_color.push('#808080')
+        }
+        if($label == 'L8'){
+            dataSet.push(data_l8);
+            arr_color.push('#7CFC00')
+        }
+        if($label == 'C3B'){
+            dataSet.push(data_c3b);
+            arr_color.push('#FF8C00')
+        }
+        if($label == 'C3BG'){
+            dataSet.push(data_c3bg);
+            arr_color.push('#1E90FF')
+        }
+        if($label == 'ME'){
+            dataSet.push(data_me);
+            arr_color.push('#000')
+        }
+        if($label == 'RE'){
+            dataSet.push(data_re);
+            arr_color.push('#008000')
+        }
+    });
+
+    initChart(item, dataSet, arr_color);
     $("#budget_chart").UseBudgetTooltip();
 
 }
 
 function set_quantity_chart(data) {
     var item    = $("#quantity_chart");
-    var dataSet = [
-        {data : jQuery.parseJSON(data.c3b), label : "C3B"},
-        {data : jQuery.parseJSON(data.c3bg), label : "C3BG"},
-        {data : jQuery.parseJSON(data.l1), label : "L1"},
-        {data : jQuery.parseJSON(data.l3), label : "L3"},
-        {data : jQuery.parseJSON(data.l6), label : "L6"},
-        {data : jQuery.parseJSON(data.l8), label : "L8"},
-    ];
+    var dataSet     = [];
+    var arr_color   = [];
 
-    initChart(item, dataSet);
+    var data_l1     = {data : jQuery.parseJSON(data.l1),      label : "L1"};
+    var data_l3     = {data : jQuery.parseJSON(data.l3),      label : "L3"};
+    var data_l6     = {data : jQuery.parseJSON(data.l6),      label : "L6"};
+    var data_l8     = {data : jQuery.parseJSON(data.l8),      label : "L8"};
+    var data_c3b    = {data : jQuery.parseJSON(data.c3b),     label : "C3B"};
+    var data_c3bg   = {data : jQuery.parseJSON(data.c3bg),    label : "C3BG"};
+
+    var lst_checkbox = $('#quantity_chk').find('input[type=checkbox]:checked');
+    jQuery.each(lst_checkbox, function(index, checkbox) {
+        $label = $(checkbox).val();
+        if($label == 'L1'){
+            dataSet.push(data_l1);
+            arr_color.push('#800000');
+        }
+        if($label == 'L3'){
+            dataSet.push(data_l3);
+            arr_color.push('#6A5ACD')
+        }
+        if($label == 'L6'){
+            dataSet.push(data_l6);
+            arr_color.push('#808080')
+        }
+        if($label == 'L8'){
+            dataSet.push(data_l8);
+            arr_color.push('#7CFC00')
+        }
+        if($label == 'C3B'){
+            dataSet.push(data_c3b);
+            arr_color.push('#FF8C00')
+        }
+        if($label == 'C3BG'){
+            dataSet.push(data_c3bg);
+            arr_color.push('#1E90FF')
+        }
+    });
+
+    initChart(item, dataSet, arr_color);
     $("#budget_chart").UseQuantityTooltip();
 
 }
 
 function set_quality_chart(data) {
     var item    = $("#quality_chart");
-    var dataSet = [
-        {data : jQuery.parseJSON(data.l3_c3b),      label : "L3/C3B"},
-        {data : jQuery.parseJSON(data.l3_c3bg),     label : "L3/C3BG"},
-        {data : jQuery.parseJSON(data.l3_l1),       label : "L3/L1"},
-        {data : jQuery.parseJSON(data.l1_c3bg),     label : "L1/C3BG"},
-        {data : jQuery.parseJSON(data.c3bg_c3b),    label : "C3BG/C3B"},
-        {data : jQuery.parseJSON(data.l6_l3),       label : "L6/L3"},
-        {data : jQuery.parseJSON(data.l8_l6),       label : "L8/L6"},
-    ];
+    var dataSet     = [];
+    var arr_color   = [];
 
-    initChart(item, dataSet);
+    var data_l3_c3b     = {data : jQuery.parseJSON(data.l3_c3b),      label : "L3/C3B"};
+    var data_l3_c3bg    = {data : jQuery.parseJSON(data.l3_c3bg),     label : "L3/C3BG"};
+    var data_l3_l1      = {data : jQuery.parseJSON(data.l3_l1),       label : "L3/L1"};
+    var data_l1_c3bg    = {data : jQuery.parseJSON(data.l1_c3bg),     label : "L1/C3BG"};
+    var data_c3bg_c3b   = {data : jQuery.parseJSON(data.c3bg_c3b),    label : "C3BG/C3B"};
+    var data_l6_l3      = {data : jQuery.parseJSON(data.l6_l3),       label : "L6/L3"};
+    var data_l8_l6      = {data : jQuery.parseJSON(data.l8_l6),       label : "L8/L6"};
+
+    var lst_checkbox = $('#quality_chk').find('input[type=checkbox]:checked');
+    jQuery.each(lst_checkbox, function(index, checkbox) {
+        $label = $(checkbox).val();
+        if($label == 'L3/C3B'){
+            dataSet.push(data_l3_c3b);
+            arr_color.push('#800000');
+        }
+        if($label == 'L3/C3BG'){
+            dataSet.push(data_l3_c3bg);
+            arr_color.push('#6A5ACD')
+        }
+        if($label == 'L3/L1'){
+            dataSet.push(data_l3_l1);
+            arr_color.push('#808080')
+        }
+        if($label == 'L1/C3BG'){
+            dataSet.push(data_l1_c3bg);
+            arr_color.push('#7CFC00')
+        }
+        if($label == 'C3BG/C3B'){
+            dataSet.push(data_c3bg_c3b);
+            arr_color.push('#FF8C00')
+        }
+        if($label == 'L6/L3'){
+            dataSet.push(data_l6_l3);
+            arr_color.push('#1E90FF')
+        }
+        if($label == 'L8/L6'){
+            dataSet.push(data_l8_l6);
+            arr_color.push('#1E90FF')
+        }
+    });
+
+
+    initChart(item, dataSet, arr_color);
     $("#quality_chart").UseQualityTooltip();
 }
 
@@ -440,18 +608,13 @@ function getDate(date){
 
 
 /* chart colors default */
+
 var $chrt_border_color = "#efefef";
 var $chrt_grid_color = "#DDD";
-var $chrt_main = "#E24913";
-var $chrt_second = "#6A5ACD";
-var $chrt_third = "#808080";
-var $chrt_fourth = "#7CFC00";
-var $chrt_fifth = "#FF8C00";
-var $chrt_mono = "#1E90FF";
-var $chrt_seven = "#000";
 /* site stats chart */
 
-function initChart(item, data){
+function initChart(item, data, arr_color){
+
     if (item.length) {
         $.plot(item, data,
             {
@@ -490,7 +653,7 @@ function initChart(item, data){
                     borderWidth : 0,
                     borderColor : $chrt_border_color,
                 },
-                colors : [$chrt_main,$chrt_second, $chrt_third, $chrt_fourth, $chrt_fifth, $chrt_mono, $chrt_seven],
+                colors : arr_color,
             });
     }
     /* end site stats */

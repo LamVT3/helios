@@ -327,3 +327,34 @@ input#limit
 #table_contacts th:last-child{
     min-width: 80px;
 }
+.rectangle {
+    height: 10px;
+    min-width: 30px;
+    margin: 0px 0px 5px 3px;
+    /*padding: 2px;*/
+    float: right;
+}
+.border-top-1 {
+    border-top: 4px solid #800000;
+}
+.border-top-2 {
+    border-top: 4px solid #6A5ACD;
+}
+.border-top-3 {
+    border-top: 4px solid #808080;
+}
+.border-top-4 {
+    border-top: 4px solid #7CFC00;
+}
+.border-top-5 {
+    border-top: 4px solid #FF8C00;
+}
+.border-top-6 {
+    border-top: 4px solid #1E90FF;
+}
+.border-top-7 {
+    border-top: 4px solid #000;
+}
+.border-top-8 {
+    border-top: 4px solid #008000;
+}
