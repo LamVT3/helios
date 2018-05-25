@@ -62,28 +62,46 @@ class SubReportController extends Controller
         // get start date and end date
         list($year, $month, $d, $first_day_this_month, $last_day_this_month) = $this->getDate($budget_month);
 
-        $match = [
-            ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
-            [
-                '$group' => [
-                    '_id'   => '$date',
-                    'me'    => ['$sum' => '$spent'],
-                    're'    => ['$sum' => '$revenue'],
-                    'c3b'   => ['$sum' => '$c3b'],
-                    'c3bg'  => ['$sum' => '$c3bg'],
-                    'l1'    => ['$sum' => '$l1'],
-                    'l3'    => ['$sum' => '$l3'],
-                    'l6'    => ['$sum' => '$l6'],
-                    'l8'    => ['$sum' => '$l8'],
-                ]
-            ]
-        ];
-
         // get Ad id
-        $matchData  = $this->getMatchData();
-        if(count($matchData) > 0){
-            $match[]    = $matchData;
+        $ad_id  = $this->getAds();
+
+        if(count($ad_id) > 0){
+            $match = [
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                ['$match' => ['ad_id' => ['$in' => $ad_id]]],
+                [
+                    '$group' => [
+                        '_id'   => '$date',
+                        'me'    => ['$sum' => '$spent'],
+                        're'    => ['$sum' => '$revenue'],
+                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3bg'  => ['$sum' => '$c3bg'],
+                        'l1'    => ['$sum' => '$l1'],
+                        'l3'    => ['$sum' => '$l3'],
+                        'l6'    => ['$sum' => '$l6'],
+                        'l8'    => ['$sum' => '$l8'],
+                    ]
+                ]
+            ];
+        }else{
+            $match = [
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                [
+                    '$group' => [
+                        '_id'   => '$date',
+                        'me'    => ['$sum' => '$spent'],
+                        're'    => ['$sum' => '$revenue'],
+                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3bg'  => ['$sum' => '$c3bg'],
+                        'l1'    => ['$sum' => '$l1'],
+                        'l3'    => ['$sum' => '$l3'],
+                        'l6'    => ['$sum' => '$l6'],
+                        'l8'    => ['$sum' => '$l8'],
+                    ]
+                ]
+            ];
         }
+
         /*  start Chart*/
         $query_chart = AdResult::raw(function ($collection) use ($match) {
             return $collection->aggregate($match);
@@ -185,25 +203,40 @@ class SubReportController extends Controller
         // get start date and end date
         list($year, $month, $d, $first_day_this_month, $last_day_this_month) = $this->getDate($quantity_month);
 
-        $match = [
-            ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
-            [
-                '$group' => [
-                    '_id'   => '$date',
-                    'c3b'   => ['$sum' => '$c3b'],
-                    'c3bg'  => ['$sum' => '$c3bg'],
-                    'l1'    => ['$sum' => '$l1'],
-                    'l3'    => ['$sum' => '$l3'],
-                    'l6'    => ['$sum' => '$l6'],
-                    'l8'    => ['$sum' => '$l8'],
-                ]
-            ]
-        ];
-
         // get Ad id
-        $matchData  = $this->getMatchData();
-        if(count($matchData) > 0){
-            $match[]    = $matchData;
+        $ad_id  = $this->getAds();
+
+        if(count($ad_id) > 0){
+            $match = [
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                ['$match' => ['ad_id' => ['$in' => $ad_id]]],
+                [
+                    '$group' => [
+                        '_id'   => '$date',
+                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3bg'  => ['$sum' => '$c3bg'],
+                        'l1'    => ['$sum' => '$l1'],
+                        'l3'    => ['$sum' => '$l3'],
+                        'l6'    => ['$sum' => '$l6'],
+                        'l8'    => ['$sum' => '$l8'],
+                    ]
+                ]
+                ];
+        }else{
+            $match = [
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                [
+                    '$group' => [
+                        '_id'   => '$date',
+                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3bg'  => ['$sum' => '$c3bg'],
+                        'l1'    => ['$sum' => '$l1'],
+                        'l3'    => ['$sum' => '$l3'],
+                        'l6'    => ['$sum' => '$l6'],
+                        'l8'    => ['$sum' => '$l8'],
+                    ]
+                ]
+            ];
         }
 
         /*  start Chart*/
@@ -267,25 +300,40 @@ class SubReportController extends Controller
         // get start date and end date
         list($year, $month, $d, $first_day_this_month, $last_day_this_month) = $this->getDate($quality_month);
 
-        $match = [
-            ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
-            [
-                '$group' => [
-                    '_id'   => '$date',
-                    'c3b'   => ['$sum' => '$c3b'],
-                    'c3bg'  => ['$sum' => '$c3bg'],
-                    'l1'    => ['$sum' => '$l1'],
-                    'l3'    => ['$sum' => '$l3'],
-                    'l6'    => ['$sum' => '$l6'],
-                    'l8'    => ['$sum' => '$l8'],
-                ]
-            ]
-        ];
-
         // get Ad id
-        $matchData  = $this->getMatchData();
-        if(count($matchData) > 0){
-            $match[]    = $matchData;
+        $ad_id  = $this->getAds();
+
+        if(count($ad_id) > 0){
+            $match = [
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                ['$match' => ['ad_id' => ['$in' => $ad_id]]],
+                [
+                    '$group' => [
+                        '_id'   => '$date',
+                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3bg'  => ['$sum' => '$c3bg'],
+                        'l1'    => ['$sum' => '$l1'],
+                        'l3'    => ['$sum' => '$l3'],
+                        'l6'    => ['$sum' => '$l6'],
+                        'l8'    => ['$sum' => '$l8'],
+                    ]
+                ]
+            ];
+        }else{
+            $match = [
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                [
+                    '$group' => [
+                        '_id'   => '$date',
+                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3bg'  => ['$sum' => '$c3bg'],
+                        'l1'    => ['$sum' => '$l1'],
+                        'l3'    => ['$sum' => '$l3'],
+                        'l6'    => ['$sum' => '$l6'],
+                        'l8'    => ['$sum' => '$l8'],
+                    ]
+                ]
+            ];
         }
 
         /*  start Chart*/
@@ -378,18 +426,13 @@ class SubReportController extends Controller
         return $data_where;
     }
 
-    private function getMatchData(){
-
+    private function getAds(){
         $data_where = $this->getWhereData();
-
         $ads    = array();
-        $match  = array();
         if (count($data_where) >= 1) {
             $ads = Ad::where($data_where)->pluck('_id')->toArray();
-            $match = ['$match' => ['ad_id' => ['$in' => $ads]]];
         }
-
-        return $match;
+        return $ads;
     }
 
     public function getFilter(){
