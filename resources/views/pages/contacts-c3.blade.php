@@ -114,9 +114,9 @@
                                         <select name="clevel" id="clevel" class="select2"
                                                 style="width: 280px">
                                             <option value="">All</option>
-                                            <option value="c3a">C3A</option>
-                                            <option value="c3b" selected>C3B</option>
-                                            <option value="c3bg">C3BG</option>
+                                            <option value="c3a">c3a</option>
+                                            <option value="c3b" selected>c3b</option>
+                                            <option value="c3bg">c3bg</option>
                                         </select>
                                         <i></i>
                                     </section>
@@ -125,14 +125,14 @@
                                         <select name="current_level" id="current_level" class="select2"
                                                 style="width: 280px">
                                             <option value="">All</option>
-                                            <option value="l1">L1</option>
-                                            <option value="l2">L2</option>
-                                            <option value="l3">L3</option>
-                                            <option value="l4">L4</option>
-                                            <option value="l5">L5</option>
-                                            <option value="l6">L6</option>
-                                            <option value="l7">L7</option>
-                                            <option value="l8">L8</option>
+                                            <option value="l1">l1</option>
+                                            <option value="l2">l2</option>
+                                            <option value="l3">l3</option>
+                                            <option value="l4">l4</option>
+                                            <option value="l5">l5</option>
+                                            <option value="l6">l6</option>
+                                            <option value="l7">l7</option>
+                                            <option value="l8">l8</option>
                                         </select>
                                         <i></i>
                                     </section>

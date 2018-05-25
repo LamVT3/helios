@@ -112,9 +112,74 @@
                             ['id' => 'budget', 'icon' => 'fa-line-chart', 'title' => "Budget in ", 'dropdown' => 'true'])
                                 <!-- widget content -->
                                     <div class="widget-body no-padding">
-
                                         <div class="widget-body-toolbar bg-color-white smart-form">
                                             <p class="text-danger text-right"><strong>ME / RE: </strong><span id="me_re">{{ $budget["me_re"]  or '0'}}</span>%</p>
+                                            <div class="row" id="budget_chk">
+                                                <div class="col col-sm">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="L1" checked>
+                                                            <div class="rectangle border-top-1">L1</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-sm">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="L3" checked>
+                                                            <div class="rectangle border-top-2">L3</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-sm">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="L6" checked>
+                                                            <div class="rectangle border-top-3">L6</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-sm">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="L8" checked>
+                                                            <div class="rectangle border-top-4">L8</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-sm">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="C3B" checked>
+                                                            <div class="rectangle border-top-5">C3B</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-sm">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="C3BG" checked>
+                                                            <div class="rectangle border-top-6">C3BG</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-sm">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="ME" checked>
+                                                            <div class="rectangle border-top-7">ME</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-sm">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="RE" checked>
+                                                            <div class="rectangle border-top-8">RE</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div id="budget_chart" class="chart has-legend"></div>
                                     </div>
@@ -127,7 +192,56 @@
                                 <!-- widget content -->
                                     <div class="widget-body no-padding">
                                         <div class="widget-body-toolbar bg-color-white smart-form">
-
+                                            <div class="row" id="quantity_chk">
+                                                <div class="col col-sm">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="L1" checked>
+                                                            <div class="rectangle border-top-1">L1</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-sm">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="L3" checked>
+                                                            <div class="rectangle border-top-2">L3</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-sm">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="L6" checked>
+                                                            <div class="rectangle border-top-3">L6</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-sm">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="L8" checked>
+                                                            <div class="rectangle border-top-4">L8</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-sm">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="C3B" checked>
+                                                            <div class="rectangle border-top-5">C3B</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-sm">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="C3BG" checked>
+                                                            <div class="rectangle border-top-6">C3BG</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div id="quantity_chart" class="chart has-legend"></div>
                                     </div>
@@ -139,8 +253,65 @@
                             ['id' => 'quality', 'icon' => 'fa-line-chart', 'title' => "Quality in ", 'dropdown' => 'true'])
                                 <!-- widget content -->
                                     <div class="widget-body no-padding">
-
                                         <div class="widget-body-toolbar bg-color-white smart-form">
+                                            <div class="row" id="quality_chk">
+                                                <div class="col col-md">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="L3/C3B" checked>
+                                                            <div class="rectangle border-top-1">L3/C3B</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-md">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="L3/C3BG" checked>
+                                                            <div class="rectangle border-top-2">L3/C3BG</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-md">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="L3/L1" checked>
+                                                            <div class="rectangle border-top-3">L3/L1</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-md">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="L1/C3BG" checked>
+                                                            <div class="rectangle border-top-4">L1/C3BG</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-md">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="C3BG/C3B" checked>
+                                                            <div class="rectangle border-top-5">C3BG/C3B</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-md">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="L6/L3" checked>
+                                                            <div class="rectangle border-top-6">L6/L3</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col col-md">
+                                                    <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" value="L8/L6" checked>
+                                                            <div class="rectangle border-top-7">L8/L6</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div id="quality_chart" class="chart has-legend"></div>
                                     </div>
@@ -196,6 +367,7 @@
 
 <script type="text/javascript">
 
+var arr_color = ["#800000", "#6A5ACD", "#808080", "#7CFC00", "#FF8C00", "#1E90FF", "#000", "#008000"];
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
 $(document).ready(function () {
     initBudget();
@@ -207,32 +379,32 @@ $(document).ready(function () {
 function initBudget(){
     var item = $("#budget_chart");
     var data = [
-        {data : {{ $budget["me"] }},    label : "ME"},
-        {data : {{ $budget["re"] }},    label : "RE"},
-        {data : {{ $budget["c3b"] }},   label : "C3B"},
-        {data : {{ $budget["c3bg"] }},  label : "C3BG"},
         {data : {{ $budget["l1"] }},    label : "L1"},
         {data : {{ $budget["l3"] }},    label : "L3"},
         {data : {{ $budget["l6"] }},    label : "L6"},
         {data : {{ $budget["l8"] }},    label : "L8"},
+        {data : {{ $budget["c3b"] }},   label : "C3B"},
+        {data : {{ $budget["c3bg"] }},  label : "C3BG"},
+        {data : {{ $budget["me"] }},    label : "ME"},
+        {data : {{ $budget["re"] }},    label : "RE"},
     ];
 
-    initChart(item, data);
+    initChart(item, data, arr_color);
     item.UseBudgetTooltip();
 }
 
 function initQuantity(){
     var item = $("#quantity_chart");
     var data =  [
-        {data : {{ $quantity["c3b"] }},     label : "C3B"},
-        {data : {{ $quantity["c3bg"] }},    label : "C3BG"},
         {data : {{ $quantity["l1"] }},      label : "L1"},
         {data : {{ $quantity["l3"] }},      label : "L3"},
         {data : {{ $quantity["l6"] }},      label : "L6"},
         {data : {{ $quantity["l8"] }},      label : "L8"},
+        {data : {{ $quantity["c3b"] }},     label : "C3B"},
+        {data : {{ $quantity["c3bg"] }},    label : "C3BG"},
     ];
 
-    initChart(item, data);
+    initChart(item, data, arr_color);
     $("#quantity_chart").UseQuantityTooltip();
 }
 
@@ -248,7 +420,7 @@ function initQuality(){
         {data : {{ $quality["l8_l6"] }},       label : "L8/L6"},
     ];
 
-    initChart(item, data);
+    initChart(item, data, arr_color);
     $("#quality_chart").UseQualityTooltip();
 }
 
