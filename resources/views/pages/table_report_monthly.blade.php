@@ -24,7 +24,7 @@
             </tr>
         </table>
     </div>
-    <div class="wrapper_report_monthly">
+    <div class="wrapper_report_monthly gray">
         <table id="table_report" class="table" width="100%">
             <thead>
                 <tr class="font-medium">
@@ -512,6 +512,9 @@
     }
     .white {
         color: #fafafa;
+    }
+    .gray {
+        color: #505050;
     }
     .background-blue {
         background-color: #157DEC;
