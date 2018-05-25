@@ -429,12 +429,10 @@
                     <td>0</td>
                     <td>0</td>
                     <td>0</td>
-                    <td>0</td>
                 </tr>
                 <tr style="font-weight: bold">
                     <td></td>
                     <td>Duplicate Ratio</td>
-                    <td>0</td>
                     <td>0</td>
                     <td>0</td>
                     <td>0</td>
