@@ -4,30 +4,30 @@
     <div style="margin: 20px auto;">
         <table class="table" width="100%">
             <tr>
-                <div style="text-align: center; font-weight: bold; font-size: xx-large; margin: 20px auto;">MARKETING_INDEX REPORT</div>
+                <div style="font-size: xx-large; margin: 20px auto;" class="bold center blue">MARKETING_INDEX REPORT</div>
             </tr>
-            <tr style="font-weight: bold; font-size: x-large; font-style: italic;">
+            <tr style="font-size: x-large;" class="bold italic blue">
                 <td>Budget :</td>
-                <td></td>
+                <td class="orange"></td>
                 <td>Target L1 :</td>
-                <td></td>
+                <td class="orange"></td>
                 <td>L3/C3B :</td>
-                <td></td>
+                <td class="orange"></td>
             </tr>
-            <tr style="font-weight: bold; font-size: large">
+            <tr style="font-size: large" class="bold blue">
                 <td>Spent :</td>
-                <td>{{ $report['total']->spent }} USD</td>
+                <td class="orange">{{ $report['total']->spent }} USD</td>
                 <td>Produced (L1) :</td>
-                <td>{{ $report['total']->l1 }} </td>
+                <td class="orange">{{ $report['total']->l1 }} </td>
                 <td>Actual (L3/C3B) : </td>
-                <td>{{ ($report['total']->c3b != 0) ? round($report['total']->l3 / $report['total']->c3b,4)*100 : 0 }}%</td>
+                <td class="orange">{{ ($report['total']->c3b != 0) ? round($report['total']->l3 / $report['total']->c3b,4)*100 : 0 }}%</td>
             </tr>
         </table>
     </div>
     <div class="wrapper_report_monthly">
         <table id="table_report" class="table" width="100%">
             <thead>
-                <tr style="font-size: medium">
+                <tr class="font-medium">
                     <th></th>
                     <th></th>
                     <th>Week 1</th>
@@ -44,7 +44,7 @@
                     <th>Range Date</th>
                     <th>Forecast</th>
                 </tr>
-                <tr style="font-style: italic;">
+                <tr class="italic">
                     <th></th>
                     <th></th>
                     <th>{{ $report['week1']->range }}</th>
@@ -70,10 +70,10 @@
             </thead>
             <tbody>
                 <tr>
-                    <td style="font-weight: bold; background-color: #2ea8e5; font-size: medium">BUDGET</td>
+                    <td class="bold font-medium background-blue white">BUDGET</td>
                 </tr>
-                <tr style="font-weight: bold; font-size: medium">
-                    <td style="background-color: #ba871f">Actual</td>
+                <tr class="bold font-medium blue">
+                    <td class="orange">Actual</td>
                     <td>ME/RE %</td>
                     <td>{{ ($report['week1']->revenue != 0) ? round($report['week1']->spent * $usd_thb / $report['week1']->revenue,4)*100 : 0 }}%</td>
                     <td>{{ ($report['week2']->revenue != 0) ? round($report['week2']->spent * $usd_thb / $report['week2']->revenue,4)*100 : 0 }}%</td>
@@ -89,7 +89,7 @@
                     <td>{{ ($report['rangeDate']->revenue != 0) ? round($report['rangeDate']->spent * $usd_thb / $report['rangeDate']->revenue,4)*100 : 0 }}%</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-style: italic;">
+                <tr class="italic">
                     <td></td>
                     <td>ME (USD)</td>
                     <td>{{ $report['week1']->spent }}</td>
@@ -106,7 +106,7 @@
                     <td>{{ $report['rangeDate']->spent }}</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-style: italic;">
+                <tr class="italic">
                     <td></td>
                     <td>RE (THB)</td>
                     <td>{{ $report['week1']->revenue }}</td>
@@ -123,9 +123,9 @@
                     <td>{{ $report['rangeDate']->revenue }}</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr class="bold">
                     <td></td>
-                    <td style="text-align: center">C3B</td>
+                    <td class="center">C3B</td>
                     <td>{{ ($report['week1']->c3b != 0) ? round($report['week1']->spent * $usd_vnd / $report['week1']->c3b) : 0 }}</td>
                     <td>{{ ($report['week2']->c3b != 0) ? round($report['week2']->spent * $usd_vnd / $report['week2']->c3b) : 0 }}</td>
                     <td>{{ ($report['week3']->c3b != 0) ? round($report['week3']->spent * $usd_vnd / $report['week3']->c3b) : 0 }}</td>
@@ -140,9 +140,9 @@
                     <td>{{ ($report['rangeDate']->c3b != 0) ? round($report['rangeDate']->spent * $usd_vnd / $report['rangeDate']->c3b) : 0 }}</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr class="bold">
                     <td></td>
-                    <td style="text-align: center">C3BG</td>
+                    <td class="center">C3BG</td>
                     <td>{{ ($report['week1']->c3bg != 0) ? round($report['week1']->spent * $usd_vnd / $report['week1']->c3bg) : 0 }}</td>
                     <td>{{ ($report['week2']->c3bg != 0) ? round($report['week2']->spent * $usd_vnd / $report['week2']->c3bg) : 0 }}</td>
                     <td>{{ ($report['week3']->c3bg != 0) ? round($report['week3']->spent * $usd_vnd / $report['week3']->c3bg) : 0 }}</td>
@@ -157,9 +157,9 @@
                     <td>{{ ($report['rangeDate']->c3bg != 0) ? round($report['rangeDate']->spent * $usd_vnd / $report['rangeDate']->c3bg) : 0 }}</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr class="bold">
                     <td></td>
-                    <td style="text-align: center">L1 used</td>
+                    <td class="center">L1 used</td>
                     <td>{{ ($report['week1']->l1 != 0) ? round($report['week1']->spent * $usd_vnd / $report['week1']->l1) : 0 }}</td>
                     <td>{{ ($report['week2']->l1 != 0) ? round($report['week2']->spent * $usd_vnd / $report['week2']->l1) : 0 }}</td>
                     <td>{{ ($report['week3']->l1 != 0) ? round($report['week3']->spent * $usd_vnd / $report['week3']->l1) : 0 }}</td>
@@ -174,9 +174,9 @@
                     <td>{{ ($report['rangeDate']->l1 != 0) ? round($report['rangeDate']->spent * $usd_vnd / $report['rangeDate']->l1) : 0 }}</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr class="bold">
                     <td></td>
-                    <td style="text-align: center">L3</td>
+                    <td class="center">L3</td>
                     <td>{{ ($report['week1']->l3 != 0) ? round($report['week1']->spent * $usd_vnd / $report['week1']->l3) : 0 }}</td>
                     <td>{{ ($report['week2']->l3 != 0) ? round($report['week2']->spent * $usd_vnd / $report['week2']->l3) : 0 }}</td>
                     <td>{{ ($report['week3']->l3 != 0) ? round($report['week3']->spent * $usd_vnd / $report['week3']->l3) : 0 }}</td>
@@ -191,9 +191,9 @@
                     <td>{{ ($report['rangeDate']->l3 != 0) ? round($report['rangeDate']->spent * $usd_vnd / $report['rangeDate']->l3) : 0 }}</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr class="bold">
                     <td></td>
-                    <td style="text-align: center">L6</td>
+                    <td class="center">L6</td>
                     <td>{{ ($report['week1']->l6 != 0) ? round($report['week1']->spent * $usd_vnd / $report['week1']->l6) : 0 }}</td>
                     <td>{{ ($report['week2']->l6 != 0) ? round($report['week2']->spent * $usd_vnd / $report['week2']->l6) : 0 }}</td>
                     <td>{{ ($report['week3']->l6 != 0) ? round($report['week3']->spent * $usd_vnd / $report['week3']->l6) : 0 }}</td>
@@ -208,9 +208,9 @@
                     <td>{{ ($report['rangeDate']->l6 != 0) ? round($report['rangeDate']->spent * $usd_vnd / $report['rangeDate']->l6) : 0 }}</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr class="bold">
                     <td></td>
-                    <td style="text-align: center">L8</td>
+                    <td class="center">L8</td>
                     <td>{{ ($report['week1']->l8 != 0) ? round($report['week1']->spent * $usd_vnd / $report['week1']->l8) : 0 }}</td>
                     <td>{{ ($report['week2']->l8 != 0) ? round($report['week2']->spent * $usd_vnd / $report['week2']->l8) : 0 }}</td>
                     <td>{{ ($report['week3']->l8 != 0) ? round($report['week3']->spent * $usd_vnd / $report['week3']->l8) : 0 }}</td>
@@ -226,10 +226,10 @@
                     <td>0</td>
                 </tr>
                 <tr>
-                    <td style="font-weight: bold; background-color: #2ea8e5; font-size: medium">QUANTITY</td>
+                    <td class="bold font-medium background-blue white">QUANTITY</td>
                 </tr>
-                <tr style="font-weight: bold; font-size: medium">
-                    <td style="background-color: #ba871f">Actual</td>
+                <tr class="bold font-medium blue">
+                    <td class="orange">Actual</td>
                     <td>C3B</td>
                     <td>{{ $report['week1']->c3b }}</td>
                     <td>{{ $report['week2']->c3b }}</td>
@@ -245,7 +245,7 @@
                     <td>{{ $report['rangeDate']->c3b }}</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr class="bold">
                     <td></td>
                     <td>C3BG</td>
                     <td>{{ $report['week1']->c3bg }}</td>
@@ -262,7 +262,7 @@
                     <td>{{ $report['rangeDate']->c3bg }}</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr class="bold">
                     <td></td>
                     <td>L1 used</td>
                     <td>{{ $report['week1']->l1 }}</td>
@@ -279,7 +279,7 @@
                     <td>{{ $report['rangeDate']->l1 }}</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr class="bold">
                     <td></td>
                     <td>L3</td>
                     <td>{{ $report['week1']->l3 }}</td>
@@ -296,7 +296,7 @@
                     <td>{{ $report['rangeDate']->l3 }}</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr class="bold">
                     <td></td>
                     <td>L6</td>
                     <td>{{ $report['week1']->l6 }}</td>
@@ -313,7 +313,7 @@
                     <td>{{ $report['rangeDate']->l6 }}</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr class="bold">
                     <td></td>
                     <td>L8</td>
                     <td>{{ $report['week1']->l8 }}</td>
@@ -331,10 +331,10 @@
                     <td>0</td>
                 </tr>
                 <tr>
-                    <td style="font-weight: bold; background-color: #2ea8e5; font-size: medium">QUALITY</td>
+                    <td class="bold font-medium background-blue white">QUALITY</td>
                 </tr>
-                <tr style="font-weight: bold; font-size: medium">
-                    <td style="background-color: #ba871f">Actual</td>
+                <tr class="bold font-medium blue">
+                    <td class="orange">Actual</td>
                     <td>L3/C3B %</td>
                     <td>{{ ($report['week1']->c3b != 0) ? round($report['week1']->l3 / $report['week1']->c3b,4)*100 : 0 }}%</td>
                     <td>{{ ($report['week2']->c3b != 0) ? round($report['week2']->l3 / $report['week2']->c3b,4)*100 : 0 }}%</td>
@@ -350,9 +350,9 @@
                     <td>{{ ($report['rangeDate']->c3b != 0) ? round($report['rangeDate']->l3 / $report['rangeDate']->c3b,4)*100 : 0 }}%</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-style: italic;">
+                <tr class="italic">
                     <td></td>
-                    <td style="text-align: center">L3/C3BG %</td>
+                    <td class="center">L3/C3BG %</td>
                     <td>{{ ($report['week1']->c3bg != 0) ? round($report['week1']->l3 / $report['week1']->c3bg,4)*100 : 0 }}%</td>
                     <td>{{ ($report['week2']->c3bg != 0) ? round($report['week2']->l3 / $report['week2']->c3bg,4)*100 : 0 }}%</td>
                     <td>{{ ($report['week3']->c3bg != 0) ? round($report['week3']->l3 / $report['week3']->c3bg,4)*100 : 0 }}%</td>
@@ -367,9 +367,9 @@
                     <td>{{ ($report['rangeDate']->c3bg != 0) ? round($report['rangeDate']->l3 / $report['rangeDate']->c3bg,4)*100 : 0 }}%</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-style: italic;">
+                <tr class="italic">
                     <td></td>
-                    <td style="text-align: center">L3/L1 %</td>
+                    <td class="center">L3/L1 %</td>
                     <td>{{ ($report['week1']->l1 != 0) ? round($report['week1']->l3 / $report['week1']->l1,4)*100 : 0 }}%</td>
                     <td>{{ ($report['week2']->l1 != 0) ? round($report['week2']->l3 / $report['week2']->l1,4)*100 : 0 }}%</td>
                     <td>{{ ($report['week3']->l1 != 0) ? round($report['week3']->l3 / $report['week3']->l1,4)*100 : 0 }}%</td>
@@ -384,9 +384,9 @@
                     <td>{{ ($report['rangeDate']->l1 != 0) ? round($report['rangeDate']->l3 / $report['rangeDate']->l1,4)*100 : 0 }}%</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-style: italic;">
+                <tr class="italic">
                     <td></td>
-                    <td style="text-align: center">L1/C3BG %</td>
+                    <td class="center">L1/C3BG %</td>
                     <td>{{ ($report['week1']->c3bg != 0) ? round($report['week1']->l1 / $report['week1']->c3bg,4)*100 : 0 }}%</td>
                     <td>{{ ($report['week2']->c3bg != 0) ? round($report['week2']->l1 / $report['week2']->c3bg,4)*100 : 0 }}%</td>
                     <td>{{ ($report['week3']->c3bg != 0) ? round($report['week3']->l1 / $report['week3']->c3bg,4)*100 : 0 }}%</td>
@@ -401,9 +401,9 @@
                     <td>{{ ($report['rangeDate']->c3bg != 0) ? round($report['rangeDate']->l1 / $report['rangeDate']->c3bg,4)*100 : 0 }}%</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-style: italic;">
+                <tr class="italic">
                     <td></td>
-                    <td style="text-align: center">C3BG/C3B %</td>
+                    <td class="center">C3BG/C3B %</td>
                     <td>{{ ($report['week1']->c3b != 0) ? round($report['week1']->c3bg / $report['week1']->c3b,4)*100 : 0 }}%</td>
                     <td>{{ ($report['week2']->c3b != 0) ? round($report['week2']->c3bg / $report['week2']->c3b,4)*100 : 0 }}%</td>
                     <td>{{ ($report['week3']->c3b != 0) ? round($report['week3']->c3bg / $report['week3']->c3b,4)*100 : 0 }}%</td>
@@ -418,7 +418,7 @@
                     <td>{{ ($report['rangeDate']->c3b != 0) ? round($report['rangeDate']->c3bg / $report['rangeDate']->c3b,4)*100 : 0 }}%</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr class="bold">
                     <td></td>
                     <td>Return Ratio</td>
                     <td>0</td>
@@ -430,7 +430,7 @@
                     <td>0</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr class="bold">
                     <td></td>
                     <td>Duplicate Ratio</td>
                     <td>0</td>
@@ -442,7 +442,7 @@
                     <td>0</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr class="bold">
                     <td></td>
                     <td>L6/L3 %</td>
                     <td>{{ ($report['week1']->l3 != 0) ? round($report['week1']->l6 / $report['week1']->l3,4)*100 : 0 }}%</td>
@@ -459,7 +459,7 @@
                     <td>{{ ($report['rangeDate']->l3 != 0) ? round($report['rangeDate']->l6 / $report['rangeDate']->l3,4)*100 : 0 }}%</td>
                     <td>0</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr class="bold">
                     <td></td>
                     <td>L8/L6 %</td>
                     <td>{{ ($report['week1']->l6 != 0) ? round($report['week1']->l8 / $report['week1']->l6,4)*100 : 0 }}%</td>
@@ -493,5 +493,30 @@
     }
     #table_report th {
         vertical-align:middle
+    }
+
+    .italic {
+        font-style: italic;
+    }
+    .bold {
+        font-weight: bold;
+    }
+    .center {
+        text-align: center;
+    }
+    .orange {
+        color: #ED8515;
+    }
+    .blue {
+        color: #157DEC;
+    }
+    .white {
+        color: #fafafa;
+    }
+    .background-blue {
+        background-color: #157DEC;
+    }
+    .font-medium {
+        font-size: medium;
     }
 </style>
