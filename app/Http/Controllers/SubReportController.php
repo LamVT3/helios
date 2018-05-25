@@ -80,18 +80,15 @@ class SubReportController extends Controller
         ];
 
         // get Ad id
-        $id = $this->getAdIds();
-
-        if(count($id) > 1){
-            $match[] = ['$match' => ['_id' => ['$in' => $id]]];
+        $matchData  = $this->getMatchData();
+        if(count($matchData) > 0){
+            $match[]    = $matchData;
         }
-
         /*  start Chart*/
         $query_chart = AdResult::raw(function ($collection) use ($match) {
             return $collection->aggregate($match);
         });
 
-//        var_dump($query_chart);die;
         $array_month = array();
         for ($i = 1; $i <= $d; $i++) {
             //$array_month[date($i)] = 0;
@@ -204,10 +201,9 @@ class SubReportController extends Controller
         ];
 
         // get Ad id
-        $id = $this->getAdIds();
-
-        if(count($id) > 1){
-            $match[] = ['$match' => ['_id' => ['$in' => $id]]];
+        $matchData  = $this->getMatchData();
+        if(count($matchData) > 0){
+            $match[]    = $matchData;
         }
 
         /*  start Chart*/
@@ -287,9 +283,9 @@ class SubReportController extends Controller
         ];
 
         // get Ad id
-        $id = $this->getAdIds();
-        if(count($id) > 1){
-            $match[] = ['$match' => ['_id' => ['$in' => $id]]];
+        $matchData  = $this->getMatchData();
+        if(count($matchData) > 0){
+            $match[]    = $matchData;
         }
 
         /*  start Chart*/
@@ -382,16 +378,18 @@ class SubReportController extends Controller
         return $data_where;
     }
 
-    private function getAdIds(){
+    private function getMatchData(){
 
         $data_where = $this->getWhereData();
 
-        $ads = array();
+        $ads    = array();
+        $match  = array();
         if (count($data_where) >= 1) {
             $ads = Ad::where($data_where)->pluck('_id')->toArray();
+            $match = ['$match' => ['ad_id' => ['$in' => $ads]]];
         }
 
-        return $ads;
+        return $match;
     }
 
     public function getFilter(){
@@ -413,7 +411,6 @@ class SubReportController extends Controller
 
     private function getDate($month){
         $request = request();
-
         if($month){
             $year   = date('Y'); /* nam hien tai*/
             $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
