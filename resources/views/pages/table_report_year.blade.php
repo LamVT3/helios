@@ -2,34 +2,35 @@
     <?php $usd_vnd = $reportY['config']['USD_VND'] ?>
     <?php $usd_thb = $reportY['config']['USD_THB'] ?>
     <?php
+        unset($reportY['config']);
 
-    unset($reportY['config']);
-    $reportY['Total'] = (object)[
-        'c1' => 0,
-        'c2' => 0,
-        'c3' => 0,
-        'c3b' => 0,
-        'c3bg' => 0,
-        'spent' => 0,
-        'l1' => 0,
-        'l3' => 0,
-        'l6' => 0,
-        'l8' => 0,
-        'revenue' => 0,
-    ];
+        $c1 = $c2 = $c3 = $c3b = $c3bg = $spent = $l1 = $l3 = $l6 = $l8 = $revenue = 0;
         foreach ($reportY as $rs) {
-            $reportY['Total']->c1 += isset($rs->c1) ? $rs->c1 : 0;
-            $reportY['Total']->c2 += isset($rs->c2) ? $rs->c2 : 0;
-            $reportY['Total']->c3 += isset($rs->c3) ? $rs->c3 : 0;
-            $reportY['Total']->c3b += isset($rs->c3b) ? $rs->c3b : 0;
-            $reportY['Total']->c3bg += isset($rs->c3bg) ? $rs->c3bg : 0;
-            $reportY['Total']->spent += isset($rs->spent) ? $rs->spent : 0;
-            $reportY['Total']->l1 += isset($rs->l1) ? $rs->l1 : 0;
-            $reportY['Total']->l3 += isset($rs->l3) ? $rs->l3 : 0;
-            $reportY['Total']->l6 += isset($rs->l6) ? $rs->l6 : 0;
-            $reportY['Total']->l8 += isset($rs->l8) ? $rs->l8 : 0;
-            $reportY['Total']->revenue += isset($rs->revenue) ? $rs->revenue : 0;
+            $c1 += isset($rs->c1) ? $rs->c1 : 0;
+            $c2 += isset($rs->c2) ? $rs->c2 : 0;
+            $c3 += isset($rs->c3) ? $rs->c3 : 0;
+            $c3b += isset($rs->c3b) ? $rs->c3b : 0;
+            $c3bg += isset($rs->c3bg) ? $rs->c3bg : 0;
+            $spent += isset($rs->spent) ? $rs->spent : 0;
+            $l1 += isset($rs->l1) ? $rs->l1 : 0;
+            $l3 += isset($rs->l3) ? $rs->l3 : 0;
+            $l6 += isset($rs->l6) ? $rs->l6 : 0;
+            $l8 += isset($rs->l8) ? $rs->l8 : 0;
+            $revenue += isset($rs->revenue) ? $rs->revenue : 0;
         }
+        $reportY['Total'] = (object)[
+            'c1' => $c1,
+            'c2' => $c2,
+            'c3' => $c3,
+            'c3b' => $c3b,
+            'c3bg' => $c3bg,
+            'spent' => $spent,
+            'l1' => $l1,
+            'l3' => $l3,
+            'l6' => $l6,
+            'l8' => $l8,
+            'revenue' => $revenue,
+        ];
     ?>
     <div style="margin: 20px auto;">
         <table class="table" width="100%">
