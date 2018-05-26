@@ -711,14 +711,17 @@ class AjaxController extends Controller
                 'range' => "---",
             ];
 
-            $report[$key]->range = isset($rangeArr[$key]) ? $rangeArr[$key] : NULL;
+            if ($rangeArr != null) {
+                $report[$key]->range = isset($rangeArr[$key]) ? $rangeArr[$key] : NULL;
+            }
+
             if(isset($value) && $value != null) {
                 foreach ($value as $item) {
                     $report[$key]->c1 += isset($item->c1) ? $item->c1 : 0;
                     $report[$key]->c2 += isset($item->c2) ? $item->c2 : 0;
                     $report[$key]->c3 += isset($item->c3) ? $item->c3 : 0;
                     $report[$key]->c3b += isset($item->c3b) ? $item->c3b : 0;
-                    $report[$key]->c3bg += isset($item->c3bg) ? $item->c3b : 0;
+                    $report[$key]->c3bg += isset($item->c3bg) ? $item->c3bg : 0;
                     $report[$key]->spent += isset($item->spent) ? $item->spent : 0;
                     $report[$key]->l1 += isset($item->l1) ? $item->l1 : 0;
                     $report[$key]->l3 += isset($item->l3) ? $item->l3 : 0;
@@ -730,6 +733,61 @@ class AjaxController extends Controller
         }
 
         return $report;
+    }
+
+    public function getReportYear() {
+        $month     = request('month');
+        $year      = request('year');
+
+        if($month < 10){
+            $month = '0'.$month;
+        }
+        $startDate = date($year.'-' . $month .'-01');
+        $days      = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+        $endDate   = date($year.'-' . $month .'-'.$days);
+
+        $resultsArr = array();
+        $i = 0;
+        do {
+            $result = AdResult::raw(function ($collection) use ($startDate, $endDate) {
+                /*if($month == "04") {
+                    var_dump($startDate);
+                    var_dump($endDate);
+                    var_dump($collection->aggregate([
+                        ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
+                    ]));
+                }*/
+                return $collection->aggregate([
+                    ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
+                ]);
+            });
+
+            $resultsArr[date('Y',strtotime($startDate)).' - '.date('m',strtotime($startDate))] = $result;
+            if ($month == "01") {
+                $month = 12;
+                $year -= 1;
+            } else {
+                $month -= 1;
+            }
+
+            if($month < 10){
+                $month = '0'.$month;
+            }
+            $startDate = date($year.'-' . $month .'-01');
+            $days      = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+            $endDate   = date($year.'-' . $month .'-'.$days);
+
+            $i++;
+        } while ($i < 12);
+
+        /*var_dump($resultsArr['2018 - 04']);
+        die;*/
+
+        $resultsArr = array_reverse($this->prepare_report($resultsArr, null), true);
+
+        $data['reportY'] = $resultsArr;
+
+        return view('pages.table_report_year', $data);
     }
 
     public function getContactPaginate(){

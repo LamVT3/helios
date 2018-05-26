@@ -14,7 +14,8 @@
         <div class="tab-v1">
             <ul id="tabs" class="nav nav-tabs">
                 <li><a href="#report" data-toggle="tab"><strong>Report</strong></a></li>
-                <li class="active"><a href="#monthly" data-toggle="tab"><strong>Monthly Marketing Report</strong></a></li>
+                <li><a href="#monthly" data-toggle="tab"><strong>Monthly Marketing Report</strong></a></li>
+                <li class="active"><a href="#year" data-toggle="tab"><strong>Year nearly Marketing Report</strong></a></li>
             </ul>
             <div class="tab-content mb30">
                 <div id="report" class="tab-pane">
@@ -203,7 +204,7 @@
                     <!-- end widget grid -->
                 </div>
 
-                <div class="tab-pane active" id="monthly">
+                <div class="tab-pane" id="monthly">
                     <section id="widget-grid">
                         <div class="row">
                             <article class="col-sm-12 col-md-12">
@@ -216,6 +217,24 @@
                                 </div>
                                 <div id="report_monthly"></div>
                             @endcomponent
+                            </article>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="tab-pane active" id="year">
+                    <section id="widget-grid">
+                        <div class="row">
+                            <article class="col-sm-12 col-md-12">
+                                @component('components.jarviswidget',
+                                ['id' => 'year_chart', 'icon' => 'fa-line-chart', 'title' => "Report year " , 'dropdown' => "false"])
+                                    <div class="loading" style="display: none">
+                                        <div class="col-md-12 text-center">
+                                            <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
+                                        </div>
+                                    </div>
+                                    <div id="report_year"></div>
+                                @endcomponent
                             </article>
                         </div>
                     </section>
@@ -246,13 +265,13 @@
 <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 <script type="text/javascript">
-    get_report_monthly(new Date().getMonth() + 1, new Date(), new Date());
+    var m = new Date().getMonth() + 1;
+    get_report_monthly(m, new Date(), new Date());
 
     function get_report_monthly(month, startDate, endDate) {
 
         month = "" + month;
-
-        console.log("month = " + month.length);
+        console.log("month = " + month);
 
         if (month < 10 && month.length == 1) {
             month = "0" + month.toString();
@@ -291,6 +310,26 @@
         console.log("end date = " + endDate);
         $('#rangedate span').html(startDate.getDate() + '-' + endDate.getDate());
     }
+
+    var y = new Date().getFullYear();
+    get_report_year(y, m);
+
+    function get_report_year(year, month) {
+        console.log("year "+ year);
+        $.get("{{ route('ajax-getReportYear') }}", {year: year, month: month}, function (data) {
+            document.getElementById("report_year").innerHTML = data;
+        }).fail( function () {
+            alert('Cannot connect to server. Please try again later.');
+        });
+    }
+
+    $(document).ready(function () {
+        if(m != 12) {
+            $('h2#year_chart').html('Report year <span class="yellow">' + (y-1) + ' - ' + y + '</span>');
+        } else {
+            $('h2#year_chart').html('Report year <span class="yellow">' + y + '</span>');
+        }
+    });
 
 </script>
 
