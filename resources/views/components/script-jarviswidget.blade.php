@@ -8,7 +8,7 @@
         dropdown.html(__arr_month[current_month]);
         $('h2#c3_chart').html('C3 in ' + dropdown.html());
         $('h2#l8_chart').html('L8 in ' + dropdown.html());
-        $('h2#monthly_chart').html('Report month ' + dropdown.html());
+        $('h2#monthly_chart').html('Report month <span class="yellow">' + dropdown.html()+ '</span>');
     });
 
     $('li#month').click(function() {
