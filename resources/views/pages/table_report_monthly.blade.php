@@ -10,7 +10,7 @@
         --><div class="inlineBlock col-md-3">L3/C3B :</div><!--
         --><div class="orange inlineBlock col-md-1"></div>
         </div>
-        <div style="font-size: x-large; border-top: 1px solid #ffffff !important; padding: 15px 0; float: left; width: 100%;" class="bold blue bg-gray2">
+        <div style="font-size: x-large; padding: 15px 0; float: left; width: 100%;" class="bold blue bg-gray2">
             <div class="inlineBlock col-md-2">Spent :</div><!--
         --><div class="orange inlineBlock col-md-2">{{ $report['total']->spent }} USD</div><!--
         --><div class="inlineBlock col-md-3">Produced (L1) :</div><!--
@@ -65,7 +65,7 @@
             <tbody>
                 <tr>
                     <td class="bold font-medium bg-blue white">BUDGET</td>
-                    <td colspan="10" class="bg-gray3"></td>
+                    <td class="bg-gray3"></td>
                 </tr>
                 <tr class="bold font-medium blue">
                     <td class="orange bg-gray2">Actual</td>
@@ -222,7 +222,7 @@
                 </tr>
                 <tr>
                     <td class="bold font-medium bg-blue white">QUANTITY</td>
-                    <td colspan="10" class="bg-gray3"></td>
+                    <td class="bg-gray3"></td>
                 </tr>
                 <tr class="bold font-medium blue">
                     <td class="orange bg-gray2">Actual</td>
@@ -328,7 +328,7 @@
                 </tr>
                 <tr>
                     <td class="bold font-medium bg-blue white">QUALITY</td>
-                    <td colspan="10" class="bg-gray3"></td>
+                    <td class="bg-gray3"></td>
                 </tr>
                 <tr class="bold font-medium blue">
                     <td class="orange bg-gray2">Actual</td>
@@ -478,6 +478,7 @@
     </div>
 </div>
 
+
 <style>
     tr:nth-child(even) {
         background: #fafafa
@@ -533,5 +534,8 @@
     }
     .inlineBlock {
         display: inline-block;
+    }
+    .table > tbody > tr > td {
+        border-bottom: 1px solid #ddd;
     }
 </style>
