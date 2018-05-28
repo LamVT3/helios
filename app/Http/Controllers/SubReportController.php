@@ -553,21 +553,21 @@ class SubReportController extends Controller
 
 		for ($i = 0; $i < 24; $i++){
 			if(isset($contacts_week[$i]['c3'])){
-				$c3_week_line[] =  [$i, count($contacts_week[$i]['c3']) / 7];
+				$c3_week_line[] =  [$i, intval( count($contacts_week[$i]['c3']) / 7)];
 			}
 			else{
 				$c3_week_line[] =  [$i, 0];
 			}
 			if(isset($contacts_week[$i]['c3b']))
 			{
-				$c3b_week_line[] =  [$i, count($contacts_week[$i]['c3b']) / 7];
+				$c3b_week_line[] =  [$i, intval( count($contacts_week[$i]['c3b']) / 7)];
 			}
 			else
 			{
 				$c3b_week_line[] =  [$i, 0];
 			}
 			if(isset($contacts_week[$i]['c3bg'])){
-				$c3bg_week_line[] =  [$i, count($contacts_week[$i]['c3bg']) / 7];
+				$c3bg_week_line[] =  [$i, intval( count($contacts_week[$i]['c3bg']) / 7)];
 			}
 			else
 			{
@@ -681,21 +681,21 @@ class SubReportController extends Controller
 
 		for ($i = 0; $i < 24; $i++){
 			if(isset($contacts_week[$i]['c3'])){
-				$c3_week_line[] =  [$i, count($contacts_week[$i]['c3']) / 7];
+				$c3_week_line[] =  [$i, intval( count($contacts_week[$i]['c3']) / 7)];
 			}
 			else{
 				$c3_week_line[] =  [$i, 0];
 			}
 			if(isset($contacts_week[$i]['c3b']))
 			{
-				$c3b_week_line[] =  [$i, count($contacts_week[$i]['c3b']) / 7];
+				$c3b_week_line[] =  [$i, intval( count($contacts_week[$i]['c3b']) / 7)];
 			}
 			else
 			{
 				$c3b_week_line[] =  [$i, 0];
 			}
 			if(isset($contacts_week[$i]['c3bg'])){
-				$c3bg_week_line[] =  [$i, count($contacts_week[$i]['c3bg']) / 7];
+				$c3bg_week_line[] =  [$i, intval( count($contacts_week[$i]['c3bg']) / 7)];
 			}
 			else
 			{
