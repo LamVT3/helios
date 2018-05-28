@@ -510,7 +510,7 @@ class SubReportController extends Controller
 								} );
 
 		$contacts_week = Contact::where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 - 7 * 86400000)
-		                   ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
+		                   ->where( 'submit_time', '<', strtotime( "midnight" ) * 1000 )
 		                   ->whereIn( 'clevel', [ 'c3', 'c3b', 'c3bg' ] )
 		                   ->get()
 		                   ->groupBy( function ( $contact ) {
@@ -525,34 +525,52 @@ class SubReportController extends Controller
 			if(isset($contacts[$i]['c3'])){
 				$table['c3'][$i] =  count($contacts[$i]['c3']);
 				$c3_line[] =  [$i, count($contacts[$i]['c3'])];
-				$c3_week_line[] =  [$i, count($contacts_week[$i]['c3'])];
 			}
 			else{
 				$table['c3'][$i] =  0;
 				$c3_line[] =  [$i, 0];
-				$c3_week_line[] =  [$i, 0];
 			}
 			if(isset($contacts[$i]['c3b']))
 			{
 				$table['c3b'][$i] =  count($contacts[$i]['c3b']);
 				$c3b_line[] =  [$i, count($contacts[$i]['c3b'])];
-				$c3b_week_line[] =  [$i, count($contacts_week[$i]['c3b'])];
 			}
 			else
 			{
 				$table['c3b'][$i] =  0;
 				$c3b_line[] =  [$i, 0];
-				$c3b_week_line[] =  [$i, 0];
 			}
 			if(isset($contacts[$i]['c3bg'])){
 				$table['c3bg'][$i] =  count($contacts[$i]['c3bg']);
 				$c3bg_line[] =  [$i, count($contacts[$i]['c3bg'])];
-				$c3bg_week_line[] =  [$i, count($contacts_week[$i]['c3bg'])];
 			}
 			else
 			{
 				$table['c3bg'][$i] =  0;
 				$c3bg_line[] =  [$i, 0];
+			}
+		}
+
+		for ($i = 0; $i < 24; $i++){
+			if(isset($contacts_week[$i]['c3'])){
+				$c3_week_line[] =  [$i, count($contacts_week[$i]['c3'])];
+			}
+			else{
+				$c3_week_line[] =  [$i, 0];
+			}
+			if(isset($contacts_week[$i]['c3b']))
+			{
+				$c3b_week_line[] =  [$i, count($contacts_week[$i]['c3b'])];
+			}
+			else
+			{
+				$c3b_week_line[] =  [$i, 0];
+			}
+			if(isset($contacts_week[$i]['c3bg'])){
+				$c3bg_week_line[] =  [$i, count($contacts_week[$i]['c3bg'])];
+			}
+			else
+			{
 				$c3bg_week_line[] =  [$i, 0];
 			}
 		}
@@ -602,10 +620,13 @@ class SubReportController extends Controller
 		$table['c3b'] = [];
 		$table['c3bg'] = [];
 
-		$date_time   = date('Y-m-d');
+		$data_where = $this->getWhereData();
 
-		$contacts = Contact::where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 )
-		                   ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
+		$request        = request();
+		$date_time   = $request->date_time;
+
+		$contacts = Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $date_time ) * 1000 )
+		                   ->where( 'submit_time', '<', strtotime( $date_time ) * 1000 + 86400000)
 		                   ->whereIn( 'clevel', [ 'c3', 'c3b', 'c3bg' ] )
 		                   ->get()
 		                   ->groupBy( function ( $contact ) {
@@ -616,8 +637,8 @@ class SubReportController extends Controller
 				} );
 			} );
 
-		$contacts_week = Contact::where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 - 7 * 86400000)
-		                        ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
+		$contacts_week = Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $date_time ) * 1000 - 7 * 86400000)
+		                        ->where( 'submit_time', '<', strtotime( $date_time ) * 1000)
 		                        ->whereIn( 'clevel', [ 'c3', 'c3b', 'c3bg' ] )
 		                        ->get()
 		                        ->groupBy( function ( $contact ) {
@@ -632,34 +653,52 @@ class SubReportController extends Controller
 			if(isset($contacts[$i]['c3'])){
 				$table['c3'][$i] =  count($contacts[$i]['c3']);
 				$c3_line[] =  [$i, count($contacts[$i]['c3'])];
-				$c3_week_line[] =  [$i, count($contacts_week[$i]['c3'])];
 			}
 			else{
 				$table['c3'][$i] =  0;
 				$c3_line[] =  [$i, 0];
-				$c3_week_line[] =  [$i, 0];
 			}
 			if(isset($contacts[$i]['c3b']))
 			{
 				$table['c3b'][$i] =  count($contacts[$i]['c3b']);
 				$c3b_line[] =  [$i, count($contacts[$i]['c3b'])];
-				$c3b_week_line[] =  [$i, count($contacts_week[$i]['c3b'])];
 			}
 			else
 			{
 				$table['c3b'][$i] =  0;
 				$c3b_line[] =  [$i, 0];
-				$c3b_week_line[] =  [$i, 0];
 			}
 			if(isset($contacts[$i]['c3bg'])){
 				$table['c3bg'][$i] =  count($contacts[$i]['c3bg']);
 				$c3bg_line[] =  [$i, count($contacts[$i]['c3bg'])];
-				$c3bg_week_line[] =  [$i, count($contacts_week[$i]['c3bg'])];
 			}
 			else
 			{
 				$table['c3bg'][$i] =  0;
 				$c3bg_line[] =  [$i, 0];
+			}
+		}
+
+		for ($i = 0; $i < 24; $i++){
+			if(isset($contacts_week[$i]['c3'])){
+				$c3_week_line[] =  [$i, count($contacts_week[$i]['c3'])];
+			}
+			else{
+				$c3_week_line[] =  [$i, 0];
+			}
+			if(isset($contacts_week[$i]['c3b']))
+			{
+				$c3b_week_line[] =  [$i, count($contacts_week[$i]['c3b'])];
+			}
+			else
+			{
+				$c3b_week_line[] =  [$i, 0];
+			}
+			if(isset($contacts_week[$i]['c3bg'])){
+				$c3bg_week_line[] =  [$i, count($contacts_week[$i]['c3bg'])];
+			}
+			else
+			{
 				$c3bg_week_line[] =  [$i, 0];
 			}
 		}
@@ -670,6 +709,9 @@ class SubReportController extends Controller
 		$chart['c3_week']    = json_encode($c3_week_line);
 		$chart['c3b_week']     = json_encode($c3b_week_line);
 		$chart['c3bg_week']     = json_encode($c3bg_week_line);
+
+//		var_dump($c3bg_line);
+//		dd($c3bg_week_line);
 
 		return view('pages.hour-report', compact(
 			'page_title',
