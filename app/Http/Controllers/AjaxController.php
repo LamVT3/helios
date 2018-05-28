@@ -588,6 +588,8 @@ class AjaxController extends Controller
         $startDayRange = explode(" ", $startRange)[2];
         $endDayRange = explode(" ", $endRange)[2];
 
+        /*Mon 1 = 8 - 1 = 7
+        Sun 7 = 8 - 7 = 1*/
         $daysInFirstWeek = 8 - date('N',strtotime($startDate));
         $rangeTotal = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
         $results = AdResult::raw(function ($collection) use ($startDate, $endDate) {

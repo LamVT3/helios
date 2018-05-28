@@ -14,8 +14,8 @@
         <div class="tab-v1">
             <ul id="tabs" class="nav nav-tabs">
                 <li><a href="#report" data-toggle="tab"><strong>Report</strong></a></li>
-                <li><a href="#monthly" data-toggle="tab"><strong>Monthly Marketing Report</strong></a></li>
-                <li class="active"><a href="#year" data-toggle="tab"><strong>Year nearly Marketing Report</strong></a></li>
+                <li class="active"><a href="#monthly" data-toggle="tab"><strong>Monthly Report</strong></a></li>
+                <li {{--class="active"--}}><a href="#year" data-toggle="tab"><strong>Last 12 Months Report</strong></a></li>
             </ul>
             <div class="tab-content mb30">
                 <div id="report" class="tab-pane">
@@ -204,39 +204,35 @@
                     <!-- end widget grid -->
                 </div>
 
-                <div class="tab-pane" id="monthly">
+                <div class="tab-pane active" id="monthly">
                     <section id="widget-grid">
-                        <div class="row">
-                            <article class="col-sm-12 col-md-12">
+                        <article class="col-sm-12 col-md-12">
+                        @component('components.jarviswidget',
+                        ['id' => 'monthly_chart', 'icon' => 'fa-line-chart', 'title' => "Report month " , 'dropdown' => "true"])
+                            <div class="loading" style="display: none">
+                                <div class="col-md-12 text-center">
+                                    <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
+                                </div>
+                            </div>
+                            <div id="report_monthly"></div>
+                        @endcomponent
+                        </article>
+                    </section>
+                </div>
+
+                <div class="tab-pane" id="year">
+                    <section id="widget-grid">
+                        <article class="col-sm-12 col-md-12">
                             @component('components.jarviswidget',
-                            ['id' => 'monthly_chart', 'icon' => 'fa-line-chart', 'title' => "Report month " , 'dropdown' => "true"])
+                            ['id' => 'year_chart', 'icon' => 'fa-line-chart', 'title' => "Report year " , 'dropdown' => "false"])
                                 <div class="loading" style="display: none">
                                     <div class="col-md-12 text-center">
                                         <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
                                     </div>
                                 </div>
-                                <div id="report_monthly"></div>
+                                <div id="report_year"></div>
                             @endcomponent
-                            </article>
-                        </div>
-                    </section>
-                </div>
-
-                <div class="tab-pane active" id="year">
-                    <section id="widget-grid">
-                        <div class="row">
-                            <article class="col-sm-12 col-md-12">
-                                @component('components.jarviswidget',
-                                ['id' => 'year_chart', 'icon' => 'fa-line-chart', 'title' => "Report year " , 'dropdown' => "false"])
-                                    <div class="loading" style="display: none">
-                                        <div class="col-md-12 text-center">
-                                            <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
-                                        </div>
-                                    </div>
-                                    <div id="report_year"></div>
-                                @endcomponent
-                            </article>
-                        </div>
+                        </article>
                     </section>
                 </div>
 
