@@ -96,6 +96,16 @@
                                         </section>
                                     </div>
                                     <div class="row">
+                                        <section class="col col-2">
+                                            <label class="label">From</label>
+                                            <input type="date" name="date_from" class="form-control" value="{{$date_from}}">
+                                        </section>
+                                        <section class="col col-2">
+                                            <label class="label">To</label>
+                                            <input type="date" name="date_to" class="form-control" value="{{$date_to}}">
+                                        </section>
+                                    </div>
+                                    <div class="row">
                                         <div class="col-md-12 text-right">
                                             <button class="btn btn-primary btn-sm" type="submit"
                                                     style="margin-right: 15px">

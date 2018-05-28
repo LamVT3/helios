@@ -495,6 +495,9 @@ class SubReportController extends Controller
 		$c3b = [];
 		$c3bg = [];
 
+		$date_from   = date('Y-m-d');
+		$date_to   = date('Y-m-d');
+
 		$contacts = Contact::where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 )
 		                   ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
 		                   ->whereIn( 'clevel', [ 'c3', 'c3b', 'c3bg' ] )
@@ -559,7 +562,9 @@ class SubReportController extends Controller
 			'c3_chart',
 			'c3b_chart',
 			'c3bg_chart',
-			'data_where'
+			'data_where',
+			'date_from',
+			'date_to'
 		));
 	}
 
@@ -583,8 +588,12 @@ class SubReportController extends Controller
 		$c3bg = [];
 		$data_where = $this->getWhereData();
 
-		$contacts = Contact::where($data_where)->where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 )
-		                   ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
+		$request        = request();
+		$date_from   = $request->date_from;
+		$date_to = $request->date_to;
+
+		$contacts = Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $date_from ) * 1000 )
+		                   ->where( 'submit_time', '<', strtotime( $date_to ) * 1000 + 86400000)
 		                   ->whereIn( 'clevel', [ 'c3', 'c3b', 'c3bg' ] )
 		                   ->get()
 		                   ->groupBy( function ( $contact ) {
@@ -647,7 +656,9 @@ class SubReportController extends Controller
 			'c3_chart',
 			'c3b_chart',
 			'c3bg_chart',
-			'data_where'
+			'data_where',
+			'date_from',
+			'date_to'
 		));
 	}
 
