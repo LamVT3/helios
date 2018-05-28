@@ -14,8 +14,8 @@
         <div class="tab-v1">
             <ul id="tabs" class="nav nav-tabs">
                 <li><a href="#report" data-toggle="tab"><strong>Report</strong></a></li>
-                <li class="active"><a href="#monthly" data-toggle="tab"><strong>Monthly Report</strong></a></li>
-                <li {{--class="active"--}}><a href="#year" data-toggle="tab"><strong>Last 12 Months Report</strong></a></li>
+                <li {{--class="active"--}}><a href="#monthly" data-toggle="tab"><strong>Monthly Report</strong></a></li>
+                <li class="active"><a href="#year" data-toggle="tab"><strong>Last 12 Months Report</strong></a></li>
             </ul>
             <div class="tab-content mb30">
                 <div id="report" class="tab-pane">
@@ -204,7 +204,7 @@
                     <!-- end widget grid -->
                 </div>
 
-                <div class="tab-pane active" id="monthly">
+                <div class="tab-pane" id="monthly">
                     <section id="widget-grid">
                         <article class="col-sm-12 col-md-12">
                         @component('components.jarviswidget',
@@ -220,7 +220,7 @@
                     </section>
                 </div>
 
-                <div class="tab-pane" id="year">
+                <div class="tab-pane active" id="year">
                     <section id="widget-grid">
                         <article class="col-sm-12 col-md-12">
                             @component('components.jarviswidget',
