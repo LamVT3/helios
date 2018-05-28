@@ -32,8 +32,8 @@
             'revenue' => $revenue,
         ];
     ?>
-    <div style="font-size: xx-large; border: #303030 !important ; padding: 15px 0;" class="bold center blue bg-gray1">MARKETING_INDEX REPORT</div>
-    <div style="font-size: x-large; border-top: 1px solid #ffffff !important; padding: 15px 0; float: left; width: 100%" class="bold italic blue bg-gray2">
+    <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0;" class="bold center blue">MARKETING_INDEX REPORT</div>
+    <div style="font-size: x-large; border-bottom: 1px #ddd solid !important; padding: 15px 0; float: left; width: 100%" class="bold italic blue">
         <div class="inlineBlock col-md-2">Budget :</div><!--
         --><div class="orange inlineBlock col-md-2"></div><!--
         --><div class="inlineBlock col-md-3">Target L1 :</div><!--
@@ -41,7 +41,7 @@
         --><div class="inlineBlock col-md-3">L3/C3B :</div><!--
         --><div class="orange inlineBlock col-md-1"></div>
     </div>
-    <div style="font-size: x-large; padding: 15px 0; float: left; width: 100%;" class="bold blue bg-gray2">
+    <div style="font-size: x-large; padding: 15px 0; float: left; width: 100%; " class="bold blue">
         <div class="inlineBlock col-md-2">Spent :</div><!--
         --><div class="orange inlineBlock col-md-2">{{ $reportY['Total']->spent }} USD</div><!--
         --><div class="inlineBlock col-md-3">Produced (L1) :</div><!--
@@ -52,9 +52,9 @@
     <div class="wrapper_report_year gray">
         <table id="table_report" class="table" width="100%">
             <thead>
-                <tr class="font-medium orange" style="background: #383838">
-                    <th style="border-top: 2px solid #ffffff;"></th>
-                    <th style="border-top: 2px solid #ffffff;"></th>
+                <tr class="font-medium orange">
+                    <th style="border-top: 2px solid #ffffff; border-bottom: 2px solid #ffffff;"></th>
+                    <th style="border-top: 2px solid #ffffff; border-bottom: 2px solid #ffffff;"></th>
                     <?php
                         $arrY = array();
                         $col = 1;
@@ -71,9 +71,9 @@
                             }
                         }
                     ?>
-                    <th class="center" style="border-left: 2px solid #ffffff; border-top: 2px solid #ffffff;">Total</th>
+                    <th class="center" style="border: 2px solid #ffffff; border-right: none;">Total</th>
                 </tr>
-                <tr class="italic center orange" style="background: #484848;">
+                <tr class="italic center orange">
                     <th></th>
                     <th style="border-right: 2px solid #ffffff;"></th>
                     <?php
@@ -91,11 +91,10 @@
             <tbody>
                 <tr>
                     <td class="bold font-medium bg-blue white">BUDGET</td>
-                    <td class="bg-gray3"></td>
                 </tr>
                 <tr class="bold font-medium blue">
-                    <td class="orange bg-gray2">Actual</td>
-                    <td class="bg-gray2">ME/RE %</td>
+                    <td class="orange">Actual</td>
+                    <td>ME/RE %</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ ($rs->revenue != 0) ? round($rs->spent * $usd_thb / $rs->revenue,4)*100 : 0 }}%</td>
@@ -104,8 +103,8 @@
                     <td class="center">{{ ($reportY['Total']->revenue != 0) ? round($reportY['Total']->spent * $usd_thb / $reportY['Total']->revenue,4)*100 : 0 }}%</td>
                 </tr>
                 <tr class="italic">
-                    <td class="bg-gray2"></td>
-                    <td class="bg-gray2 yellow">ME (USD)</td>
+                    <td></td>
+                    <td>ME (USD)</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ $rs->spent}}</td>
@@ -114,8 +113,8 @@
                     <td class="center">{{ $reportY['Total']->spent }}</td>
                 </tr>
                 <tr class="italic">
-                    <td class="bg-gray2"></td>
-                    <td class="bg-gray2 yellow">RE (THB)</td>
+                    <td></td>
+                    <td>RE (THB)</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ $rs->revenue}}</td>
@@ -124,8 +123,8 @@
                     <td class="center">{{ $reportY['Total']->revenue }}</td>
                 </tr>
                 <tr class="bold">
-                    <td class="bg-gray2"></td>
-                    <td class="center bg-gray2 white">C3B</td>
+                    <td></td>
+                    <td class="center">C3B</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ ($rs->c3b != 0) ? round($rs->spent * $usd_vnd / $rs->c3b) : 0 }}</td>
@@ -134,8 +133,8 @@
                     <td class="center">{{ ($reportY['Total']->c3b != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->c3b) : 0 }}</td>
                 </tr>
                 <tr class="bold">
-                    <td class="bg-gray2"></td>
-                    <td class="center bg-gray2 white">C3BG</td>
+                    <td></td>
+                    <td class="center">C3BG</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ ($rs->c3bg != 0) ? round($rs->spent * $usd_vnd / $rs->c3bg) : 0 }}</td>
@@ -144,8 +143,8 @@
                     <td class="center">{{ ($reportY['Total']->c3bg != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->c3bg) : 0 }}</td>
                 </tr>
                 <tr class="bold">
-                    <td class="bg-gray2"></td>
-                    <td class="center bg-gray2 white">L1 used</td>
+                    <td></td>
+                    <td class="center">L1 used</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ ($rs->l1 != 0) ? round($rs->spent * $usd_vnd / $rs->l1) : 0 }}</td>
@@ -154,8 +153,8 @@
                     <td class="center">{{ ($reportY['Total']->l1 != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->l1) : 0 }}</td>
                 </tr>
                 <tr class="bold">
-                    <td class="bg-gray2"></td>
-                    <td class="center bg-gray2 white">L3</td>
+                    <td></td>
+                    <td class="center">L3</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ ($rs->l3 != 0) ? round($rs->spent * $usd_vnd / $rs->l3) : 0 }}</td>
@@ -164,8 +163,8 @@
                     <td class="center">{{ ($reportY['Total']->l3 != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->l3) : 0 }}</td>
                 </tr>
                 <tr class="bold">
-                    <td class="bg-gray2"></td>
-                    <td class="center bg-gray2 white">L6</td>
+                    <td></td>
+                    <td class="center">L6</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ ($rs->l6 != 0) ? round($rs->spent * $usd_vnd / $rs->l6) : 0 }}</td>
@@ -174,8 +173,8 @@
                     <td class="center">{{ ($reportY['Total']->l6 != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->l6) : 0 }}</td>
                 </tr>
                 <tr class="bold">
-                    <td class="bg-gray2"></td>
-                    <td class="center bg-gray2 white">L8</td>
+                    <td></td>
+                    <td class="center">L8</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ ($rs->l8 != 0) ? round($rs->spent * $usd_vnd / $rs->l8) : 0 }}</td>
@@ -185,11 +184,10 @@
                 </tr>
                 <tr>
                     <td class="bold font-medium bg-blue white">QUANTITY</td>
-                    <td class="bg-gray3"></td>
                 </tr>
                 <tr class="bold font-medium blue">
-                    <td class="orange bg-gray2">Actual</td>
-                    <td class="bg-gray2">C3B</td>
+                    <td class="orange">Actual</td>
+                    <td>C3B</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ $rs->c3b }}</td>
@@ -198,8 +196,8 @@
                     <td class="center">{{ $reportY['Total']->c3b }}</td>
                 </tr>
                 <tr class="bold">
-                    <td class="bg-gray2"></td>
-                    <td class="bg-gray2 white">C3BG</td>
+                    <td></td>
+                    <td>C3BG</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ $rs->c3bg }}</td>
@@ -208,8 +206,8 @@
                     <td class="center">{{ $reportY['Total']->c3bg }}</td>
                 </tr>
                 <tr class="bold">
-                    <td class="bg-gray2"></td>
-                    <td class="bg-gray2 white">L1 used</td>
+                    <td></td>
+                    <td>L1 used</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ $rs->l1 }}</td>
@@ -218,8 +216,8 @@
                     <td class="center">{{ $reportY['Total']->l1 }}</td>
                 </tr>
                 <tr class="bold">
-                    <td class="bg-gray2"></td>
-                    <td class="bg-gray2 white">L3</td>
+                    <td></td>
+                    <td>L3</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ $rs->l3 }}</td>
@@ -228,8 +226,8 @@
                     <td class="center">{{ $reportY['Total']->l3 }}</td>
                 </tr>
                 <tr class="bold">
-                    <td class="bg-gray2"></td>
-                    <td class="bg-gray2 white">L6</td>
+                    <td></td>
+                    <td>L6</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ $rs->l6 }}</td>
@@ -238,8 +236,8 @@
                     <td class="center">{{ $reportY['Total']->l6 }}</td>
                 </tr>
                 <tr class="bold">
-                    <td class="bg-gray2"></td>
-                    <td class="bg-gray2 white">L8</td>
+                    <td></td>
+                    <td>L8</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ $rs->l8 }}</td>
@@ -249,11 +247,10 @@
                 </tr>
                 <tr>
                     <td class="bold font-medium bg-blue white">QUALITY</td>
-                    <td class="bg-gray3"></td>
                 </tr>
                 <tr class="bold font-medium blue">
-                    <td class="orange bg-gray2">Actual</td>
-                    <td class="bg-gray2">L3/C3B %</td>
+                    <td class="orange">Actual</td>
+                    <td>L3/C3B %</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ ($rs->c3b != 0) ? round($rs->l3 / $rs->c3b,4)*100 : 0 }}%</td>
@@ -262,8 +259,8 @@
                     <td class="center">{{ ($reportY['Total']->c3b != 0) ? round($reportY['Total']->l3 / $reportY['Total']->c3b,4)*100 : 0 }}%</td>
                 </tr>
                 <tr class="italic">
-                    <td class="bg-gray2"></td>
-                    <td class="center bg-gray2 yellow">L3/C3BG %</td>
+                    <td></td>
+                    <td class="center">L3/C3BG %</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ ($rs->c3bg != 0) ? round($rs->l3 / $rs->c3bg,4)*100 : 0 }}%</td>
@@ -272,8 +269,8 @@
                     <td class="center">{{ ($reportY['Total']->c3bg != 0) ? round($reportY['Total']->l3 / $reportY['Total']->c3bg,4)*100 : 0 }}%</td>
                 </tr>
                 <tr class="italic">
-                    <td class="bg-gray2"></td>
-                    <td class="center bg-gray2 yellow">L3/L1 %</td>
+                    <td></td>
+                    <td class="center">L3/L1 %</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ ($rs->l1 != 0) ? round($rs->l3 / $rs->l1,4)*100 : 0 }}%</td>
@@ -282,8 +279,8 @@
                     <td class="center">{{ ($reportY['Total']->l1 != 0) ? round($reportY['Total']->l3 / $reportY['Total']->l1,4)*100 : 0 }}%</td>
                 </tr>
                 <tr class="italic">
-                    <td class="bg-gray2"></td>
-                    <td class="center bg-gray2 yellow">L1/C3BG %</td>
+                    <td></td>
+                    <td class="center">L1/C3BG %</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ ($rs->c3bg != 0) ? round($rs->l1 / $rs->c3bg,4)*100 : 0 }}%</td>
@@ -292,8 +289,8 @@
                     <td class="center">{{ ($reportY['Total']->c3bg != 0) ? round($reportY['Total']->l1 / $reportY['Total']->c3bg,4)*100 : 0 }}%</td>
                 </tr>
                 <tr class="italic">
-                    <td class="bg-gray2"></td>
-                    <td class="center bg-gray2 yellow">C3BG/C3B %</td>
+                    <td></td>
+                    <td class="center">C3BG/C3B %</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ ($rs->c3b != 0) ? round($rs->c3bg / $rs->c3b,4)*100 : 0 }}%</td>
@@ -302,22 +299,22 @@
                     <td class="center">{{ ($reportY['Total']->c3b != 0) ? round($reportY['Total']->c3bg / $reportY['Total']->c3b,4)*100 : 0 }}%</td>
                 </tr>
                 <tr class="bold">
-                    <td class="bg-gray2"></td>
-                    <td class="bg-gray2 white">Return Ratio</td>
+                    <td></td>
+                    <td>Return Ratio</td>
                     @foreach($reportY as $key => $rs)
                         <td class="center">0</td>
                     @endforeach
                 </tr>
                 <tr class="bold">
-                    <td class="bg-gray2"></td>
-                    <td class="bg-gray2 white">Duplicate Ratio</td>
+                    <td></td>
+                    <td>Duplicate Ratio</td>
                     @foreach($reportY as $key => $rs)
                         <td class="center">0</td>
                     @endforeach
                 </tr>
                 <tr class="bold">
-                    <td class="bg-gray2"></td>
-                    <td class="bg-gray2 white">L6/L3 %</td>
+                    <td></td>
+                    <td>L6/L3 %</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ ($rs->l3 != 0) ? round($rs->l6 / $rs->l3,4)*100 : 0 }}%</td>
@@ -326,8 +323,8 @@
                     <td class="center">{{ ($reportY['Total']->l3 != 0) ? round($reportY['Total']->l6 / $reportY['Total']->l3, 4)*100 : 0 }}%</td>
                 </tr>
                 <tr class="bold">
-                    <td class="bg-gray2"></td>
-                    <td class="bg-gray2 white">L8/L6 %</td>
+                    <td></td>
+                    <td>L8/L6 %</td>
                     @foreach($reportY as $key => $rs)
                         @if($key != "Total")
                             <td class="center">{{ ($rs->l6 != 0) ? round($rs->l8 / $rs->l6,4)*100 : 0 }}%</td>
