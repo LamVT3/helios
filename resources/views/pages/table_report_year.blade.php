@@ -91,7 +91,7 @@
             <tbody>
                 <tr>
                     <td class="bold font-medium bg-blue white">BUDGET</td>
-                    <td colspan="14" class="bg-gray3"></td>
+                    <td class="bg-gray3"></td>
                 </tr>
                 <tr class="bold font-medium blue">
                     <td class="orange bg-gray2">Actual</td>
@@ -185,7 +185,7 @@
                 </tr>
                 <tr>
                     <td class="bold font-medium bg-blue white">QUANTITY</td>
-                    <td colspan="14" class="bg-gray3"></td>
+                    <td class="bg-gray3"></td>
                 </tr>
                 <tr class="bold font-medium blue">
                     <td class="orange bg-gray2">Actual</td>
@@ -249,7 +249,7 @@
                 </tr>
                 <tr>
                     <td class="bold font-medium bg-blue white">QUALITY</td>
-                    <td colspan="14" class="bg-gray3"></td>
+                    <td class="bg-gray3"></td>
                 </tr>
                 <tr class="bold font-medium blue">
                     <td class="orange bg-gray2">Actual</td>
@@ -340,6 +340,7 @@
     </div>
 </div>
 
+
 <style>
     tr:nth-child(even) {
         background: #fafafa
@@ -395,5 +396,8 @@
     }
     .inlineBlock {
         display: inline-block;
+    }
+    .table > tbody > tr > td {
+        border-bottom: 1px solid #ddd;
     }
 </style>
