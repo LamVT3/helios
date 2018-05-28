@@ -553,21 +553,21 @@ class SubReportController extends Controller
 
 		for ($i = 0; $i < 24; $i++){
 			if(isset($contacts_week[$i]['c3'])){
-				$c3_week_line[] =  [$i, count($contacts_week[$i]['c3'])];
+				$c3_week_line[] =  [$i, count($contacts_week[$i]['c3']) / 7];
 			}
 			else{
 				$c3_week_line[] =  [$i, 0];
 			}
 			if(isset($contacts_week[$i]['c3b']))
 			{
-				$c3b_week_line[] =  [$i, count($contacts_week[$i]['c3b'])];
+				$c3b_week_line[] =  [$i, count($contacts_week[$i]['c3b']) / 7];
 			}
 			else
 			{
 				$c3b_week_line[] =  [$i, 0];
 			}
 			if(isset($contacts_week[$i]['c3bg'])){
-				$c3bg_week_line[] =  [$i, count($contacts_week[$i]['c3bg'])];
+				$c3bg_week_line[] =  [$i, count($contacts_week[$i]['c3bg']) / 7];
 			}
 			else
 			{
@@ -681,21 +681,21 @@ class SubReportController extends Controller
 
 		for ($i = 0; $i < 24; $i++){
 			if(isset($contacts_week[$i]['c3'])){
-				$c3_week_line[] =  [$i, count($contacts_week[$i]['c3'])];
+				$c3_week_line[] =  [$i, count($contacts_week[$i]['c3']) / 7];
 			}
 			else{
 				$c3_week_line[] =  [$i, 0];
 			}
 			if(isset($contacts_week[$i]['c3b']))
 			{
-				$c3b_week_line[] =  [$i, count($contacts_week[$i]['c3b'])];
+				$c3b_week_line[] =  [$i, count($contacts_week[$i]['c3b']) / 7];
 			}
 			else
 			{
 				$c3b_week_line[] =  [$i, 0];
 			}
 			if(isset($contacts_week[$i]['c3bg'])){
-				$c3bg_week_line[] =  [$i, count($contacts_week[$i]['c3bg'])];
+				$c3bg_week_line[] =  [$i, count($contacts_week[$i]['c3bg']) / 7];
 			}
 			else
 			{
@@ -709,9 +709,6 @@ class SubReportController extends Controller
 		$chart['c3_week']    = json_encode($c3_week_line);
 		$chart['c3b_week']     = json_encode($c3b_week_line);
 		$chart['c3bg_week']     = json_encode($c3bg_week_line);
-
-//		var_dump($c3bg_line);
-//		dd($c3bg_week_line);
 
 		return view('pages.hour-report', compact(
 			'page_title',
