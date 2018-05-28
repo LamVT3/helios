@@ -14,8 +14,8 @@
         <div class="tab-v1">
             <ul id="tabs" class="nav nav-tabs">
                 <li><a href="#report" data-toggle="tab"><strong>Report</strong></a></li>
-                <li class="active"><a href="#monthly" data-toggle="tab"><strong>Monthly Marketing Report</strong></a></li>
-                <li {{--class="active"--}}><a href="#year" data-toggle="tab"><strong>Last 12 Month Marketing Report</strong></a></li>
+                <li class="active"><a href="#monthly" data-toggle="tab"><strong>Monthly Report</strong></a></li>
+                <li {{--class="active"--}}><a href="#year" data-toggle="tab"><strong>Last 12 Months Report</strong></a></li>
             </ul>
             <div class="tab-content mb30">
                 <div id="report" class="tab-pane">
