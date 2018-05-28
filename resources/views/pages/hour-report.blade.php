@@ -97,12 +97,8 @@
                                     </div>
                                     <div class="row">
                                         <section class="col col-2">
-                                            <label class="label">From</label>
-                                            <input type="date" name="date_from" class="form-control" value="{{$date_from}}">
-                                        </section>
-                                        <section class="col col-2">
-                                            <label class="label">To</label>
-                                            <input type="date" name="date_to" class="form-control" value="{{$date_to}}">
+                                            <label class="label">Choose date</label>
+                                            <input type="date" name="date_time" class="form-control" value="{{$date_time}}">
                                         </section>
                                     </div>
                                     <div class="row">
@@ -141,16 +137,16 @@
                                                 @for($i = 0; $i < 24; $i++)
                                                     <tr>
                                                         <td>{{$i}}h</td>
-                                                        <td>{{$c3[$i]}}</td>
-                                                        <td>{{$c3b[$i]}}</td>
-                                                        <td>{{$c3bg[$i]}}</td>
+                                                        <td>{{$table['c3'][$i]}}</td>
+                                                        <td>{{$table['c3b'][$i]}}</td>
+                                                        <td>{{$table['c3bg'][$i]}}</td>
                                                     </tr>
                                                 @endfor
                                                     <tr>
                                                         <th>Total</th>
-                                                        <th>{{array_sum($c3)}}</th>
-                                                        <th>{{array_sum($c3b)}}</th>
-                                                        <th>{{array_sum($c3bg)}}</th>
+                                                        <th>{{array_sum($table['c3'])}}</th>
+                                                        <th>{{array_sum($table['c3b'])}}</th>
+                                                        <th>{{array_sum($table['c3bg'])}}</th>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -237,17 +233,19 @@
         function initC3() {
             var item = $("#c3_chart");
             var data = [
-                {data: {{$c3_chart}}, label: "C3"},
+                {data : {{ $chart["c3_week"] }},label : "C3 Week", color: "#FF8C00"},
+                {data: {{$chart['c3']}}, label: "C3", color: "#7CFC00"},
             ];
 
-            initChart(item, data, ["#7CFC00"]);
+            initChart(item, data);
             item.UseC3Tooltip();
         }
 
         function initC3B() {
             var item = $("#c3b_chart");
             var data = [
-                {data: {{$c3b_chart}}, label: "C3B"},
+                {data : {{ $chart["c3b_week"] }},label : "C3B Week", color: "#FF8C00"},
+                {data: {{$chart['c3b']}}, label: "C3B", color: "#1E90FF"},
             ];
 
             initChart(item, data, ["#1E90FF"]);
@@ -257,10 +255,11 @@
         function initC3BG() {
             var item = $("#c3bg_chart");
             var data = [
-                {data: {{$c3bg_chart}}, label: "C3BG"},
+                {data : {{ $chart["c3bg_week"] }},label : "C3BG Week", color: "#FF8C00"},
+                {data: {{$chart['c3bg']}}, label: "C3BG", color: "#6A5ACD"},
             ];
 
-            initChart(item, data, ["#6A5ACD"]);
+            initChart(item, data);
             $("#c3bg_chart").UseC3BGTooltip();
         }
 
