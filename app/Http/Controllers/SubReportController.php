@@ -7,6 +7,7 @@ use App\AdResult;
 use App\Campaign;
 use App\Channel;
 use App\Config;
+use App\Contact;
 use App\Source;
 use App\Team;
 use App\User;
@@ -475,5 +476,179 @@ class SubReportController extends Controller
 
         return [$year, $month, $d, $first_day_this_month, $last_day_this_month];
     }
+
+	public function hourReport(){
+		$page_title = "Hour Report | Helios";
+		$page_css = array();
+		$no_main_header = FALSE; //set true for lock.php and login.php
+		$active = 'hour-report';
+		$breadcrumbs = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Hour Report </span>";
+
+		$sources        = Source::all();
+		$teams          = Team::all();
+		$marketers      = User::all();
+		$campaigns      = Campaign::where('is_active', 1)->get();
+		$page_size      = Config::getByKey('PAGE_SIZE');
+		$subcampaigns   = Subcampaign::where('is_active', 1)->get();
+
+		$c3 = [];
+		$c3b = [];
+		$c3bg = [];
+
+		$contacts = Contact::where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 )
+		                   ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
+		                   ->whereIn( 'clevel', [ 'c3', 'c3b', 'c3bg' ] )
+		                   ->get()
+		                   ->groupBy( function ( $contact ) {
+			                   return (int) date( "H", $contact->submit_time / 1000 );
+		                   } )->transform( function ( $item, $k ) {
+									return $item->groupBy( function ( $i ) {
+										return (string) $i->clevel;
+									} );
+								} );
+
+		for ($i = 0; $i < 24; $i++){
+			if(isset($contacts[$i]['c3'])){
+				$c3[$i] =  count($contacts[$i]['c3']);
+				$c3_line[] =  [$i, count($contacts[$i]['c3'])];
+			}
+			else{
+				$c3[$i] =  0;
+				$c3_line[] =  [$i, 0];
+			}
+			if(isset($contacts[$i]['c3b']))
+			{
+				$c3b[$i] =  count($contacts[$i]['c3b']);
+				$c3b_line[] =  [$i, count($contacts[$i]['c3b'])];
+			}
+			else
+			{
+				$c3b[$i] =  0;
+				$c3b_line[] =  [$i, 0];
+			}
+			if(isset($contacts[$i]['c3bg'])){
+				$c3bg[$i] =  count($contacts[$i]['c3bg']);
+				$c3bg_line[] =  [$i, count($contacts[$i]['c3bg'])];
+
+			}
+			else
+			{
+				$c3bg[$i] =  0;
+				$c3bg_line[] =  [$i, 0];
+			}
+		}
+
+		$c3_chart    = json_encode($c3_line);
+		$c3b_chart     = json_encode($c3b_line);
+		$c3bg_chart     = json_encode($c3bg_line);
+		return view('pages.hour-report', compact(
+			'page_title',
+			'page_css',
+			'no_main_header',
+			'active',
+			'breadcrumbs',
+			'sources',
+			'teams',
+			'marketers',
+			'campaigns',
+			'page_size',
+			'subcampaigns',
+			'c3',
+			'c3b',
+			'c3bg',
+			'c3_chart',
+			'c3b_chart',
+			'c3bg_chart',
+			'data_where'
+		));
+	}
+
+	public function hourReportFilter(){
+		$page_title = "Hour Report | Helios";
+		$page_css = array();
+		$no_main_header = FALSE; //set true for lock.php and login.php
+		$active = 'hour-report';
+		$breadcrumbs = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Hour Report </span>";
+
+		$sources        = Source::all();
+		$teams          = Team::all();
+		$marketers      = User::all();
+		$campaigns      = Campaign::where('is_active', 1)->get();
+		$page_size      = Config::getByKey('PAGE_SIZE');
+		$subcampaigns   = Subcampaign::where('is_active', 1)->get();
+
+
+		$c3 = [];
+		$c3b = [];
+		$c3bg = [];
+		$data_where = $this->getWhereData();
+
+		$contacts = Contact::where($data_where)->where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 )
+		                   ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
+		                   ->whereIn( 'clevel', [ 'c3', 'c3b', 'c3bg' ] )
+		                   ->get()
+		                   ->groupBy( function ( $contact ) {
+			                   return (int) date( "H", $contact->submit_time / 1000 );
+		                   } )->transform( function ( $item, $k ) {
+									return $item->groupBy( function ( $i ) {
+										return (string) $i->clevel;
+									} );
+								} );
+
+		for ($i = 0; $i < 24; $i++){
+			if(isset($contacts[$i]['c3'])){
+				$c3[$i] =  count($contacts[$i]['c3']);
+				$c3_line[] =  [$i, count($contacts[$i]['c3'])];
+			}
+			else{
+				$c3[$i] =  0;
+				$c3_line[] =  [$i, 0];
+			}
+			if(isset($contacts[$i]['c3b']))
+			{
+				$c3b[$i] =  count($contacts[$i]['c3b']);
+				$c3b_line[] =  [$i, count($contacts[$i]['c3b'])];
+			}
+			else
+			{
+				$c3b[$i] =  0;
+				$c3b_line[] =  [$i, 0];
+			}
+			if(isset($contacts[$i]['c3bg'])){
+				$c3bg[$i] =  count($contacts[$i]['c3bg']);
+				$c3bg_line[] =  [$i, count($contacts[$i]['c3bg'])];
+
+			}
+			else
+			{
+				$c3bg[$i] =  0;
+				$c3bg_line[] =  [$i, 0];
+			}
+		}
+
+		$c3_chart    = json_encode($c3_line);
+		$c3b_chart     = json_encode($c3b_line);
+		$c3bg_chart     = json_encode($c3bg_line);
+		return view('pages.hour-report', compact(
+			'page_title',
+			'page_css',
+			'no_main_header',
+			'active',
+			'breadcrumbs',
+			'sources',
+			'teams',
+			'marketers',
+			'campaigns',
+			'page_size',
+			'subcampaigns',
+			'c3',
+			'c3b',
+			'c3bg',
+			'c3_chart',
+			'c3b_chart',
+			'c3bg_chart',
+			'data_where'
+		));
+	}
 
 }
