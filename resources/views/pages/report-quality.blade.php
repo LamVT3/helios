@@ -15,7 +15,7 @@
             <ul id="tabs" class="nav nav-tabs">
                 <li><a href="#report" data-toggle="tab"><strong>Report</strong></a></li>
                 <li {{--class="active"--}}><a href="#monthly" data-toggle="tab"><strong>Monthly Report</strong></a></li>
-                <li class="active"><a href="#year" data-toggle="tab"><strong>Last 12 Months Report</strong></a></li>
+                <li class="active"><a href="#year" data-toggle="tab"><strong>Last Months Report</strong></a></li>
             </ul>
             <div class="tab-content mb30">
                 <div id="report" class="tab-pane">
@@ -224,7 +224,7 @@
                     <section id="widget-grid">
                         <article class="col-sm-12 col-md-12">
                             @component('components.jarviswidget',
-                            ['id' => 'year_chart', 'icon' => 'fa-line-chart', 'title' => "Report year " , 'dropdown' => "false"])
+                            ['id' => 'year_chart', 'icon' => 'fa-line-chart', 'title' => "Report year " , 'dropdownY' => "true"])
                                 <div class="loading" style="display: none">
                                     <div class="col-md-12 text-center">
                                         <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
@@ -262,6 +262,8 @@
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 <script type="text/javascript">
     var m = new Date().getMonth() + 1;
+    var y = new Date().getFullYear();
+
     get_report_monthly(m, new Date(), new Date());
 
     function get_report_monthly(month, startDate, endDate) {
@@ -307,12 +309,11 @@
         $('#rangedate span').html(startDate.getDate() + '-' + endDate.getDate());
     }
 
-    var y = new Date().getFullYear();
-    get_report_year(y, m);
+    get_report_year(y, m, 12);
 
-    function get_report_year(year, month) {
+    function get_report_year(year, month, noLastMonth) {
         console.log("year "+ year);
-        $.get("{{ route('ajax-getReportYear') }}", {year: year, month: month}, function (data) {
+        $.get("{{ route('ajax-getReportYear') }}", {year: year, month: month, noLastMonth: noLastMonth}, function (data) {
             document.getElementById("report_year").innerHTML = data;
         }).fail( function () {
             alert('Cannot connect to server. Please try again later.');
