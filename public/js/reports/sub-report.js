@@ -294,6 +294,18 @@ $(document).ready(function () {
         loadDataByWeeks();
     });
 
+    $('#budget_by_weeks_chk input[type=checkbox]').change(function (e) {
+        loadDataByWeeks('budget');
+    })
+
+    $('#quantity_by_weeks_chk input[type=checkbox]').change(function (e) {
+        loadDataByWeeks('quantity');
+    })
+
+    $('#quality_by_weeks_chk input[type=checkbox]').change(function (e) {
+        loadDataByWeeks('quality');
+    })
+
 });
 
 function get_budget(month) {
@@ -446,7 +458,7 @@ function set_budget_chart(data) {
         }
     });
 
-    initChart(item, dataSet, arr_color);
+    initChart(item, dataSet, arr_color, 'by_days');
     $("#budget_chart").UseTooltip('budget');
 
 }
@@ -492,7 +504,7 @@ function set_quantity_chart(data) {
         }
     });
 
-    initChart(item, dataSet, arr_color);
+    initChart(item, dataSet, arr_color, 'by_days');
     $("#budget_chart").UseTooltip('quantity');
 
 }
@@ -544,7 +556,7 @@ function set_quality_chart(data) {
     });
 
 
-    initChart(item, dataSet, arr_color);
+    initChart(item, dataSet, arr_color, 'by_days');
     $("#quality_chart").UseTooltip('quality');
 }
 
@@ -630,8 +642,7 @@ function initChart(item, data, arr_color, type) {
     /* end site stats */
 }
 
-
-function loadDataByWeeks() {
+function loadDataByWeeks(type) {
     var url = $('input[name="get_by_weeks"]').val();
     var source_id = $('select[name="source_id"]').val();
     var team_id = $('select[name="team_id"]').val();
@@ -662,7 +673,20 @@ function loadDataByWeeks() {
             subcampaign_id: subcampaign_id,
         }
     }).done(function (response) {
-        set_budget_chart_by_weeks(response.budget);
+        if (type == 'budget'){
+            set_budget_chart_by_weeks(response.budget);
+        }
+        else if (type == 'quantity'){
+            set_quantity_chart_by_weeks(response.quantity);
+        }
+        else if (type == 'quality'){
+            set_quality_chart_by_weeks(response.quality);
+        } else {
+            set_budget_chart_by_weeks(response.budget);
+            set_quantity_chart_by_weeks(response.quantity);
+            set_quality_chart_by_weeks(response.quality);
+        }
+
     });
 
     $('.loading').hide();
@@ -773,6 +797,103 @@ function set_budget_chart_by_weeks(data) {
     initChart(item, dataSet, arr_color, 'by_weeks');
     $("#budget_by_weeks_chart").UseTooltipByWeeks('budget');
 
+}
+
+function set_quantity_chart_by_weeks(data) {
+
+    var item = $("#quantity_by_weeks_chart");
+    var dataSet = [];
+    var arr_color = [];
+
+    var data_l1 = {data: jQuery.parseJSON(data.l1), label: "L1"};
+    var data_l3 = {data: jQuery.parseJSON(data.l3), label: "L3"};
+    var data_l6 = {data: jQuery.parseJSON(data.l6), label: "L6"};
+    var data_l8 = {data: jQuery.parseJSON(data.l8), label: "L8"};
+    var data_c3b = {data: jQuery.parseJSON(data.c3b), label: "C3B"};
+    var data_c3bg = {data: jQuery.parseJSON(data.c3bg), label: "C3BG"};
+
+    var lst_checkbox = $('#quantity_by_weeks_chk').find('input[type=checkbox]:checked');
+    jQuery.each(lst_checkbox, function (index, checkbox) {
+        $label = $(checkbox).val();
+        if ($label == 'L1') {
+            dataSet.push(data_l1);
+            arr_color.push('#800000');
+        }
+        if ($label == 'L3') {
+            dataSet.push(data_l3);
+            arr_color.push('#6A5ACD')
+        }
+        if ($label == 'L6') {
+            dataSet.push(data_l6);
+            arr_color.push('#808080')
+        }
+        if ($label == 'L8') {
+            dataSet.push(data_l8);
+            arr_color.push('#7CFC00')
+        }
+        if ($label == 'C3B') {
+            dataSet.push(data_c3b);
+            arr_color.push('#FF8C00')
+        }
+        if ($label == 'C3BG') {
+            dataSet.push(data_c3bg);
+            arr_color.push('#1E90FF')
+        }
+    });
+
+    initChart(item, dataSet, arr_color, 'by_weeks');
+    $("#quantity_by_weeks_chart").UseTooltipByWeeks('quantity');
+
+}
+
+function set_quality_chart_by_weeks(data) {
+    var item = $("#quality_by_weeks_chart");
+    var dataSet = [];
+    var arr_color = [];
+
+    var data_l3_c3b = {data: jQuery.parseJSON(data.l3_c3b), label: "L3/C3B"};
+    var data_l3_c3bg = {data: jQuery.parseJSON(data.l3_c3bg), label: "L3/C3BG"};
+    var data_l3_l1 = {data: jQuery.parseJSON(data.l3_l1), label: "L3/L1"};
+    var data_l1_c3bg = {data: jQuery.parseJSON(data.l1_c3bg), label: "L1/C3BG"};
+    var data_c3bg_c3b = {data: jQuery.parseJSON(data.c3bg_c3b), label: "C3BG/C3B"};
+    var data_l6_l3 = {data: jQuery.parseJSON(data.l6_l3), label: "L6/L3"};
+    var data_l8_l6 = {data: jQuery.parseJSON(data.l8_l6), label: "L8/L6"};
+
+    var lst_checkbox = $('#quality_by_weeks_chk').find('input[type=checkbox]:checked');
+    jQuery.each(lst_checkbox, function (index, checkbox) {
+        $label = $(checkbox).val();
+        if ($label == 'L3/C3B') {
+            dataSet.push(data_l3_c3b);
+            arr_color.push('#800000');
+        }
+        if ($label == 'L3/C3BG') {
+            dataSet.push(data_l3_c3bg);
+            arr_color.push('#6A5ACD')
+        }
+        if ($label == 'L3/L1') {
+            dataSet.push(data_l3_l1);
+            arr_color.push('#808080')
+        }
+        if ($label == 'L1/C3BG') {
+            dataSet.push(data_l1_c3bg);
+            arr_color.push('#7CFC00')
+        }
+        if ($label == 'C3BG/C3B') {
+            dataSet.push(data_c3bg_c3b);
+            arr_color.push('#FF8C00')
+        }
+        if ($label == 'L6/L3') {
+            dataSet.push(data_l6_l3);
+            arr_color.push('#1E90FF')
+        }
+        if ($label == 'L8/L6') {
+            dataSet.push(data_l8_l6);
+            arr_color.push('#1E90FF')
+        }
+    });
+
+    initChart(item, dataSet, arr_color, 'by_weeks');
+    $("#quality_by_weeks_chart").UseTooltipByWeeks('quality');
 }
 
 function getDateRange(weekNumber) {

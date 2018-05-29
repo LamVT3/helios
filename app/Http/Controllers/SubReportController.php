@@ -459,7 +459,7 @@ class SubReportController extends Controller
         return [$year, $month, $d, $first_day_this_month, $last_day_this_month];
     }
 
-    public function getBudgetByWeeks(){
+    public function prepareDataByWeeks(){
         // get start date and end date
         $w          = $this->getWeek();
         $start_date = date('Y-01-01'); /* ngày đàu tiên của nam */
@@ -510,10 +510,14 @@ class SubReportController extends Controller
             return $collection->aggregate($match);
         });
 
-        $array_weeks = array();
-        for ($i = 1; $i <= $w; $i++) {
-            $array_weeks[$i] = 0;
-        }
+        $result['budget']   = $this->getBudgetByWeeks($query_chart, $w);
+        $result['quantity'] = $this->getQuantityByWeeks($query_chart, $w);
+        $result['quality']  = $this->getQualityByWeeks($query_chart, $w);
+
+        return $result;
+    }
+
+    private function getBudgetByWeeks($query_chart, $w){
 
         $config     = Config::getByKeys(['USD_VND', 'USD_THB']);
         $usd_vnd    = $config['USD_VND'];
@@ -588,7 +592,161 @@ class SubReportController extends Controller
         return $result;
     }
 
+    private function getQuantityByWeeks($query_chart, $w){
 
+        $c3b_array  = array();
+        $c3bg_array = array();
+        $l1_array   = array();
+        $l3_array   = array();
+        $l6_array   = array();
+        $l8_array   = array();
+
+        foreach ($query_chart as $item_result) {
+            $week = $this->getWeek($item_result['_id']);
+
+            @$c3b_array[$week]  += $item_result['c3b']   ? $item_result['c3b']     : 0 ;
+            @$c3bg_array[$week] += $item_result['c3bg']  ? $item_result['c3bg']    : 0 ;
+            @$l1_array[$week]   += $item_result['l1']    ? $item_result['l1']      : 0 ;
+            @$l3_array[$week]   += $item_result['l3']    ? $item_result['l3']      : 0 ;
+            @$l6_array[$week]   += $item_result['l6']    ? $item_result['l6']      : 0 ;
+            @$l8_array[$week]   += $item_result['l8']    ? $item_result['l8']      : 0 ;
+
+        }
+
+        $c3b_result  = array();
+        $c3bg_result = array();
+        $l1_result   = array();
+        $l3_result   = array();
+        $l6_result   = array();
+        $l8_result   = array();
+
+        for ($i = 1; $i <= $w; $i++) {
+            $c3b_result[]   = [$i, isset($c3b_array[$i])  ? $c3b_array[$i]  : 0];
+            $c3bg_result[]  = [$i, isset($c3bg_array[$i]) ? $c3bg_array[$i] : 0];
+            $l1_result[]    = [$i, isset($l1_array[$i])   ? $l1_array[$i]   : 0];
+            $l3_result[]    = [$i, isset($l3_array[$i])   ? $l3_array[$i]   : 0];
+            $l6_result[]    = [$i, isset($l6_array[$i])   ? $l6_array[$i]   : 0];
+            $l8_result[]    = [$i, isset($l8_array[$i])   ? $l8_array[$i]   : 0];
+        }
+
+        $result = array();
+        $result['c3b']      = json_encode($c3b_result);
+        $result['c3bg']     = json_encode($c3bg_result);
+        $result['l1']       = json_encode($l1_result);
+        $result['l3']       = json_encode($l3_result);
+        $result['l6']       = json_encode($l6_result);
+        $result['l8']       = json_encode($l8_result);
+
+        return $result;
+    }
+
+    private function getTotalDataByWeeks($query_chart, $w){
+        $c3b_array  = array();
+        $c3bg_array = array();
+        $l1_array   = array();
+        $l3_array   = array();
+        $l6_array   = array();
+        $l8_array   = array();
+
+        foreach ($query_chart as $item_result) {
+            $week = $this->getWeek($item_result['_id']);
+
+            @$c3b_array[$week]  += $item_result['c3b']   ? $item_result['c3b']     : 0 ;
+            @$c3bg_array[$week] += $item_result['c3bg']  ? $item_result['c3bg']    : 0 ;
+            @$l1_array[$week]   += $item_result['l1']    ? $item_result['l1']      : 0 ;
+            @$l3_array[$week]   += $item_result['l3']    ? $item_result['l3']      : 0 ;
+            @$l6_array[$week]   += $item_result['l6']    ? $item_result['l6']      : 0 ;
+            @$l8_array[$week]   += $item_result['l8']    ? $item_result['l8']      : 0 ;
+
+        }
+
+        $c3b_result  = array();
+        $c3bg_result = array();
+        $l1_result   = array();
+        $l3_result   = array();
+        $l6_result   = array();
+        $l8_result   = array();
+
+        for ($i = 1; $i <= $w; $i++) {
+            $c3b_result[]   = [$i, isset($c3b_array[$i])  ? $c3b_array[$i]  : 0];
+            $c3bg_result[]  = [$i, isset($c3bg_array[$i]) ? $c3bg_array[$i] : 0];
+            $l1_result[]    = [$i, isset($l1_array[$i])   ? $l1_array[$i]   : 0];
+            $l3_result[]    = [$i, isset($l3_array[$i])   ? $l3_array[$i]   : 0];
+            $l6_result[]    = [$i, isset($l6_array[$i])   ? $l6_array[$i]   : 0];
+            $l8_result[]    = [$i, isset($l8_array[$i])   ? $l8_array[$i]   : 0];
+        }
+
+        $result = array();
+        $result['c3b']      = $c3b_result;
+        $result['c3bg']     = $c3bg_result;
+        $result['l1']       = $l1_result;
+        $result['l3']       = $l3_result;
+        $result['l6']       = $l6_result;
+        $result['l8']       = $l8_result;
+
+        return $result;
+    }
+
+    private function getQualityByWeeks($query_chart, $w){
+
+        $total = $this->getTotalDataByWeeks($query_chart, $w);
+
+        $l3_c3b_array   = array();
+        $l3_c3bg_array  = array();
+        $l3_l1_array    = array();
+        $l1_c3bg_array  = array();
+        $c3bg_c3b_array = array();
+        $l6_l3_array    = array();
+        $l8_l6_array    = array();
+
+        for ($i = 0; $i < $w; $i++) {
+            $cnt = $i + 1;
+
+            $l3_c3b_array[$cnt]     = $total['c3b'][$i][1] ?
+                round($total['l3'][$i][1] / $total['c3b'][$i][1],2) * 100 : 0;
+            $l3_c3bg_array[$cnt]    = $total['c3bg'][$i][1] ?
+                round($total['l3'][$i][1] / $total['c3bg'][$i][1],2) * 100 : 0;
+            $l3_l1_array[$cnt]      = $total['l1'][$i][1] ?
+                round($total['l3'][$i][1] / $total['l1'][$i][1],2) * 100 : 0;
+            $l1_c3bg_array[$cnt]    = $total['c3bg'][$i][1] ?
+                round($total['l1'][$i][1] / $total['c3bg'][$i][1],2) * 100 : 0;
+            $c3bg_c3b_array[$cnt]   = $total['c3b'][$i][1] ?
+                round($total['c3bg'][$i][1] / $total['c3b'][$i][1],2) * 100 : 0;
+            $l6_l3_array[$cnt]      = $total['l3'][$i][1] ?
+                round($total['l6'][$i][1] / $total['l3'][$i][1],2) * 100 : 0;
+            $l8_l6_array[$cnt]      = $total['l6'][$i][1] ?
+                round($total['l8'][$i][1] / $total['l6'][$i][1],2) * 100 : 0;
+        }
+
+        $l3_c3b_result   = array();
+        $l3_c3bg_result  = array();
+        $l3_l1_result    = array();
+        $l1_c3bg_result  = array();
+        $c3bg_c3b_result = array();
+        $l6_l3_result    = array();
+        $l8_l6_result    = array();
+
+        for ($i = 1; $i <= $w; $i++) {
+            $l3_c3b_result[]    = [$i, isset($l3_c3b_array[$i])   ? $l3_c3b_array[$i]   : 0];
+            $l3_c3bg_result[]   = [$i, isset($l3_c3bg_array[$i])  ? $l3_c3bg_array[$i]  : 0];
+            $l3_l1_result[]     = [$i, isset($l3_l1_array[$i])    ? $l3_l1_array[$i]    : 0];
+            $l1_c3bg_result[]   = [$i, isset($l1_c3bg_array[$i])  ? $l1_c3bg_array[$i]  : 0];
+            $c3bg_c3b_result[]  = [$i, isset($c3bg_c3b_array[$i]) ? $c3bg_c3b_array[$i] : 0];
+            $l6_l3_result[]     = [$i, isset($l6_l3_array[$i])    ? $l6_l3_array[$i]    : 0];
+            $l8_l6_result[]     = [$i, isset($l8_l6_array[$i])    ? $l8_l6_array[$i]    : 0];
+        }
+
+        $result = array();
+        $result['l3_c3b']   = json_encode($l3_c3b_result);
+        $result['l3_c3bg']  = json_encode($l3_c3bg_result);
+        $result['l3_l1']    = json_encode($l3_l1_result);
+        $result['l1_c3bg']  = json_encode($l1_c3bg_result);
+        $result['c3bg_c3b'] = json_encode($c3bg_c3b_result);
+        $result['l6_l3']    = json_encode($l6_l3_result);
+        $result['l8_l6']    = json_encode($l8_l6_result);
+
+        return $result;
+    }
 
     private function getWeek( $date = null ){
         if($date){
@@ -626,15 +784,7 @@ class SubReportController extends Controller
     }
 
     public function getDataByWeeks(){
-
-//        $budget     = $this->getBudgetByWeeks();
-//
-//        $result['budget']   = $budget;
-
-        
-
-
-
+        $result = $this->prepareDataByWeeks();
         return $result;
     }
 
