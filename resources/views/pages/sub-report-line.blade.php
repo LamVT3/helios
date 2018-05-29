@@ -21,11 +21,11 @@
                 <article class="col-sm-12 col-md-12">
 
                     @component('components.jarviswidget',
-                    ['id' => 1, 'icon' => 'fa-table', 'title' => 'Report'])
+                    ['id' => 1, 'icon' => 'fa-table', 'title' => 'Line Chart'])
                     <div class="widget-body">
 
                         <form id="search-form-sub-report" class="smart-form" action="#"
-                              url="{!! route('line-chart.filter') !!}">
+                              url="#">
                             {{--<div class="row">--}}
                                 {{--<div id="sub_reportrange" class="pull-left"--}}
                                      {{--style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; margin: 10px 15px">--}}
@@ -99,6 +99,7 @@
                                 </div>
                             </div>
                         </form>
+
                         <div class="loading" style="display: none">
                             <div class="col-md-12 text-center">
                                 <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
@@ -106,219 +107,458 @@
                         </div>
                         <hr>
 
-                        <div class="row">
-                            <article class="col-sm-12 col-md-12">
-                            @component('components.jarviswidget',
-                            ['id' => 'budget', 'icon' => 'fa-line-chart', 'title' => "Budget in ", 'dropdown' => 'true'])
-                                <!-- widget content -->
-                                    <div class="widget-body no-padding">
-                                        <div class="widget-body-toolbar bg-color-white smart-form">
-                                            <p class="text-danger text-right"><strong>ME / RE: </strong><span id="me_re">{{ $budget["me_re"]  or '0'}}</span>%</p>
-                                            <div class="row" id="budget_chk">
-                                                <div class="col col-sm">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="L1" checked>
-                                                            <div class="rectangle border-top-1">L1</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col col-sm">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="L3" checked>
-                                                            <div class="rectangle border-top-2">L3</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col col-sm">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="L6" checked>
-                                                            <div class="rectangle border-top-3">L6</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col col-sm">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="L8" checked>
-                                                            <div class="rectangle border-top-4">L8</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col col-sm">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="C3B" checked>
-                                                            <div class="rectangle border-top-5">C3B</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col col-sm">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="C3BG" checked>
-                                                            <div class="rectangle border-top-6">C3BG</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col col-sm">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="ME" checked>
-                                                            <div class="rectangle border-top-7">ME</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col col-sm">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="RE" checked>
-                                                            <div class="rectangle border-top-8">RE</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div id="budget_chart" class="chart has-legend"></div>
-                                    </div>
-                                @endcomponent
-                            </article>
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#by_days">By Days</a></li>
+                            <li><a data-toggle="tab" href="#by_weeks">By Weeks</a></li>
+                            <li><a data-toggle="tab" href="#by_months">By Months</a></li>
+                        </ul>
 
-                            <article class="col-sm-12 col-md-12">
-                            @component('components.jarviswidget',
-                            ['id' => 'quantity', 'icon' => 'fa-line-chart', 'title' => "Quantity in ", 'dropdown' => 'true'])
-                                <!-- widget content -->
-                                    <div class="widget-body no-padding">
-                                        <div class="widget-body-toolbar bg-color-white smart-form">
-                                            <div class="row" id="quantity_chk">
-                                                <div class="col col-sm">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="L1" checked>
-                                                            <div class="rectangle border-top-1">L1</div>
-                                                        </label>
+                        <div class="tab-content" id="sub_report_tab">
+                            <div id="by_days" class="tab-pane fade in active">
+                                <div class="row">
+                                    <article class="col-sm-12 col-md-12">
+                                    @component('components.jarviswidget',
+                                    ['id' => 'budget', 'icon' => 'fa-line-chart', 'title' => "Budget in ", 'dropdown' => 'true'])
+                                        <!-- widget content -->
+                                            <div class="widget-body no-padding">
+                                                <div class="widget-body-toolbar bg-color-white smart-form">
+                                                    <p class="text-danger text-right"><strong>ME / RE: </strong><span id="me_re">{{ $budget["me_re"]  or '0'}}</span>%</p>
+                                                    <div class="row" id="budget_chk">
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L1" checked>
+                                                                    <div class="rectangle border-top-1">L1</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L3" checked>
+                                                                    <div class="rectangle border-top-2">L3</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L6" checked>
+                                                                    <div class="rectangle border-top-3">L6</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L8" checked>
+                                                                    <div class="rectangle border-top-4">L8</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="C3B" checked>
+                                                                    <div class="rectangle border-top-5">C3B</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="C3BG" checked>
+                                                                    <div class="rectangle border-top-6">C3BG</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="ME" checked>
+                                                                    <div class="rectangle border-top-7">ME</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="RE" checked>
+                                                                    <div class="rectangle border-top-8">RE</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col col-sm">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="L3" checked>
-                                                            <div class="rectangle border-top-2">L3</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col col-sm">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="L6" checked>
-                                                            <div class="rectangle border-top-3">L6</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col col-sm">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="L8" checked>
-                                                            <div class="rectangle border-top-4">L8</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col col-sm">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="C3B" checked>
-                                                            <div class="rectangle border-top-5">C3B</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col col-sm">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="C3BG" checked>
-                                                            <div class="rectangle border-top-6">C3BG</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
+                                                <div id="budget_chart" class="chart has-legend"></div>
                                             </div>
-                                        </div>
-                                        <div id="quantity_chart" class="chart has-legend"></div>
-                                    </div>
-                                @endcomponent
-                            </article>
+                                        @endcomponent
+                                    </article>
 
-                            <article class="col-sm-12 col-md-12">
-                            @component('components.jarviswidget',
-                            ['id' => 'quality', 'icon' => 'fa-line-chart', 'title' => "Quality in ", 'dropdown' => 'true'])
-                                <!-- widget content -->
-                                    <div class="widget-body no-padding">
-                                        <div class="widget-body-toolbar bg-color-white smart-form">
-                                            <div class="row" id="quality_chk">
-                                                <div class="col col-md">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="L3/C3B" checked>
-                                                            <div class="rectangle border-top-1">L3/C3B</div>
-                                                        </label>
+                                    <article class="col-sm-12 col-md-12">
+                                    @component('components.jarviswidget',
+                                    ['id' => 'quantity', 'icon' => 'fa-line-chart', 'title' => "Quantity in ", 'dropdown' => 'true'])
+                                        <!-- widget content -->
+                                            <div class="widget-body no-padding">
+                                                <div class="widget-body-toolbar bg-color-white smart-form">
+                                                    <div class="row" id="quantity_chk">
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L1" checked>
+                                                                    <div class="rectangle border-top-1">L1</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L3" checked>
+                                                                    <div class="rectangle border-top-2">L3</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L6" checked>
+                                                                    <div class="rectangle border-top-3">L6</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L8" checked>
+                                                                    <div class="rectangle border-top-4">L8</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="C3B" checked>
+                                                                    <div class="rectangle border-top-5">C3B</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="C3BG" checked>
+                                                                    <div class="rectangle border-top-6">C3BG</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col col-md">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="L3/C3BG" checked>
-                                                            <div class="rectangle border-top-2">L3/C3BG</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col col-md">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="L3/L1" checked>
-                                                            <div class="rectangle border-top-3">L3/L1</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col col-md">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="L1/C3BG" checked>
-                                                            <div class="rectangle border-top-4">L1/C3BG</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col col-md">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="C3BG/C3B" checked>
-                                                            <div class="rectangle border-top-5">C3BG/C3B</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col col-md">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="L6/L3" checked>
-                                                            <div class="rectangle border-top-6">L6/L3</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col col-md">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" value="L8/L6" checked>
-                                                            <div class="rectangle border-top-7">L8/L6</div>
-                                                        </label>
-                                                    </div>
-                                                </div>
+                                                <div id="quantity_chart" class="chart has-legend"></div>
                                             </div>
-                                        </div>
-                                        <div id="quality_chart" class="chart has-legend"></div>
-                                    </div>
-                                @endcomponent
-                            </article>
+                                        @endcomponent
+                                    </article>
 
+                                    <article class="col-sm-12 col-md-12">
+                                    @component('components.jarviswidget',
+                                    ['id' => 'quality', 'icon' => 'fa-line-chart', 'title' => "Quality in ", 'dropdown' => 'true'])
+                                        <!-- widget content -->
+                                            <div class="widget-body no-padding">
+                                                <div class="widget-body-toolbar bg-color-white smart-form">
+                                                    <div class="row" id="quality_chk">
+                                                        <div class="col col-md">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L3/C3B" checked>
+                                                                    <div class="rectangle border-top-1">L3/C3B</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-md">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L3/C3BG" checked>
+                                                                    <div class="rectangle border-top-2">L3/C3BG</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-md">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L3/L1" checked>
+                                                                    <div class="rectangle border-top-3">L3/L1</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-md">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L1/C3BG" checked>
+                                                                    <div class="rectangle border-top-4">L1/C3BG</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-md">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="C3BG/C3B" checked>
+                                                                    <div class="rectangle border-top-5">C3BG/C3B</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-md">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L6/L3" checked>
+                                                                    <div class="rectangle border-top-6">L6/L3</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-md">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L8/L6" checked>
+                                                                    <div class="rectangle border-top-7">L8/L6</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="quality_chart" class="chart has-legend"></div>
+                                            </div>
+                                        @endcomponent
+                                    </article>
+
+                                </div>
+                            </div>
+                            <div id="by_weeks" class="tab-pane fade">
+                                <div class="row">
+                                    <article class="col-sm-12 col-md-12">
+                                    @component('components.jarviswidget',
+                                    ['id' => 'budget_by_weeks', 'icon' => 'fa-line-chart', 'title' => "Budget in ", 'dropdown' => 'false'])
+                                        <!-- widget content -->
+                                            <div class="widget-body no-padding">
+                                                <div class="widget-body-toolbar bg-color-white smart-form">
+                                                    <p class="text-danger text-right"><strong>ME / RE: </strong><span id="me_re_by_weeks">{{ $budget["me_re"]  or '0'}}</span>%</p>
+                                                    <div class="row" id="budget_by_weeks_chk">
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L1" checked>
+                                                                    <div class="rectangle border-top-1">L1</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L3" checked>
+                                                                    <div class="rectangle border-top-2">L3</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L6" checked>
+                                                                    <div class="rectangle border-top-3">L6</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L8" checked>
+                                                                    <div class="rectangle border-top-4">L8</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="C3B" checked>
+                                                                    <div class="rectangle border-top-5">C3B</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="C3BG" checked>
+                                                                    <div class="rectangle border-top-6">C3BG</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="ME" checked>
+                                                                    <div class="rectangle border-top-7">ME</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="RE" checked>
+                                                                    <div class="rectangle border-top-8">RE</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="budget_by_weeks_chart" class="chart has-legend"></div>
+                                            </div>
+                                        @endcomponent
+                                    </article>
+
+                                    <article class="col-sm-12 col-md-12">
+                                    @component('components.jarviswidget',
+                                    ['id' => 'quantity_by_weeks', 'icon' => 'fa-line-chart', 'title' => "Quantity in ", 'dropdown' => 'false'])
+                                        <!-- widget content -->
+                                            <div class="widget-body no-padding">
+                                                <div class="widget-body-toolbar bg-color-white smart-form">
+                                                    <div class="row" id="quantity_by_weeks_chk">
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L1" checked>
+                                                                    <div class="rectangle border-top-1">L1</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L3" checked>
+                                                                    <div class="rectangle border-top-2">L3</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L6" checked>
+                                                                    <div class="rectangle border-top-3">L6</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L8" checked>
+                                                                    <div class="rectangle border-top-4">L8</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="C3B" checked>
+                                                                    <div class="rectangle border-top-5">C3B</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="C3BG" checked>
+                                                                    <div class="rectangle border-top-6">C3BG</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="quantity_by_weeks_chart" class="chart has-legend"></div>
+                                            </div>
+                                        @endcomponent
+                                    </article>
+
+                                    <article class="col-sm-12 col-md-12">
+                                    @component('components.jarviswidget',
+                                    ['id' => 'quality_by_weeks', 'icon' => 'fa-line-chart', 'title' => "Quality in ", 'dropdown' => 'false'])
+                                        <!-- widget content -->
+                                            <div class="widget-body no-padding">
+                                                <div class="widget-body-toolbar bg-color-white smart-form">
+                                                    <div class="row" id="quality_by_weeks_chk">
+                                                        <div class="col col-md">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L3/C3B" checked>
+                                                                    <div class="rectangle border-top-1">L3/C3B</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-md">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L3/C3BG" checked>
+                                                                    <div class="rectangle border-top-2">L3/C3BG</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-md">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L3/L1" checked>
+                                                                    <div class="rectangle border-top-3">L3/L1</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-md">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L1/C3BG" checked>
+                                                                    <div class="rectangle border-top-4">L1/C3BG</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-md">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="C3BG/C3B" checked>
+                                                                    <div class="rectangle border-top-5">C3BG/C3B</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-md">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L6/L3" checked>
+                                                                    <div class="rectangle border-top-6">L6/L3</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-md">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input type="checkbox" class="form-check-input" value="L8/L6" checked>
+                                                                    <div class="rectangle border-top-7">L8/L6</div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="quality_by_weeks_chart" class="chart has-legend"></div>
+                                            </div>
+                                        @endcomponent
+                                    </article>
+
+                                </div>
+                            </div>
+                            <div id="by_months" class="tab-pane fade">
+                                <h3>Menu 2</h3>
+                                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+                            </div>
                         </div>
+
+
+
+
+
+
+
+
+
+
 
                     </div>
                     @endcomponent
@@ -348,6 +588,9 @@
 <input type="hidden" name="budget_month">
 <input type="hidden" name="quantity_month">
 <input type="hidden" name="quality_month">
+<input type="hidden" name="get_by_days" value="{{route('line-chart.getByDays')}}">
+<input type="hidden" name="get_by_weeks" value="{{route('line-chart.getByWeeks')}}">
+<input type="hidden" name="get_by_months">
 <!-- END MAIN PANEL -->
 
 @endsection
@@ -370,13 +613,13 @@
 var arr_color = ["#800000", "#6A5ACD", "#808080", "#7CFC00", "#FF8C00", "#1E90FF", "#000", "#008000"];
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
 $(document).ready(function () {
-    initBudget();
-    initQuantity();
-    initQuality();
+    initBudgetDay();
+    initQuantityDay();
+    initQualityDay();
 
 });
 
-function initBudget(){
+function initBudgetDay(){
     var item = $("#budget_chart");
     var data = [
         {data : {{ $budget["l1"] }},    label : "L1"},
@@ -389,11 +632,11 @@ function initBudget(){
         {data : {{ $budget["re"] }},    label : "RE"},
     ];
 
-    initChart(item, data, arr_color);
-    item.UseBudgetTooltip();
+    initChart(item, data, arr_color, 'by_days');
+    item.UseTooltip('budget');
 }
 
-function initQuantity(){
+function initQuantityDay(){
     var item = $("#quantity_chart");
     var data =  [
         {data : {{ $quantity["l1"] }},      label : "L1"},
@@ -404,11 +647,11 @@ function initQuantity(){
         {data : {{ $quantity["c3bg"] }},    label : "C3BG"},
     ];
 
-    initChart(item, data, arr_color);
-    $("#quantity_chart").UseQuantityTooltip();
+    initChart(item, data, arr_color, 'by_days');
+    $("#quantity_chart").UseTooltip('quantity');
 }
 
-function initQuality(){
+function initQualityDay(){
     var item = $("#quality_chart");
     var data =  [
         {data : {{ $quality["l3_c3b"] }},      label : "L3/C3B"},
@@ -420,8 +663,8 @@ function initQuality(){
         {data : {{ $quality["l8_l6"] }},       label : "L8/L6"},
     ];
 
-    initChart(item, data, arr_color);
-    $("#quality_chart").UseQualityTooltip();
+    initChart(item, data, arr_color, 'by_days');
+    $("#quality_chart").UseTooltip('quality');
 }
 
     </script>

@@ -358,3 +358,6 @@ input#limit
 .border-top-8 {
     border-top: 4px solid #008000;
 }
+#sub_report_tab {
+    margin: 10px 0px 0px 0px;
+}

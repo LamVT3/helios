@@ -435,23 +435,6 @@ class SubReportController extends Controller
         return $ads;
     }
 
-    public function getFilter(){
-        $request        = request();
-        $budget_month   = $request->budget_month;
-        $quantity_month = $request->quantity_month;
-        $quality_month  = $request->quality_month;
-
-        $budget     = $this->getBudget($budget_month);
-        $quantity   = $this->getQuantity($quantity_month);
-        $quality    = $this->getQuality($quality_month);
-
-        $result['budget']   = $budget;
-        $result['quantity'] = $quantity;
-        $result['quality']  = $quality;
-
-        return $result;
-    }
-
     private function getDate($month){
         $request = request();
         if($month){
@@ -474,6 +457,202 @@ class SubReportController extends Controller
         }
 
         return [$year, $month, $d, $first_day_this_month, $last_day_this_month];
+    }
+
+    public function getBudgetByWeeks(){
+        // get start date and end date
+        $w          = $this->getWeek();
+        $start_date = date('Y-01-01'); /* ngày đàu tiên của nam */
+        $end_date   = date('Y-m-d'); /* ngày hien tai  */
+
+        // get Ad id
+        $ad_id  = $this->getAds();
+
+        if(count($ad_id) > 0){
+            $match = [
+                ['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
+                ['$match' => ['ad_id' => ['$in' => $ad_id]]],
+                [
+                    '$group' => [
+                        '_id'   => '$date',
+                        'me'    => ['$sum' => '$spent'],
+                        're'    => ['$sum' => '$revenue'],
+                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3bg'  => ['$sum' => '$c3bg'],
+                        'l1'    => ['$sum' => '$l1'],
+                        'l3'    => ['$sum' => '$l3'],
+                        'l6'    => ['$sum' => '$l6'],
+                        'l8'    => ['$sum' => '$l8'],
+                    ]
+                ]
+            ];
+        }else{
+            $match = [
+                ['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
+                [
+                    '$group' => [
+                        '_id'   => '$date',
+                        'me'    => ['$sum' => '$spent'],
+                        're'    => ['$sum' => '$revenue'],
+                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3bg'  => ['$sum' => '$c3bg'],
+                        'l1'    => ['$sum' => '$l1'],
+                        'l3'    => ['$sum' => '$l3'],
+                        'l6'    => ['$sum' => '$l6'],
+                        'l8'    => ['$sum' => '$l8'],
+                    ]
+                ]
+            ];
+        }
+
+        /*  start Chart*/
+        $query_chart = AdResult::raw(function ($collection) use ($match) {
+            return $collection->aggregate($match);
+        });
+
+        $array_weeks = array();
+        for ($i = 1; $i <= $w; $i++) {
+            $array_weeks[$i] = 0;
+        }
+
+        $config     = Config::getByKeys(['USD_VND', 'USD_THB']);
+        $usd_vnd    = $config['USD_VND'];
+        $usd_thb    = $config['USD_VND'];
+
+        $me_array   = array();
+        $re_array   = array();
+        $c3b_array  = array();
+        $c3bg_array = array();
+        $l1_array   = array();
+        $l3_array   = array();
+        $l6_array   = array();
+        $l8_array   = array();
+
+        $total_me   = 0;
+        $total_re   = 0;
+
+        foreach ($query_chart as $item_result) {
+            $week = $this->getWeek($item_result['_id']);
+
+            $me         = $item_result['me'] * $usd_vnd;
+            $re         = $item_result['re'] / $usd_thb * $usd_vnd;
+
+            $total_me   += $me;
+            $total_re   += $re;
+
+            @$me_array[$week]   += $me;
+            @$re_array[$week]   += $re;
+            @$c3b_array[$week]  += $item_result['c3b']   ? $me / $item_result['c3b']     : 0 ;
+            @$c3bg_array[$week] += $item_result['c3bg']  ? $me / $item_result['c3bg']    : 0 ;
+            @$l1_array[$week]   += $item_result['l1']    ? $me / $item_result['l1']      : 0 ;
+            @$l3_array[$week]   += $item_result['l3']    ? $me / $item_result['l3']      : 0 ;
+            @$l6_array[$week]   += $item_result['l6']    ? $me / $item_result['l6']      : 0 ;
+            @$l8_array[$week]   += $item_result['l8']    ? $me / $item_result['l8']      : 0 ;
+
+        }
+
+        $me_result   = array();
+        $re_result   = array();
+        $c3b_result  = array();
+        $c3bg_result = array();
+        $l1_result   = array();
+        $l3_result   = array();
+        $l6_result   = array();
+        $l8_result   = array();
+
+        for ($i = 1; $i <= $w; $i++) {
+
+            $me_result[]    = [$i, isset($me_array[$i])   ? $me_array[$i]   : 0];
+            $re_result[]    = [$i, isset($re_array[$i])   ? $re_array[$i]   : 0];
+            $c3b_result[]   = [$i, isset($c3b_array[$i])  ? $c3b_array[$i]  : 0];
+            $c3bg_result[]  = [$i, isset($c3bg_array[$i]) ? $c3bg_array[$i] : 0];
+            $l1_result[]    = [$i, isset($l1_array[$i])   ? $l1_array[$i]   : 0];
+            $l3_result[]    = [$i, isset($l3_array[$i])   ? $l3_array[$i]   : 0];
+            $l6_result[]    = [$i, isset($l6_array[$i])   ? $l6_array[$i]   : 0];
+            $l8_result[]    = [$i, isset($l8_array[$i])   ? $l8_array[$i]   : 0];
+        }
+
+        $me_re  = $total_re ? round ($total_me / $total_re, 4) * 100 : 0;
+
+        $result = array();
+        $result['me']       = json_encode($me_result);
+        $result['re']       = json_encode($re_result);
+        $result['c3b']      = json_encode($c3b_result);
+        $result['c3bg']     = json_encode($c3bg_result);
+        $result['l1']       = json_encode($l1_result);
+        $result['l3']       = json_encode($l3_result);
+        $result['l6']       = json_encode($l6_result);
+        $result['l8']       = json_encode($l8_result);
+        $result['me_re']    = $me_re;
+
+        return $result;
+    }
+
+
+
+    private function getWeek( $date = null ){
+        if($date){
+            $week_count = date('W', strtotime($date));
+            return (int)$week_count;
+        }
+
+        $year = date('Y');
+
+        $week_count = date('W', strtotime($year . '-12-31'));
+
+        if ($week_count == '01')
+        {
+            $week_count = date('W', strtotime($year . '-12-24'));
+        }
+
+        return (int)$week_count;
+    }
+
+    public function getDataByDays(){
+        $request        = request();
+        $budget_month   = $request->budget_month;
+        $quantity_month = $request->quantity_month;
+        $quality_month  = $request->quality_month;
+
+        $budget     = $this->getBudget($budget_month);
+        $quantity   = $this->getQuantity($quantity_month);
+        $quality    = $this->getQuality($quality_month);
+
+        $result['budget']   = $budget;
+        $result['quantity'] = $quantity;
+        $result['quality']  = $quality;
+
+        return $result;
+    }
+
+    public function getDataByWeeks(){
+
+//        $budget     = $this->getBudgetByWeeks();
+//
+//        $result['budget']   = $budget;
+
+        
+
+
+
+        return $result;
+    }
+
+    public function getDataByMonths(){
+        $request        = request();
+        $budget_month   = $request->budget_month;
+        $quantity_month = $request->quantity_month;
+        $quality_month  = $request->quality_month;
+
+        $budget     = $this->getBudget($budget_month);
+        $quantity   = $this->getQuantity($quantity_month);
+        $quality    = $this->getQuality($quality_month);
+
+        $result['budget']   = $budget;
+        $result['quantity'] = $quantity;
+        $result['quality']  = $quality;
+
+        return $result;
     }
 
 }

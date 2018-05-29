@@ -7,7 +7,7 @@ $(document).ready(function () {
 
     var d = new Date();
     var month = d.getMonth() + 1;
-    if(month < 10){
+    if (month < 10) {
         month = "0" + month.toString();
     }
     else {
@@ -23,13 +23,13 @@ $(document).ready(function () {
         endDate: end,
         opens: 'right',
         minDate: moment().startOf('month'),
-        maxDate:moment().endOf('month'),
+        maxDate: moment().endOf('month'),
         ranges: {
             'Today': [moment(), moment()],
             'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
             'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-            "This Week":[moment().startOf("isoWeek"),moment().endOf("isoWeek")],
+            "This Week": [moment().startOf("isoWeek"), moment().endOf("isoWeek")],
             "Last Week": [moment().subtract(1, "week").startOf("isoWeek"), moment().subtract(1, "week").endOf("isoWeek")],
             'This Month': [moment().startOf('month'), moment().endOf('month')],
             'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
@@ -40,25 +40,25 @@ $(document).ready(function () {
 
     set_title();
 
-    $('li#month').click(function() {
-        var month       = $(this).val();
-        var dropdown    = $(this).closest('ul').siblings();
+    $('li#month').click(function () {
+        var month = $(this).val();
+        var dropdown = $(this).closest('ul').siblings();
         dropdown.html(__arr_month[month - 1]);
 
-        if(month < 10){
+        if (month < 10) {
             month = "0" + month.toString();
         }
         else {
             month = month.toString();
         }
 
-        var title       = $(this).parents('div.widget-toolbar').siblings('h2');
-        var title_id    = title.attr('id');
-        if(title_id == 'budget'){
+        var title = $(this).parents('div.widget-toolbar').siblings('h2');
+        var title_id = title.attr('id');
+        if (title_id == 'budget') {
             title.html('Budget in ' + dropdown.html());
             $('input[name="budget_month"]').val(month);
             get_budget(month);
-        } else if (title_id == 'quantity'){
+        } else if (title_id == 'quantity') {
             title.html('Quantity in ' + dropdown.html());
             $('input[name="quantity_month"]').val(month);
             get_quantity(month);
@@ -70,7 +70,7 @@ $(document).ready(function () {
     });
 });
 
-function set_title(){
+function set_title() {
     var d = new Date();
     var current_month = d.getMonth();
     var dropdown = $('button#dropdown');
@@ -85,7 +85,7 @@ function set_title(){
 var previousPoint = null, previousLabel = null;
 var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-$.fn.UseBudgetTooltip = function () {
+$.fn.UseTooltip = function (mode) {
     $(this).bind("plothover", function (event, pos, item) {
         if (item) {
             if ((previousLabel != item.series.label) || (previousPoint != item.dataIndex)) {
@@ -99,10 +99,16 @@ $.fn.UseBudgetTooltip = function () {
                 var color = item.series.color;
                 var month = new Date(x).getMonth();
 
-                showTooltip(item.pageX,
-                    item.pageY,
-                    color,
-                    "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + numberWithDots(y) + "</strong> (VND)");
+                var tooltip = ''
+                if (mode == 'budget') {
+                    tooltip = "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + numberWithDots(y) + "</strong> (VND)";
+                } else if (mode == 'quantity') {
+                    tooltip = "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + numberWithCommas(y) + "</strong>"
+                } else {
+                    tooltip = "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + y + "</strong> (%)";
+                }
+
+                showTooltip(item.pageX, item.pageY, color, tooltip);
             }
         } else {
             $("#tooltip").remove();
@@ -111,7 +117,7 @@ $.fn.UseBudgetTooltip = function () {
     });
 };
 
-$.fn.UseQuantityTooltip = function () {
+$.fn.UseTooltipByWeeks = function (mode) {
     $(this).bind("plothover", function (event, pos, item) {
         if (item) {
             if ((previousLabel != item.series.label) || (previousPoint != item.dataIndex)) {
@@ -125,36 +131,16 @@ $.fn.UseQuantityTooltip = function () {
                 var color = item.series.color;
                 var month = new Date(x).getMonth();
 
-                showTooltip(item.pageX,
-                    item.pageY,
-                    color,
-                    "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + numberWithCommas(y) + "</strong>");
-            }
-        } else {
-            $("#tooltip").remove();
-            previousPoint = null;
-        }
-    });
-};
+                var tooltip = ''
+                if (mode == 'budget') {
+                    tooltip = "<strong>" + item.series.label + "</strong><br>" + getDateRange(x) + " : <strong>" + numberWithDots(y) + "</strong> (VND)";
+                } else if (mode == 'quantity') {
+                    tooltip = "<strong>" + item.series.label + "</strong><br>" + getDateRange(x) + " : <strong>" + numberWithCommas(y) + "</strong>"
+                } else {
+                    tooltip = "<strong>" + item.series.label + "</strong><br>" + getDateRange(x) + " : <strong>" + y + "</strong> (%)";
+                }
 
-$.fn.UseQualityTooltip = function () {
-    $(this).bind("plothover", function (event, pos, item) {
-        if (item) {
-            if ((previousLabel != item.series.label) || (previousPoint != item.dataIndex)) {
-                previousPoint = item.dataIndex;
-                previousLabel = item.series.label;
-                $("#tooltip").remove();
-
-                var x = item.datapoint[0];
-                var y = item.datapoint[1];
-
-                var color = item.series.color;
-                var month = new Date(x).getMonth();
-
-                showTooltip(item.pageX,
-                    item.pageY,
-                    color,
-                    "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + y + "</strong> (%)");
+                showTooltip(item.pageX - 40, item.pageY, color, tooltip);
             }
         } else {
             $("#tooltip").remove();
@@ -164,6 +150,7 @@ $.fn.UseQualityTooltip = function () {
 };
 
 function showTooltip(x, y, color, contents) {
+
     $('<div id="tooltip">' + contents + '</div>').css({
         position: 'absolute',
         display: 'none',
@@ -187,13 +174,15 @@ function cb(start, end) {
 }
 
 function numberWithCommas(number) {
-    var parts = number.toFixed().split(".");;
+    var parts = number.toFixed().split(".");
+    ;
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return parts.join(".");
 }
 
 function numberWithDots(number) {
-    var parts = number.toFixed().split(".");;
+    var parts = number.toFixed().split(".");
+    ;
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     return parts.join(".");
 }
@@ -283,74 +272,37 @@ $(document).ready(function () {
 
     $('#search-form-sub-report').submit(function (e) {
         e.preventDefault();
-        var url             = $('#search-form-sub-report').attr('url');
-        var source_id       = $('select[name="source_id"]').val();
-        var team_id         = $('select[name="team_id"]').val();
-        var marketer_id     = $('select[name="marketer_id"]').val();
-        var campaign_id     = $('select[name="campaign_id"]').val();
-        var subcampaign_id  = $('select[name="subcampaign_id"]').val();
-        var registered_date = $('.registered_date').text();
-        var budget_month    = $('input[name="budget_month"]').val();
-        var quantity_month  = $('input[name="quantity_month"]').val();
-        var quality_month   = $('input[name="quality_month"]').val();
-
-        $('input[name="source_id"]').val(source_id);
-        $('input[name="team_id"]').val(team_id);
-        $('input[name="marketer_id"]').val(marketer_id);
-        $('input[name="campaign_id"]').val(campaign_id);
-        $('input[name="subcampaign_id"]').val(subcampaign_id);
-        $('input[name="registered_date"]').val(registered_date);
-
-        $('.loading').show();
-
-        $.ajax({
-            url: url,
-            type: 'GET',
-            contentType: "application/json",
-            dataType: "json",
-            data: {
-                source_id       : source_id,
-                team_id         : team_id,
-                marketer_id     : marketer_id,
-                campaign_id     : campaign_id,
-                subcampaign_id  : subcampaign_id,
-                budget_month    : budget_month,
-                quantity_month  : quantity_month,
-                quality_month   : quality_month,
-            }
-        }).done(function (response) {
-            set_budget_chart(response.budget);
-            set_quantity_chart(response.quantity);
-            set_quality_chart(response.quality);
-        });
-
-        $('.loading').hide();
+        loadDataByDays();
     })
 
-    $('#budget_chk input[type=checkbox]').change(function (e){
+    $('#budget_chk input[type=checkbox]').change(function (e) {
         var month = $('input[name="budget_month"]').val();
         get_budget(month);
     })
 
-    $('#quantity_chk input[type=checkbox]').change(function (e){
+    $('#quantity_chk input[type=checkbox]').change(function (e) {
         var month = $('input[name="quantity_month"]').val();
         get_quantity(month);
     })
 
-    $('#quality_chk input[type=checkbox]').change(function (e){
+    $('#quality_chk input[type=checkbox]').change(function (e) {
         var month = $('input[name="quality_month"]').val();
         get_quality(month);
     })
 
+    $('.nav-tabs a[href="#by_weeks"]').on('show.bs.tab', function () {
+        loadDataByWeeks();
+    });
+
 });
 
 function get_budget(month) {
-    var url             = $('input[name="budget_url"]').val();
-    var source_id       = $('select[name="source_id"]').val();
-    var team_id         = $('select[name="team_id"]').val();
-    var marketer_id     = $('select[name="marketer_id"]').val();
-    var campaign_id     = $('select[name="campaign_id"]').val();
-    var subcampaign_id  = $('select[name="subcampaign_id"]').val();
+    var url = $('input[name="budget_url"]').val();
+    var source_id = $('select[name="source_id"]').val();
+    var team_id = $('select[name="team_id"]').val();
+    var marketer_id = $('select[name="marketer_id"]').val();
+    var campaign_id = $('select[name="campaign_id"]').val();
+    var subcampaign_id = $('select[name="subcampaign_id"]').val();
     var registered_date = $('.registered_date').text();
 
     $('input[name="source_id"]').val(source_id);
@@ -361,12 +313,12 @@ function get_budget(month) {
     $('input[name="registered_date"]').val(registered_date);
 
     var data = {};
-    data.source_id          = source_id;
-    data.team_id            = team_id;
-    data.marketer_id        = marketer_id;
-    data.campaign_id        = campaign_id;
-    data.subcampaign_id     = subcampaign_id;
-    data.month              = month;
+    data.source_id = source_id;
+    data.team_id = team_id;
+    data.marketer_id = marketer_id;
+    data.campaign_id = campaign_id;
+    data.subcampaign_id = subcampaign_id;
+    data.month = month;
 
     $.get(url, data, function (data) {
         set_budget_chart(data);
@@ -377,12 +329,12 @@ function get_budget(month) {
 }
 
 function get_quantity(month) {
-    var url             =  $('input[name="quantity_url"]').val();
-    var source_id       = $('select[name="source_id"]').val();
-    var team_id         = $('select[name="team_id"]').val();
-    var marketer_id     = $('select[name="marketer_id"]').val();
-    var campaign_id     = $('select[name="campaign_id"]').val();
-    var subcampaign_id  = $('select[name="subcampaign_id"]').val();
+    var url = $('input[name="quantity_url"]').val();
+    var source_id = $('select[name="source_id"]').val();
+    var team_id = $('select[name="team_id"]').val();
+    var marketer_id = $('select[name="marketer_id"]').val();
+    var campaign_id = $('select[name="campaign_id"]').val();
+    var subcampaign_id = $('select[name="subcampaign_id"]').val();
     var registered_date = $('.registered_date').text();
 
     $('input[name="source_id"]').val(source_id);
@@ -393,12 +345,12 @@ function get_quantity(month) {
     $('input[name="registered_date"]').val(registered_date);
 
     var data = {};
-    data.source_id          = source_id;
-    data.team_id            = team_id;
-    data.marketer_id        = marketer_id;
-    data.campaign_id        = campaign_id;
-    data.subcampaign_id     = subcampaign_id;
-    data.month              = month;
+    data.source_id = source_id;
+    data.team_id = team_id;
+    data.marketer_id = marketer_id;
+    data.campaign_id = campaign_id;
+    data.subcampaign_id = subcampaign_id;
+    data.month = month;
 
     $.get(url, data, function (data) {
 
@@ -410,12 +362,12 @@ function get_quantity(month) {
 }
 
 function get_quality(month) {
-    var url             =  $('input[name="quality_url"]').val();
-    var source_id       = $('select[name="source_id"]').val();
-    var team_id         = $('select[name="team_id"]').val();
-    var marketer_id     = $('select[name="marketer_id"]').val();
-    var campaign_id     = $('select[name="campaign_id"]').val();
-    var subcampaign_id  = $('select[name="subcampaign_id"]').val();
+    var url = $('input[name="quality_url"]').val();
+    var source_id = $('select[name="source_id"]').val();
+    var team_id = $('select[name="team_id"]').val();
+    var marketer_id = $('select[name="marketer_id"]').val();
+    var campaign_id = $('select[name="campaign_id"]').val();
+    var subcampaign_id = $('select[name="subcampaign_id"]').val();
     var registered_date = $('.registered_date').text();
 
     $('input[name="source_id"]').val(source_id);
@@ -426,12 +378,12 @@ function get_quality(month) {
     $('input[name="registered_date"]').val(registered_date);
 
     var data = {};
-    data.source_id          = source_id;
-    data.team_id            = team_id;
-    data.marketer_id        = marketer_id;
-    data.campaign_id        = campaign_id;
-    data.subcampaign_id     = subcampaign_id;
-    data.month              = month;
+    data.source_id = source_id;
+    data.team_id = team_id;
+    data.marketer_id = marketer_id;
+    data.campaign_id = campaign_id;
+    data.subcampaign_id = subcampaign_id;
+    data.month = month;
 
     $.get(url, data, function (data) {
         set_quality_chart(data);
@@ -444,148 +396,148 @@ function get_quality(month) {
 function set_budget_chart(data) {
     $('span#me_re').text(data.me_re);
 
-    var item        = $("#budget_chart");
-    var dataSet     = [];
-    var arr_color   = [];
+    var item = $("#budget_chart");
+    var dataSet = [];
+    var arr_color = [];
 
-    var data_l1     = {data : jQuery.parseJSON(data.l1),      label : "L1"};
-    var data_l3     = {data : jQuery.parseJSON(data.l3),      label : "L3"};
-    var data_l6     = {data : jQuery.parseJSON(data.l6),      label : "L6"};
-    var data_l8     = {data : jQuery.parseJSON(data.l8),      label : "L8"};
-    var data_c3b    = {data : jQuery.parseJSON(data.c3b),     label : "C3B"};
-    var data_c3bg   = {data : jQuery.parseJSON(data.c3bg),    label : "C3BG"};
-    var data_me     = {data : jQuery.parseJSON(data.me),      label : "ME"};
-    var data_re     = {data : jQuery.parseJSON(data.re),      label : "RE"};
+    var data_l1 = {data: jQuery.parseJSON(data.l1), label: "L1"};
+    var data_l3 = {data: jQuery.parseJSON(data.l3), label: "L3"};
+    var data_l6 = {data: jQuery.parseJSON(data.l6), label: "L6"};
+    var data_l8 = {data: jQuery.parseJSON(data.l8), label: "L8"};
+    var data_c3b = {data: jQuery.parseJSON(data.c3b), label: "C3B"};
+    var data_c3bg = {data: jQuery.parseJSON(data.c3bg), label: "C3BG"};
+    var data_me = {data: jQuery.parseJSON(data.me), label: "ME"};
+    var data_re = {data: jQuery.parseJSON(data.re), label: "RE"};
 
     var lst_checkbox = $('#budget_chk').find('input[type=checkbox]:checked');
-    jQuery.each(lst_checkbox, function(index, checkbox) {
+    jQuery.each(lst_checkbox, function (index, checkbox) {
         $label = $(checkbox).val();
-        if($label == 'L1'){
+        if ($label == 'L1') {
             dataSet.push(data_l1);
             arr_color.push('#800000');
         }
-        if($label == 'L3'){
+        if ($label == 'L3') {
             dataSet.push(data_l3);
             arr_color.push('#6A5ACD')
         }
-        if($label == 'L6'){
+        if ($label == 'L6') {
             dataSet.push(data_l6);
             arr_color.push('#808080')
         }
-        if($label == 'L8'){
+        if ($label == 'L8') {
             dataSet.push(data_l8);
             arr_color.push('#7CFC00')
         }
-        if($label == 'C3B'){
+        if ($label == 'C3B') {
             dataSet.push(data_c3b);
             arr_color.push('#FF8C00')
         }
-        if($label == 'C3BG'){
+        if ($label == 'C3BG') {
             dataSet.push(data_c3bg);
             arr_color.push('#1E90FF')
         }
-        if($label == 'ME'){
+        if ($label == 'ME') {
             dataSet.push(data_me);
             arr_color.push('#000')
         }
-        if($label == 'RE'){
+        if ($label == 'RE') {
             dataSet.push(data_re);
             arr_color.push('#008000')
         }
     });
 
     initChart(item, dataSet, arr_color);
-    $("#budget_chart").UseBudgetTooltip();
+    $("#budget_chart").UseTooltip('budget');
 
 }
 
 function set_quantity_chart(data) {
-    var item    = $("#quantity_chart");
-    var dataSet     = [];
-    var arr_color   = [];
+    var item = $("#quantity_chart");
+    var dataSet = [];
+    var arr_color = [];
 
-    var data_l1     = {data : jQuery.parseJSON(data.l1),      label : "L1"};
-    var data_l3     = {data : jQuery.parseJSON(data.l3),      label : "L3"};
-    var data_l6     = {data : jQuery.parseJSON(data.l6),      label : "L6"};
-    var data_l8     = {data : jQuery.parseJSON(data.l8),      label : "L8"};
-    var data_c3b    = {data : jQuery.parseJSON(data.c3b),     label : "C3B"};
-    var data_c3bg   = {data : jQuery.parseJSON(data.c3bg),    label : "C3BG"};
+    var data_l1 = {data: jQuery.parseJSON(data.l1), label: "L1"};
+    var data_l3 = {data: jQuery.parseJSON(data.l3), label: "L3"};
+    var data_l6 = {data: jQuery.parseJSON(data.l6), label: "L6"};
+    var data_l8 = {data: jQuery.parseJSON(data.l8), label: "L8"};
+    var data_c3b = {data: jQuery.parseJSON(data.c3b), label: "C3B"};
+    var data_c3bg = {data: jQuery.parseJSON(data.c3bg), label: "C3BG"};
 
     var lst_checkbox = $('#quantity_chk').find('input[type=checkbox]:checked');
-    jQuery.each(lst_checkbox, function(index, checkbox) {
+    jQuery.each(lst_checkbox, function (index, checkbox) {
         $label = $(checkbox).val();
-        if($label == 'L1'){
+        if ($label == 'L1') {
             dataSet.push(data_l1);
             arr_color.push('#800000');
         }
-        if($label == 'L3'){
+        if ($label == 'L3') {
             dataSet.push(data_l3);
             arr_color.push('#6A5ACD')
         }
-        if($label == 'L6'){
+        if ($label == 'L6') {
             dataSet.push(data_l6);
             arr_color.push('#808080')
         }
-        if($label == 'L8'){
+        if ($label == 'L8') {
             dataSet.push(data_l8);
             arr_color.push('#7CFC00')
         }
-        if($label == 'C3B'){
+        if ($label == 'C3B') {
             dataSet.push(data_c3b);
             arr_color.push('#FF8C00')
         }
-        if($label == 'C3BG'){
+        if ($label == 'C3BG') {
             dataSet.push(data_c3bg);
             arr_color.push('#1E90FF')
         }
     });
 
     initChart(item, dataSet, arr_color);
-    $("#budget_chart").UseQuantityTooltip();
+    $("#budget_chart").UseTooltip('quantity');
 
 }
 
 function set_quality_chart(data) {
-    var item    = $("#quality_chart");
-    var dataSet     = [];
-    var arr_color   = [];
+    var item = $("#quality_chart");
+    var dataSet = [];
+    var arr_color = [];
 
-    var data_l3_c3b     = {data : jQuery.parseJSON(data.l3_c3b),      label : "L3/C3B"};
-    var data_l3_c3bg    = {data : jQuery.parseJSON(data.l3_c3bg),     label : "L3/C3BG"};
-    var data_l3_l1      = {data : jQuery.parseJSON(data.l3_l1),       label : "L3/L1"};
-    var data_l1_c3bg    = {data : jQuery.parseJSON(data.l1_c3bg),     label : "L1/C3BG"};
-    var data_c3bg_c3b   = {data : jQuery.parseJSON(data.c3bg_c3b),    label : "C3BG/C3B"};
-    var data_l6_l3      = {data : jQuery.parseJSON(data.l6_l3),       label : "L6/L3"};
-    var data_l8_l6      = {data : jQuery.parseJSON(data.l8_l6),       label : "L8/L6"};
+    var data_l3_c3b = {data: jQuery.parseJSON(data.l3_c3b), label: "L3/C3B"};
+    var data_l3_c3bg = {data: jQuery.parseJSON(data.l3_c3bg), label: "L3/C3BG"};
+    var data_l3_l1 = {data: jQuery.parseJSON(data.l3_l1), label: "L3/L1"};
+    var data_l1_c3bg = {data: jQuery.parseJSON(data.l1_c3bg), label: "L1/C3BG"};
+    var data_c3bg_c3b = {data: jQuery.parseJSON(data.c3bg_c3b), label: "C3BG/C3B"};
+    var data_l6_l3 = {data: jQuery.parseJSON(data.l6_l3), label: "L6/L3"};
+    var data_l8_l6 = {data: jQuery.parseJSON(data.l8_l6), label: "L8/L6"};
 
     var lst_checkbox = $('#quality_chk').find('input[type=checkbox]:checked');
-    jQuery.each(lst_checkbox, function(index, checkbox) {
+    jQuery.each(lst_checkbox, function (index, checkbox) {
         $label = $(checkbox).val();
-        if($label == 'L3/C3B'){
+        if ($label == 'L3/C3B') {
             dataSet.push(data_l3_c3b);
             arr_color.push('#800000');
         }
-        if($label == 'L3/C3BG'){
+        if ($label == 'L3/C3BG') {
             dataSet.push(data_l3_c3bg);
             arr_color.push('#6A5ACD')
         }
-        if($label == 'L3/L1'){
+        if ($label == 'L3/L1') {
             dataSet.push(data_l3_l1);
             arr_color.push('#808080')
         }
-        if($label == 'L1/C3BG'){
+        if ($label == 'L1/C3BG') {
             dataSet.push(data_l1_c3bg);
             arr_color.push('#7CFC00')
         }
-        if($label == 'C3BG/C3B'){
+        if ($label == 'C3BG/C3B') {
             dataSet.push(data_c3bg_c3b);
             arr_color.push('#FF8C00')
         }
-        if($label == 'L6/L3'){
+        if ($label == 'L6/L3') {
             dataSet.push(data_l6_l3);
             arr_color.push('#1E90FF')
         }
-        if($label == 'L8/L6'){
+        if ($label == 'L8/L6') {
             dataSet.push(data_l8_l6);
             arr_color.push('#1E90FF')
         }
@@ -593,10 +545,10 @@ function set_quality_chart(data) {
 
 
     initChart(item, dataSet, arr_color);
-    $("#quality_chart").UseQualityTooltip();
+    $("#quality_chart").UseTooltip('quality');
 }
 
-function getDate(date){
+function getDate(date) {
     var d = new Date(date);
     var curr_date = d.getDate();
     var curr_month = d.getMonth();
@@ -611,52 +563,228 @@ function getDate(date){
 
 var $chrt_border_color = "#efefef";
 var $chrt_grid_color = "#DDD";
+
 /* site stats chart */
 
-function initChart(item, data, arr_color){
+function initChart(item, data, arr_color, type) {
+
+    var option = {
+        series: {
+            lines: {
+                show: true,
+                lineWidth: 1,
+                fill: true,
+                fillColor: {
+                    colors: [{
+                        opacity: 0.1
+                    }, {
+                        opacity: 0.15
+                    }]
+                }
+            },
+            points: {
+                show: true
+            },
+            shadowSize: 0
+        },
+        // xaxis : {
+        //     mode: "time",
+        //     timeformat: "%d/%m",
+        //     ticks : 20
+        // },
+        yaxes: [{
+            ticks: 10,
+            min: 0,
+        }],
+        grid: {
+            hoverable: true,
+            // clickable : true,
+            tickColor: $chrt_border_color,
+            borderWidth: 0,
+            borderColor: $chrt_border_color,
+        },
+        colors: arr_color,
+    };
+
+    if (type == 'by_days') {
+        option.xaxis = {
+            mode: "time",
+            timeformat: "%d/%m",
+            ticks: 20
+        };
+    } else if (type == 'by_weeks') {
+        $w = moment().weeksInYear();
+        $arr_weeks = [];
+        for ($i = 0; $i <= $w; $i++) {
+            $arr_weeks[$i] = $i;
+        }
+
+        option.xaxis = {
+            ticks: $arr_weeks,
+        };
+    }
 
     if (item.length) {
-        $.plot(item, data,
-            {
-                series : {
-                    lines : {
-                        show : true,
-                        lineWidth : 1,
-                        fill : true,
-                        fillColor : {
-                            colors : [{
-                                opacity : 0.1
-                            }, {
-                                opacity : 0.15
-                            }]
-                        }
-                    },
-                    points : {
-                        show : true
-                    },
-                    shadowSize : 0
-                },
-                xaxis : {
-                    mode: "time",
-                    timeformat: "%d/%m",
-                    ticks : 14
-                },
-
-                yaxes : [{
-                    ticks : 10,
-                    min : 0,
-                }],
-                grid : {
-                    hoverable : true,
-                    clickable : true,
-                    tickColor : $chrt_border_color,
-                    borderWidth : 0,
-                    borderColor : $chrt_border_color,
-                },
-                colors : arr_color,
-            });
+        $.plot(item, data, option);
     }
     /* end site stats */
 }
+
+
+function loadDataByWeeks() {
+    var url = $('input[name="get_by_weeks"]').val();
+    var source_id = $('select[name="source_id"]').val();
+    var team_id = $('select[name="team_id"]').val();
+    var marketer_id = $('select[name="marketer_id"]').val();
+    var campaign_id = $('select[name="campaign_id"]').val();
+    var subcampaign_id = $('select[name="subcampaign_id"]').val();
+    var registered_date = $('.registered_date').text();
+
+    $('input[name="source_id"]').val(source_id);
+    $('input[name="team_id"]').val(team_id);
+    $('input[name="marketer_id"]').val(marketer_id);
+    $('input[name="campaign_id"]').val(campaign_id);
+    $('input[name="subcampaign_id"]').val(subcampaign_id);
+    $('input[name="registered_date"]').val(registered_date);
+
+    $('.loading').show();
+
+    $.ajax({
+        url: url,
+        type: 'GET',
+        contentType: "application/json",
+        dataType: "json",
+        data: {
+            source_id: source_id,
+            team_id: team_id,
+            marketer_id: marketer_id,
+            campaign_id: campaign_id,
+            subcampaign_id: subcampaign_id,
+        }
+    }).done(function (response) {
+        set_budget_chart_by_weeks(response.budget);
+    });
+
+    $('.loading').hide();
+}
+
+function loadDataByDays() {
+    var url = $('#search-form-sub-report').attr('url');
+    var source_id = $('select[name="source_id"]').val();
+    var team_id = $('select[name="team_id"]').val();
+    var marketer_id = $('select[name="marketer_id"]').val();
+    var campaign_id = $('select[name="campaign_id"]').val();
+    var subcampaign_id = $('select[name="subcampaign_id"]').val();
+    var registered_date = $('.registered_date').text();
+    var budget_month = $('input[name="budget_month"]').val();
+    var quantity_month = $('input[name="quantity_month"]').val();
+    var quality_month = $('input[name="quality_month"]').val();
+
+    $('input[name="source_id"]').val(source_id);
+    $('input[name="team_id"]').val(team_id);
+    $('input[name="marketer_id"]').val(marketer_id);
+    $('input[name="campaign_id"]').val(campaign_id);
+    $('input[name="subcampaign_id"]').val(subcampaign_id);
+    $('input[name="registered_date"]').val(registered_date);
+
+    $('.loading').show();
+
+    $.ajax({
+        url: url,
+        type: 'GET',
+        contentType: "application/json",
+        dataType: "json",
+        data: {
+            source_id: source_id,
+            team_id: team_id,
+            marketer_id: marketer_id,
+            campaign_id: campaign_id,
+            subcampaign_id: subcampaign_id,
+            budget_month: budget_month,
+            quantity_month: quantity_month,
+            quality_month: quality_month,
+        }
+    }).done(function (response) {
+        set_budget_chart(response.budget);
+        set_quantity_chart(response.quantity);
+        set_quality_chart(response.quality);
+    });
+
+    $('.loading').hide();
+}
+
+function loadDataByMonths() {
+
+}
+
+function set_budget_chart_by_weeks(data) {
+    $('span#me_re_by_weeks').text(data.me_re);
+
+    var item = $("#budget_by_weeks_chart");
+    var dataSet = [];
+    var arr_color = [];
+
+    var data_l1 = {data: jQuery.parseJSON(data.l1), label: "L1"};
+    var data_l3 = {data: jQuery.parseJSON(data.l3), label: "L3"};
+    var data_l6 = {data: jQuery.parseJSON(data.l6), label: "L6"};
+    var data_l8 = {data: jQuery.parseJSON(data.l8), label: "L8"};
+    var data_c3b = {data: jQuery.parseJSON(data.c3b), label: "C3B"};
+    var data_c3bg = {data: jQuery.parseJSON(data.c3bg), label: "C3BG"};
+    var data_me = {data: jQuery.parseJSON(data.me), label: "ME"};
+    var data_re = {data: jQuery.parseJSON(data.re), label: "RE"};
+
+    var lst_checkbox = $('#budget_by_weeks_chk').find('input[type=checkbox]:checked');
+    jQuery.each(lst_checkbox, function (index, checkbox) {
+        $label = $(checkbox).val();
+        if ($label == 'L1') {
+            dataSet.push(data_l1);
+            arr_color.push('#800000');
+        }
+        if ($label == 'L3') {
+            dataSet.push(data_l3);
+            arr_color.push('#6A5ACD')
+        }
+        if ($label == 'L6') {
+            dataSet.push(data_l6);
+            arr_color.push('#808080')
+        }
+        if ($label == 'L8') {
+            dataSet.push(data_l8);
+            arr_color.push('#7CFC00')
+        }
+        if ($label == 'C3B') {
+            dataSet.push(data_c3b);
+            arr_color.push('#FF8C00')
+        }
+        if ($label == 'C3BG') {
+            dataSet.push(data_c3bg);
+            arr_color.push('#1E90FF')
+        }
+        if ($label == 'ME') {
+            dataSet.push(data_me);
+            arr_color.push('#000')
+        }
+        if ($label == 'RE') {
+            dataSet.push(data_re);
+            arr_color.push('#008000')
+        }
+    });
+
+    initChart(item, dataSet, arr_color, 'by_weeks');
+    $("#budget_by_weeks_chart").UseTooltipByWeeks('budget');
+
+}
+
+function getDateRange(weekNumber) {
+    var beginningOfWeek = moment().week(weekNumber).startOf('week');
+    var endOfWeek = moment().week(weekNumber).startOf('week').add(6, 'days');
+
+    if (weekNumber == 52) {
+        return beginningOfWeek.format('DD/MM') + '-' + '31/12';
+    }
+
+    return beginningOfWeek.format('DD/MM') + '-' + endOfWeek.format('DD/MM');
+}
+
 
 
