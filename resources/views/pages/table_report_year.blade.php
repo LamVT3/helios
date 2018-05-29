@@ -50,7 +50,7 @@
         --><div class="orange inlineBlock col-md-1">{{ ($reportY['Total']->c3bg != 0) ? round($reportY['Total']->l3 / $reportY['Total']->c3bg,4)*100 : 0 }}%</div>
     </div>
     <div class="wrapper_report_year gray">
-        <div style="width: 25%; display: inline-block;">
+        <div style="width: 250px; display: inline-block;">
             <table class="table" width="100%">
                 <thead>
                 <tr class="font-medium orange" style="height: 40px;">
@@ -175,7 +175,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="content" style="width: 75%; float: right">
+        <div class="content" style="width: calc(100% - 250px); float: right">
             <table id="table_report" class="table" width="100%">
                 <thead>
                     <tr class="font-medium orange" style="height: 40px;">
@@ -205,7 +205,7 @@
                                 $y = substr($key, 0, 4);
                                 $m = substr($key, -2);
                                 echo '<th style="border-bottom: 2px solid #fff;'.(($m == '12' || ($m == date('m') && $y == date('Y'))) ? "border-right: 2px solid #fff;" : "").
-                                    '" class="center '.(($m == '01') ? 'orange' : 'blue').'">'.$m.'</th>';
+                                    '" class="center '.(($m == '01') ? 'white bg-blue' : 'blue').'">'.$m.'</th>';
                             }
                         }
                         ?>
@@ -219,8 +219,8 @@
                                 $y = substr($key, 0, 4);
                                 $m = substr($key, -2);
                                 $days = cal_days_in_month(CAL_GREGORIAN, $m, $y);
-                                echo '<th style="'.(($m == '12' || $m == date('m')) ? "border-right: 2px solid #fff;" : "").
-                                    '" class="center '.(($m == '01') ? 'orange' : 'blue').'">'.$days.' days</th>';
+                                echo '<th style="'.(($m == '12' || ($m == date('m') && $y == date('Y'))) ? "border-right: 2px solid #fff;" : "").
+                                    '" class="center '.(($m == '01') ? 'white bg-blue' : 'blue').'">'.$days.' days</th>';
                             }
                         }
                         ?>
