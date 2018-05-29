@@ -742,8 +742,9 @@ class AjaxController extends Controller
     }
 
     public function getReportYear() {
-        $month     = request('month');
-        $year      = request('year');
+        $month       = request('month');
+        $year        = request('year');
+        $noLastMonth = request('noLastMonth');
 
         if($month < 10){
             $month = '0'.$month;
@@ -784,7 +785,7 @@ class AjaxController extends Controller
             $endDate   = date($year.'-' . $month .'-'.$days);
 
             $i++;
-        } while ($i < 12);
+        } while ($i < $noLastMonth);
 
         /*var_dump($resultsArr['2018 - 04']);
         die;*/

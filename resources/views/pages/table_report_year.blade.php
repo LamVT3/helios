@@ -32,7 +32,7 @@
             'revenue' => $revenue,
         ];
     ?>
-    <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0;" class="bold center blue">MARKETING_INDEX REPORT</div>
+    <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0; background: #fafafa" class="bold center blue">MARKETING_INDEX REPORT</div>
     <div style="font-size: x-large; border-bottom: 1px #ddd solid !important; padding: 15px 0; float: left; width: 100%" class="bold italic blue">
         <div class="inlineBlock col-md-2">Budget :</div><!--
         --><div class="orange inlineBlock col-md-2"></div><!--
@@ -50,308 +50,306 @@
         --><div class="orange inlineBlock col-md-1">{{ ($reportY['Total']->c3bg != 0) ? round($reportY['Total']->l3 / $reportY['Total']->c3bg,4)*100 : 0 }}%</div>
     </div>
     <div class="wrapper_report_year gray">
-        <table id="table_report" class="table" width="100%">
-            <thead>
-                <tr class="font-medium orange">
-                    <th style="border-top: 2px solid #ffffff; border-bottom: 2px solid #ffffff;"></th>
-                    <th style="border-top: 2px solid #ffffff; border-bottom: 2px solid #ffffff;"></th>
-                    <?php
-                        $arrY = array();
-                        $col = 1;
-                        foreach($reportY as $key => $rs) {
-                            $y = substr($key, 0, 4);
-                            if(!in_array($y, $arrY)){
-                                if(!empty($arrY)){
-                                    echo '<th colspan="'.$col.'" class="center" style="border: 2px solid #ffffff;">'.end($arrY).'</th>';
+        <div class="content">
+            <table id="table_report" class="table" width="100%">
+                <thead>
+                    <tr class="font-medium orange">
+                        <th style="border-top: 2px solid #fff; border-bottom: 2px solid #fff;"></th>
+                        <th style="border: 2px solid #fff; border-left: none;"></th>
+                        <?php
+                            $arrY = array();
+                            $col = 1;
+                            foreach($reportY as $key => $rs) {
+                                $y = substr($key, 0, 4);
+                                if(!in_array($y, $arrY)){
+                                    if(!empty($arrY)){
+                                        echo '<th colspan="'.$col.'" class="center" style="border: 2px solid #fff; border-left:none;">'.end($arrY).'</th>';
+                                    }
+                                    $col = 1;
+                                    array_push($arrY, $y);
+                                } else {
+                                    $col += 1;
                                 }
-                                $col = 1;
-                                array_push($arrY, $y);
-                            } else {
-                                $col += 1;
                             }
-                        }
-                    ?>
-                    <th class="center" style="border: 2px solid #ffffff; border-right: none;">Total</th>
-                </tr>
-                <tr class="italic center orange">
-                    <th></th>
-                    <th style="border-right: 2px solid #ffffff;"></th>
-                    <?php
-                        $arrY = array();
-                        foreach ($reportY as $key => $rs) {
-                            if ($key != "Total") {
-                                $m = substr($key, -2);
-                                echo '<th class="center">'.$m.'</th>';
+                        ?>
+                        <th class="center" style="border-top: 2px solid #fff; border-bottom: 1px solid #fff;">Total</th>
+                    </tr>
+                    <tr class="italic center">
+                        <th></th>
+                        <th style="border-right: 2px solid #fff;"></th>
+                        <?php
+                            $arrY = array();
+                            foreach ($reportY as $key => $rs) {
+                                if ($key != "Total") {
+                                    $m = substr($key, -2);
+                                    echo '<th style="'.(($m == '12' || $m == date('m')) ? "border-right: 2px solid #fff;" : "").
+                                        '" class="center '.(($m == '01') ? 'orange' : 'blue').'">'.$m.'</th>';
+                                }
                             }
-                        }
-                    ?>
-                    <th style="border-left: 2px solid #ffffff;"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="bold font-medium bg-blue white">BUDGET</td>
-                </tr>
-                <tr class="bold font-medium blue">
-                    <td class="orange">Actual</td>
-                    <td>ME/RE %</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ ($rs->revenue != 0) ? round($rs->spent * $usd_thb / $rs->revenue,4)*100 : 0 }}%</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ ($reportY['Total']->revenue != 0) ? round($reportY['Total']->spent * $usd_thb / $reportY['Total']->revenue,4)*100 : 0 }}%</td>
-                </tr>
-                <tr class="italic">
-                    <td></td>
-                    <td>ME (USD)</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ $rs->spent}}</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ $reportY['Total']->spent }}</td>
-                </tr>
-                <tr class="italic">
-                    <td></td>
-                    <td>RE (THB)</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ $rs->revenue}}</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ $reportY['Total']->revenue }}</td>
-                </tr>
-                <tr class="bold">
-                    <td></td>
-                    <td class="center">C3B</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ ($rs->c3b != 0) ? round($rs->spent * $usd_vnd / $rs->c3b) : 0 }}</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ ($reportY['Total']->c3b != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->c3b) : 0 }}</td>
-                </tr>
-                <tr class="bold">
-                    <td></td>
-                    <td class="center">C3BG</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ ($rs->c3bg != 0) ? round($rs->spent * $usd_vnd / $rs->c3bg) : 0 }}</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ ($reportY['Total']->c3bg != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->c3bg) : 0 }}</td>
-                </tr>
-                <tr class="bold">
-                    <td></td>
-                    <td class="center">L1 used</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ ($rs->l1 != 0) ? round($rs->spent * $usd_vnd / $rs->l1) : 0 }}</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ ($reportY['Total']->l1 != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->l1) : 0 }}</td>
-                </tr>
-                <tr class="bold">
-                    <td></td>
-                    <td class="center">L3</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ ($rs->l3 != 0) ? round($rs->spent * $usd_vnd / $rs->l3) : 0 }}</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ ($reportY['Total']->l3 != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->l3) : 0 }}</td>
-                </tr>
-                <tr class="bold">
-                    <td></td>
-                    <td class="center">L6</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ ($rs->l6 != 0) ? round($rs->spent * $usd_vnd / $rs->l6) : 0 }}</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ ($reportY['Total']->l6 != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->l6) : 0 }}</td>
-                </tr>
-                <tr class="bold">
-                    <td></td>
-                    <td class="center">L8</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ ($rs->l8 != 0) ? round($rs->spent * $usd_vnd / $rs->l8) : 0 }}</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ ($reportY['Total']->l8 != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->l8) : 0 }}</td>
-                </tr>
-                <tr>
-                    <td class="bold font-medium bg-blue white">QUANTITY</td>
-                </tr>
-                <tr class="bold font-medium blue">
-                    <td class="orange">Actual</td>
-                    <td>C3B</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ $rs->c3b }}</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ $reportY['Total']->c3b }}</td>
-                </tr>
-                <tr class="bold">
-                    <td></td>
-                    <td>C3BG</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ $rs->c3bg }}</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ $reportY['Total']->c3bg }}</td>
-                </tr>
-                <tr class="bold">
-                    <td></td>
-                    <td>L1 used</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ $rs->l1 }}</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ $reportY['Total']->l1 }}</td>
-                </tr>
-                <tr class="bold">
-                    <td></td>
-                    <td>L3</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ $rs->l3 }}</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ $reportY['Total']->l3 }}</td>
-                </tr>
-                <tr class="bold">
-                    <td></td>
-                    <td>L6</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ $rs->l6 }}</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ $reportY['Total']->l6 }}</td>
-                </tr>
-                <tr class="bold">
-                    <td></td>
-                    <td>L8</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ $rs->l8 }}</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ $reportY['Total']->l8 }}</td>
-                </tr>
-                <tr>
-                    <td class="bold font-medium bg-blue white">QUALITY</td>
-                </tr>
-                <tr class="bold font-medium blue">
-                    <td class="orange">Actual</td>
-                    <td>L3/C3B %</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ ($rs->c3b != 0) ? round($rs->l3 / $rs->c3b,4)*100 : 0 }}%</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ ($reportY['Total']->c3b != 0) ? round($reportY['Total']->l3 / $reportY['Total']->c3b,4)*100 : 0 }}%</td>
-                </tr>
-                <tr class="italic">
-                    <td></td>
-                    <td class="center">L3/C3BG %</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ ($rs->c3bg != 0) ? round($rs->l3 / $rs->c3bg,4)*100 : 0 }}%</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ ($reportY['Total']->c3bg != 0) ? round($reportY['Total']->l3 / $reportY['Total']->c3bg,4)*100 : 0 }}%</td>
-                </tr>
-                <tr class="italic">
-                    <td></td>
-                    <td class="center">L3/L1 %</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ ($rs->l1 != 0) ? round($rs->l3 / $rs->l1,4)*100 : 0 }}%</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ ($reportY['Total']->l1 != 0) ? round($reportY['Total']->l3 / $reportY['Total']->l1,4)*100 : 0 }}%</td>
-                </tr>
-                <tr class="italic">
-                    <td></td>
-                    <td class="center">L1/C3BG %</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ ($rs->c3bg != 0) ? round($rs->l1 / $rs->c3bg,4)*100 : 0 }}%</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ ($reportY['Total']->c3bg != 0) ? round($reportY['Total']->l1 / $reportY['Total']->c3bg,4)*100 : 0 }}%</td>
-                </tr>
-                <tr class="italic">
-                    <td></td>
-                    <td class="center">C3BG/C3B %</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ ($rs->c3b != 0) ? round($rs->c3bg / $rs->c3b,4)*100 : 0 }}%</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ ($reportY['Total']->c3b != 0) ? round($reportY['Total']->c3bg / $reportY['Total']->c3b,4)*100 : 0 }}%</td>
-                </tr>
-                <tr class="bold">
-                    <td></td>
-                    <td>Return Ratio</td>
-                    @foreach($reportY as $key => $rs)
-                        <td class="center">0</td>
-                    @endforeach
-                </tr>
-                <tr class="bold">
-                    <td></td>
-                    <td>Duplicate Ratio</td>
-                    @foreach($reportY as $key => $rs)
-                        <td class="center">0</td>
-                    @endforeach
-                </tr>
-                <tr class="bold">
-                    <td></td>
-                    <td>L6/L3 %</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ ($rs->l3 != 0) ? round($rs->l6 / $rs->l3,4)*100 : 0 }}%</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ ($reportY['Total']->l3 != 0) ? round($reportY['Total']->l6 / $reportY['Total']->l3, 4)*100 : 0 }}%</td>
-                </tr>
-                <tr class="bold">
-                    <td></td>
-                    <td>L8/L6 %</td>
-                    @foreach($reportY as $key => $rs)
-                        @if($key != "Total")
-                            <td class="center">{{ ($rs->l6 != 0) ? round($rs->l8 / $rs->l6,4)*100 : 0 }}%</td>
-                        @endif
-                    @endforeach
-                    <td class="center">{{ ($reportY['Total']->l6 != 0) ? round($reportY['Total']->l8 / $reportY['Total']->l6,4)*100 : 0 }}%</td>
-                </tr>
-            </tbody>
-        </table>
+                        ?>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="bold font-medium bg-blue white">BUDGET</td>
+                    </tr>
+                    <tr class="bold font-medium blue">
+                        <td class="orange">Actual</td>
+                        <td>ME/RE %</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ ($rs->revenue != 0) ? round($rs->spent * $usd_thb / $rs->revenue,4)*100 : 0 }}%</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ ($reportY['Total']->revenue != 0) ? round($reportY['Total']->spent * $usd_thb / $reportY['Total']->revenue,4)*100 : 0 }}%</td>
+                    </tr>
+                    <tr class="italic">
+                        <td></td>
+                        <td>ME (USD)</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ $rs->spent}}</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ $reportY['Total']->spent }}</td>
+                    </tr>
+                    <tr class="italic">
+                        <td></td>
+                        <td>RE (THB)</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ $rs->revenue}}</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ $reportY['Total']->revenue }}</td>
+                    </tr>
+                    <tr class="bold">
+                        <td></td>
+                        <td class="center">C3B</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ ($rs->c3b != 0) ? round($rs->spent * $usd_vnd / $rs->c3b) : 0 }}</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ ($reportY['Total']->c3b != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->c3b) : 0 }}</td>
+                    </tr>
+                    <tr class="bold">
+                        <td></td>
+                        <td class="center">C3BG</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ ($rs->c3bg != 0) ? round($rs->spent * $usd_vnd / $rs->c3bg) : 0 }}</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ ($reportY['Total']->c3bg != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->c3bg) : 0 }}</td>
+                    </tr>
+                    <tr class="bold">
+                        <td></td>
+                        <td class="center">L1 used</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ ($rs->l1 != 0) ? round($rs->spent * $usd_vnd / $rs->l1) : 0 }}</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ ($reportY['Total']->l1 != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->l1) : 0 }}</td>
+                    </tr>
+                    <tr class="bold">
+                        <td></td>
+                        <td class="center">L3</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ ($rs->l3 != 0) ? round($rs->spent * $usd_vnd / $rs->l3) : 0 }}</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ ($reportY['Total']->l3 != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->l3) : 0 }}</td>
+                    </tr>
+                    <tr class="bold">
+                        <td></td>
+                        <td class="center">L6</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ ($rs->l6 != 0) ? round($rs->spent * $usd_vnd / $rs->l6) : 0 }}</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ ($reportY['Total']->l6 != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->l6) : 0 }}</td>
+                    </tr>
+                    <tr class="bold">
+                        <td></td>
+                        <td class="center">L8</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ ($rs->l8 != 0) ? round($rs->spent * $usd_vnd / $rs->l8) : 0 }}</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ ($reportY['Total']->l8 != 0) ? round($reportY['Total']->spent * $usd_vnd / $reportY['Total']->l8) : 0 }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bold font-medium bg-blue white">QUANTITY</td>
+                    </tr>
+                    <tr class="bold font-medium blue">
+                        <td class="orange">Actual</td>
+                        <td>C3B</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ $rs->c3b }}</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ $reportY['Total']->c3b }}</td>
+                    </tr>
+                    <tr class="bold">
+                        <td></td>
+                        <td>C3BG</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ $rs->c3bg }}</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ $reportY['Total']->c3bg }}</td>
+                    </tr>
+                    <tr class="bold">
+                        <td></td>
+                        <td>L1 used</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ $rs->l1 }}</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ $reportY['Total']->l1 }}</td>
+                    </tr>
+                    <tr class="bold">
+                        <td></td>
+                        <td>L3</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ $rs->l3 }}</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ $reportY['Total']->l3 }}</td>
+                    </tr>
+                    <tr class="bold">
+                        <td></td>
+                        <td>L6</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ $rs->l6 }}</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ $reportY['Total']->l6 }}</td>
+                    </tr>
+                    <tr class="bold">
+                        <td></td>
+                        <td>L8</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ $rs->l8 }}</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ $reportY['Total']->l8 }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bold font-medium bg-blue white">QUALITY</td>
+                    </tr>
+                    <tr class="bold font-medium blue">
+                        <td class="orange">Actual</td>
+                        <td>L3/C3B %</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ ($rs->c3b != 0) ? round($rs->l3 / $rs->c3b,4)*100 : 0 }}%</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ ($reportY['Total']->c3b != 0) ? round($reportY['Total']->l3 / $reportY['Total']->c3b,4)*100 : 0 }}%</td>
+                    </tr>
+                    <tr class="italic">
+                        <td></td>
+                        <td class="center">L3/C3BG %</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ ($rs->c3bg != 0) ? round($rs->l3 / $rs->c3bg,4)*100 : 0 }}%</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ ($reportY['Total']->c3bg != 0) ? round($reportY['Total']->l3 / $reportY['Total']->c3bg,4)*100 : 0 }}%</td>
+                    </tr>
+                    <tr class="italic">
+                        <td></td>
+                        <td class="center">L3/L1 %</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ ($rs->l1 != 0) ? round($rs->l3 / $rs->l1,4)*100 : 0 }}%</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ ($reportY['Total']->l1 != 0) ? round($reportY['Total']->l3 / $reportY['Total']->l1,4)*100 : 0 }}%</td>
+                    </tr>
+                    <tr class="italic">
+                        <td></td>
+                        <td class="center">L1/C3BG %</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ ($rs->c3bg != 0) ? round($rs->l1 / $rs->c3bg,4)*100 : 0 }}%</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ ($reportY['Total']->c3bg != 0) ? round($reportY['Total']->l1 / $reportY['Total']->c3bg,4)*100 : 0 }}%</td>
+                    </tr>
+                    <tr class="italic">
+                        <td></td>
+                        <td class="center">C3BG/C3B %</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ ($rs->c3b != 0) ? round($rs->c3bg / $rs->c3b,4)*100 : 0 }}%</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ ($reportY['Total']->c3b != 0) ? round($reportY['Total']->c3bg / $reportY['Total']->c3b,4)*100 : 0 }}%</td>
+                    </tr>
+                    <tr class="bold">
+                        <td></td>
+                        <td>Return Ratio</td>
+                        @foreach($reportY as $key => $rs)
+                            <td class="center">0</td>
+                        @endforeach
+                    </tr>
+                    <tr class="bold">
+                        <td></td>
+                        <td>Duplicate Ratio</td>
+                        @foreach($reportY as $key => $rs)
+                            <td class="center">0</td>
+                        @endforeach
+                    </tr>
+                    <tr class="bold">
+                        <td></td>
+                        <td>L6/L3 %</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ ($rs->l3 != 0) ? round($rs->l6 / $rs->l3,4)*100 : 0 }}%</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ ($reportY['Total']->l3 != 0) ? round($reportY['Total']->l6 / $reportY['Total']->l3, 4)*100 : 0 }}%</td>
+                    </tr>
+                    <tr class="bold">
+                        <td></td>
+                        <td>L8/L6 %</td>
+                        @foreach($reportY as $key => $rs)
+                            @if($key != "Total")
+                                <td class="center">{{ ($rs->l6 != 0) ? round($rs->l8 / $rs->l6,4)*100 : 0 }}%</td>
+                            @endif
+                        @endforeach
+                        <td class="center">{{ ($reportY['Total']->l6 != 0) ? round($reportY['Total']->l8 / $reportY['Total']->l6,4)*100 : 0 }}%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-
 <style>
     tr:nth-child(even) {
-        background: #fafafa
+        background: #fafafa;
     }
     tr:nth-child(odd) {
-        background: #ffffff
+        background: #ffffff;
     }
     col:first-child {
-        background: #2ea8e5
+        background: #2ea8e5;
     }
-    #table_report th {
-        vertical-align:middle
-    }
-
     .italic {
         font-style: italic;
     }
@@ -379,15 +377,6 @@
     .bg-blue {
         background: #157DEC;
     }
-    .bg-gray1 {
-        background: #383838;
-    }
-    .bg-gray2 {
-        background: #484848;
-    }
-    .bg-gray3 {
-        background: #585858;
-    }
     .font-medium {
         font-size: medium;
     }
@@ -396,5 +385,11 @@
     }
     .table > tbody > tr > td {
         border-bottom: 1px solid #ddd;
+    }
+
+    .wrapper_report_year {
+        width: 100%;
+        border: none 0px;
+        overflow-x: scroll;
     }
 </style>

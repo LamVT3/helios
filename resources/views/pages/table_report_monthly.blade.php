@@ -1,7 +1,7 @@
 <div class="widget-body no-padding">
     <?php $usd_vnd = $report['config']['USD_VND'] ?>
     <?php $usd_thb = $report['config']['USD_THB'] ?>
-        <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0;" class="bold center blue">MARKETING_INDEX REPORT</div>
+        <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0; background: #fafafa" class="bold center blue">MARKETING_INDEX REPORT</div>
         <div style="font-size: x-large; border-bottom: 1px #ddd solid !important; padding: 15px 0; float: left; width: 100%" class="bold italic blue">
             <div class="inlineBlock col-md-2">Budget :</div><!--
         --><div class="orange inlineBlock col-md-2"></div><!--
@@ -516,15 +516,6 @@
     }
     .bg-blue {
         background: #157DEC;
-    }
-    .bg-gray1 {
-        background: #383838;
-    }
-    .bg-gray2 {
-        background: #484848;
-    }
-    .bg-gray3 {
-        background: #585858;
     }
     .font-medium {
         font-size: medium;
