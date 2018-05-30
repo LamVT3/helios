@@ -306,6 +306,22 @@ $(document).ready(function () {
         loadDataByWeeks('quality');
     })
 
+    $('.nav-tabs a[href="#by_months"]').on('show.bs.tab', function () {
+        loadDataByMonths();
+    });
+
+    $('#budget_by_months_chk input[type=checkbox]').change(function (e) {
+        loadDataByMonths('budget');
+    })
+
+    $('#quantity_by_months_chk input[type=checkbox]').change(function (e) {
+        loadDataByMonths('quantity');
+    })
+
+    $('#quality_by_months_chk input[type=checkbox]').change(function (e) {
+        loadDataByMonths('quality');
+    })
+
 });
 
 function get_budget(month) {
@@ -686,7 +702,6 @@ function loadDataByWeeks(type) {
             set_quantity_chart_by_weeks(response.quantity);
             set_quality_chart_by_weeks(response.quality);
         }
-
     });
 
     $('.loading').hide();
@@ -737,8 +752,53 @@ function loadDataByDays() {
     $('.loading').hide();
 }
 
-function loadDataByMonths() {
+function loadDataByMonths(type) {
+    var url = $('input[name="get_by_months"]').val();
+    var source_id = $('select[name="source_id"]').val();
+    var team_id = $('select[name="team_id"]').val();
+    var marketer_id = $('select[name="marketer_id"]').val();
+    var campaign_id = $('select[name="campaign_id"]').val();
+    var subcampaign_id = $('select[name="subcampaign_id"]').val();
+    var registered_date = $('.registered_date').text();
 
+    $('input[name="source_id"]').val(source_id);
+    $('input[name="team_id"]').val(team_id);
+    $('input[name="marketer_id"]').val(marketer_id);
+    $('input[name="campaign_id"]').val(campaign_id);
+    $('input[name="subcampaign_id"]').val(subcampaign_id);
+    $('input[name="registered_date"]').val(registered_date);
+
+    $('.loading').show();
+
+    $.ajax({
+        url: url,
+        type: 'GET',
+        contentType: "application/json",
+        dataType: "json",
+        data: {
+            source_id: source_id,
+            team_id: team_id,
+            marketer_id: marketer_id,
+            campaign_id: campaign_id,
+            subcampaign_id: subcampaign_id,
+        }
+    }).done(function (response) {
+        if (type == 'budget'){
+            set_budget_chart_by_months(response.budget);
+        }
+        else if (type == 'quantity'){
+            set_quantity_chart_by_months(response.quantity);
+        }
+        else if (type == 'quality'){
+            set_quality_chart_by_months(response.quality);
+        } else {
+            set_budget_chart_by_months(response.budget);
+            set_quantity_chart_by_months(response.quantity);
+            set_quality_chart_by_months(response.quality);
+        }
+    });
+
+    $('.loading').hide();
 }
 
 function set_budget_chart_by_weeks(data) {
@@ -905,6 +965,161 @@ function getDateRange(weekNumber) {
     }
 
     return beginningOfWeek.format('DD/MM') + '-' + endOfWeek.format('DD/MM');
+}
+
+function set_budget_chart_by_months(data) {
+    $('span#me_re_by_months').text(data.me_re);
+
+    var item = $("#budget_by_months_chart");
+    var dataSet = [];
+    var arr_color = [];
+
+    var data_l1 = {data: jQuery.parseJSON(data.l1), label: "L1"};
+    var data_l3 = {data: jQuery.parseJSON(data.l3), label: "L3"};
+    var data_l6 = {data: jQuery.parseJSON(data.l6), label: "L6"};
+    var data_l8 = {data: jQuery.parseJSON(data.l8), label: "L8"};
+    var data_c3b = {data: jQuery.parseJSON(data.c3b), label: "C3B"};
+    var data_c3bg = {data: jQuery.parseJSON(data.c3bg), label: "C3BG"};
+    var data_me = {data: jQuery.parseJSON(data.me), label: "ME"};
+    var data_re = {data: jQuery.parseJSON(data.re), label: "RE"};
+
+    var lst_checkbox = $('#budget_by_months_chk').find('input[type=checkbox]:checked');
+    jQuery.each(lst_checkbox, function (index, checkbox) {
+        $label = $(checkbox).val();
+        if ($label == 'L1') {
+            dataSet.push(data_l1);
+            arr_color.push('#800000');
+        }
+        if ($label == 'L3') {
+            dataSet.push(data_l3);
+            arr_color.push('#6A5ACD')
+        }
+        if ($label == 'L6') {
+            dataSet.push(data_l6);
+            arr_color.push('#808080')
+        }
+        if ($label == 'L8') {
+            dataSet.push(data_l8);
+            arr_color.push('#7CFC00')
+        }
+        if ($label == 'C3B') {
+            dataSet.push(data_c3b);
+            arr_color.push('#FF8C00')
+        }
+        if ($label == 'C3BG') {
+            dataSet.push(data_c3bg);
+            arr_color.push('#1E90FF')
+        }
+        if ($label == 'ME') {
+            dataSet.push(data_me);
+            arr_color.push('#000')
+        }
+        if ($label == 'RE') {
+            dataSet.push(data_re);
+            arr_color.push('#008000')
+        }
+    });
+
+    initChart(item, dataSet, arr_color, 'by_weeks');
+    $("#budget_by_months_chart").UseTooltipByWeeks('budget');
+
+}
+
+function set_quantity_chart_by_months(data) {
+
+    var item = $("#quantity_by_months_chart");
+    var dataSet = [];
+    var arr_color = [];
+
+    var data_l1 = {data: jQuery.parseJSON(data.l1), label: "L1"};
+    var data_l3 = {data: jQuery.parseJSON(data.l3), label: "L3"};
+    var data_l6 = {data: jQuery.parseJSON(data.l6), label: "L6"};
+    var data_l8 = {data: jQuery.parseJSON(data.l8), label: "L8"};
+    var data_c3b = {data: jQuery.parseJSON(data.c3b), label: "C3B"};
+    var data_c3bg = {data: jQuery.parseJSON(data.c3bg), label: "C3BG"};
+
+    var lst_checkbox = $('#quantity_by_months_chk').find('input[type=checkbox]:checked');
+    jQuery.each(lst_checkbox, function (index, checkbox) {
+        $label = $(checkbox).val();
+        if ($label == 'L1') {
+            dataSet.push(data_l1);
+            arr_color.push('#800000');
+        }
+        if ($label == 'L3') {
+            dataSet.push(data_l3);
+            arr_color.push('#6A5ACD')
+        }
+        if ($label == 'L6') {
+            dataSet.push(data_l6);
+            arr_color.push('#808080')
+        }
+        if ($label == 'L8') {
+            dataSet.push(data_l8);
+            arr_color.push('#7CFC00')
+        }
+        if ($label == 'C3B') {
+            dataSet.push(data_c3b);
+            arr_color.push('#FF8C00')
+        }
+        if ($label == 'C3BG') {
+            dataSet.push(data_c3bg);
+            arr_color.push('#1E90FF')
+        }
+    });
+
+    initChart(item, dataSet, arr_color, 'by_weeks');
+    $("#quantity_by_months_chart").UseTooltipByWeeks('quantity');
+
+}
+
+function set_quality_chart_by_months(data) {
+    var item = $("#quality_by_months_chart");
+    var dataSet = [];
+    var arr_color = [];
+
+    var data_l3_c3b = {data: jQuery.parseJSON(data.l3_c3b), label: "L3/C3B"};
+    var data_l3_c3bg = {data: jQuery.parseJSON(data.l3_c3bg), label: "L3/C3BG"};
+    var data_l3_l1 = {data: jQuery.parseJSON(data.l3_l1), label: "L3/L1"};
+    var data_l1_c3bg = {data: jQuery.parseJSON(data.l1_c3bg), label: "L1/C3BG"};
+    var data_c3bg_c3b = {data: jQuery.parseJSON(data.c3bg_c3b), label: "C3BG/C3B"};
+    var data_l6_l3 = {data: jQuery.parseJSON(data.l6_l3), label: "L6/L3"};
+    var data_l8_l6 = {data: jQuery.parseJSON(data.l8_l6), label: "L8/L6"};
+
+    var lst_checkbox = $('#quality_by_months_chk').find('input[type=checkbox]:checked');
+    jQuery.each(lst_checkbox, function (index, checkbox) {
+        $label = $(checkbox).val();
+        if ($label == 'L3/C3B') {
+            dataSet.push(data_l3_c3b);
+            arr_color.push('#800000');
+        }
+        if ($label == 'L3/C3BG') {
+            dataSet.push(data_l3_c3bg);
+            arr_color.push('#6A5ACD')
+        }
+        if ($label == 'L3/L1') {
+            dataSet.push(data_l3_l1);
+            arr_color.push('#808080')
+        }
+        if ($label == 'L1/C3BG') {
+            dataSet.push(data_l1_c3bg);
+            arr_color.push('#7CFC00')
+        }
+        if ($label == 'C3BG/C3B') {
+            dataSet.push(data_c3bg_c3b);
+            arr_color.push('#FF8C00')
+        }
+        if ($label == 'L6/L3') {
+            dataSet.push(data_l6_l3);
+            arr_color.push('#1E90FF')
+        }
+        if ($label == 'L8/L6') {
+            dataSet.push(data_l8_l6);
+            arr_color.push('#1E90FF')
+        }
+    });
+
+    initChart(item, dataSet, arr_color, 'by_weeks');
+    $("#quality_by_months_chart").UseTooltipByWeeks('quality');
 }
 
 

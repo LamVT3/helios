@@ -141,5 +141,6 @@ Route::group(['prefix' => 'sub_report'], function () {
     Route::get('/getQuality', 'SubReportController@getQuality')->name('get-quality');
     Route::get('/getByDays', 'SubReportController@getDataByDays')->name('line-chart.getByDays');
     Route::get('/getByWeeks', 'SubReportController@getDataByWeeks')->name('line-chart.getByWeeks');
+    Route::get('/getByMonths', 'SubReportController@getDataByMonths')->name('line-chart.getByMonths');
 
 });
