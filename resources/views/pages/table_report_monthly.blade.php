@@ -22,8 +22,7 @@
         <table id="table_report" class="table" width="100%">
             <thead class="sticky" style="top: 34px; z-index: 0;">
                 <tr class="font-medium orange">
-                    <th style="border-top: 2px solid #ffffff; border-bottom: 2px solid #ffffff;"></th>
-                    <th style="border-top: 2px solid #ffffff; border-bottom: 2px solid #ffffff;"></th>
+                    <th style="border-top: 2px solid #ffffff; border-bottom: 2px solid #ffffff; text-align: right" colspan="2" class="gray">Weeks</th>
                     <th class="center" style="border: 2px solid #ffffff;">Week 1</th>
                     <th class="center" style="border: 2px solid #ffffff;">Week 2</th>
                     <th class="center" style="border: 2px solid #ffffff;">Week 3</th>
@@ -39,8 +38,7 @@
                     <th class="center" style="border: 2px solid #ffffff; border-right: none;">Forecast</th>
                 </tr>
                 <tr class="italic center orange">
-                    <th></th>
-                    <th style="border-right: 2px solid #ffffff;"></th>
+                    <th style="border-right: 2px solid #ffffff; text-align: right;" colspan="2" class="gray">N.o Days</th>
                     <th class="center" style="border-right: 2px solid #ffffff;">{{ $report['week1']->range }}</th>
                     <th class="center" style="border-right: 2px solid #ffffff;">{{ $report['week2']->range }}</th>
                     <th class="center" style="border-right: 2px solid #ffffff;">{{ $report['week3']->range }}</th>
