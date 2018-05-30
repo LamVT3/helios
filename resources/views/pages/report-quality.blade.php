@@ -13,13 +13,13 @@
 
         <div class="tab-v1">
             <ul id="tabs" class="nav nav-tabs">
-                <li><a href="#report" data-toggle="tab"><strong>Report</strong></a></li>
+                <li class="active"><a href="#report" data-toggle="tab"><strong>Report</strong></a></li>
                 <li {{--class="active"--}}><a href="#monthly" data-toggle="tab"><strong>Monthly Report</strong></a></li>
                 <li {{--class="active"--}}><a href="#year" data-toggle="tab"><strong>Latest Months Report</strong></a></li>
-                <li class="active"><a href="#statistic" data-toggle="tab"><strong>Statistic Report</strong></a></li>
+                <li {{--class="active"--}}><a href="#statistic" data-toggle="tab"><strong>Statistic Report</strong></a></li>
             </ul>
             <div class="tab-content mb30">
-                <div id="report" class="tab-pane">
+                <div id="report" class="tab-pane active">
                     <!-- widget grid -->
                     <section id="widget-grid" class="">
                         <!-- row -->
@@ -210,7 +210,7 @@
                         <div class="row">
                             <article class="col-sm-12 col-md-12">
                             @component('components.jarviswidget',
-                            ['id' => 'monthly_chart', 'icon' => 'fa-line-chart', 'title' => "Report month " , 'dropdown' => "true"])
+                            ['id' => 'monthly_chart', 'icon' => 'fa-table', 'title' => "Report month " , 'dropdown' => "true"])
                                 <div class="loading" style="display: none">
                                     <div class="col-md-12 text-center">
                                         <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
@@ -228,7 +228,7 @@
                         <div class="row">
                             <article class="col-sm-12 col-md-12">
                                 @component('components.jarviswidget',
-                                ['id' => 'year_chart', 'icon' => 'fa-line-chart', 'title' => "Report year " , 'dropdownY' => "true"])
+                                ['id' => 'year_chart', 'icon' => 'fa-table', 'title' => "Report year " , 'dropdownY' => "true"])
                                     <div class="loading" style="display: none">
                                         <div class="col-md-12 text-center">
                                             <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
@@ -241,12 +241,12 @@
                     </section>
                 </div>
 
-                <div class="tab-pane active" id="statistic">
+                <div class="tab-pane" id="statistic">
                     <section id="widget-grid">
                         <div class="row">
                             <article class="col-sm-12 col-md-12">
                                 @component('components.jarviswidget',
-                                ['id' => 'statistic_chart', 'icon' => 'fa-line-chart', 'title' => "Report year ", 'dropdownY' => "true"])
+                                ['id' => 'statistic_chart', 'icon' => 'fa-table', 'title' => "Report year ", 'dropdownY' => "true"])
                                     <div class="loading" style="display: none">
                                         <div class="col-md-12 text-center">
                                             <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
