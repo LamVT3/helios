@@ -499,7 +499,7 @@ class SubReportController extends Controller
 
 		$contacts = Contact::where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 )
 		                   ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
-		                   ->whereIn( 'clevel', [ 'c3', 'c3b', 'c3bg' ] )
+		                   ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
 		                   ->get()
 		                   ->groupBy( function ( $contact ) {
 			                   return (int) date( "H", $contact->submit_time / 1000 );
@@ -511,7 +511,7 @@ class SubReportController extends Controller
 
 		$contacts_week = Contact::where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 - 7 * 86400000)
 		                   ->where( 'submit_time', '<', strtotime( "midnight" ) * 1000 )
-		                   ->whereIn( 'clevel', [ 'c3', 'c3b', 'c3bg' ] )
+		                   ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
 		                   ->get()
 		                   ->groupBy( function ( $contact ) {
 			                   return (int) date( "H", $contact->submit_time / 1000 );
@@ -522,9 +522,9 @@ class SubReportController extends Controller
 			} );
 
 		for ($i = 0; $i < 24; $i++){
-			if(isset($contacts[$i]['c3'])){
-				$table['c3'][$i] =  count($contacts[$i]['c3']);
-				$c3_line[] =  [$i, count($contacts[$i]['c3'])];
+			if(isset($contacts[$i]['c3a'])){
+				$table['c3'][$i] =  count($contacts[$i]['c3a']);
+				$c3_line[] =  [$i, count($contacts[$i]['c3a'])];
 			}
 			else{
 				$table['c3'][$i] =  0;
@@ -552,8 +552,8 @@ class SubReportController extends Controller
 		}
 
 		for ($i = 0; $i < 24; $i++){
-			if(isset($contacts_week[$i]['c3'])){
-				$c3_week_line[] =  [$i, intval( round(count($contacts_week[$i]['c3']) / 7))];
+			if(isset($contacts_week[$i]['c3a'])){
+				$c3_week_line[] =  [$i, intval( round(count($contacts_week[$i]['c3a']) / 7))];
 			}
 			else{
 				$c3_week_line[] =  [$i, 0];
@@ -627,7 +627,7 @@ class SubReportController extends Controller
 
 		$contacts = Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $date_time ) * 1000 )
 		                   ->where( 'submit_time', '<', strtotime( $date_time ) * 1000 + 86400000)
-		                   ->whereIn( 'clevel', [ 'c3', 'c3b', 'c3bg' ] )
+		                   ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
 		                   ->get()
 		                   ->groupBy( function ( $contact ) {
 			                   return (int) date( "H", $contact->submit_time / 1000 );
@@ -639,7 +639,7 @@ class SubReportController extends Controller
 
 		$contacts_week = Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $date_time ) * 1000 - 7 * 86400000)
 		                        ->where( 'submit_time', '<', strtotime( $date_time ) * 1000)
-		                        ->whereIn( 'clevel', [ 'c3', 'c3b', 'c3bg' ] )
+		                        ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
 		                        ->get()
 		                        ->groupBy( function ( $contact ) {
 			                        return (int) date( "H", $contact->submit_time / 1000 );
@@ -650,9 +650,9 @@ class SubReportController extends Controller
 			} );
 
 		for ($i = 0; $i < 24; $i++){
-			if(isset($contacts[$i]['c3'])){
-				$table['c3'][$i] =  count($contacts[$i]['c3']);
-				$c3_line[] =  [$i, count($contacts[$i]['c3'])];
+			if(isset($contacts[$i]['c3a'])){
+				$table['c3'][$i] =  count($contacts[$i]['c3a']);
+				$c3_line[] =  [$i, count($contacts[$i]['c3a'])];
 			}
 			else{
 				$table['c3'][$i] =  0;
@@ -680,8 +680,8 @@ class SubReportController extends Controller
 		}
 
 		for ($i = 0; $i < 24; $i++){
-			if(isset($contacts_week[$i]['c3'])){
-				$c3_week_line[] =  [$i, intval( round(count($contacts_week[$i]['c3']) / 7))];
+			if(isset($contacts_week[$i]['c3a'])){
+				$c3_week_line[] =  [$i, intval( round(count($contacts_week[$i]['c3a']) / 7))];
 			}
 			else{
 				$c3_week_line[] =  [$i, 0];
