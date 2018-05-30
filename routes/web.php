@@ -140,7 +140,13 @@ Route::group(['prefix' => 'sub_report'], function () {
     Route::get('/getReport', 'SubReportController@getBudget')->name('get-budget');
     Route::get('/getQuantity', 'SubReportController@getQuantity')->name('get-quantity');
     Route::get('/getQuality', 'SubReportController@getQuality')->name('get-quality');
+
     Route::get('/filter', 'SubReportController@getFilter')->name('line-chart.filter');
 	Route::get('/hour-report', 'SubReportController@hourReport')->name('hour-report');
 	Route::post('/hour-report', 'SubReportController@hourReportFilter')->name('hour-report.filter');
+
+    Route::get('/getByDays', 'SubReportController@getDataByDays')->name('line-chart.getByDays');
+    Route::get('/getByWeeks', 'SubReportController@getDataByWeeks')->name('line-chart.getByWeeks');
+    Route::get('/getByMonths', 'SubReportController@getDataByMonths')->name('line-chart.getByMonths');
+
 });
