@@ -32,7 +32,7 @@
             'revenue' => $revenue,
         ];
     ?>
-    <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0; background: #f1f1f1" class="bold center blue">RADAR MARKETING ONLINE</div>
+    <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0; background: #fafafa" class="bold center orange">RADAR MARKETING ONLINE</div>
     <div style="font-size: x-large; border-bottom: 1px #ddd solid !important; padding: 15px 0; float: left; width: 100%" class="bold italic blue">
         <div class="inlineBlock col-md-2">Budget :</div><!--
         --><div class="orange inlineBlock col-md-2"></div><!--
