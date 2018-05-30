@@ -1,7 +1,7 @@
 <div class="widget-body no-padding">
     <?php $usd_vnd = $report['config']['USD_VND'] ?>
     <?php $usd_thb = $report['config']['USD_THB'] ?>
-        <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0; background: #fafafa" class="bold center blue">MARKETING_INDEX REPORT</div>
+        <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0; background: #fafafa" class="bold center orange">MONTHLY MARKETING REPORT</div>
         <div style="font-size: x-large; border-bottom: 1px #ddd solid !important; padding: 15px 0; float: left; width: 100%" class="bold italic blue">
             <div class="inlineBlock col-md-2">Budget :</div><!--
         --><div class="orange inlineBlock col-md-2"></div><!--
@@ -20,10 +20,9 @@
         </div>
     <div class="wrapper_report_monthly gray">
         <table id="table_report" class="table" width="100%">
-            <thead>
+            <thead class="sticky" style="top: 34px; z-index: 0;">
                 <tr class="font-medium orange">
-                    <th style="border-top: 2px solid #ffffff; border-bottom: 2px solid #ffffff;"></th>
-                    <th style="border-top: 2px solid #ffffff; border-bottom: 2px solid #ffffff;"></th>
+                    <th style="border-top: 2px solid #ffffff; border-bottom: 2px solid #ffffff; text-align: right" colspan="2" class="gray">Weeks</th>
                     <th class="center" style="border: 2px solid #ffffff;">Week 1</th>
                     <th class="center" style="border: 2px solid #ffffff;">Week 2</th>
                     <th class="center" style="border: 2px solid #ffffff;">Week 3</th>
@@ -39,8 +38,7 @@
                     <th class="center" style="border: 2px solid #ffffff; border-right: none;">Forecast</th>
                 </tr>
                 <tr class="italic center orange">
-                    <th></th>
-                    <th style="border-right: 2px solid #ffffff;"></th>
+                    <th style="border-right: 2px solid #ffffff; text-align: right;" colspan="2" class="gray">N.o Days</th>
                     <th class="center" style="border-right: 2px solid #ffffff;">{{ $report['week1']->range }}</th>
                     <th class="center" style="border-right: 2px solid #ffffff;">{{ $report['week2']->range }}</th>
                     <th class="center" style="border-right: 2px solid #ffffff;">{{ $report['week3']->range }}</th>
@@ -59,7 +57,7 @@
                             <span class="rangedate"></span> <b class="caret"></b>
                         </div>
                     </th>
-                    <th style="border-right: 2px solid #ffffff;"></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>

@@ -15,7 +15,8 @@
             <ul id="tabs" class="nav nav-tabs">
                 <li><a href="#report" data-toggle="tab"><strong>Report</strong></a></li>
                 <li {{--class="active"--}}><a href="#monthly" data-toggle="tab"><strong>Monthly Report</strong></a></li>
-                <li class="active"><a href="#year" data-toggle="tab"><strong>Last Months Report</strong></a></li>
+                <li {{--class="active"--}}><a href="#year" data-toggle="tab"><strong>Latest Months Report</strong></a></li>
+                <li class="active"><a href="#statistic" data-toggle="tab"><strong>Statistic Report</strong></a></li>
             </ul>
             <div class="tab-content mb30">
                 <div id="report" class="tab-pane">
@@ -206,33 +207,55 @@
 
                 <div class="tab-pane" id="monthly">
                     <section id="widget-grid">
-                        <article class="col-sm-12 col-md-12">
-                        @component('components.jarviswidget',
-                        ['id' => 'monthly_chart', 'icon' => 'fa-line-chart', 'title' => "Report month " , 'dropdown' => "true"])
-                            <div class="loading" style="display: none">
-                                <div class="col-md-12 text-center">
-                                    <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
-                                </div>
-                            </div>
-                            <div id="report_monthly"></div>
-                        @endcomponent
-                        </article>
-                    </section>
-                </div>
-
-                <div class="tab-pane active" id="year">
-                    <section id="widget-grid">
-                        <article class="col-sm-12 col-md-12">
+                        <div class="row">
+                            <article class="col-sm-12 col-md-12">
                             @component('components.jarviswidget',
-                            ['id' => 'year_chart', 'icon' => 'fa-line-chart', 'title' => "Report year " , 'dropdownY' => "true"])
+                            ['id' => 'monthly_chart', 'icon' => 'fa-line-chart', 'title' => "Report month " , 'dropdown' => "true"])
                                 <div class="loading" style="display: none">
                                     <div class="col-md-12 text-center">
                                         <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
                                     </div>
                                 </div>
-                                <div id="report_year"></div>
+                                <div id="monthly_report"></div>
                             @endcomponent
-                        </article>
+                            </article>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="tab-pane" id="year">
+                    <section id="widget-grid">
+                        <div class="row">
+                            <article class="col-sm-12 col-md-12">
+                                @component('components.jarviswidget',
+                                ['id' => 'year_chart', 'icon' => 'fa-line-chart', 'title' => "Report year " , 'dropdownY' => "true"])
+                                    <div class="loading" style="display: none">
+                                        <div class="col-md-12 text-center">
+                                            <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
+                                        </div>
+                                    </div>
+                                    <div id="year_report"></div>
+                                @endcomponent
+                            </article>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="tab-pane active" id="statistic">
+                    <section id="widget-grid">
+                        <div class="row">
+                            <article class="col-sm-12 col-md-12">
+                                @component('components.jarviswidget',
+                                ['id' => 'statistic_chart', 'icon' => 'fa-line-chart', 'title' => "Report year ", 'dropdownY' => "true"])
+                                    <div class="loading" style="display: none">
+                                        <div class="col-md-12 text-center">
+                                            <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
+                                        </div>
+                                    </div>
+                                    <div id="statistic_report"></div>
+                                @endcomponent
+                            </article>
+                        </div>
                     </section>
                 </div>
 
@@ -278,7 +301,7 @@
         }
 
        $.get("{{ route('ajax-getReportMonthly') }}", {month: month, startDate: startDate, endDate: endDate}, function (data) {
-            document.getElementById("report_monthly").innerHTML = data;
+            document.getElementById("monthly_report").innerHTML = data;
         }).fail( function () {
             alert('Cannot connect to server. Please try again later.');
         }).complete(function () {
@@ -312,9 +335,18 @@
     get_report_year(y, m, 12);
 
     function get_report_year(year, month, noLastMonth) {
-        console.log("year "+ year);
         $.get("{{ route('ajax-getReportYear') }}", {year: year, month: month, noLastMonth: noLastMonth}, function (data) {
-            document.getElementById("report_year").innerHTML = data;
+            document.getElementById("year_report").innerHTML = data;
+        }).fail( function () {
+            alert('Cannot connect to server. Please try again later.');
+        });
+    }
+
+    get_report_statistic(y, m, 12);
+
+    function get_report_statistic(year, month, noLastMonth) {
+        $.get("{{ route('ajax-getReportStatistic') }}", {year: year, month: month, noLastMonth: noLastMonth}, function (data) {
+            document.getElementById("statistic_report").innerHTML = data;
         }).fail( function () {
             alert('Cannot connect to server. Please try again later.');
         });
@@ -323,9 +355,23 @@
     $(document).ready(function () {
         if(m != 12) {
             $('h2#year_chart').html('Report year <span class="yellow">' + (y-1) + ' - ' + y + '</span>');
+            $('h2#statistic_chart').html('Report year <span class="yellow">' + (y-1) + ' - ' + y + '</span>');
         } else {
             $('h2#year_chart').html('Report year <span class="yellow">' + y + '</span>');
+            $('h2#statistic_chart').html('Report year <span class="yellow">' + y + '</span>');
         }
+
+        // When the user scrolls the page, execute myFunction
+        window.onscroll = function() {
+            var elementDropdown = document.getElementById("dropdown");
+            elementDropdown.setAttribute("aria-expanded", "false");
+            elementDropdown.parentElement.classList.remove("open");
+
+            var elementDropdownY = document.getElementById("dropdownY");
+            elementDropdownY.setAttribute("aria-expanded", "false");
+            elementDropdownY.parentElement.classList.remove("open");
+        };
+
     });
 
 </script>

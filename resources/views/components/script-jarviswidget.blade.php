@@ -13,7 +13,10 @@
 
         var dropdownY = $('button#dropdownY');
         dropdownY.html(__arr_last_month[1]);
-        $('h2#monthly_chart').html('Report month <span class="yellow">' + dropdown.html()+ '</span>');
+        var dropdownLst = document.getElementsByClassName('dropdown-toggle');
+        for (var i = 0; i < dropdownLst.length; i++) {
+            dropdownLst[i].parentElement.parentElement.parentElement.classList.add('sticky');
+        }
     });
 
     $('li#month').click(function() {
@@ -44,17 +47,21 @@
         var title_id = title.attr('id');
         var m = new Date().getMonth() + 1;
         var y = new Date().getFullYear();
+
+        var r = noMonth - m;
+        console.log(r);
+        if (r > 12) {
+            title.html('Report year <span class="yellow">' + (y - 2) + ' - ' + y + '</span>');
+        } else if (r > 0) {
+            title.html('Report year <span class="yellow">' + (y - 1) + ' - ' + y + '</span>');
+        } else {
+            title.html('Report year <span class="yellow">' + y + '</span>');
+        }
+
         if (title_id == 'year_chart') {
-            var r = noMonth - m;
-            console.log(r);
-            if (r > 12) {
-                title.html('Report year <span class="yellow">' + (y - 2) + ' - ' + y + '</span>');
-            } else if (r > 0) {
-                title.html('Report year <span class="yellow">' + (y - 1) + ' - ' + y + '</span>');
-            } else {
-                title.html('Report year <span class="yellow">' + y + '</span>');
-            }
             get_report_year(y, m, noMonth);
+        } else if (title_id == 'statistic_chart') {
+            get_report_statistic(y, m, noMonth);
         }
     });
 
