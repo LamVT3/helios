@@ -127,7 +127,7 @@
                                                 <thead>
                                                 <tr>
                                                     <th>Time</th>
-                                                    <th>C3</th>
+                                                    <th>C3A</th>
                                                     <th>C3B</th>
                                                     <th>C3BG</th>
                                                 </tr>
@@ -156,7 +156,7 @@
                                     <div class="col-sm-8">
                                         <article class="col-sm-12 col-md-12">
                                         @component('components.jarviswidget',
-                                        ['id' => 'budget', 'icon' => 'fa-line-chart', 'title' => "C3 ", 'dropdown' => 'false'])
+                                        ['id' => 'budget', 'icon' => 'fa-line-chart', 'title' => "C3A ", 'dropdown' => 'false'])
                                             <!-- widget content -->
                                                 <div class="widget-body no-padding">
                                                     <div id="c3_chart" class="chart has-legend"></div>
@@ -233,8 +233,8 @@
         function initC3() {
             var item = $("#c3_chart");
             var data = [
-                {data : {{ $chart["c3_week"] }},label : "C3 Week", color: "#FF8C00"},
-                {data: {{$chart['c3']}}, label: "C3", color: "#7CFC00"},
+                {data : {{ $chart["c3_week"] }},label : "C3A Week", color: "#FF8C00"},
+                {data: {{$chart['c3']}}, label: "C3A", color: "#7CFC00"},
             ];
 
             initChart(item, data);
