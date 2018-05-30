@@ -511,9 +511,21 @@ class SubReportController extends Controller
             return $collection->aggregate($match);
         });
 
-        $result['budget']   = $this->getBudgetByWeeks($query_chart, $w);
-        $result['quantity'] = $this->getQuantityByWeeks($query_chart, $w);
-        $result['quality']  = $this->getQualityByWeeks($query_chart, $w);
+        $type = \request('type');
+
+        if ($type == 'budget') {
+            $result['budget']   = $this->getBudgetByWeeks($query_chart, $w);
+        }
+        else if ($type == 'quantity') {
+            $result['quantity'] = $this->getQuantityByWeeks($query_chart, $w);
+        }
+        else if ($type == 'quality') {
+            $result['quality']  = $this->getQualityByWeeks($query_chart, $w);
+        } else {
+            $result['budget']   = $this->getBudgetByWeeks($query_chart, $w);
+            $result['quantity'] = $this->getQuantityByWeeks($query_chart, $w);
+            $result['quality']  = $this->getQualityByWeeks($query_chart, $w);
+        }
 
         return $result;
     }
@@ -849,9 +861,21 @@ class SubReportController extends Controller
             return $collection->aggregate($match);
         });
 
-        $result['budget']   = $this->getBudgetByMonths($query_chart);
-        $result['quantity'] = $this->getQuantityByMonths($query_chart);
-        $result['quality']  = $this->getQualityByMonths($query_chart);
+        $type = \request('type');
+
+        if ($type == 'budget') {
+            $result['budget']   = $this->getBudgetByMonths($query_chart);
+        }
+        else if ($type == 'quantity') {
+            $result['quantity'] = $this->getQuantityByMonths($query_chart);
+        }
+        else if ($type == 'quality') {
+            $result['quality']  = $this->getQualityByMonths($query_chart);
+        } else {
+            $result['budget']   = $this->getBudgetByMonths($query_chart);
+            $result['quantity'] = $this->getQuantityByMonths($query_chart);
+            $result['quality']  = $this->getQualityByMonths($query_chart);
+        }
 
         return $result;
     }
