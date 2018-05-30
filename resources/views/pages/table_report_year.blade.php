@@ -32,7 +32,7 @@
             'revenue' => $revenue,
         ];
     ?>
-    <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0; background: #f1f1f1" class="bold center blue">RADAR MARKETING REPORT</div>
+    <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0; background: #f1f1f1" class="bold center blue">RADAR MARKETING ONLINE</div>
     <div style="font-size: x-large; border-bottom: 1px #ddd solid !important; padding: 15px 0; float: left; width: 100%" class="bold italic blue">
         <div class="inlineBlock col-md-2">Budget :</div><!--
         --><div class="orange inlineBlock col-md-2"></div><!--
@@ -54,16 +54,13 @@
             <table class="table" width="100%">
                 <thead style="top: 34px;">
                 <tr class="font-medium orange" style="height: 36px;">
-                    <th style="border-top: 2px solid #fff; border-bottom: 2px solid #fff;"></th>
-                    <th style="border: 2px solid #fff; border-left: none;"></th>
+                    <th style="border: 2px solid #fff; border-left: none; text-align: right;" colspan="2">Year</th>
                 </tr>
                 <tr class="italic center" style="height: 36px;">
-                    <th style="border-bottom: 2px solid #fff;"></th>
-                    <th style="border-right: 2px solid #fff; border-bottom: 2px solid #fff;"></th>
+                    <th style="border-right: 2px solid #fff; border-bottom: 2px solid #fff; text-align: right;" colspan="2">Month</th>
                 </tr>
                 <tr class="italic center" style="height: 53px;">
-                    <th></th>
-                    <th style="border-right: 2px solid #fff;"></th>
+                    <th style="border-right: 2px solid #fff; text-align: right; vertical-align: middle;" colspan="2"> Days in month</th>
                 </tr>
                 </thead>
                 <tbody>

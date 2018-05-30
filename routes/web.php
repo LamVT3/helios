@@ -93,6 +93,7 @@ Route::group(['prefix' => 'ajax'], function () {
     Route::get('/getL8Chart', 'AjaxController@getL8Chart')->name('ajax-getL8Chart');
     Route::get('/getReportMonthly', 'AjaxController@getReportMonthly')->name('ajax-getReportMonthly');
     Route::get('/getReportYear', 'AjaxController@getReportYear')->name('ajax-getReportYear');
+    Route::get('/getReportStatistic', 'AjaxController@getReportStatistic')->name('ajax-getReportStatistic');
     Route::get('/paginate', 'AjaxController@getContactPaginate')->name('ajax-paginate');
     Route::get('/getFilterMaketer', 'AjaxController@getFilterMaketer')->name('ajax-getFilterMaketer');
 });

@@ -737,7 +737,7 @@ class AjaxController extends Controller
         return $report;
     }
 
-    public function getReportYear() {
+    private function getReport() {
         $month       = request('month');
         $year        = request('year');
         $noLastMonth = request('noLastMonth');
@@ -789,8 +789,17 @@ class AjaxController extends Controller
         $resultsArr = array_reverse($this->prepare_report($resultsArr, null), true);
 
         $data['reportY'] = $resultsArr;
+        return $data;
+    }
 
+    public function getReportYear() {
+        $data = $this->getReport();
         return view('pages.table_report_year', $data);
+    }
+
+    public function getReportStatistic() {
+        $data = $this->getReport();
+        return view('pages.table_report_statistic', $data);
     }
 
     public function getContactPaginate(){
