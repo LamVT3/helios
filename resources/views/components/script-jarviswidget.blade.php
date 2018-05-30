@@ -13,7 +13,8 @@
 
         var dropdownY = $('button#dropdownY');
         dropdownY.html(__arr_last_month[1]);
-        $('h2#monthly_chart').html('Report month <span class="yellow">' + dropdown.html()+ '</span>');
+        document.getElementById('dropdownY').parentElement.parentElement.parentElement.classList.add('sticky');
+        document.getElementById('dropdown').parentElement.parentElement.parentElement.classList.add('sticky');
     });
 
     $('li#month').click(function() {

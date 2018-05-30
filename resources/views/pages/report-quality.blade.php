@@ -206,33 +206,37 @@
 
                 <div class="tab-pane" id="monthly">
                     <section id="widget-grid">
-                        <article class="col-sm-12 col-md-12">
-                        @component('components.jarviswidget',
-                        ['id' => 'monthly_chart', 'icon' => 'fa-line-chart', 'title' => "Report month " , 'dropdown' => "true"])
-                            <div class="loading" style="display: none">
-                                <div class="col-md-12 text-center">
-                                    <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
-                                </div>
-                            </div>
-                            <div id="report_monthly"></div>
-                        @endcomponent
-                        </article>
-                    </section>
-                </div>
-
-                <div class="tab-pane active" id="year">
-                    <section id="widget-grid">
-                        <article class="col-sm-12 col-md-12">
+                        <div class="row">
+                            <article class="col-sm-12 col-md-12">
                             @component('components.jarviswidget',
-                            ['id' => 'year_chart', 'icon' => 'fa-line-chart', 'title' => "Report year " , 'dropdownY' => "true"])
+                            ['id' => 'monthly_chart', 'icon' => 'fa-line-chart', 'title' => "Report month " , 'dropdown' => "true"])
                                 <div class="loading" style="display: none">
                                     <div class="col-md-12 text-center">
                                         <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
                                     </div>
                                 </div>
-                                <div id="report_year"></div>
+                                <div id="report_monthly"></div>
                             @endcomponent
-                        </article>
+                            </article>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="tab-pane active" id="year">
+                    <section id="widget-grid">
+                        <div class="row">
+                            <article class="col-sm-12 col-md-12">
+                                @component('components.jarviswidget',
+                                ['id' => 'year_chart', 'icon' => 'fa-line-chart', 'title' => "Report year " , 'dropdownY' => "true"])
+                                    <div class="loading" style="display: none">
+                                        <div class="col-md-12 text-center">
+                                            <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
+                                        </div>
+                                    </div>
+                                    <div id="report_year"></div>
+                                @endcomponent
+                            </article>
+                        </div>
                     </section>
                 </div>
 
@@ -326,6 +330,18 @@
         } else {
             $('h2#year_chart').html('Report year <span class="yellow">' + y + '</span>');
         }
+
+        // When the user scrolls the page, execute myFunction
+        window.onscroll = function() {
+            var elementDropdown = document.getElementById("dropdown");
+            elementDropdown.setAttribute("aria-expanded", "false");
+            elementDropdown.parentElement.classList.remove("open");
+
+            var elementDropdownY = document.getElementById("dropdownY");
+            elementDropdownY.setAttribute("aria-expanded", "false");
+            elementDropdownY.parentElement.classList.remove("open");
+        };
+
     });
 
 </script>

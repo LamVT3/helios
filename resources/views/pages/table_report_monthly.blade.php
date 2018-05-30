@@ -1,7 +1,7 @@
 <div class="widget-body no-padding">
     <?php $usd_vnd = $report['config']['USD_VND'] ?>
     <?php $usd_thb = $report['config']['USD_THB'] ?>
-        <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0; background: #fafafa" class="bold center blue">MARKETING_INDEX REPORT</div>
+        <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0; background: #f1f1f1" class="bold center blue">MONTHLY MARKETING REPORT</div>
         <div style="font-size: x-large; border-bottom: 1px #ddd solid !important; padding: 15px 0; float: left; width: 100%" class="bold italic blue">
             <div class="inlineBlock col-md-2">Budget :</div><!--
         --><div class="orange inlineBlock col-md-2"></div><!--
@@ -20,7 +20,7 @@
         </div>
     <div class="wrapper_report_monthly gray">
         <table id="table_report" class="table" width="100%">
-            <thead>
+            <thead class="sticky" style="top: 34px; z-index: 0;">
                 <tr class="font-medium orange">
                     <th style="border-top: 2px solid #ffffff; border-bottom: 2px solid #ffffff;"></th>
                     <th style="border-top: 2px solid #ffffff; border-bottom: 2px solid #ffffff;"></th>
@@ -59,7 +59,7 @@
                             <span class="rangedate"></span> <b class="caret"></b>
                         </div>
                     </th>
-                    <th style="border-right: 2px solid #ffffff;"></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
