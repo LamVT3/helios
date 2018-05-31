@@ -6,7 +6,14 @@ return [
     'UNKNOWN'               => 'unknown',
     'MAX_DISPLAY'           => 100,
     'DEFAULT_EXPORT'        => 100,
-    'CONFIRM_EXPORT'        => 'Are you sure you want to export these contacts ?'
+    'CONFIRM_EXPORT'        => 'Are you sure you want to export these contacts ?',
+    'CAMPAIGN_NAME_INVALID' => 'The Campaign name has already been taken.',
+    'SUBCAMPAIGN_NAME_INVALID' => 'The Subcampaign name has already been taken.',
+    'AD_NAME_INVALID'       => 'The Ad name has already been taken.',
+    'CONFIG_INVALID'        => 'The Config key name has already been taken.',
+    'LANDING_PAGE_INVALID'  => 'The Landing page name has already been taken.',
+    'SOURCE_INVALID'        => 'The Source name has already been taken.',
+    'TEAM_INVALID'          => 'The Team name has already been taken.',
 ];
 
 

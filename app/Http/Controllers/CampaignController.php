@@ -140,6 +140,15 @@ class CampaignController extends Controller
             $campaign->creator_name = $user->username;
             $campaign->is_active = 1;
 
+            try{
+                $validator = [
+                    'campaign_name' => 'required|unique:campaigns,name',
+                ];
+                $this->validate(request(), $validator);
+            }catch(\Exception $e){
+                return config('constants.CAMPAIGN_NAME_INVALID');
+            }
+
             $campaign->save();
             $message .= "1 campaign";
         }else{
@@ -158,6 +167,15 @@ class CampaignController extends Controller
             $subcampaign->creator_id = $user->id;
             $subcampaign->creator_name = $user->username;
             $subcampaign->is_active = 1;
+
+            try{
+                $validator = [
+                    'subcampaign_name' => 'required|unique:subcampaigns,name',
+                ];
+                $this->validate(request(), $validator);
+            }catch(\Exception $e){
+                return config('constants.SUBCAMPAIGN_NAME_INVALID');
+            }
 
             $subcampaign->save();
             if($message) $message .= ', 1 subcampaign';
@@ -217,6 +235,15 @@ class CampaignController extends Controller
 
             $ad->shorten_url = $shorten_url;
             $ad->is_active = 1;
+
+            try{
+                $validator = [
+                    'ad_name' => 'required|unique:ads,name',
+                ];
+                $this->validate(request(), $validator);
+            }catch(\Exception $e){
+                return config('constants.AD_NAME_INVALID');
+            }
 
             $ad->save();
             if($message) $message .= ', 1 ad';

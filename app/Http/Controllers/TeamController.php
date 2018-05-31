@@ -61,10 +61,14 @@ class TeamController extends Controller
     public function store()
     {
         if(auth()->user()->role !== "Manager" && auth()->user()->role !== "Admin") return view('errors.403');
-        $this->validate(request(), [
-            'name' => 'required|alpha_dash',
-            'description' => 'required'
-        ]);
+        try{
+            $validator = [
+                'name' => 'required|alpha_dash|unique:teams,name',
+            ];
+            $this->validate(request(), $validator);
+        }catch(\Exception $e){
+            return config('constants.TEAM_INVALID');
+        }
 
         $user = auth()->user();
 

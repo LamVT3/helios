@@ -40,10 +40,14 @@ class LandingPageController extends Controller
     public function store()
     {
         /*if (!\Entrust::can('edit-review')) return view('errors.403');*/
-        $this->validate(request(), [
-            'name' => 'required',
-            'url' => 'required',
-        ]);
+        try{
+            $validator = [
+                'name' => 'required|unique:landing_pages,name',
+            ];
+            $this->validate(request(), $validator);
+        }catch(\Exception $e){
+            return config('constants.LANDING_PAGE_INVALID');
+        }
 
         $user = auth()->user();
 

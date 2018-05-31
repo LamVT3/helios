@@ -63,11 +63,14 @@ class SubcampaignController extends Controller
     public function store()
     {
         /*if (!\Entrust::can('edit-review')) return view('errors.403');*/
-        $this->validate(request(), [
-            'name' => 'required',
-            'code' => 'required',
-            'description' => 'required'
-        ]);
+        try{
+            $validator = [
+                'name' => 'required|unique:subcampaigns,name',
+            ];
+            $this->validate(request(), $validator);
+        }catch(\Exception $e){
+            return config('constants.SUBCAMPAIGN_NAME_INVALID');
+        }
 
         $subcampaign = request('subcampaign_id') ? Subcampaign::find(request('subcampaign_id')) : new Subcampaign();
 		$subcampaign->campaign_id = request('campaign_id');

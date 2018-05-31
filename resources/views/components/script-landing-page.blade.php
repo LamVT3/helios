@@ -101,7 +101,7 @@
                     $('#meaning').html('');*/
                     location.href = data.url;
                 }else{
-                    $('#form-landing-page-alert').html('<div class="alert alert-danger"> Cannot connect to server. Please try again later. </div>');
+                    $('#form-landing-page-alert').html('<div class="alert alert-danger">'+ data +'</div>');
                 }
             }).fail(
                 function (err) {

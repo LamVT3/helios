@@ -97,7 +97,7 @@
                 if(data.type && data.type == 'success'){
                     location.href = data.url;
                 }else{
-                    $('#form-config-alert').html('<div class="alert alert-danger"> Cannot connect to server. Please try again later. </div>');
+                    $('#form-config-alert').html('<div class="alert alert-danger">' + data + '</div>');
                 }
             }).fail(
                 function (err) {
