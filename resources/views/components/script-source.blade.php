@@ -131,7 +131,7 @@
                     location.href = data.url;
                 }else{
                     btn.removeAttr('disabled');
-                    $('#form-source-alert').html('<div class="alert alert-danger"> Cannot connect to server. Please try again later. </div>');
+                    $('#form-source-alert').html('<div class="alert alert-danger">' + data + '</div>');
                 }
             }).fail(
                 function (err) {

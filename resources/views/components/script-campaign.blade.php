@@ -288,12 +288,11 @@
                     location.href = data.url;
                 }else{
                     btn.removeAttr('disabled');
-                    $('#form-campaign-alert').html('<div class="alert alert-danger"> Cannot connect to server. Please try again later. </div>');
+                    $('#form-campaign-alert').html('<div class="alert alert-danger">' + data + '</div>');
                     $('.loading').hide();
                 }
             }).fail(
                 function (err) {
-                    console.log(err);
                     btn.removeAttr('disabled');
                     $('#form-campaign-alert').html('<div class="alert alert-danger"> Cannot connect to server. Please try again later. </div>');
                     $('.loading').hide();
