@@ -135,6 +135,11 @@ Route::group(['prefix' => 'tracking-inventory'], function () {
     Route::get('/show/duplicate/{id}', 'TrackingController@showDuplicate')->name('tracking-inventory-duplicate');
 });
 
+Route::group(['prefix' => 'tracking'], function () {
+	Route::get('/double-check', 'TrackingController@doubleCheck')->name('double-check');
+	Route::post('/double-check', 'TrackingController@doubleCheck')->name('double-check.filter');
+});
+
 Route::group(['prefix' => 'sub_report'], function () {
     Route::get('/', 'SubReportController@index')->name('sub-report-line');
     Route::get('/getReport', 'SubReportController@getBudget')->name('get-budget');

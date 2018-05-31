@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\AdResult;
+use App\Contact;
 use App\Permission;
 use App\Role;
 use App\User;
@@ -105,4 +107,134 @@ class TrackingController extends Controller {
 			'page_size'
 		) );
 	}
+
+	public function doubleCheck(Request $request){
+		$page_title = "Double Check | Helios";
+		$page_css = array();
+		$no_main_header = FALSE; //set true for lock.php and login.php
+		$active = 'double-check';
+		$breadcrumbs = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Tracking <span>> Double Check</span>";
+
+		$table['ad_results'] = [];
+		$table['contacts'] = [];
+
+
+		if (isset($request->submit_date)) {
+			$submit_date = $request->submit_date;
+			$date_place = str_replace('-', ' ', $submit_date);
+			$date_arr = explode(' ', str_replace('/', '-', $date_place));
+			$date_start = strtotime($date_arr[0]);
+			$date_end = strtotime("+1 day", strtotime($date_arr[1]));
+		}
+		else {
+			$date_time   = date('d/m/Y');
+			$date_start  = strtotime(str_replace('/', '-', $date_time));
+			$date_end    = strtotime(str_replace('/', '-', $date_time)) + 86400;
+			$submit_date = $date_time . '-' . $date_time;
+		}
+
+		$contacts = Contact::where( 'submit_time', '>=',  $date_start * 1000 )
+	                         ->where( 'submit_time', '<',  $date_end  * 1000 )
+	                         ->get();
+
+		$l1 = Contact::where( 'l1_time', '>=',   date('Y-m-d', $date_start) )
+	                   ->where( 'l1_time', '<', date('Y-m-d', $date_end))
+	                   ->get();
+
+		$l2 = Contact::where( 'l2_time', '>=',   date('Y-m-d', $date_start) )
+		             ->where( 'l2_time', '<', date('Y-m-d', $date_end))
+		             ->get();
+
+		$l3 = Contact::where( 'l3_time', '>=',   date('Y-m-d', $date_start) )
+		             ->where( 'l3_time', '<', date('Y-m-d', $date_end))
+		             ->get();
+
+		$l4 = Contact::where( 'l4_time', '>=',   date('Y-m-d', $date_start)  )
+		             ->where( 'l4_time', '<', date('Y-m-d', $date_end))
+		             ->get();
+
+		$l5 = Contact::where( 'l5_time', '>=',   date('Y-m-d', $date_start)  )
+		             ->where( 'l5_time', '<', date('Y-m-d', $date_end))
+		             ->get();
+
+		$l6 = Contact::where( 'l6_time', '>=',   date('Y-m-d', $date_start)  )
+		             ->where( 'l6_time', '<', date('Y-m-d', $date_end))
+		             ->get();
+
+		$l7 = Contact::where( 'l7_time', '>=',   date('Y-m-d', $date_start)  )
+		             ->where( 'l7_time', '<', date('Y-m-d', $date_end))
+		             ->get();
+
+		$l8 = Contact::where( 'l8_time', '>=',   date('Y-m-d', $date_start)  )
+		             ->where( 'l8_time', '<', date('Y-m-d', $date_end))
+		             ->get();
+
+		$table['contacts']['c3'] = 0;
+		$table['contacts']['l1'] = count($l1);
+		$table['contacts']['l2'] = count($l2);
+		$table['contacts']['l3'] = count($l3);
+		$table['contacts']['l4'] = count($l4);
+		$table['contacts']['l5'] = count($l5);
+		$table['contacts']['l6'] = count($l6);
+		$table['contacts']['l7'] = count($l7);
+		$table['contacts']['l8'] = count($l8);
+		$table['contacts']['spent'] = 0;
+		$table['contacts']['revenue'] = 0;
+
+		foreach ($contacts as $contact){
+			if(in_array($contact['clevel'], ['c3a','c3b','c3bg'])){
+				$table['contacts']['c3'] += 1;
+			}
+		}
+
+		foreach ($l8 as $contact){
+			$table['contacts']['spent'] += isset($contact['spent']) ? $contact['spent'] : 0 ;
+			$table['contacts']['revenue'] += isset($contact['revenue']) ? $contact['revenue'] : 0 ;
+		}
+
+
+		$ad_results = AdResult::where( 'date', '>=',  date('Y-m-d', $date_start) )
+		                      ->where( 'date', '<', date('Y-m-d', $date_end))
+		                      ->get();
+
+
+		$table['ad_results']['c3'] = 0;
+		$table['ad_results']['l1'] = 0;
+		$table['ad_results']['l2'] = 0;
+		$table['ad_results']['l3'] = 0;
+		$table['ad_results']['l4'] = 0;
+		$table['ad_results']['l5'] = 0;
+		$table['ad_results']['l6'] = 0;
+		$table['ad_results']['l7'] = 0;
+		$table['ad_results']['l8'] = 0;
+		$table['ad_results']['spent'] = 0;
+		$table['ad_results']['revenue'] = 0;
+
+		 foreach ($ad_results as $ad_result){
+			 $table['ad_results']['c3'] += isset($ad_result['c3']) ? $ad_result['c3'] : 0 ;
+			 $table['ad_results']['l1'] += isset($ad_result['l1']) ? $ad_result['l1'] : 0 ;
+			 $table['ad_results']['l2'] += isset($ad_result['l2']) ? $ad_result['l2'] : 0 ;
+			 $table['ad_results']['l3'] += isset($ad_result['l3']) ? $ad_result['l3'] : 0 ;
+			 $table['ad_results']['l4'] += isset($ad_result['l4']) ? $ad_result['l4'] : 0 ;
+			 $table['ad_results']['l5'] += isset($ad_result['l5']) ? $ad_result['l5'] : 0 ;
+			 $table['ad_results']['l6'] += isset($ad_result['l6']) ? $ad_result['l6'] : 0 ;
+			 $table['ad_results']['l7'] += isset($ad_result['l7']) ? $ad_result['l7'] : 0 ;
+			 $table['ad_results']['l8'] += isset($ad_result['l8']) ? $ad_result['l8'] : 0 ;
+			 $table['ad_results']['spent'] += isset($ad_result['spent']) ? $ad_result['spent'] : 0 ;
+			 $table['ad_results']['revenue'] += isset($ad_result['revenue']) ? $ad_result['revenue'] : 0 ;
+		 }
+
+		return view('pages.double-check', compact(
+			'page_title',
+			'page_css',
+			'no_main_header',
+			'active',
+			'breadcrumbs',
+			'page_size',
+			'subcampaigns',
+			'table',
+			'submit_date'
+		));
+	}
+
 }
