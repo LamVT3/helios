@@ -47,10 +47,16 @@ class ConfigController extends Controller
         }
 
         /*if (!\Entrust::can('edit-review')) return view('errors.403');*/
-        $this->validate(request(), [
-            'key'   => 'required',
-            'value' => 'required',
-        ]);
+        try
+        {
+            $this->validate(request(), [
+                'key'   => 'required|unique:configs,key',
+                'value' => 'required',
+            ]);
+        }catch(\Exception $e){
+            return config('constants.CONFIG_INVALID');
+        }
+
 
         $user = auth()->user();
 

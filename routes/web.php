@@ -94,6 +94,7 @@ Route::group(['prefix' => 'ajax'], function () {
     Route::get('/getL8Chart', 'AjaxController@getL8Chart')->name('ajax-getL8Chart');
     Route::get('/getReportMonthly', 'AjaxController@getReportMonthly')->name('ajax-getReportMonthly');
     Route::get('/getReportYear', 'AjaxController@getReportYear')->name('ajax-getReportYear');
+    Route::get('/getReportStatistic', 'AjaxController@getReportStatistic')->name('ajax-getReportStatistic');
     Route::get('/paginate', 'AjaxController@getContactPaginate')->name('ajax-paginate');
     Route::get('/getFilterMaketer', 'AjaxController@getFilterMaketer')->name('ajax-getFilterMaketer');
     Route::get('updateStatusExport', 'AjaxController@updateStatusExport')->name('ajax-updateStatusExport');
@@ -145,7 +146,13 @@ Route::group(['prefix' => 'sub_report'], function () {
     Route::get('/getReport', 'SubReportController@getBudget')->name('get-budget');
     Route::get('/getQuantity', 'SubReportController@getQuantity')->name('get-quantity');
     Route::get('/getQuality', 'SubReportController@getQuality')->name('get-quality');
+
     Route::get('/filter', 'SubReportController@getFilter')->name('line-chart.filter');
 	Route::get('/hour-report', 'SubReportController@hourReport')->name('hour-report');
 	Route::post('/hour-report', 'SubReportController@hourReportFilter')->name('hour-report.filter');
+
+    Route::get('/getByDays', 'SubReportController@getDataByDays')->name('line-chart.getByDays');
+    Route::get('/getByWeeks', 'SubReportController@getDataByWeeks')->name('line-chart.getByWeeks');
+    Route::get('/getByMonths', 'SubReportController@getDataByMonths')->name('line-chart.getByMonths');
+
 });

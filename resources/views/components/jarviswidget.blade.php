@@ -25,7 +25,7 @@
                     <button id="dropdown" class="btn dropdown-toggle btn-xs btn-warning" data-toggle="dropdown">
                         Dropdown <i class="fa fa-caret-down"></i>
                     </button>
-                    <ul class="dropdown-menu pull-right">
+                    <ul class="dropdown-menu pull-right" style="z-index: 999;">
                         @for ($i = 1; $i <= 12; $i++)
                             <li id="month" value="{{$i}}">
                                 <a href="javascript:void(0);">{{date('F - Y', strtotime('2018-'.$i))}}</a>
@@ -42,7 +42,7 @@
                     <button id="dropdownY" class="btn dropdown-toggle btn-xs btn-warning" data-toggle="dropdown">
                         Dropdown <i class="fa fa-caret-down"></i>
                     </button>
-                    <ul class="dropdown-menu pull-right">
+                    <ul class="dropdown-menu pull-right" style="z-index: 999;">
                         <li id="lastMonth" value="6"><a href="javascript:void(0);">Last 6 months</a></li>
                         <li id="lastMonth" value="12"><a href="javascript:void(0);">Last 12 months</a></li>
                         <li id="lastMonth" value="18"><a href="javascript:void(0);">Last 18 months</a></li>

@@ -32,7 +32,7 @@
             'revenue' => $revenue,
         ];
     ?>
-    <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0; background: #fafafa" class="bold center blue">MARKETING_INDEX REPORT</div>
+    <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0; background: #fafafa" class="bold center orange">RADAR MARKETING ONLINE</div>
     <div style="font-size: x-large; border-bottom: 1px #ddd solid !important; padding: 15px 0; float: left; width: 100%" class="bold italic blue">
         <div class="inlineBlock col-md-2">Budget :</div><!--
         --><div class="orange inlineBlock col-md-2"></div><!--
@@ -52,18 +52,15 @@
     <div class="wrapper_report_year gray">
         <div style="width: 250px; display: inline-block;">
             <table class="table" width="100%">
-                <thead>
-                <tr class="font-medium orange" style="height: 40px;">
-                    <th style="border-top: 2px solid #fff; border-bottom: 2px solid #fff;"></th>
-                    <th style="border: 2px solid #fff; border-left: none;"></th>
+                <thead style="top: 34px;">
+                <tr class="font-medium orange" style="height: 36px;">
+                    <th style="border: 2px solid #fff; border-left: none; text-align: right;" colspan="2">Year</th>
                 </tr>
-                <tr class="italic center" style="height: 40px;">
-                    <th style="border-bottom: 2px solid #fff;"></th>
-                    <th style="border-right: 2px solid #fff; border-bottom: 2px solid #fff;"></th>
+                <tr class="italic center" style="height: 36px;">
+                    <th style="border-right: 2px solid #fff; border-bottom: 2px solid #fff; text-align: right;" colspan="2">Month</th>
                 </tr>
-                <tr class="italic center" style="height: 60px;">
-                    <th></th>
-                    <th style="border-right: 2px solid #fff;"></th>
+                <tr class="italic center" style="height: 53px;">
+                    <th style="border-right: 2px solid #fff; text-align: right; vertical-align: middle;" colspan="2"> Days in month</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -177,8 +174,8 @@
         </div>
         <div class="content" style="width: calc(100% - 250px); float: right">
             <table id="table_report" class="table" width="100%">
-                <thead>
-                    <tr class="font-medium orange" style="height: 40px;">
+                <thead style="top: 34px; z-index: 0;">
+                    <tr class="font-medium orange" style="height: 36px;">
                         <?php
                             $arrY = array();
                             $col = 1;
@@ -197,7 +194,7 @@
                         ?>
                         <th class="center" style="border-top: 2px solid #fff; border-bottom: 1px solid #fff;">Total</th>
                     </tr>
-                    <tr class="italic center" style="height: 40px;">
+                    <tr class="italic center" style="height: 36px;">
                         <?php
                         $arrY = array();
                         foreach ($reportY as $key => $rs) {
@@ -211,7 +208,7 @@
                         ?>
                         <th class="center" style="border-top: 2px solid #fff; border-bottom: 2px solid #fff;"></th>
                     </tr>
-                    <tr class="italic center" style="height: 60px;">
+                    <tr class="italic center" style="height: 53px;">
                         <?php
                         $arrY = array();
                         foreach ($reportY as $key => $rs) {
@@ -220,7 +217,7 @@
                                 $m = substr($key, -2);
                                 $days = cal_days_in_month(CAL_GREGORIAN, $m, $y);
                                 echo '<th style="'.(($m == '12' || ($m == date('m') && $y == date('Y'))) ? "border-right: 2px solid #fff;" : "").
-                                    '" class="center '.(($m == '01') ? 'white bg-blue' : 'blue').'">'.$days.' days</th>';
+                                    '" class="center '.(($m == '01') ? 'orange' : 'blue').'">'.$days.' days</th>';
                             }
                         }
                         ?>
@@ -474,10 +471,13 @@
         height: 40px;
         border-bottom: 1px solid #ddd;
     }
-
     .content {
-        width: 100%;
         border: none 0px;
         overflow-x: scroll;
+    }
+    .sticky {
+        position: sticky;
+        top: 0;
+        z-index: 1;
     }
 </style>
