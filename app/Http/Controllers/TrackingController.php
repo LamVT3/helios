@@ -12,7 +12,6 @@ use DB;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Input;
 
 class TrackingController extends Controller {
@@ -137,47 +136,15 @@ class TrackingController extends Controller {
 	                         ->where( 'submit_time', '<',  $date_end  * 1000 )
 	                         ->get();
 
-		$l1 = Contact::where( 'l1_time', '>=',   date('Y-m-d', $date_start) )
-	                   ->where( 'l1_time', '<', date('Y-m-d', $date_end))
-	                   ->get();
-
-		$l2 = Contact::where( 'l2_time', '>=',   date('Y-m-d', $date_start) )
-		             ->where( 'l2_time', '<', date('Y-m-d', $date_end))
-		             ->get();
-
-		$l3 = Contact::where( 'l3_time', '>=',   date('Y-m-d', $date_start) )
-		             ->where( 'l3_time', '<', date('Y-m-d', $date_end))
-		             ->get();
-
-		$l4 = Contact::where( 'l4_time', '>=',   date('Y-m-d', $date_start)  )
-		             ->where( 'l4_time', '<', date('Y-m-d', $date_end))
-		             ->get();
-
-		$l5 = Contact::where( 'l5_time', '>=',   date('Y-m-d', $date_start)  )
-		             ->where( 'l5_time', '<', date('Y-m-d', $date_end))
-		             ->get();
-
-		$l6 = Contact::where( 'l6_time', '>=',   date('Y-m-d', $date_start)  )
-		             ->where( 'l6_time', '<', date('Y-m-d', $date_end))
-		             ->get();
-
-		$l7 = Contact::where( 'l7_time', '>=',   date('Y-m-d', $date_start)  )
-		             ->where( 'l7_time', '<', date('Y-m-d', $date_end))
-		             ->get();
-
-		$l8 = Contact::where( 'l8_time', '>=',   date('Y-m-d', $date_start)  )
-		             ->where( 'l8_time', '<', date('Y-m-d', $date_end))
-		             ->get();
-
 		$table['contacts']['c3'] = 0;
-		$table['contacts']['l1'] = count($l1);
-		$table['contacts']['l2'] = count($l2);
-		$table['contacts']['l3'] = count($l3);
-		$table['contacts']['l4'] = count($l4);
-		$table['contacts']['l5'] = count($l5);
-		$table['contacts']['l6'] = count($l6);
-		$table['contacts']['l7'] = count($l7);
-		$table['contacts']['l8'] = count($l8);
+		$table['contacts']['l1'] = 0;
+		$table['contacts']['l2'] = 0;
+		$table['contacts']['l3'] = 0;
+		$table['contacts']['l4'] = 0;
+		$table['contacts']['l5'] = 0;
+		$table['contacts']['l6'] = 0;
+		$table['contacts']['l7'] = 0;
+		$table['contacts']['l8'] = 0;
 		$table['contacts']['spent'] = 0;
 		$table['contacts']['revenue'] = 0;
 
@@ -185,18 +152,21 @@ class TrackingController extends Controller {
 			if(in_array($contact['clevel'], ['c3a','c3b','c3bg'])){
 				$table['contacts']['c3'] += 1;
 			}
-		}
-
-		foreach ($l8 as $contact){
+			$table['contacts']['l1'] += isset($contact['l1_time']) && !empty($contact['l1_time']) ? 1 : 0 ;
+			$table['contacts']['l2'] += isset($contact['l2_time']) && !empty($contact['l2_time']) ? 1 : 0 ;
+			$table['contacts']['l3'] += isset($contact['l3_time']) && !empty($contact['l3_time']) ? 1 : 0 ;
+			$table['contacts']['l4'] += isset($contact['l4_time']) && !empty($contact['l4_time']) ? 1 : 0 ;
+			$table['contacts']['l5'] += isset($contact['l5_time']) && !empty($contact['l5_time']) ? 1 : 0 ;
+			$table['contacts']['l6'] += isset($contact['l6_time']) && !empty($contact['l6_time']) ? 1 : 0 ;
+			$table['contacts']['l7'] += isset($contact['l7_time']) && !empty($contact['l7_time']) ? 1 : 0 ;
+			$table['contacts']['l8'] += isset($contact['l8_time']) && !empty($contact['l8_time']) ? 1 : 0 ;
 			$table['contacts']['spent'] += isset($contact['spent']) ? $contact['spent'] : 0 ;
 			$table['contacts']['revenue'] += isset($contact['revenue']) ? $contact['revenue'] : 0 ;
 		}
 
-
 		$ad_results = AdResult::where( 'date', '>=',  date('Y-m-d', $date_start) )
 		                      ->where( 'date', '<', date('Y-m-d', $date_end))
 		                      ->get();
-
 
 		$table['ad_results']['c3'] = 0;
 		$table['ad_results']['l1'] = 0;
