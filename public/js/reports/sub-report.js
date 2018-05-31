@@ -344,7 +344,7 @@ $(document).ready(function () {
     })
 
     $('.nav-tabs a[href="#by_weeks"]').on('show.bs.tab', function () {
-        loadDataByWeeks();
+        setTimeout(function(){ loadDataByWeeks(); }, 300);
     });
 
     $('#budget_by_weeks_chk input[type=checkbox]').change(function (e) {
@@ -360,7 +360,7 @@ $(document).ready(function () {
     })
 
     $('.nav-tabs a[href="#by_months"]').on('show.bs.tab', function () {
-        loadDataByMonths();
+        setTimeout(function(){ loadDataByMonths(); }, 300);
     });
 
     $('#budget_by_months_chk input[type=checkbox]').change(function (e) {
