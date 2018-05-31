@@ -361,3 +361,6 @@ input#limit
 #sub_report_tab {
     margin: 10px 0px 0px 0px;
 }
+div.chart{
+    width: 98%;
+}
