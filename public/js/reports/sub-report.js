@@ -68,6 +68,9 @@ $(document).ready(function () {
             get_quality(month);
         }
     });
+
+    loadDataByWeeks();
+    loadDataByMonths();
 });
 
 function set_title() {
