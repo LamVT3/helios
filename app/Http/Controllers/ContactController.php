@@ -307,6 +307,7 @@ class ContactController extends Controller
 
         $filePath =  $destinationPath . '/' . $file->getClientOriginalName();
         // DB::connection( 'mongodb' )->enableQueryLog();
+
         Excel::load($filePath, function($reader) {
 
             $client = new Client();
@@ -317,26 +318,29 @@ class ContactController extends Controller
             ]);*/
 
             $import_time = time();
-            $invalid_item = [];
+
+            $cnt = 0;
+            $template = \config('constants.TEMPLATE_IMPORT');
+            $invalid = array_diff($template,$results->getHeading());
+
+            if(count($invalid) > 0){
+                if(count($invalid) < 5){
+                    $fields = implode("',' ",$invalid);
+                    $errors =  'Invalid field(s): \''.$fields.'\' in file import !!! - Please download sample file.';
+                    return redirect()->back()->withErrors($errors);
+                }
+                $errors =  'File import is invalid !!! - Please download sample file.';
+                return redirect()->back()->withErrors($errors);
+            }
 
             foreach($results as $item){
 
+                if($item->phone == '' && $item->name == '' && $item->email == ''){
+                    continue; // check import blank record
+                }
+
                 // validate submit_time
-
                 $submit_time = is_object($item->submit_time) ? $item->submit_time->timestamp : $import_time;
-                if($submit_time < strtotime("01/01/2010")
-                    || $submit_time > strtotime("01/01/2035") ){
-                    $submit_time = $import_time;
-                }
-
-                $phone = $this->format_phone($item->phone."");
-                if(!$this->validate_phone($phone)) continue;
-
-                // validate email
-                $email = $item->email;
-                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $email = 'invalid@email.com';
-                }
 
                 $contact = new Contact();
                 $contact->contact_source = "import_data";
@@ -350,34 +354,19 @@ class ContactController extends Controller
                 $contact->subcampaign_name = $item->utm_subcampaign;
                 $contact->ad_name = $item->utm_ad;
                 $contact->name = $item->fullname;
-                $contact->phone = $phone;
-                $contact->email = $email;
+                $contact->phone = $item->phone;
+                $contact->email = $item->email;
                 $contact->age = $item->age;
                 $contact->landing_page = $item->landing_page;
                 $contact->ad_link = $item->ad_link;
                 $contact->channel = $item->channel;
                 $contact->import_time = $import_time;
-                $contact->clevel = "c3b";
+                $contact->clevel = "c3a";
 
-                // validate phone
-                if(!$this->validate_phone($phone)){
-                    $contact->clevel = "c3a";
-                    $contact->invalid_reason = "invalid phone";
-                }
+                list($contact->clevel, $contact->invalid_reason) = $this->validate_c3a($contact);
 
-                // Check duplicated
-                $submit_date = date('Y-m-d', $contact->submit_time/1000);
-                $startDate = strtotime($submit_date)*1000;
-                $endDate = strtotime("+1 day", strtotime($submit_date)) * 1000;
-
-                if(Contact::where('phone', $phone)->where('submit_time', '>=', $startDate)->where('submit_time', '<', $endDate)->exists()){
-                    $contact->clevel = "c3a";
-                    $contact->invalid_reason = "duplicated";
-                }
-                // Check age
-                if(is_numeric($item->age) && $item->age < 18){
-                    $contact->clevel = "c3a";
-                    $contact->invalid_reason = "invalid age";
+                if($contact->clevel == 'c3b'){
+                    list($contact->clevel, $contact->invalid_reason) = $this->validate_c3b($contact);
                 }
 
                 // match ad_id
@@ -395,29 +384,33 @@ class ContactController extends Controller
                 }
                 $contact->contact_id = $this->gen_contact_id($contact);
 
+                $cnt++;
                 $contact->save();
 
                 // Update c3, c3b statistic in ad_results
                 $ad_result = AdResult::where('ad_id', $contact->ad_id)->where('date', date('Y-m-d', $contact->submit_time/1000))->first();
                 if($ad_result === null){
                     $ad_result = new AdResult();
-                    $ad_result->ad_id = $contact->ad_id;
-                    $ad_result->date = date('Y-m-d', $contact->submit_time/1000);
-                    $ad_result->c3 = 1;
-                    $ad_result->c3b = ($contact->clevel === "c3a") ? 0 : 1;
+                    $ad_result->ad_id   = $contact->ad_id;
+                    $ad_result->date    = date('Y-m-d', $contact->submit_time/1000);
+                    $ad_result->c3      = 1;
+                    $ad_result->c3a     = ($contact->clevel === "c3a")  ? 1 : 0;
+                    $ad_result->c3b     = ($contact->clevel === "c3b")  ? 1 : 0;
+                    $ad_result->c3bg    = ($contact->clevel === "c3bg") ? 1 : 0;
                     if($contact->ad_id !== 'unknown') $ad_result->creator_id = $ad->creator_id;
                 }else{
                     $ad_result->c3 ++;
-                    $ad_result->c3b += ($contact->clevel === "c3a") ? 0 : 1;
+                    $ad_result->c3a     += ($contact->clevel === "c3a")     ? 1 : 0;
+                    $ad_result->c3b     += ($contact->clevel === "c3b")     ? 1 : 0;
+                    $ad_result->c3bg    += ($contact->clevel === "c3bg")    ? 1 : 0;
                 }
-
                 $ad_result->save();
-
             }
+
+            session()->flash('message', $cnt.' Contact(s) have been imported successfully');
 
         });
         //DB::connection('mongodb')->getQueryLog();
-        session()->flash('message', 'Contacts have been imported successfully');
         return redirect()->back();
     }
 
@@ -430,6 +423,11 @@ class ContactController extends Controller
     }
 
     private function validate_phone($phone){
+        if(!preg_match('/^[0-9]/', $phone))
+        {
+            return false;
+        }
+
         if($phone) return true;
         return false;
     }
@@ -439,6 +437,65 @@ class ContactController extends Controller
         $submit_time = date('Ymd', $contact->submit_time/1000);
         $phone = substr($contact->phone, -6);
         return $submit_time.$phone.'TL';
+    }
+
+    private function validate_c3a($contact){
+
+        // validate phone
+        if(!$this->validate_phone($contact->phone)){
+            $clevel         = "c3a";
+            $invalid_reason = "invalid phone";
+
+            return array($clevel, $invalid_reason);
+        }
+
+        // validate email
+        $email = $contact->email;
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $clevel         = "c3a";
+            $invalid_reason = 'invalid email';
+            return array($clevel, $invalid_reason);
+        }
+
+        // Check duplicated in current day
+        $exist = Contact::where([['phone', $contact->phone], ['name', $contact->name]])
+            ->orWhere([['phone', $contact->phone], ['email', $contact->email]])
+            ->orWhere([['name', $contact->phone], ['email', $contact->name]])
+            ->where('submit_time', '>=', strtotime("midnight")*1000)
+            ->where('submit_time', '<', strtotime("tomorrow")*1000)->exists();
+
+        if($exist){
+            $clevel         = "c3a";
+            $invalid_reason = 'duplicated';
+            return array($clevel, $invalid_reason);
+        }
+
+        return array('c3b', '');
+    }
+
+    private function validate_c3b($contact){
+        if($contact->age < 18){
+            $clevel         = "c3b";
+            $invalid_reason = 'c3b - age < 18';
+            return array($clevel, $invalid_reason);
+        }
+
+        $past_15_date = strtotime("-15 day");
+
+        // Check duplicated
+        $exist = Contact::where([['phone', $contact->phone], ['name', $contact->name]])
+            ->orWhere([['phone', $contact->phone], ['email', $contact->email]])
+            ->orWhere([['name', $contact->phone], ['email', $contact->name]])
+            ->where('submit_time', '>=', $past_15_date * 1000)
+            ->where('submit_time', '<', strtotime("tomorrow")*1000)->exists();
+
+        if($exist){
+            $clevel         = "c3b";
+            $invalid_reason = 'c3b - duplicated in 15 days';
+            return array($clevel, $invalid_reason);
+        }
+
+        return array('c3bg', '');
     }
 
 }

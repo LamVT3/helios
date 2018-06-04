@@ -204,7 +204,7 @@ $(document).ready(function () {
         }
     });
 
-    $('div.alert-success').hide();
+    // $('div.alert-success').hide();
 
     $('#search-form-c3').submit(function (e) {
         e.preventDefault();
