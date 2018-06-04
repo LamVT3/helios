@@ -175,7 +175,6 @@
             modal.find('input[name=title]').val('');
             modal.find('input[name=notification_id]').val('');
             modal.find('textarea[name=content]').html('');
-            console.log($('textarea[name=content]').val());
             if (itemId) {
                 $.get('{{ route("notification-get", "") }}/' + itemId, {}, function (data) {
                     if (data.type && data.type == 'success') {

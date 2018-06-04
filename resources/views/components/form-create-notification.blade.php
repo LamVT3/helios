@@ -1,7 +1,7 @@
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="post" id="form-campaign" action="{{ route("notification-save") }}">
+            <form method="post" id="form-campaign" action="{{ route("notification-save") }}" novalidate>
                 <input type="hidden" name="notification_id" value=""/>
                 <input type="hidden" name="notification_type" value="Create"/>
                 <div class="modal-header">
