@@ -38,9 +38,7 @@
 
         $('#notify_confirm').click(function () {
             $.get($(this).data('url'), {}, function (data) {
-                console.log(data);
                 if (data.type && data.type == 'success') {
-                    alert("Ok")
                     $('#notify').modal('hide');
                 } else {
                     $('#notify').modal('hide');
