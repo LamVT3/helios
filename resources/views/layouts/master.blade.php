@@ -84,6 +84,10 @@
 
 @yield('script')
 
+@auth
+    @include('components.notify')
+@endauth
+
 <!-- Your GOOGLE ANALYTICS CODE Below -->
 
 </body>

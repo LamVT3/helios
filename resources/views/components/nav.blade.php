@@ -94,6 +94,11 @@
                             class="menu-item-parent">Contacts</span></a>
             </li>
 
+            <li class="{{ $active == 'notification' ? 'active' : '' }}">
+                <a href="{{ route('notification') }}"><i class="fa fa-lg fa-fw fa-bell"></i> <span
+                            class="menu-item-parent">Notification</span></a>
+            </li>
+
             {{--@permission('view-user')--}}
             <li class="{{ $active == 'users' ? 'active' : '' }}">
                 <!-- 2018-04-04 lamvt update icon -->

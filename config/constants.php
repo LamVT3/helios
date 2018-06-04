@@ -14,6 +14,7 @@ return [
     'LANDING_PAGE_INVALID'  => 'The Landing page name has already been taken.',
     'SOURCE_INVALID'        => 'The Source name has already been taken.',
     'TEAM_INVALID'          => 'The Team name has already been taken.',
+    'NOTIFICATION_INVALID'  => 'The Notification name has already been taken.',
 ];
 
 

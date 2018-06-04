@@ -141,6 +141,14 @@ Route::group(['prefix' => 'tracking'], function () {
 	Route::post('/double-check', 'TrackingController@doubleCheck')->name('double-check.filter');
 });
 
+Route::group(['prefix' => 'notification'], function () {
+	Route::get('/', 'NotificationController@index')->name('notification');
+	Route::get('/show/{id}', 'NotificationController@show')->name('notification-show');
+	Route::get('/confirm/{id}', 'NotificationController@confirm')->name('notification-confirm');
+	Route::get('/get/{id}', 'NotificationController@get')->name('notification-get');
+	Route::post('/save', 'NotificationController@save')->name('notification-save');
+});
+
 Route::group(['prefix' => 'sub_report'], function () {
     Route::get('/', 'SubReportController@index')->name('sub-report-line');
     Route::get('/getReport', 'SubReportController@getBudget')->name('get-budget');
