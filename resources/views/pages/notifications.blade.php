@@ -84,13 +84,14 @@
                                     </tr>
                                     </thead>
                                     <tbody>
+                                    @if(count($notification->users) > 0)
                                     @foreach ($notification->users as $item)
                                         <tr>
                                             <td>{{ $item['username'] }}</td>
                                             <td>{{ $item['date'] }}</td>
                                         </tr>
                                     @endforeach
-
+                                    @endif
                                     </tbody>
                                 </table>
                             </div>
