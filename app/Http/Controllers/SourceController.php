@@ -42,13 +42,15 @@ class SourceController extends Controller
     public function store()
     {
         if(auth()->user()->role !== "Manager" && auth()->user()->role !== "Admin") return view('errors.403');
-        try{
-            $validator = [
-                'name' => 'required|unique:sources,name',
-            ];
-            $this->validate(request(), $validator);
-        }catch(\Exception $e){
-            return config('constants.AD_NAME_INVALID');
+        if (!request('source_id')){
+            try{
+                $validator = [
+                    'name' => 'required|unique:sources,name',
+                ];
+                $this->validate(request(), $validator);
+            }catch(\Exception $e){
+                return config('constants.AD_NAME_INVALID');
+            }
         }
 
         $user = auth()->user();

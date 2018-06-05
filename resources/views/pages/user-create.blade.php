@@ -89,7 +89,7 @@
                                                 </label>
                                             </section>
                                             <section class="col-lg-12">
-                                                <label class="label">Active?</label>
+                                                <label class="label">Active</label>
                                                 <div class="inline-group">
                                                     <label class="radio">
                                                         <input type="radio" name="is_active"

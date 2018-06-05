@@ -51,11 +51,12 @@
                                         <th>Subcampaign</th>
                                         <th>Campaign</th>
                                         <th>Landing Page</th>
+                                        <th>Channel</th>
                                         <th>Shorten URL</th>
                                         <th>Link tracking</th>
                                         <th>MOL Tracking</th>
                                         <th>Creator</th>
-                                        <th>Created at</th>
+                                        <th style="min-width: 150px">Created at</th>
                                         {{--<th>Active?</th>--}}
                                         {{--<th>Action</th>--}}
                                     </tr>
@@ -70,6 +71,7 @@
                                             <td>{{ $item->subcampaign_name }}</td>
                                             <td>{{ $item->campaign_name }}</td>
                                             <td>{{ $item->landing_page_name }}</td>
+                                            <td>{{ $item->channel_name }}</td>
                                             <td>
                                                 <a class="copy btn btn-default btn-xs" data-id="{{ $item->id }}" href="javascript:void(0)"> <i class='fa fa-copy'></i></a>
                                                 <a id="url-{{ $item->id }}" href="{{ $item->shorten_url }}" target="_blank">{{ $item->shorten_url }}</a>

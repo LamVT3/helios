@@ -41,7 +41,6 @@ Route::group(['prefix' => 'campaign'], function () {
 });
 
 Route::group(['prefix' => 'landingpage'], function () {
-
     Route::get('/', 'LandingPageController@index')->name('landing-page');
     Route::post('/create', 'LandingPageController@store')->name('landing-page-create');
     Route::get('/get/{id}', 'LandingPageController@get')->name('landing-page-get');
@@ -155,4 +154,16 @@ Route::group(['prefix' => 'sub_report'], function () {
     Route::get('/getByWeeks', 'SubReportController@getDataByWeeks')->name('line-chart.getByWeeks');
     Route::get('/getByMonths', 'SubReportController@getDataByMonths')->name('line-chart.getByMonths');
 
+});
+
+Route::group(['prefix' => 'thankyou_page'], function () {
+    Route::get('/', 'ThankYouPageController@index')->name('thankyou-page');
+    Route::post('/create', 'ThankYouPageController@store')->name('thankyou-page-create');
+    Route::get('/get/{id}', 'ThankYouPageController@get')->name('thankyou-page-get');
+});
+
+Route::group(['prefix' => 'channel'], function () {
+    Route::get('/', 'ChannelController@index')->name('channel');
+    Route::post('/create', 'ChannelController@store')->name('channel-create');
+    Route::get('/get/{id}', 'ChannelController@get')->name('channel-get');
 });

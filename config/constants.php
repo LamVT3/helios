@@ -16,6 +16,8 @@ return [
     'TEAM_INVALID'          => 'The Team name has already been taken.',
     'TEMPLATE_IMPORT'       => ['submit_time', 'utm_source', 'utm_team', 'utm_agent', 'utm_medium', 'utm_campaign',
         'utm_subcampaign', 'utm_ad', 'fullname', 'email', 'phone', 'age', 'landing_page', 'ad_link', 'channel'],
+    'THANKYOU_PAGE_INVALID' => 'The Thank you page name has already been taken.',
+    'CHANNEL_INVALID'       => 'The Channel name has already been taken.',
 ];
 
 
