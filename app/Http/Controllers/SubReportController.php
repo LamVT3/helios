@@ -478,6 +478,9 @@ class SubReportController extends Controller
 		$table['c3'] = [];
 		$table['c3b'] = [];
 		$table['c3bg'] = [];
+		$table['c3_week'] = [];
+		$table['c3b_week'] = [];
+		$table['c3bg_week'] = [];
 
 		$date_time   = date('Y-m-d');
 
@@ -537,24 +540,31 @@ class SubReportController extends Controller
 
 		for ($i = 0; $i < 24; $i++){
 			if(isset($contacts_week[$i]['c3a'])){
+				$table['c3_week'][$i] =  intval( round(count($contacts_week[$i]['c3a']) / 7));
 				$c3_week_line[] =  [$i, intval( round(count($contacts_week[$i]['c3a']) / 7))];
 			}
 			else{
+				$table['c3_week'][$i] =  0;
 				$c3_week_line[] =  [$i, 0];
 			}
 			if(isset($contacts_week[$i]['c3b']))
 			{
+				$table['c3b_week'][$i] =  intval( round(count($contacts_week[$i]['c3b']) / 7));
 				$c3b_week_line[] =  [$i, intval( round(count($contacts_week[$i]['c3b']) / 7))];
 			}
 			else
 			{
+				$table['c3b_week'][$i] =  0;
 				$c3b_week_line[] =  [$i, 0];
 			}
 			if(isset($contacts_week[$i]['c3bg'])){
+				$table['c3bg_week'][$i] =  intval( round(count($contacts_week[$i]['c3bg']) / 7));
+
 				$c3bg_week_line[] =  [$i, intval( round(count($contacts_week[$i]['c3bg']) / 7))];
 			}
 			else
 			{
+				$table['c3bg_week'][$i] =  0;
 				$c3bg_week_line[] =  [$i, 0];
 			}
 		}
@@ -603,6 +613,9 @@ class SubReportController extends Controller
 		$table['c3'] = [];
 		$table['c3b'] = [];
 		$table['c3bg'] = [];
+		$table['c3_week'] = [];
+		$table['c3b_week'] = [];
+		$table['c3bg_week'] = [];
 
 		$data_where = $this->getWhereData();
 
@@ -665,24 +678,31 @@ class SubReportController extends Controller
 
 		for ($i = 0; $i < 24; $i++){
 			if(isset($contacts_week[$i]['c3a'])){
+				$table['c3_week'][$i] =  intval( round(count($contacts_week[$i]['c3a']) / 7));
 				$c3_week_line[] =  [$i, intval( round(count($contacts_week[$i]['c3a']) / 7))];
 			}
 			else{
+				$table['c3_week'][$i] =  0;
 				$c3_week_line[] =  [$i, 0];
 			}
 			if(isset($contacts_week[$i]['c3b']))
 			{
+				$table['c3b_week'][$i] =  intval( round(count($contacts_week[$i]['c3b']) / 7));
 				$c3b_week_line[] =  [$i, intval( round(count($contacts_week[$i]['c3b']) / 7))];
 			}
 			else
 			{
+				$table['c3b_week'][$i] =  0;
 				$c3b_week_line[] =  [$i, 0];
 			}
 			if(isset($contacts_week[$i]['c3bg'])){
+				$table['c3bg_week'][$i] =  intval( round(count($contacts_week[$i]['c3bg']) / 7));
+
 				$c3bg_week_line[] =  [$i, intval( round(count($contacts_week[$i]['c3bg']) / 7))];
 			}
 			else
 			{
+				$table['c3bg_week'][$i] =  0;
 				$c3bg_week_line[] =  [$i, 0];
 			}
 		}
