@@ -197,6 +197,7 @@ fieldset:first-of-type {
 }
 
 #table_ads td{
+    min-width: 95px;
     max-width: 300px;
     word-wrap: break-word;
 }

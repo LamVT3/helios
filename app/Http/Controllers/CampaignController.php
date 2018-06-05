@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Ad;
 use App\Campaign;
+use App\Channel;
 use App\LandingPage;
 use App\Source;
 use App\Subcampaign;
@@ -40,6 +41,7 @@ class CampaignController extends Controller
         $team = Team::find($user->team_id);
 
         $landing_pages  = LandingPage::where('is_active', 1)->get();
+        $channel        = Channel::where('is_active', 1)->get();
         $page_size      = Config::getByKey('PAGE_SIZE');
 
         return view('pages.campaigns', compact(
@@ -52,7 +54,8 @@ class CampaignController extends Controller
             'team',
             'landing_pages',
             'user',
-            'page_size'
+            'page_size',
+            'channel'
         ));
     }
 
@@ -78,6 +81,7 @@ class CampaignController extends Controller
         $subcampaigns = Subcampaign::where('campaign_id', $campaign->id)->get();
         $landing_pages = LandingPage::where('is_active', 1)->get();
         $page_size     = Config::getByKey('PAGE_SIZE');
+        $channel       = Channel::where('is_active', 1)->get();
 
         return view('pages.subcampaigns', compact(
             'page_title',
@@ -91,7 +95,8 @@ class CampaignController extends Controller
             'campaign_id',
             'subcampaigns',
             'landing_pages',
-            'page_size'
+            'page_size',
+            'channel'
         ));
     }
 
@@ -121,6 +126,7 @@ class CampaignController extends Controller
         $mol_link_tracking = request('mol_link_tracking', "");
         $medium = request('medium', "");
         $landing_page = request('landing_page');
+        $channel = request('channel');
 
         //$current_url = \request('current_url', route('campaign'));
 
@@ -140,13 +146,15 @@ class CampaignController extends Controller
             $campaign->creator_name = $user->username;
             $campaign->is_active = 1;
 
-            try{
-                $validator = [
-                    'campaign_name' => 'required|unique:campaigns,name',
-                ];
-                $this->validate(request(), $validator);
-            }catch(\Exception $e){
-                return config('constants.CAMPAIGN_NAME_INVALID');
+            if (!request('id')){
+                try{
+                    $validator = [
+                        'campaign_name' => 'required|unique:campaigns,name',
+                    ];
+                    $this->validate(request(), $validator);
+                }catch(\Exception $e){
+                    return config('constants.CAMPAIGN_NAME_INVALID');
+                }
             }
 
             $campaign->save();
@@ -219,8 +227,11 @@ class CampaignController extends Controller
             $ad->subcampaign_id = $subcampaign->id;
             $ad->subcampaign_name = $subcampaign->name;
             $landing_page = LandingPage::findOrFail($landing_page);
+            $channel = Channel::findOrFail($channel);
             $ad->landing_page_id = $landing_page->id;
             $ad->landing_page_name = $landing_page->name;
+            $ad->channel_id = $channel->id;
+            $ad->channel_name = $channel->name;
             $ad->creator_id = $user->id;
             $ad->creator_name = $user->username;
             $ad->tracking_link = $landing_page->url . "?utm_source={$source->name}&utm_team={$team->name}&utm_agent={$user->username}&utm_campaign={$campaign->name}&utm_medium={$ad->medium}&utm_subcampaign={$subcampaign->name}&utm_ad={$ad->name}" . ($ad->mol_link_tracking ? "&{$ad->mol_link_tracking}" : '');

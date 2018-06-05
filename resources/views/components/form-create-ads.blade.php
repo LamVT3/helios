@@ -157,11 +157,26 @@
                                 </div>
                                 <div class="row">
                                     <section>
-                                        <label class="label col col-4" for="landing_page">Landing Page</label>
+                                        <label class="label col col-4 require_field" for="landing_page">Landing Page</label>
                                         <label class="select col col-8">
                                             <select name="landing_page" id="landing_page">
+                                                <option value="" selected>Select Landing Page</option>
                                                 @foreach ($landing_pages as $item)
                                                     <option value="{{ $item->id }}">{{ $item->url }}</option>
+                                                @endforeach
+                                            </select>
+                                            <i></i>
+                                        </label>
+                                    </section>
+                                </div>
+                                <div class="row">
+                                    <section>
+                                        <label class="label col col-4 require_field" for="channel">Channel</label>
+                                        <label class="select col col-8">
+                                            <select name="channel" id="channel">
+                                                <option value="" selected>Select Channel</option>
+                                                @foreach ($channel as $item)
+                                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
                                                 @endforeach
                                             </select>
                                             <i></i>

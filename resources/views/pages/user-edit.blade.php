@@ -43,7 +43,7 @@
                                             <section class="col-lg-12">
                                                 <label class="label require_field">Username</label>
                                                 <label class="input">
-                                                    <input type="text" name="username"
+                                                    <input type="text" name="username" disabled="disabled"
                                                            value="{{ old('username', isset($user) ? $user->username : '') }}">
                                                 </label>
                                             </section>
@@ -95,7 +95,7 @@
                                                 </label>
                                             </section>
                                             <section class="col-lg-12">
-                                                <label class="label">Active?</label>
+                                                <label class="label">Active</label>
                                                 <div class="inline-group">
                                                     <label class="radio">
                                                         <input type="radio" name="is_active"

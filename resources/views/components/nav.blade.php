@@ -44,6 +44,12 @@
                     <li class="{{ $active == 'mktmanager-teams' ? 'active' : '' }}">
                         <a href="{{ route('team') }}"><i class="fa fa-lg fa-fw fa-group"></i> Teams</a>
                     </li>
+                    <li class="{{ $active == 'mktmanager-channel' ? 'active' : '' }}">
+                        <a href="{{ route('channel') }}"><i class="fa fa-lg fa-fw fa-gg-circle"></i> Channel</a>
+                    </li>
+                    <li class="{{ $active == 'mktmanager-tksPage' ? 'active' : '' }}">
+                        <a href="{{ route('thankyou-page') }}"><i class="fa fa-lg fa-fw fa-gift"></i> Thank You Page</a>
+                    </li>
                     {{--<li class="{{ $active == 'kpis' ? 'active' : '' }}">
                         <a href="{{ route('kpis') }}"><i class="fa fa-lg fa-fw fa-bullseye"></i> Kpis</a>
                     </li>--}}

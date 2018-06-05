@@ -51,6 +51,7 @@
             var button = $(event.relatedTarget) // Button that triggered the modal
             var itemId = button.data('item-id')
             var modal = $(this);
+            modal.find('input[name=name]').removeAttr('disabled');
             if (itemId) {
                 $.get('{{ route("team-get", "") }}/' + itemId, {}, function (data) {
                     if (data.type && data.type == 'success') {
@@ -59,6 +60,7 @@
                         modal.find('.modal-title').text('Edit Team');
                         modal.find('input[name=team_id]').val(itemId);
                         modal.find('input[name=name]').val(team.name);
+                        modal.find('input[name=name]').attr('disabled','disabled');
                         //modal.find('select[name=source]').val(team.source_id);
                         modal.find('textarea[name=description]').html(team.description);
 

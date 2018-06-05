@@ -16,6 +16,7 @@
             var button = $(event.relatedTarget) // Button that triggered the modal
             var itemId = button.data('item-id');
             var modal = $(this);
+            modal.find('input[name=key]').removeAttr('disabled');
             if (itemId) {
                 $.get('{{ route("config-get", "") }}/' + itemId, {}, function (data) {
                     if (data.type && data.type == 'success') {
@@ -25,6 +26,7 @@
                         modal.find('input[name=config_id]').val(itemId);
                         modal.find('input[name=name]').val(config.name);
                         modal.find('input[name=key]').val(config.key);
+                        modal.find('input[name=key]').attr('disabled','disabled');
                         modal.find('input[name=value]').val(config.value);
                         modal.find('textarea[name=description]').html(config.description);
                         modal.find('select[name=active]').val(config.active);

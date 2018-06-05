@@ -17,13 +17,15 @@ class AdController extends Controller
     public function store()
     {
         /*if (!\Entrust::can('edit-review')) return view('errors.403');*/
-        try{
-            $validator = [
-                'name' => 'required|unique:ads,name',
-            ];
-            $this->validate(request(), $validator);
-        }catch(\Exception $e){
-            return config('constants.AD_NAME_INVALID');
+        if (!request('ads_id')){
+            try{
+                $validator = [
+                    'name' => 'required|unique:ads,name',
+                ];
+                $this->validate(request(), $validator);
+            }catch(\Exception $e){
+                return config('constants.AD_NAME_INVALID');
+            }
         }
 
         $ads = request('ads_id') ? Ad::find(request('ads_id')) : new Ad();
@@ -36,7 +38,7 @@ class AdController extends Controller
 
         $ads->save();
 
-        if (!request('id'))
+        if (!request('ads_id'))
             session()->flash('message', 'Ad has been created successfully');
         else
             session()->flash('message', 'Ad has been updated successfully');
