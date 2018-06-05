@@ -8,12 +8,14 @@
         <div id="content">
 
             @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
-                <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
-                   id="btn-create"
-                   data-item-type="Campaign"
-                   data-toggle="modal"
-                   data-target="#addModal"><i
-                            class="fa fa-plus fa-lg"></i> Create Notification</a>
+                    @if(auth()->user()->role == "Admin")
+                    <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
+                           id="btn-create"
+                           data-item-type="Campaign"
+                           data-toggle="modal"
+                           data-target="#addModal"><i
+                                    class="fa fa-plus fa-lg"></i> Create Notification</a>
+                    @endif
             @endcomponent
 
             @include('layouts.errors')
@@ -45,7 +47,9 @@
                                     @foreach ($notifications as $item)
                                         <tr id="notify-{{ $item->id }}">
                                             <td>{{ $item->title }}</td>
-                                            <td><p>{!! substr($item->content, 0,30) !!}...</p></td>
+                                            <td><div class="details" style="display:none">{!! $item->content !!}</div>
+                                                <a class="more" href="#">Show Details</a>
+                                            </td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
                                             <td>{{ $item->creator_name }}</td>
                                             <td>
@@ -80,6 +84,8 @@
                                     <thead>
                                     <tr>
                                         <th>Username</th>
+                                        <th>Title</th>
+                                        <th>Content</th>
                                         <th>Date</th>
                                     </tr>
                                     </thead>
@@ -88,6 +94,10 @@
                                     @foreach ($notification->users as $item)
                                         <tr>
                                             <td>{{ $item['username'] }}</td>
+                                            <td>{{ $item['title'] }}</td>
+                                            <td><div class="details" style="display:none">{!! $item['content'] !!}</div>
+                                                <a class="more" href="#">Show Details</a>
+                                            </td>
                                             <td>{{ $item['date'] }}</td>
                                         </tr>
                                     @endforeach
@@ -233,6 +243,11 @@
             });
         });
 
+        $('.more').click(function () {
+            var $this = $(this);
+            var detail = $(this).parent().find('.details');
+            detail.slideToggle(function(){$this.html(detail.is(':visible')?'Hidden Details':'Show Details');});
+        })
 
 
     })

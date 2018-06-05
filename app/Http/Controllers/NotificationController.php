@@ -91,7 +91,12 @@ class NotificationController extends Controller
 
 		$array_user = $notification->users;
 
-		$array_user[$user->id] = array('user_id' => $user->_id, 'username' => $user->username, 'date' => date('Y-m-d H:i:s'));
+		$array_user[$user->id] = array('user_id' => $user->_id,
+		                               'username' => $user->username,
+		                               'title' => $notification->title,
+		                               'content' => $notification->content,
+		                               'date' => date('Y-m-d H:i:s')
+									);
 
 		$notification->users = $array_user;
 
@@ -119,6 +124,7 @@ class NotificationController extends Controller
             $notification->content = $content;
             $notification->creator_id = $user->id;
 	        $notification->creator_name = $user->username;
+	        $notification->users = [];
 
 	        try{
                 $validator = [
@@ -138,6 +144,7 @@ class NotificationController extends Controller
             $notification = Notification::findOrFail(request('notification_id'));
 	        $notification->title = $title;
 	        $notification->content = $content;
+	        $notification->users = [];
 	        $notification->save();
 
 	        session()->flash('message', 'Notification has been updated successfully');
