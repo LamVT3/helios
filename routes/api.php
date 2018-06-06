@@ -24,12 +24,12 @@ Route::post( '/get-ads', function ( Request $request ) {
 	$ad = \App\Ad::where( 'name', $ads_name )->first();
 	if ( $ad ) {
 		return response()->json( [
-			                         'source'      => $ad->source_name,
-			                         'team'        => $ad->team_name,
+			                         'utm_source'      => $ad->source_name,
+			                         'utm_team'        => $ad->team_name,
 			                         'marketer'    => $ad->creator_name,
-			                         'campaign'    => $ad->campaign_name,
-			                         'subcampaign' => $ad->subcampaign_name,
-			                         'medium'      => $ad->medium,
+			                         'utm_campaign'    => $ad->campaign_name,
+			                         'utm_subcampaign' => $ad->subcampaign_name,
+			                         'utm_medium'      => $ad->medium,
 		                         ] );
 
 	}
