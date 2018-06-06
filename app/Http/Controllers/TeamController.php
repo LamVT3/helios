@@ -153,7 +153,7 @@ class TeamController extends Controller
             $m->save();
         }
 
-        if (!request('id'))
+        if (!request('team_id'))
             session()->flash('message', 'Team has been created successfully');
         else
             session()->flash('message', 'Team has been updated successfully');

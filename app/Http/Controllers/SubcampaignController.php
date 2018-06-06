@@ -41,6 +41,7 @@ class SubcampaignController extends Controller
         $ads = Ad::where('subcampaign_id', $subcampaign->id)->orderBy('created_at', 'desc')->get();
         $landing_pages = LandingPage::where('is_active', 1)->get();
         $page_size     = Config::getByKey('PAGE_SIZE');
+        $channel       = Channel::where('is_active', 1)->get();
 
         return view('pages.ads', compact(
             'page_title',
@@ -56,20 +57,23 @@ class SubcampaignController extends Controller
             'ads',
             'landing_pages',
             'page_size',
-            'max_display'
+            'max_display',
+            'channel'
         ));
     }
 
     public function store()
     {
         /*if (!\Entrust::can('edit-review')) return view('errors.403');*/
-        try{
-            $validator = [
-                'name' => 'required|unique:subcampaigns,name',
-            ];
-            $this->validate(request(), $validator);
-        }catch(\Exception $e){
-            return config('constants.SUBCAMPAIGN_NAME_INVALID');
+        if (!request('subcampaign_id')){
+            try{
+                $validator = [
+                    'name' => 'required|unique:subcampaigns,name',
+                ];
+                $this->validate(request(), $validator);
+            }catch(\Exception $e){
+                return config('constants.SUBCAMPAIGN_NAME_INVALID');
+            }
         }
 
         $subcampaign = request('subcampaign_id') ? Subcampaign::find(request('subcampaign_id')) : new Subcampaign();
@@ -81,7 +85,7 @@ class SubcampaignController extends Controller
 
         $subcampaign->save();
 
-        if (!request('id'))
+        if (!request('subcampaign_id'))
             session()->flash('message', 'Subcampaign has been created successfully');
         else
             session()->flash('message', 'Subcampaign has been updated successfully');
