@@ -13,6 +13,25 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::middleware( 'auth:api' )->get( '/user', function ( Request $request ) {
+	return $request->user();
+} );
+
+Route::post( '/get-ads', function ( Request $request ) {
+	$ads_name = $request->get('name');
+	if (!$ads_name)
+		return response()->json( [ 'result' => 'Ad name doesn\'t exists' ] );
+	$ad = \App\Ad::where( 'name', $ads_name )->first();
+	if ( $ad ) {
+		return response()->json( [
+			                         'source'      => $ad->source_name,
+			                         'team'        => $ad->team_name,
+			                         'marketer'    => $ad->creator_name,
+			                         'campaign'    => $ad->campaign_name,
+			                         'subcampaign' => $ad->subcampaign_name,
+			                         'medium'      => $ad->medium,
+		                         ] );
+
+	}
+	return response()->json( [ 'result' => 'Not found' ] );
+} );
