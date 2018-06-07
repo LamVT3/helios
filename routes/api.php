@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +27,7 @@ Route::post( '/get-ads', function ( Request $request ) {
 		return response()->json( [
 			                         'utm_source'      => $ad->source_name,
 			                         'utm_team'        => $ad->team_name,
-			                         'marketer'    => $ad->creator_name,
+			                         'utm_agent'       => $ad->creator_name,
 			                         'utm_campaign'    => $ad->campaign_name,
 			                         'utm_subcampaign' => $ad->subcampaign_name,
 			                         'utm_medium'      => $ad->medium,
