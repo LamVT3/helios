@@ -212,7 +212,6 @@ fieldset:first-of-type {
 
 .table-profile td a {
     font-size: 30px;
-
 }
 
 .select2-container{
@@ -364,4 +363,20 @@ input#limit
 }
 div.chart{
     width: 98%;
+}
+.statistic{
+    margin: 20px 20px 20px 20px;
+    border: 1px solid #ccc;
+}
+.statistic-top-1{
+    border-top: 4px solid #0000CD;
+    width: 40px;
+}
+.statistic-top-2{
+    border-top: 4px solid #FF0000;
+    width: 40px;
+}
+.statistic-top-3{
+    border-top: 4px solid #FF8C00;
+    width: 40px;
 }

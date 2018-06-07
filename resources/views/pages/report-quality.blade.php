@@ -347,6 +347,11 @@
     function get_report_statistic(year, month, noLastMonth) {
         $.get("{{ route('ajax-getReportStatistic') }}", {year: year, month: month, noLastMonth: noLastMonth}, function (data) {
             document.getElementById("statistic_report").innerHTML = data;
+            $('#statistic_chart_year').val(year);
+            $('#statistic_chart_month').val(month);
+            $('#statistic_chart_noMonth').val(noLastMonth);
+
+            initStatisticChart();
         }).fail( function () {
             alert('Cannot connect to server. Please try again later.');
         });
@@ -377,5 +382,6 @@
 </script>
 
 @include('components.script-jarviswidget')
+@include('components.script-statistic-chart')
 
 @stop
