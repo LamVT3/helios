@@ -108,7 +108,7 @@
                             $y = substr($key, 0, 4);
                             $m = substr($key, -2);
                             echo '<th style="border-bottom: 2px solid #fff;'.(($m == '12' || ($m == date('m') && $y == date('Y'))) ? "border-right: 2px solid #fff;" : "").
-                                '" class="center '.(($m == '01') ? 'white bg-blue' : 'blue').'">'.$m.'</th>';
+                                '" class="center '.(($m == date('m') && $y == date('Y')) ? 'white bg-blue' : '').'">'.$m.'</th>';
                         }
                     }
                     ?>
@@ -123,7 +123,7 @@
                             $m = substr($key, -2);
                             $days = cal_days_in_month(CAL_GREGORIAN, $m, $y);
                             echo '<th style="'.(($m == '12' || ($m == date('m') && $y == date('Y'))) ? "border-right: 2px solid #fff;" : "").
-                                '" class="center '.(($m == '01') ? 'orange' : 'blue').'">'.$days.' days</th>';
+                                '" class="center '.(($m == date('m') && $y == date('Y')) ? 'white bg-blue' : '').'">'.$days.' days</th>';
                         }
                     }
                     ?>

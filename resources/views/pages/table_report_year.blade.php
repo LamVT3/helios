@@ -36,18 +36,18 @@
     <div style="font-size: x-large; border-bottom: 1px #ddd solid !important; padding: 15px 0; float: left; width: 100%" class="bold italic blue">
         <div class="inlineBlock col-md-2">Budget :</div><!--
         --><div class="orange inlineBlock col-md-2"></div><!--
-        --><div class="inlineBlock col-md-3">Target L1 :</div><!--
-        --><div class="orange inlineBlock col-md-1"></div><!--
-        --><div class="inlineBlock col-md-3">L3/C3B :</div><!--
-        --><div class="orange inlineBlock col-md-1"></div>
+        --><div class="inlineBlock col-md-2">Target L1 :</div><!--
+        --><div class="orange inlineBlock col-md-2"></div><!--
+        --><div class="inlineBlock col-md-2">L3/C3B :</div><!--
+        --><div class="orange inlineBlock col-md-2"></div>
     </div>
     <div style="font-size: x-large; padding: 15px 0; float: left; width: 100%; " class="bold blue">
         <div class="inlineBlock col-md-2">Spent :</div><!--
         --><div class="orange inlineBlock col-md-2">{{ $reportY['Total']->spent }} USD</div><!--
-        --><div class="inlineBlock col-md-3">Produced (L1) :</div><!--
-        --><div class="orange inlineBlock col-md-1">{{ $reportY['Total']->l1 }} </div><!--
-        --><div class="inlineBlock col-md-3">Actual (L3/C3BG) : </div><!--
-        --><div class="orange inlineBlock col-md-1">{{ ($reportY['Total']->c3bg != 0) ? round($reportY['Total']->l3 / $reportY['Total']->c3bg,4)*100 : 0 }}%</div>
+        --><div class="inlineBlock col-md-2">Produced :</div><!--
+        --><div class="orange inlineBlock col-md-2">{{ $reportY['Total']->l1 }} </div><!--
+        --><div class="inlineBlock col-md-2">Actual : </div><!--
+        --><div class="orange inlineBlock col-md-2">{{ ($reportY['Total']->c3bg != 0) ? round($reportY['Total']->l3 / $reportY['Total']->c3bg,4)*100 : 0 }}%</div>
     </div>
     <div class="wrapper_report_year gray">
         <div style="width: 250px; display: inline-block;">
@@ -202,7 +202,7 @@
                                 $y = substr($key, 0, 4);
                                 $m = substr($key, -2);
                                 echo '<th style="border-bottom: 2px solid #fff;'.(($m == '12' || ($m == date('m') && $y == date('Y'))) ? "border-right: 2px solid #fff;" : "").
-                                    '" class="center '.(($m == '01') ? 'white bg-blue' : 'blue').'">'.$m.'</th>';
+                                    '" class="center '.(($m == date('m') && $y == date('Y')) ? 'white bg-blue' : '').'">'.$m.'</th>';
                             }
                         }
                         ?>
@@ -217,7 +217,7 @@
                                 $m = substr($key, -2);
                                 $days = cal_days_in_month(CAL_GREGORIAN, $m, $y);
                                 echo '<th style="'.(($m == '12' || ($m == date('m') && $y == date('Y'))) ? "border-right: 2px solid #fff;" : "").
-                                    '" class="center '.(($m == '01') ? 'orange' : 'blue').'">'.$days.' days</th>';
+                                    '" class="center '.(($m == date('m') && $y == date('Y')) ? 'white bg-blue' : '').'">'.$days.' days</th>';
                             }
                         }
                         ?>

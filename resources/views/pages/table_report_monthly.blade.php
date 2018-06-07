@@ -1,22 +1,27 @@
 <div class="widget-body no-padding">
     <?php $usd_vnd = $report['config']['USD_VND'] ?>
     <?php $usd_thb = $report['config']['USD_THB'] ?>
+        <div class="col-md-1" style="float: right">
+            <button id="export" class="btn btn-success btn-sm" type="button" style="margin-top: 15px;" data-toggle="modal" data-target="#myExportModal">
+                <i class="fa fa-download"></i> Export
+            </button>
+        </div>
         <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0; background: #fafafa" class="bold center orange">MONTHLY MARKETING REPORT</div>
         <div style="font-size: x-large; border-bottom: 1px #ddd solid !important; padding: 15px 0; float: left; width: 100%" class="bold italic blue">
             <div class="inlineBlock col-md-2">Budget :</div><!--
         --><div class="orange inlineBlock col-md-2"></div><!--
-        --><div class="inlineBlock col-md-3">Target L1 :</div><!--
-        --><div class="orange inlineBlock col-md-1"></div><!--
-        --><div class="inlineBlock col-md-3">L3/C3B :</div><!--
-        --><div class="orange inlineBlock col-md-1"></div>
+        --><div class="inlineBlock col-md-2">Target L1 :</div><!--
+        --><div class="orange inlineBlock col-md-2"></div><!--
+        --><div class="inlineBlock col-md-2">L3/C3B :</div><!--
+        --><div class="orange inlineBlock col-md-2"></div>
         </div>
         <div style="font-size: x-large; padding: 15px 0; float: left; width: 100%;" class="bold blue">
             <div class="inlineBlock col-md-2">Spent :</div><!--
         --><div class="orange inlineBlock col-md-2">{{ $report['total']->spent }} USD</div><!--
-        --><div class="inlineBlock col-md-3">Produced (L1) :</div><!--
-        --><div class="orange inlineBlock col-md-1">{{ $report['total']->l1 }} </div><!--
-        --><div class="inlineBlock col-md-3">Actual (L3/C3BG) : </div><!--
-        --><div class="orange inlineBlock col-md-1">{{ ($report['total']->c3bg != 0) ? round($report['total']->l3 / $report['total']->c3bg,4)*100 : 0 }}%</div>
+        --><div class="inlineBlock col-md-2">Produced :</div><!--
+        --><div class="orange inlineBlock col-md-2">{{ $report['total']->l1 }} </div><!--
+        --><div class="inlineBlock col-md-2">Actual : </div><!--
+        --><div class="orange inlineBlock col-md-2">{{ ($report['total']->c3bg != 0) ? round($report['total']->l3 / $report['total']->c3bg,4)*100 : 0 }}%</div>
         </div>
     <div class="wrapper_report_monthly gray">
         <table id="table_report" class="table" width="100%">
