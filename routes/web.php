@@ -97,6 +97,7 @@ Route::group(['prefix' => 'ajax'], function () {
     Route::get('/paginate', 'AjaxController@getContactPaginate')->name('ajax-paginate');
     Route::get('/getFilterMaketer', 'AjaxController@getFilterMaketer')->name('ajax-getFilterMaketer');
     Route::get('updateStatusExport', 'AjaxController@updateStatusExport')->name('ajax-updateStatusExport');
+    Route::get('/setStatisticChart', 'AjaxController@prepareStatisticChart')->name('ajax-setStatisticChart');
 });
 
 Route::get('/test', 'Test@index')->name('test');

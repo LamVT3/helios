@@ -806,6 +806,34 @@ class AjaxController extends Controller
         return view('pages.table_report_statistic', $data);
     }
 
+    public function prepareStatisticChart(){
+        $data = $this->getReport();
+        $usd_vnd = $data['reportY']['config']['USD_VND'];
+
+        $c3b_array           = array();
+        $c3b_price_array    = array();
+        $l3_c3bg_array       = array();
+        foreach ($data['reportY'] as $key => $value){
+            if ($key == 'config'){
+                continue;
+            }
+            $c3b    = @$value->c3b ? $value->c3b : 0;
+            $spent  = @$value->spent ? $value->spent : 0;
+
+            $key = str_replace(" ","",$key);
+            $key = strtotime($key)*1000;
+            $c3b_array[]        = [$key, $c3b];
+            $c3b_price_array[]  = [$key, $c3b != 0 ? round($spent * $usd_vnd / $c3b) : 0];
+            $l3_c3bg_array[]    = [$key, @$value->c3bg ? round(@$value->l3 / $value->c3bg, 4) * 100 : 0];
+        }
+
+        $result = array();
+        $result['c3b']           = json_encode($c3b_array);
+        $result['c3b_price']    = json_encode($c3b_price_array);
+        $result['l3_c3bg']       = json_encode($l3_c3bg_array);
+        return $result;
+    }
+
     public function getContactPaginate(){
         $params = \request();
         $data   = $this->getC3Data();

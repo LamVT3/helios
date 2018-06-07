@@ -213,7 +213,13 @@
                 </tbody>
             </table>
         </div>
+
     </div>
+        <hr style="margin: 50px 20px 0px 20px">
+        @component('components.statistic_chart')
+
+        @endcomponent
+
 </div>
 
 <style>
