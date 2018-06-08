@@ -31,7 +31,7 @@
                                 <select name="thankyou_page">
                                     <option value="" selected>Select Thank You Page</option>
                                     @foreach ($thankyou_page as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                        <option value="{{ $item->id }}">{{ $item->url }}</option>
                                     @endforeach
                                 </select>
                                 <i></i>
