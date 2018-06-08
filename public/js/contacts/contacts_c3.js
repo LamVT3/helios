@@ -349,12 +349,12 @@ function initDataTable() {
             { "data" : 'submit_time'},
             { "data" : 'clevel'},
             { "data" : 'current_level',     "defaultContent": "-"},
+            { "data" : 'ad_name',           "defaultContent": "-"},
             { "data" : 'source_name',       "defaultContent": "-"},
             { "data" : 'team_name',         "defaultContent": "-"},
             { "data" : 'marketer_name',     "defaultContent": "-"},
             { "data" : 'campaign_name',     "defaultContent": "-"},
             { "data" : 'subcampaign_name',  "defaultContent": "-"},
-            { "data" : 'ad_name',           "defaultContent": "-"},
             { "data" : 'landing_page',      "defaultContent": "-"},
             // {
             //     "data" : 'name',

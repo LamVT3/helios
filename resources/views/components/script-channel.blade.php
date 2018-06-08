@@ -15,7 +15,7 @@
                         modal.find('input[name=name]').val(channel.name);
                         modal.find('input[name=name]').attr('disabled','disabled');
                         modal.find('input[name=fb_id]').val(channel.fb_id);
-                        modal.find('textarea[name=thankyou_page]').html(channel.thankyou_page);
+                        modal.find('select[name=thankyou_page]').val(channel.thankyou_page_id);
                         modal.find('select[name=is_active]').val(channel.is_active);
                         modal.find('[type=submit]').html('Save');
                     } else {

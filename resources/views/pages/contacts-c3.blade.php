@@ -236,12 +236,12 @@
                                         <th>Registered at</th>
                                         <th>C Level</th>
                                         <th>CRM level</th>
+                                        <th>Ads</th>
                                         <th>Source</th>
                                         <th>Team</th>
                                         <th>Marketer</th>
                                         <th>Campaign</th>
                                         <th>Subcampaign</th>
-                                        <th>Ads</th>
                                         <th>Landing page</th>
                                         <th>Action</th>
                                         <th>Status</th>

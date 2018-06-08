@@ -43,7 +43,7 @@
                                             <section class="col-lg-12">
                                                 <label class="label require_field">Username</label>
                                                 <label class="input">
-                                                    <input type="text" name="username" disabled="disabled"
+                                                    <input type="text" name="username" readonly
                                                            value="{{ old('username', isset($user) ? $user->username : '') }}">
                                                 </label>
                                             </section>
