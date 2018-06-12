@@ -117,7 +117,7 @@ class ReportController extends Controller
         $query = AdResult::where('date', '>=', $startDate);
         $query->where('date', '<=', $endDate);
 
-        if (count($data_where) >= 1) {
+        if (count($data_where) > 0) {
             $ads = Ad::where($data_where)->pluck('_id')->toArray();
             $query->whereIn('ad_id', $ads);
         }
