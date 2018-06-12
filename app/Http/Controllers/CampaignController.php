@@ -77,7 +77,13 @@ class CampaignController extends Controller
         $user = auth()->user();
         $team = Team::find($user->team_id);
 
-        $campaigns = Campaign::where(['creator_id' => $user->id])->get();
+        if ($user->role == 'Admin'){
+            $campaigns = Campaign::orderBy('created_at', 'desc')->get();
+        }
+        else{
+            $campaigns = Campaign::where('creator_id', $user->id)->orderBy('created_at', 'desc')->get();
+        }
+
         $subcampaigns = Subcampaign::where('campaign_id', $campaign->id)->get();
         $landing_pages = LandingPage::where('is_active', 1)->get();
         $page_size     = Config::getByKey('PAGE_SIZE');

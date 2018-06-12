@@ -36,7 +36,13 @@ class SubcampaignController extends Controller
         $team = Team::find($user->team_id);
         $max_display = config('constants.MAX_DISPLAY');
 
-        $campaigns = Campaign::where(['creator_id' => $user->id])->get();
+        if ($user->role == 'Admin'){
+            $campaigns = Campaign::orderBy('created_at', 'desc')->get();
+        }
+        else{
+            $campaigns = Campaign::where('creator_id', $user->id)->orderBy('created_at', 'desc')->get();
+        }
+
         $subcampaigns = Subcampaign::where('campaign_id', $campaign->id)->get();
         $ads = Ad::where('subcampaign_id', $subcampaign->id)->orderBy('created_at', 'desc')->get();
         $landing_pages = LandingPage::where('is_active', 1)->get();
