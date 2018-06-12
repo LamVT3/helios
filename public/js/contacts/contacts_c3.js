@@ -138,15 +138,9 @@ $(document).ready(function () {
 
     $('input#limit').change(function (e) {
         var limit = $('input#limit').val();
-        if(limit != '' || limit > 0){
-        //     $('input#limit').val(1000);
-        //     $('input[name="limit"]').val(1000);
-        // }
-        // else if(limit > 1000){
-        //     $('input#limit').val(1000);
-        //     $('input[name="limit"]').val(1000);
-        // }
-        // else{
+        if(limit < 0){
+            $('input[name="limit"]').val('');
+        }else{
             $('input[name="limit"]').val(limit);
         }
     })

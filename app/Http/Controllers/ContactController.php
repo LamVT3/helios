@@ -179,28 +179,23 @@ class ContactController extends Controller
                 $count = 1;
                 $contacts = $data['contacts'];
                 $datas = array();
-//                $limit = config('constants.DEFAULT_EXPORT');
-                $updateCnt = 0;
                 $limit = 0;
+                $updateCnt = 0;
                 if(\request('limit')){
                     $limit = \request('limit');
                 }
-                $headings = array('STT', 'Name', 'Email', 'Phone', 'Age', 'Time', 'Current level', 'Marketer', 'Campaign', 'Subcampaign', 'Ads', 'Landing page', 'ContactID', 'Link Tracking');
-                $sheet->prependRow(1, $headings);
-
                 foreach ($contacts as $item) {
                     $updateCnt++;
                     if($item->is_export){
                         continue;
                     }
-
-                    $row = array(
+                    $datas[] = array(
                         $count++,
                         $item->name,
                         $item->email,
                         $item->phone,
                         $item->age,
-                        Date('Y-m-d H:i:s', $item->submit_time/1000),
+                        Date('Y-m-d H:i:s', (int)$item->submit_time/1000),
                         $item->current_level,
                         $item->marketer_name,
                         $item->campaign_name,
@@ -210,13 +205,13 @@ class ContactController extends Controller
                         $item->contact_id,
                         $item->ads_link
                     );
-                    if($limit != 0 && $count > $limit){
+                    if(\request('limit') && $count > $limit){
                         break;
                     }
-                    $sheet->appendRow($row);
                 }
-//                $sheet->fromArray($datas, NULL, 'A1', FALSE, FALSE);
-
+                $sheet->fromArray($datas, NULL, 'A1', FALSE, FALSE);
+                $headings = array('STT', 'Name', 'Email', 'Phone', 'Age', 'Time', 'Current level', 'Marketer', 'Campaign', 'Subcampaign', 'Ads', 'Landing page', 'ContactID', 'Link Tracking');
+                $sheet->prependRow(1, $headings);
                 $sheet->cells('A1:N1', function ($cells) {
                     $cells->setBackground('#191919');
                     $cells->setFontColor('#DBAC69');
