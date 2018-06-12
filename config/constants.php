@@ -19,6 +19,9 @@ return [
         'utm_subcampaign', 'utm_ad', 'fullname', 'email', 'phone', 'age', 'landing_page', 'ad_link', 'channel'],
     'THANKYOU_PAGE_INVALID' => 'The Thank you page name has already been taken.',
     'CHANNEL_INVALID'       => 'The Channel name has already been taken.',
+    'ROLE_ADMIN'            => 'Admin',
+    'ROLE_MANAGER'          => 'Manager',
+    'ROLE_MARKETER'         => 'Marketer',
 ];
 
 

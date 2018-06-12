@@ -45,8 +45,14 @@ class AjaxController extends Controller
     public function getCampaigns($source_id)
     {
         $user = auth()->user();
+        if($user->role == config('constants.ROLE_ADMIN') ||
+            $user->role == config('constants.ROLE_MANAGER')){
+            $campaigns = Campaign::where(['source_id' => $source_id])->get();
+        }
+        else {
+            $campaigns = Campaign::where(['source_id' => $source_id, 'creator_id' => $user->id])->get();
+        }
 
-        $campaigns = Campaign::where(['source_id' => $source_id, 'creator_id' => $user->id])->get();
         return response()->json(['type' => 'success', 'campaigns' => $campaigns]);
     }
 
