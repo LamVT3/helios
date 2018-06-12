@@ -292,7 +292,7 @@
     function get_report_monthly(month, startDate, endDate) {
 
         month = "" + month;
-        console.log("month = " + month);
+        // console.log("month = " + month);
 
         if (month < 10 && month.length == 1) {
             month = "0" + month.toString();
@@ -300,13 +300,13 @@
             month = month.toString();
         }
 
-       $.get("{{ route('ajax-getReportMonthly') }}", {month: month, startDate: startDate, endDate: endDate}, function (data) {
+       $.get("{{ route('report.get-report-monthly') }}", {month: month, startDate: startDate, endDate: endDate}, function (data) {
             document.getElementById("monthly_report").innerHTML = data;
         }).fail( function () {
             alert('Cannot connect to server. Please try again later.');
         }).complete(function () {
            var year = startDate.getFullYear();
-           console.log("year script = " + year);
+           // console.log("year script = " + year);
            rangedate_span(startDate, endDate);
 
            $('#rangedate').daterangepicker({
@@ -327,15 +327,15 @@
     }
 
     function rangedate_span(startDate, endDate) {
-        console.log("start date = " + startDate);
-        console.log("end date = " + endDate);
+        /*console.log("start date = " + startDate);
+        console.log("end date = " + endDate);*/
         $('#rangedate span').html(startDate.getDate() + '-' + endDate.getDate());
     }
 
     get_report_year(y, m, 12);
 
     function get_report_year(year, month, noLastMonth) {
-        $.get("{{ route('ajax-getReportYear') }}", {year: year, month: month, noLastMonth: noLastMonth}, function (data) {
+        $.get("{{ route('report.get-report-year') }}", {year: year, month: month, noLastMonth: noLastMonth}, function (data) {
             document.getElementById("year_report").innerHTML = data;
         }).fail( function () {
             alert('Cannot connect to server. Please try again later.');
@@ -345,7 +345,7 @@
     get_report_statistic(y, m, 12);
 
     function get_report_statistic(year, month, noLastMonth) {
-        $.get("{{ route('ajax-getReportStatistic') }}", {year: year, month: month, noLastMonth: noLastMonth}, function (data) {
+        $.get("{{ route('report.get-report-statistic') }}", {year: year, month: month, noLastMonth: noLastMonth}, function (data) {
             document.getElementById("statistic_report").innerHTML = data;
         }).fail( function () {
             alert('Cannot connect to server. Please try again later.');

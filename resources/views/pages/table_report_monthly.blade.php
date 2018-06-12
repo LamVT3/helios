@@ -1,11 +1,6 @@
 <div class="widget-body no-padding">
     <?php $usd_vnd = $report['config']['USD_VND'] ?>
     <?php $usd_thb = $report['config']['USD_THB'] ?>
-        <div class="col-md-1" style="float: right">
-            <button id="export" class="btn btn-success btn-sm" type="button" style="margin-top: 15px;" data-toggle="modal" data-target="#myExportModal">
-                <i class="fa fa-download"></i> Export
-            </button>
-        </div>
         <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0; background: #fafafa" class="bold center orange">MONTHLY MARKETING REPORT</div>
         <div style="font-size: x-large; border-bottom: 1px #ddd solid !important; padding: 15px 0; float: left; width: 100%" class="bold italic blue">
             <div class="inlineBlock col-md-2">Budget :</div><!--
@@ -22,6 +17,12 @@
         --><div class="orange inlineBlock col-md-2">{{ $report['total']->l1 }} </div><!--
         --><div class="inlineBlock col-md-2">Actual : </div><!--
         --><div class="orange inlineBlock col-md-2">{{ ($report['total']->c3bg != 0) ? round($report['total']->l3 / $report['total']->c3bg,4)*100 : 0 }}%</div>
+        </div>
+
+        <div class="sticky" style="float: left;top: 20px;">
+            <button id="export" class="btn btn-success btn-sm" type="button" style="margin: 15px;" data-toggle="modal" data-target="#myExportModal">
+                <i class="fa fa-download"></i> Export
+            </button>
         </div>
     <div class="wrapper_report_monthly gray">
         <table id="table_report" class="table" width="100%">
@@ -478,55 +479,51 @@
     </div>
 </div>
 
+<!-- Export Modal -->
+<div class="modal fade" id="myExportModal" role="dialog">
+    <div class="modal-dialog">
 
-<style>
-    tr:nth-child(even) {
-        background: #fafafa
-    }
-    tr:nth-child(odd) {
-        background: #ffffff
-    }
-    col:first-child {
-        background: #2ea8e5
-    }
-    #table_report th {
-        vertical-align:middle
-    }
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title">Confirm Export</h3>
+            </div>
+            <div class="modal-body">
+                <h4>{{config('constants.EXPORT_REPORT')}}</h4>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm_export" type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            </div>
+        </div>
 
-    .italic {
-        font-style: italic;
-    }
-    .bold {
-        font-weight: bold;
-    }
-    .center {
-        text-align: center;
-    }
-    .orange {
-        color: #ED8515;
-    }
-    .blue {
-        color: #157DEC;
-    }
-    .white {
-        color: #ffffff;
-    }
-    .gray {
-        color: #505050;
-    }
-    .yellow {
-        color: #ffff33;
-    }
-    .bg-blue {
-        background: #157DEC;
-    }
-    .font-medium {
-        font-size: medium;
-    }
-    .inlineBlock {
-        display: inline-block;
-    }
-    .table > tbody > tr > td {
-        border-bottom: 1px solid #ddd;
-    }
-</style>
+    </div>
+</div>
+
+<div style="position: relative">
+    <form id="report-monthly-form" action="{{ route('report.export-monthly')}}" enctype="multipart/form-data">
+        <input type="hidden" name="month">
+        <input type="hidden" name="startDate">
+        <input type="hidden" name="endDate">
+    </form>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('button#confirm_export').click(function (e) {
+            e.preventDefault();
+            // $('#report-monthly-form').submit();
+            alert("success");
+            var month = document.getElementById('dropdown').textContent;
+            var rangeDate = $("#rangedate").find("span").val();
+            console.log(month + " " + rangeDate);
+            {{--$.get("{{ route('report.export-monthly') }}", {month: month})--}}
+            {{--.fail(function () {--}}
+                {{--alert('Cannot connect to server. Please try again later.');--}}
+            {{--});--}}
+        });
+    });
+</script>
+
+<link href="{{ asset('css/report.css') }}" rel="stylesheet">

@@ -69,6 +69,10 @@ Route::get('/report', 'ReportController@index')->name('report');
 Route::get('/filter', 'ReportController@getReport')->name('report.filter');
 Route::get('/export', 'ReportController@exportReport')->name('report.export');
 Route::get('/getReportSource', 'ReportController@getReportSource')->name('report.getReportSource');
+Route::get('/getReportMonthly', 'ReportController@getReportMonthly')->name('report.get-report-monthly');
+Route::get('/exportMonthly', 'ReportController@exportMonthly')->name('report.export-monthly');
+Route::get('/getReportYear', 'ReportController@getReportYear')->name('report.get-report-year');
+Route::get('/getReportStatistic', 'ReportController@getReportStatistic')->name('report.get-report-statistic');
 
 
 /*Route::get('/kpi/add', 'KpiController@add')->name('kpi-add');
@@ -91,9 +95,6 @@ Route::group(['prefix' => 'ajax'], function () {
     Route::get('getFilterCampaign', 'AjaxController@getFilterCampaign')->name('ajax-getFilterCampaign');
     Route::get('/getC3Chart', 'AjaxController@getC3Chart')->name('ajax-getC3Chart');
     Route::get('/getL8Chart', 'AjaxController@getL8Chart')->name('ajax-getL8Chart');
-    Route::get('/getReportMonthly', 'AjaxController@getReportMonthly')->name('ajax-getReportMonthly');
-    Route::get('/getReportYear', 'AjaxController@getReportYear')->name('ajax-getReportYear');
-    Route::get('/getReportStatistic', 'AjaxController@getReportStatistic')->name('ajax-getReportStatistic');
     Route::get('/paginate', 'AjaxController@getContactPaginate')->name('ajax-paginate');
     Route::get('/getFilterMaketer', 'AjaxController@getFilterMaketer')->name('ajax-getFilterMaketer');
     Route::get('updateStatusExport', 'AjaxController@updateStatusExport')->name('ajax-updateStatusExport');
