@@ -5,7 +5,7 @@ return [
     'AVATARS_URL_DEFAULT'   => 'img/avatars/default.jpg',
     'UNKNOWN'               => 'unknown',
     'MAX_DISPLAY'           => 100,
-    'DEFAULT_EXPORT'        => 100,
+    'DEFAULT_EXPORT'        => 1000,
     'CONFIRM_EXPORT'        => 'Are you sure you want to export these contacts ?',
     'CAMPAIGN_NAME_INVALID' => 'The Campaign name has already been taken.',
     'SUBCAMPAIGN_NAME_INVALID' => 'The Subcampaign name has already been taken.',

@@ -159,7 +159,7 @@
                                             <i></i>Mark contact as “Exported”</label>
                                         <div class="col-xs-4">
                                             <input class="form-control" id="limit" type="number"
-                                                   placeholder="{{config('constants.DEFAULT_EXPORT')}}" max="1000" min="1">
+                                                   placeholder="Export..." max="" min="1" data-placement="bottom" data-toggle="tooltip" title="Enter number to export...">
                                         </div>
                                         <div class="col-xs-4 export_label" id="">
                                             <label class="export_label" for="limit"> entries</label>

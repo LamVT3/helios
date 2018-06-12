@@ -50,6 +50,7 @@ $(document).ready(function () {
             'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         }
     }, c3range_span);
+
 });
 
 $(document).ready(function () {
@@ -137,15 +138,15 @@ $(document).ready(function () {
 
     $('input#limit').change(function (e) {
         var limit = $('input#limit').val();
-        if(limit == '' || limit < 0){
-            $('input#limit').val(100);
-            $('input[name="limit"]').val(100);
-        }
-        else if(limit > 1000){
-            $('input#limit').val(1000);
-            $('input[name="limit"]').val(1000);
-        }
-        else{
+        if(limit != '' || limit > 0){
+        //     $('input#limit').val(1000);
+        //     $('input[name="limit"]').val(1000);
+        // }
+        // else if(limit > 1000){
+        //     $('input#limit').val(1000);
+        //     $('input[name="limit"]').val(1000);
+        // }
+        // else{
             $('input[name="limit"]').val(limit);
         }
     })

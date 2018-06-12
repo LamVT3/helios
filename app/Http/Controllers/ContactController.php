@@ -179,17 +179,22 @@ class ContactController extends Controller
                 $count = 1;
                 $contacts = $data['contacts'];
                 $datas = array();
-                $limit = config('constants.DEFAULT_EXPORT');
+//                $limit = config('constants.DEFAULT_EXPORT');
                 $updateCnt = 0;
+                $limit = 0;
                 if(\request('limit')){
                     $limit = \request('limit');
                 }
+                $headings = array('STT', 'Name', 'Email', 'Phone', 'Age', 'Time', 'Current level', 'Marketer', 'Campaign', 'Subcampaign', 'Ads', 'Landing page', 'ContactID', 'Link Tracking');
+                $sheet->prependRow(1, $headings);
+
                 foreach ($contacts as $item) {
                     $updateCnt++;
                     if($item->is_export){
                         continue;
                     }
-                    $datas[] = array(
+
+                    $row = array(
                         $count++,
                         $item->name,
                         $item->email,
@@ -205,13 +210,13 @@ class ContactController extends Controller
                         $item->contact_id,
                         $item->ads_link
                     );
-                    if($count > $limit){
+                    if($limit != 0 && $count > $limit){
                         break;
                     }
+                    $sheet->appendRow($row);
                 }
-                $sheet->fromArray($datas, NULL, 'A1', FALSE, FALSE);
-                $headings = array('STT', 'Name', 'Email', 'Phone', 'Age', 'Time', 'Current level', 'Marketer', 'Campaign', 'Subcampaign', 'Ads', 'Landing page', 'ContactID', 'Link Tracking');
-                $sheet->prependRow(1, $headings);
+//                $sheet->fromArray($datas, NULL, 'A1', FALSE, FALSE);
+
                 $sheet->cells('A1:N1', function ($cells) {
                     $cells->setBackground('#191919');
                     $cells->setFontColor('#DBAC69');
@@ -288,7 +293,7 @@ class ContactController extends Controller
             }
             $query->where($data_where);
         }
-        $query->limit(($limit));
+        $query->limit((int)$limit);
         $contacts = $query->orderBy('submit_time', 'desc')->get();
         foreach ($contacts as $contact)
         {
