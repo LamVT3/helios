@@ -79,7 +79,7 @@
             </table>
         </div>
         <div class="content" style="width: calc(100% - 250px); float: right">
-            <table id="table_report" class="table" width="100%">
+            <table id="table_report_statistic" class="table" width="100%">
                 <thead style="top: 34px; z-index: 0;">
                 <tr class="font-medium orange" style="height: 36px;">
                     <?php

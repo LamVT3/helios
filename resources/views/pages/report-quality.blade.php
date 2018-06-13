@@ -292,7 +292,6 @@
     function get_report_monthly(month, startDate, endDate) {
 
         month = "" + month;
-        console.log("month = " + month);
 
         if (month < 10 && month.length == 1) {
             month = "0" + month.toString();
@@ -306,7 +305,6 @@
             alert('Cannot connect to server. Please try again later.');
         }).complete(function () {
            var year = startDate.getFullYear();
-           console.log("year script = " + year);
            rangedate_span(startDate, endDate);
 
            $('#rangedate').daterangepicker({
@@ -327,8 +325,6 @@
     }
 
     function rangedate_span(startDate, endDate) {
-        console.log("start date = " + startDate);
-        console.log("end date = " + endDate);
         $('#rangedate span').html(startDate.getDate() + '-' + endDate.getDate());
     }
 

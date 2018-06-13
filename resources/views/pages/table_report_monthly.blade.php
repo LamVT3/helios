@@ -19,7 +19,7 @@
         --><div class="orange inlineBlock col-md-1">{{ ($report['total']->c3bg != 0) ? round($report['total']->l3 / $report['total']->c3bg,4)*100 : 0 }}%</div>
         </div>
     <div class="wrapper_report_monthly gray">
-        <table id="table_report" class="table" width="100%">
+        <table id="table_report_monthly" class="table" width="100%">
             <thead class="sticky" style="top: 34px; z-index: 0;">
                 <tr class="font-medium orange">
                     <th style="border-top: 2px solid #ffffff; border-bottom: 2px solid #ffffff; text-align: right" colspan="2" class="gray">Weeks</th>
@@ -484,7 +484,7 @@
     col:first-child {
         background: #2ea8e5
     }
-    #table_report th {
+    #table_report_monthly th {
         vertical-align:middle
     }
 
