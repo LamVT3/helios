@@ -466,7 +466,7 @@
     .inlineBlock {
         display: inline-block;
     }
-    .table > tbody > tr > td {
+    div#year .table > tbody > tr > td {
         min-width: 30px;
         height: 40px;
         border-bottom: 1px solid #ddd;
