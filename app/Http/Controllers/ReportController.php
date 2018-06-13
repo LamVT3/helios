@@ -189,15 +189,20 @@ class ReportController extends Controller
         ];
 
         foreach ($results as $item) {
-            $report['total']->c1 += $item->c1 ? $item->c1 : 0;
-            $report['total']->c2 += $item->c2 ? $item->c2 : 0;
-            $report['total']->c3 += $item->c3 ? $item->c3 : 0;
-            $report['total']->c3b += $item->c3b ? $item->c3b : 0;
-            $report['total']->spent += $item->spent ? $item->spent : 0;
-            $report['total']->l1 += $item->l1 ? $item->l1 : 0;
-            $report['total']->l3 += $item->l3 ? $item->l3 : 0;
-            $report['total']->l8 += $item->l8 ? $item->l8 : 0;
-            $report['total']->revenue += $item->revenue ? $item->revenue : 0;
+
+            if(!isset($item->ad_id)){
+                continue;
+            }
+
+            $report['total']->c1        += $item->c1        ? $item->c1        : 0;
+            $report['total']->c2        += $item->c2        ? $item->c2        : 0;
+            $report['total']->c3        += $item->c3        ? $item->c3        : 0;
+            $report['total']->c3b       += $item->c3b       ? $item->c3b       : 0;
+            $report['total']->spent     += $item->spent     ? $item->spent     : 0;
+            $report['total']->l1        += $item->l1        ? $item->l1        : 0;
+            $report['total']->l3        += $item->l3        ? $item->l3        : 0;
+            $report['total']->l8        += $item->l8        ? $item->l8        : 0;
+            $report['total']->revenue   += $item->revenue   ? $item->revenue   : 0;
 
             if (!isset($report[$item->ad_id])) {
                 $ad = Ad::find($item->ad_id);
@@ -221,48 +226,45 @@ class ReportController extends Controller
                     $ad_name = $ad->name;
                 }
                 $report[$item->ad_id] = (object)[
-                    'source' => $source_name,
-                    'team' => $team_name,
-                    'marketer' => $marketer_name,
-                    'campaign' => $campaign_name,
-                    'subcampaign' => $subcampaign_name,
-                    'ad' => $ad_name,
-                    'c1' => $item->c1 ? $item->c1 : 0,
-                    'c2' => $item->c2 ? $item->c2 : 0,
-                    'c3' => $item->c3 ? $item->c3 : 0,
-                    'c3b' => $item->c3b ? $item->c3b : 0,
-                    'spent' => $item->spent ? $item->spent : 0,
-                    'l1' => $item->l1 ? $item->l1 : 0,
-                    'l3' => $item->l3 ? $item->l3 : 0,
-                    'l8' => $item->l8 ? $item->l8 : 0,
-                    'revenue' => $item->revenue ? $item->revenue : 0,
+                    'source'    => $source_name,
+                    'team'      => $team_name,
+                    'marketer'  => $marketer_name,
+                    'campaign'  => $campaign_name,
+                    'subcampaign'   => $subcampaign_name,
+                    'ad'        => $ad_name,
+                    'c1'        => $item->c1       ? $item->c1         : 0,
+                    'c2'        => $item->c2       ? $item->c2         : 0,
+                    'c3'        => $item->c3       ? $item->c3         : 0,
+                    'c3b'       => $item->c3b      ? $item->c3b        : 0,
+                    'spent'     => $item->spent    ? $item->spent      : 0,
+                    'l1'        => $item->l1       ? $item->l1         : 0,
+                    'l3'        => $item->l3       ? $item->l3         : 0,
+                    'l8'        => $item->l8       ? $item->l8         : 0,
+                    'revenue'   => $item->revenue  ? $item->revenue    : 0,
                 ];
-
             } else {
-                $report[$item->ad_id]->c1 += $item->c1 ? $item->c1 : 0;
-                $report[$item->ad_id]->c2 += $item->c2 ? $item->c2 : 0;
-                $report[$item->ad_id]->c3 += $item->c3 ? $item->c3 : 0;
-                $report[$item->ad_id]->c3b += $item->c3b ? $item->c3b : 0;
-                $report[$item->ad_id]->spent += $item->spent ? $item->spent : 0;
-                $report[$item->ad_id]->l1 += $item->l1 ? $item->l1 : 0;
-                $report[$item->ad_id]->l3 += $item->l3 ? $item->l3 : 0;
-                $report[$item->ad_id]->l8 += $item->l8 ? $item->l8 : 0;
-                $report[$item->ad_id]->revenue += $item->revenue ? $item->revenue : 0;
+                $report[$item->ad_id]->c1       += isset($item->c1)        ? $item->c1         : 0;
+                $report[$item->ad_id]->c2       += isset($item->c2)        ? $item->c2         : 0;
+                $report[$item->ad_id]->c3       += isset($item->c3)        ? $item->c3         : 0;
+                $report[$item->ad_id]->c3b      += isset($item->c3b)       ? $item->c3b        : 0;
+                $report[$item->ad_id]->spent    += isset($item->spent)     ? $item->spent      : 0;
+                $report[$item->ad_id]->l1       += isset($item->l1)        ? $item->l1         : 0;
+                $report[$item->ad_id]->l3       += isset($item->l3)        ? $item->l3         : 0;
+                $report[$item->ad_id]->l8       += isset($item->l8)        ? $item->l8         : 0;
+                $report[$item->ad_id]->revenue  += isset($item->revenue)   ? $item->revenue    : 0;
             }
-
         }
-
         foreach ($report as $key => $item) {
-            $item->c1_cost = $item->c1 ? round($item->spent * $rate / $item->c1, 2) : '0';
-            $item->c2_cost = $item->c2 ? round($item->spent * $rate / $item->c2, 2) : '0';
-            $item->c2_c1 = $item->c1 ? round($item->c2 / $item->c1, 4) * 100 : '0';
-            $item->c3_cost = $item->c3 ? round($item->spent * $rate / $item->c3, 2) : '0';
-            $item->c3b_cost = $item->c3b ? round($item->spent * $rate / $item->c3b, 2) : '0';
-            $item->c3_c2 = $item->c2 ? round($item->c3 / $item->c2, 4) * 100 : '0';
-            $item->l3_l1 = $item->l1 ? round($item->l3 / $item->l1, 4) * 100 : '0';
-            $item->l8_l1 = $item->l1 ? round($item->l8 / $item->l1, 4) * 100 : '0';
-            $item->me_re = $item->revenue ? round($item->spent * $usd_thb / $item->revenue, 4) * 100 : '0';
-            $report[$key] = $item;
+            $item->c1_cost  = $item->c1     ? round($item->spent * $rate / $item->c1, 2)    : '0';
+            $item->c2_cost  = $item->c2     ? round($item->spent * $rate / $item->c2, 2)    : '0';
+            $item->c2_c1    = $item->c1     ? round($item->c2 / $item->c1, 4) * 100         : '0';
+            $item->c3_cost  = $item->c3     ? round($item->spent * $rate / $item->c3, 2)    : '0';
+            $item->c3b_cost = $item->c3b    ? round($item->spent * $rate / $item->c3b, 2)   : '0';
+            $item->c3_c2    = $item->c2     ? round($item->c3 / $item->c2, 4) * 100         : '0';
+            $item->l3_l1    = $item->l1     ? round($item->l3 / $item->l1, 4) * 100         : '0';
+            $item->l8_l1    = $item->l1     ? round($item->l8 / $item->l1, 4) * 100         : '0';
+            $item->me_re    = $item->revenue ? round($item->spent * $usd_thb / $item->revenue, 4) * 100 : '0';
+            $report[$key]   = $item;
         }
 
         return $report;

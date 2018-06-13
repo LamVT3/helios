@@ -521,7 +521,7 @@
     .inlineBlock {
         display: inline-block;
     }
-    .table > tbody > tr > td {
+    div#monthly .table > tbody > tr > td {
         border-bottom: 1px solid #ddd;
     }
 </style>
