@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Ad;
 use App\AdResult;
 use App\Campaign;
 use App\Contact;
+use App\LandingPage;
 use App\Source;
 use App\Subcampaign;
 use App\Team;
@@ -210,20 +212,62 @@ class AjaxController extends Controller
         $request = request();
 
         $html_subcampaign   = "<option value='' selected>All</option>";
+        $html_landingpage   = "<option value='' selected>All</option>";
 
         if ($request->campaign_id) {
             $subcampaign    = Subcampaign::where('campaign_id', $request->campaign_id)->get();
+            $ad             = Ad::where('campaign_id', $request->campaign_id)->get();
         }else{
             $subcampaign    = Subcampaign::all();
+            $ad = Ad::all();
         }
 
         foreach ($subcampaign as $item) {
             $html_subcampaign .= "<option value=" . $item->id . "> " . $item->name . " </option>";
         }
 
+        $arr_landingpage = array();
+        foreach ($ad as $item) {
+            $arr_landingpage[] = $item->landing_page_id;
+        }
+        $landing_page = LandingPage::whereIn('_id', $arr_landingpage)->get();
+        foreach ($landing_page as $item) {
+            $html_landingpage .= "<option value=" . $item->id . "> " . $item->url . " </option>";
+        }
+
         $data_return = array(
             'status'                => TRUE,
-            'content_subcampaign'   => $html_subcampaign
+            'content_subcampaign'   => $html_subcampaign,
+            'content_landingpage'   => $html_landingpage
+        );
+        echo json_encode($data_return);
+
+    }
+
+    public function getFilterSubCampaign()
+    {
+        $request = request();
+
+        $html_landingpage   = "<option value='' selected>All</option>";
+
+        if ($request->subcampaign_id) {
+            $ad = Ad::where('subcampaign_id', $request->subcampaign_id)->get();
+        }else{
+            $ad = Ad::all();
+        }
+
+        $arr_landingpage = array();
+        foreach ($ad as $item) {
+            $arr_landingpage[] = $item->landing_page_id;
+        }
+        $landing_page = LandingPage::whereIn('_id', $arr_landingpage)->get();
+        foreach ($landing_page as $item) {
+            $html_landingpage .= "<option value=" . $item->id . "> " . $item->url . " </option>";
+        }
+
+        $data_return = array(
+            'status'                => TRUE,
+            'content_landingpage'   => $html_landingpage
         );
         echo json_encode($data_return);
 
@@ -995,6 +1039,9 @@ class AjaxController extends Controller
         if ($request->clevel) {
             $data_where['clevel']           = $request->clevel;
         }
+        if ($request->landing_page) {
+            $data_where['landing_page']     = $request->landing_page;
+        }
 
         return $data_where;
     }
@@ -1072,8 +1119,8 @@ class AjaxController extends Controller
         $contacts = $query->get();
         foreach ($contacts as $contact)
         {
-            if(isset($id[$contact->id])){
-                $contact->is_export = (int)$id[$contact->id];
+            if(isset($id[$contact->_id])){
+                $contact->is_export = (int)$id[$contact->_id];
                 $contact->save();
             }else{
                 if($request->new_status != '')
@@ -1111,6 +1158,9 @@ class AjaxController extends Controller
         }
         if ($request->old_status) {
             $data_where['is_export']        = (int)$request->old_status;
+        }
+        if ($request->landing_page) {
+            $data_where['landing_page']     = $request->landing_page;
         }
 
         return $data_where;

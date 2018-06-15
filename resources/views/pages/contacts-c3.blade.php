@@ -99,7 +99,7 @@
                                     <section class="col col-2">
                                         <label class="label">Sub Campaign</label>
                                         <select name="subcampaign_id" id="subcampaign_id" class="select2" style="width: 280px"
-                                                data-url="">
+                                                data-url="{!! route('ajax-getFilterSubCampaign') !!}">
                                             <option value="">All</option>
                                             @foreach($subcampaigns as $item)
                                                 <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -139,10 +139,21 @@
                                     <section class="col col-2">
                                         <label class="label">Status</label>
                                         <select name="is_export" id="is_export" class="select2"
-                                                style="width: 280px">
+                                                style="width: 280px" data-url="">
                                             <option value="">All</option>
                                             <option value="1">Exported</option>
                                             <option value="0">Not Export</option>
+                                        </select>
+                                        <i></i>
+                                    </section>
+                                    <section class="col col-4">
+                                        <label class="label">Landing Page</label>
+                                        <select name="landing_page" id="landing_page" class="select2" style="width: 280px"
+                                                data-url="">
+                                            <option value="">All</option>
+                                            @foreach($landing_page as $item)
+                                                <option value="{{ $item->url }}">{{ $item->url }}</option>
+                                            @endforeach
                                         </select>
                                         <i></i>
                                     </section>
@@ -212,7 +223,7 @@
                                 <input type="hidden" name="limit">
                                 <input type="hidden" name="mark_exported" value="0">
                                 <input type="hidden" name="status">
-
+                                <input type="hidden" name="landing_page">
                             </form>
                         </div>
 

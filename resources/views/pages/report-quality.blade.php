@@ -90,10 +90,23 @@
                                                 <section class="col col-2">
                                                     <label class="label">Sub Campaign</label>
                                                     <select name="subcampaign_id" id="subcampaign_id" class="select2" style="width: 280px"
-                                                            data-url="">
+                                                            data-url="{!! route('ajax-getFilterSubCampaign') !!}">
                                                         <option value="">All</option>
                                                         @foreach($subcampaigns as $item)
                                                             <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <i></i>
+                                                </section>
+                                            </div>
+                                            <div class="row">
+                                                <section class="col col-4">
+                                                    <label class="label">Landing Page</label>
+                                                    <select name="landing_page" id="landing_page" class="select2" style="width: 280px"
+                                                            data-url="">
+                                                        <option value="">All</option>
+                                                        @foreach($landing_page as $item)
+                                                            <option value="{{ $item->id }}">{{ $item->url }}</option>
                                                         @endforeach
                                                     </select>
                                                     <i></i>

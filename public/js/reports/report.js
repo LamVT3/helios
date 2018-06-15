@@ -163,6 +163,23 @@ $(document).ready(function () {
             $("#subcampaign_id").select2();
         });
     })
+
+    $('#subcampaign_id').change(function (e) {
+        var url = $('#subcampaign_id').attr('data-url');
+        var subcampaign_id = $('select[name="subcampaign_id"]').val();
+        $.ajax({
+            url: url,
+            type: 'GET',
+            contentType: "application/json",
+            dataType: "json",
+            data: {
+                subcampaign_id: subcampaign_id
+            }
+        }).done(function (response) {
+            $('#landing_page').html(response.content_landingpage);
+            $("#landing_page").select2();
+        });
+    })
 });
 
 $(document).ready(function () {
@@ -175,6 +192,7 @@ $(document).ready(function () {
         var campaign_id = $('select[name="campaign_id"]').val();
         var subcampaign_id = $('select[name="subcampaign_id"]').val();
         var registered_date = $('.registered_date').text();
+        var landing_page    = $('select[name="landing_page"]').val();
 
         $('input[name="source_id"]').val(source_id);
         $('input[name="team_id"]').val(team_id);
@@ -194,7 +212,8 @@ $(document).ready(function () {
                 marketer_id     : marketer_id,
                 campaign_id     : campaign_id,
                 subcampaign_id  : subcampaign_id,
-                registered_date : registered_date
+                registered_date : registered_date,
+                landing_page    : landing_page
             }
         }).done(function (response) {
             $('.loading').hide();
