@@ -14,7 +14,7 @@ class ConfigController extends Controller
 
     public function index()
     {
-        if(auth()->user()->role != "Manager"){
+        if(auth()->user()->role != "Manager" && auth()->user()->role != "Admin"){
             return redirect()->route('dashboard');
         }
 
@@ -42,7 +42,7 @@ class ConfigController extends Controller
 
     public function store()
     {
-        if(auth()->user()->role != "Manager"){
+        if(auth()->user()->role != "Manager"  && auth()->user()->role != "Admin"){
             return redirect()->route('dashboard');
         }
 
@@ -82,7 +82,7 @@ class ConfigController extends Controller
 
     public function get($id)
     {
-        if(auth()->user()->role != "Manager"){
+        if(auth()->user()->role != "Manager" && auth()->user()->role != "Admin"){
             return redirect()->route('dashboard');
         }
 
