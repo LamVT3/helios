@@ -45,6 +45,7 @@ class ContactController extends Controller
         $campaigns      = Campaign::where('is_active', 1)->get();
         $subcampaigns   = Subcampaign::where('is_active', 1)->get();
         $exported       = $this->countExported();
+        $landing_page   = LandingPage::where('is_active', 1)->get();
 
         return view('pages.contacts-c3', compact(
             'page_title',
@@ -59,7 +60,8 @@ class ContactController extends Controller
             'campaigns',
             'page_size',
             'subcampaigns',
-            'exported'
+            'exported',
+            'landing_page'
         ));
     }
 
@@ -255,9 +257,9 @@ class ContactController extends Controller
         if ($request->clevel) {
             $data_where['clevel']           = $request->clevel;
         }
-//        if ($request->is_export) {
-//            $data_where['is_export']        = (int)$request->is_export;
-//        }
+        if ($request->landing_page) {
+            $data_where['landing_page']     = $request->landing_page;
+        }
 
         return $data_where;
     }

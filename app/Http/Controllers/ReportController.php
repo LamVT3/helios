@@ -7,6 +7,7 @@ use App\AdResult;
 use App\Campaign;
 use App\Channel;
 use App\Config;
+use App\LandingPage;
 use App\Source;
 use App\Team;
 use App\User;
@@ -53,6 +54,7 @@ class ReportController extends Controller
         $campaigns      = Campaign::where('is_active', 1)->get();
         $page_size      = Config::getByKey('PAGE_SIZE');
         $subcampaigns   = Subcampaign::where('is_active', 1)->get();
+        $landing_page   = LandingPage::where('is_active', 1)->get();
 
         return view('pages.report-quality', compact(
             'page_title',
@@ -66,7 +68,8 @@ class ReportController extends Controller
             'marketers',
             'campaigns',
             'page_size',
-            'subcampaigns'
+            'subcampaigns',
+            'landing_page'
         ));
     }
 
@@ -104,6 +107,9 @@ class ReportController extends Controller
         }
         if ($request->subcampaign_id) {
             $data_where['subcampaign_id'] = $request->subcampaign_id;
+        }
+        if ($request->landing_page) {
+            $data_where['landing_page_id']     = $request->landing_page;
         }
 
         $startDate = Date('Y-m-d');
