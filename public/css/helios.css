@@ -188,8 +188,8 @@ fieldset:first-of-type {
     min-width: 60px;
 }
 
-#table_ads th.long, #table_report th.long{
-    min-width: 95px;
+#table_ads th.long, #table_report th{
+    min-width: 100px;
 }
 
 #table_ads tr#ad-total, #table_report tr#ad-total{
