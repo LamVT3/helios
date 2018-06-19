@@ -246,19 +246,7 @@ $(document).ready(function () {
                     fixedTotalRow();
                 },
                 'order': [],
-                "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
-                    if(iTotal - 1 == 0){
-                        return "";
-                    }
-                    iStart = iStart - 1;
-                    if(iStart == 0){
-                        iStart = 1;
-                    }
-                    iEnd = iEnd - 1;
-                    iTotal = iTotal - 1;
-                    return "Showing " + iStart + " to " + iEnd + " of " + iTotal + " entries";
-                },
-                "iDisplayLength": page_size,
+                "iDisplayLength": parseInt(page_size),
                 'scrollY'       : '55vh',
                 "scrollX"       : true,
                 'scrollCollapse': true,

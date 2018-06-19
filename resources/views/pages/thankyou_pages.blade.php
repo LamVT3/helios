@@ -136,7 +136,7 @@
                 responsiveHelper_table_channel.respond();
             },
             "order": [[0, "desc"]],
-            "iDisplayLength": page_size,
+            "iDisplayLength": parseInt(page_size),
             'scrollY'       : '55vh',
             "scrollX"       : true,
             'scrollCollapse': true,

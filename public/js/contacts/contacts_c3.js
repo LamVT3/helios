@@ -323,7 +323,7 @@ function initDataTable() {
         },
         "order": [],
         "destroy": true,
-        "iDisplayLength": page_size,
+        "iDisplayLength": parseInt(page_size),
         // "processing": true,
         "serverSide": true,
         "ajax": {

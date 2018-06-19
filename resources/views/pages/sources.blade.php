@@ -146,7 +146,7 @@
                 responsiveHelper_table_source.respond();
             },
             "order": [],
-            "iDisplayLength": page_size,
+            "iDisplayLength": parseInt(page_size),
             'scrollY'       : '55vh',
             "scrollX"       : true,
             'scrollCollapse': true,

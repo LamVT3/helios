@@ -143,8 +143,7 @@
                                     </div>
                                     <hr>
                                     <div class="wrapper_report">
-                                        <table id="table_report" class="table "
-                                               width="100%">
+                                        <table id="table_report" class="table" width="100%">
                                             <thead>
                                                 <tr>
                                                     <th>Source</th>
