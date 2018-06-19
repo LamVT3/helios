@@ -186,6 +186,7 @@ class ReportController extends Controller
                 'c2' => 0,
                 'c3' => 0,
                 'c3b' => 0,
+                'c3bg' => 0,
                 'spent' => 0,
                 'l1' => 0,
                 'l3' => 0,
@@ -202,8 +203,9 @@ class ReportController extends Controller
 
             $report['total']->c1        += $item->c1        ? $item->c1        : 0;
             $report['total']->c2        += $item->c2        ? $item->c2        : 0;
-            $report['total']->c3        += $item->c3        ? $item->c3        : 0;
+            $report['total']->c3        += $item->c3b + $item->c3bg;
             $report['total']->c3b       += $item->c3b       ? $item->c3b       : 0;
+            $report['total']->c3bg      += $item->c3bg      ? $item->c3bg      : 0;
             $report['total']->spent     += $item->spent     ? $item->spent     : 0;
             $report['total']->l1        += $item->l1        ? $item->l1        : 0;
             $report['total']->l3        += $item->l3        ? $item->l3        : 0;
@@ -240,8 +242,9 @@ class ReportController extends Controller
                     'ad'        => $ad_name,
                     'c1'        => $item->c1       ? $item->c1         : 0,
                     'c2'        => $item->c2       ? $item->c2         : 0,
-                    'c3'        => $item->c3       ? $item->c3         : 0,
+                    'c3'        => $item->c3b + $item->c3bg,
                     'c3b'       => $item->c3b      ? $item->c3b        : 0,
+                    'c3bg'      => $item->c3bg     ? $item->c3bg       : 0,
                     'spent'     => $item->spent    ? $item->spent      : 0,
                     'l1'        => $item->l1       ? $item->l1         : 0,
                     'l3'        => $item->l3       ? $item->l3         : 0,
@@ -251,8 +254,9 @@ class ReportController extends Controller
             } else {
                 $report[$item->ad_id]->c1       += isset($item->c1)        ? $item->c1         : 0;
                 $report[$item->ad_id]->c2       += isset($item->c2)        ? $item->c2         : 0;
-                $report[$item->ad_id]->c3       += isset($item->c3)        ? $item->c3         : 0;
+                $report[$item->ad_id]->c3       += $item->c3b + $item->c3bg;
                 $report[$item->ad_id]->c3b      += isset($item->c3b)       ? $item->c3b        : 0;
+                $report[$item->ad_id]->c3bg     += isset($item->c3bg)      ? $item->c3bg       : 0;
                 $report[$item->ad_id]->spent    += isset($item->spent)     ? $item->spent      : 0;
                 $report[$item->ad_id]->l1       += isset($item->l1)        ? $item->l1         : 0;
                 $report[$item->ad_id]->l3       += isset($item->l3)        ? $item->l3         : 0;
@@ -266,6 +270,7 @@ class ReportController extends Controller
             $item->c2_c1    = $item->c1     ? round($item->c2 / $item->c1, 4) * 100         : '0';
             $item->c3_cost  = $item->c3     ? round($item->spent * $rate / $item->c3, 2)    : '0';
             $item->c3b_cost = $item->c3b    ? round($item->spent * $rate / $item->c3b, 2)   : '0';
+            $item->c3bg_cost = $item->c3bg  ? round($item->spent * $rate / $item->c3bg, 2)   : '0';
             $item->c3_c2    = $item->c2     ? round($item->c3 / $item->c2, 4) * 100         : '0';
             $item->l3_l1    = $item->l1     ? round($item->l3 / $item->l1, 4) * 100         : '0';
             $item->l8_l1    = $item->l1     ? round($item->l8 / $item->l1, 4) * 100         : '0';
