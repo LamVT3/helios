@@ -132,6 +132,13 @@
                             class="menu-item-parent">Config</span></a>
             </li>
             @endif
+
+            @if(auth()->user()->role == "Manager" || auth()->user()->role == "Admin")
+                <li class="{{ $active == 'diff_contacts' ? 'active' : '' }}">
+                    <a href="{{ route('diff-contacts') }}"><i class="fa fa-lg fa-fw fa-exclamation-triangle"></i> <span
+                                class="menu-item-parent">Diff Contacts</span></a>
+                </li>
+            @endif
             {{-- end 2018-04-18 LamVT [HEL_9] Add more setting for VND/USD conversion--}}
             {{--@endpermission
 
