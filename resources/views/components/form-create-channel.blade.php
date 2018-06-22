@@ -26,7 +26,7 @@
                             </label>
                         </section>
                         <section>
-                            <label class="label require_field" for="thankyou_page">Thank You Page</label>
+                            <label class="label" for="thankyou_page">Thank You Page</label>
                             <label class="select">
                                 <select name="thankyou_page">
                                     <option value="" selected>Select Thank You Page</option>
