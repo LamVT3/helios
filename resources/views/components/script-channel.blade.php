@@ -57,7 +57,7 @@
                     // alphanumeric: true
                 },
                 thankyou_page: {
-                    required: true,
+                    // required: true,
                     // alphanumeric: true
                 },
                 fb_id: {
