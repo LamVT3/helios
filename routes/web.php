@@ -177,3 +177,7 @@ Route::group(['prefix' => 'channel'], function () {
     Route::post('/create', 'ChannelController@store')->name('channel-create');
     Route::get('/get/{id}', 'ChannelController@get')->name('channel-get');
 });
+
+Route::group(['prefix' => 'diff-contacts'], function () {
+    Route::get('/', 'DiffContactsController@index')->name('diff-contacts');
+});
