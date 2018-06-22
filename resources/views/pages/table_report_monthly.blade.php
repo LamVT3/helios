@@ -19,7 +19,7 @@
         --><div class="orange inlineBlock col-md-2">{{ ($report['total']->c3bg != 0) ? round($report['total']->l3 / $report['total']->c3bg,4)*100 : 0 }}%</div>
         </div>
 
-        <div class="sticky" style="float: left;top: 20px;">
+        <div class="sticky" style="float: right; top: 20px; z-index: 0">
             <button id="export" class="btn btn-success btn-sm" type="button" style="margin: 15px;" data-toggle="modal" data-target="#myExportModal">
                 <i class="fa fa-download"></i> Export
             </button>
@@ -490,7 +490,7 @@
                 <h3 class="modal-title">Confirm Export</h3>
             </div>
             <div class="modal-body">
-                <h4>{{config('constants.EXPORT_REPORT')}}</h4>
+                <h4>{{config('constants.EXPORT_MONTHLY_REPORT')}}</h4>
             </div>
             <div class="modal-footer">
                 <button id="confirm_export" type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
@@ -500,30 +500,5 @@
 
     </div>
 </div>
-
-<div style="position: relative">
-    <form id="report-monthly-form" action="{{ route('report.export-monthly')}}" enctype="multipart/form-data">
-        <input type="hidden" name="month">
-        <input type="hidden" name="startDate">
-        <input type="hidden" name="endDate">
-    </form>
-</div>
-
-<script type="text/javascript">
-    $(document).ready(function(){
-        $('button#confirm_export').click(function (e) {
-            e.preventDefault();
-            // $('#report-monthly-form').submit();
-            alert("success");
-            var month = document.getElementById('dropdown').textContent;
-            var rangeDate = $("#rangedate").find("span").val();
-            console.log(month + " " + rangeDate);
-            {{--$.get("{{ route('report.export-monthly') }}", {month: month})--}}
-            {{--.fail(function () {--}}
-                {{--alert('Cannot connect to server. Please try again later.');--}}
-            {{--});--}}
-        });
-    });
-</script>
 
 <link href="{{ asset('css/report.css') }}" rel="stylesheet">

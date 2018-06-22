@@ -314,8 +314,8 @@ class ReportController extends Controller
 
     private function prepareMonthly() {
         $month       = request('month');
-        $startRange  = request('startDate');
-        $endRange    = request('endDate');
+        $startRange  = request('startRange');
+        $endRange    = request('endRange');
         $startDate   = date('Y-' . $month .'-01');
         $year        = date('Y'); /* nam hien tai*/
         $days        = cal_days_in_month(CAL_GREGORIAN, $month, $year);
@@ -505,61 +505,45 @@ class ReportController extends Controller
     }
 
     public function exportMonthly() {
-        $date = \request('month');
-        $date = str_replace('/','',$date);
-        $file_name = 'Contact_C3_' . $date;
-        Excel::create($file_name, function ($excel) {
-            $excel->sheet('contacts_c3', function ($sheet) {
-                $data = $this->getC3Data();
-                $count = 1;
-                $contacts = $data['contacts'];
-                $datas = array();
-                $limit = config('constants.DEFAULT_EXPORT');
-                $updateCnt = 0;
-                if(\request('limit')){
-                    $limit = \request('limit');
-                }
-                foreach ($contacts as $item) {
-                    $updateCnt++;
-                    if($item->is_export){
-                        continue;
-                    }
-                    $datas[] = array(
-                        $count++,
-                        $item->name,
-                        $item->email,
-                        $item->phone,
-                        $item->age,
-                        Date('Y-m-d H:i:s', $item->submit_time/1000),
-                        $item->current_level,
-                        $item->marketer_name,
-                        $item->campaign_name,
-                        $item->subcampaign_name,
-                        $item->ad_name,
-                        $item->landing_page,
-                        $item->contact_id,
-                        $item->ads_link
-                    );
-                    if($count > $limit){
-                        break;
-                    }
-                }
-                $sheet->fromArray($datas, NULL, 'A1', FALSE, FALSE);
-                $headings = array('STT', 'Name', 'Email', 'Phone', 'Age', 'Time', 'Current level', 'Marketer', 'Campaign', 'Subcampaign', 'Ads', 'Landing page', 'ContactID', 'Link Tracking');
-                $sheet->prependRow(1, $headings);
-                $sheet->cells('A1:N1', function ($cells) {
-                    $cells->setBackground('#191919');
-                    $cells->setFontColor('#DBAC69');
-                    $cells->setFontSize(12);
-                    $cells->setFontWeight('bold');
-                });
-                $is_update = \request('mark_exported');
-                if($is_update){
-                    $this->updateStatusExport($updateCnt);
-                }
-            });
-
-        })->export('xls');
+//        $month = request('month');
+//        var_dump($month);
+//        $file_name = 'Report_Month_' . $month;
+//        Excel::create($file_name, function ($excel, $month) {
+//            $excel->sheet('Monthly_Report_' . $month, function ($sheet) {
+//                $data = $this->prepareMonthly();
+//                $count = 1;
+//                $report = $data['report'];
+//                $data = array();
+//                foreach ($report as $item) {
+//                    $data[] = array(
+//                        $count++,
+//                        $item->name,
+//                        $item->email,
+//                        $item->phone,
+//                        $item->age,
+//                        Date('Y-m-d H:i:s', $item->submit_time/1000),
+//                        $item->current_level,
+//                        $item->marketer_name,
+//                        $item->campaign_name,
+//                        $item->subcampaign_name,
+//                        $item->ad_name,
+//                        $item->landing_page,
+//                        $item->contact_id,
+//                        $item->ads_link
+//                    );
+//                }
+//                $sheet->fromArray($data, NULL, 'A1', FALSE, FALSE);
+//                $headings = array('STT', 'Name', 'Email', 'Phone', 'Age', 'Time', 'Current level', 'Marketer', 'Campaign', 'Subcampaign', 'Ads', 'Landing page', 'ContactID', 'Link Tracking');
+//                $sheet->prependRow(1, $headings);
+//                $sheet->cells('A1:N1', function ($cells) {
+//                    $cells->setBackground('#191919');
+//                    $cells->setFontColor('#DBAC69');
+//                    $cells->setFontSize(12);
+//                    $cells->setFontWeight('bold');
+//                });
+//            });
+//
+//        })->export('xls');
     }
 
 }

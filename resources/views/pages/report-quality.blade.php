@@ -289,7 +289,7 @@
 
     get_report_monthly(m, new Date(), new Date());
 
-    function get_report_monthly(month, startDate, endDate) {
+    function get_report_monthly(month, startRange, endRange) {
 
         month = "" + month;
         // console.log("month = " + month);
@@ -300,24 +300,24 @@
             month = month.toString();
         }
 
-       $.get("{{ route('report.get-report-monthly') }}", {month: month, startDate: startDate, endDate: endDate}, function (data) {
+       $.get("{{ route('report.get-report-monthly') }}", {month: month, startRange: startRange, endRange: endRange}, function (data) {
             document.getElementById("monthly_report").innerHTML = data;
         }).fail( function () {
             alert('Cannot connect to server. Please try again later.');
         }).complete(function () {
-           var year = startDate.getFullYear();
+           var year = startRange.getFullYear();
            // console.log("year script = " + year);
-           rangedate_span(startDate, endDate);
+           rangedate_span(startRange, endRange);
 
            $('#rangedate').daterangepicker({
-               startDate: startDate.getDate(),
-               endDate: endDate.getDate(),
+               startRange: startRange.getDate(),
+               endRange: endRange.getDate(),
                opens: 'right',
                minDate: new Date(year, month-1, 1),
                maxDate: new Date(year, month, 0),
-           }, function(startDate, endDate){
-               let start = new Date(startDate);
-               let end = new Date(endDate);
+           }, function(startRange, endRange){
+               let start = new Date(startRange);
+               let end = new Date(endRange);
                rangedate_span(start, end);
                get_report_monthly(month, start, end);
            });
@@ -326,10 +326,10 @@
         $( "#monthly" ).click();
     }
 
-    function rangedate_span(startDate, endDate) {
-        /*console.log("start date = " + startDate);
-        console.log("end date = " + endDate);*/
-        $('#rangedate span').html(startDate.getDate() + '-' + endDate.getDate());
+    function rangedate_span(startRange, endRange) {
+        /*console.log("start range = " + startRange);
+        console.log("end range = " + endRange);*/
+        $('#rangedate span').html(startRange.getDate() + '-' + endRange.getDate());
     }
 
     get_report_year(y, m, 12);
@@ -372,6 +372,21 @@
             elementDropdownY.parentElement.classList.remove("open");
         };
 
+    });
+
+    $('#monthly_report').on('click', 'button#confirm_export', function (e) {
+        e.preventDefault();
+        var monthArr = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
+        var month = document.getElementById('dropdown').textContent;
+        var rangeDate = $("#rangedate").find("span").text();
+        let dateArr = rangeDate.split("-");
+        month = monthArr.indexOf(month) + 1;
+        $.get("{{ route('report.export-monthly') }}", {month: month, startRange: dateArr[0], endRange: dateArr[1]})
+            .fail(function (e) {
+                console.log(e);
+                alert('Cannot connect to server. Please try again later.');
+            });
     });
 
 </script>
