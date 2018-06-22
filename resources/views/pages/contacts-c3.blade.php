@@ -224,6 +224,7 @@
                                 <input type="hidden" name="mark_exported" value="0">
                                 <input type="hidden" name="status">
                                 <input type="hidden" name="landing_page">
+                                <input type="hidden" name="search" value="">
                             </form>
                         </div>
 
@@ -244,18 +245,18 @@
                                         <th>Email</th>
                                         <th>Phone</th>
                                         <th>Age</th>
-                                        <th>Registered at</th>
-                                        <th>C Level</th>
-                                        <th>CRM level</th>
+                                        <th class="long">Registered at</th>
+                                        <th class="long">C Level</th>
+                                        <th class="long">CRM level</th>
                                         <th>Ads</th>
                                         <th>Source</th>
                                         <th>Team</th>
                                         <th>Marketer</th>
                                         <th>Campaign</th>
                                         <th>Subcampaign</th>
-                                        <th>Landing page</th>
+                                        <th class="long">Landing page</th>
                                         <th>Action</th>
-                                        <th>Status</th>
+                                        <th class="long">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>

@@ -185,19 +185,10 @@ $(document).ready(function () {
         }
     });
 
-    $('input[id=update_all]').click(function () {
-        var is_checked = this.checked;
-        if(is_checked){
-            $('input[name="update_all"]').val(1);
-        }else{
-            $('input[name="update_all"]').val(0);
-        }
-        $('input:checkbox[id=is_update]').prop('checked', this.checked);
-        enable_update();
-        $("input:checkbox[id=is_update]").each(function () {
-           edit(this, 'all');
-        });
-    });
+    // $('input[type=search]').change(function (e) {
+    //     countExportedWhenSearch();
+    //     console.log(1111);
+    // })
 
 });
 
@@ -233,14 +224,15 @@ $(document).ready(function () {
 
     $('button#confirm_export').click(function (e) {
         e.preventDefault();
+
         $('#export-form-c3').submit();
         setTimeout(function(){
             countExported();
             $('div#export_success').show();
             $('div#update_success').hide();
             $('input#update_all').prop('checked', false); // Unchecks checkbox all
-        }, 1000);
 
+        }, 1000);
     });
 
     $('button#update_contact').click(function (e) {
@@ -262,6 +254,20 @@ $(document).ready(function () {
         // }
     });
 
+    $('input[id=update_all]').click(function () {
+        var is_checked = this.checked;
+        if(is_checked){
+            $('input[name="update_all"]').val(1);
+        }else{
+            $('input[name="update_all"]').val(0);
+        }
+        $('input:checkbox[id=is_update]').prop('checked', this.checked);
+        enable_update();
+        $("input:checkbox[id=is_update]").each(function () {
+            edit(this, 'all');
+        });
+    });
+
 });
 
 function initDataTable() {
@@ -281,6 +287,7 @@ function initDataTable() {
     var is_export       = $('select[name="is_export"]').val();
     var limit           = $('input#limit').val();
     var landing_page    = $('select[name="landing_page"]').val();
+    var search          = $('input[name="search"]').val();
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -319,6 +326,16 @@ function initDataTable() {
             responsiveHelper_table_campaign.createExpandIcon(nRow);
         },
         "drawCallback": function (oSettings) {
+
+            $('input[type=search]').change(function (e) {
+                var search = $('input[type=search]').val();
+                $('input[name="search"]').val(search);
+                countExportedWhenSearch();
+            })
+
+            var search =  $('input[name="search"]').val();
+            $('input[type=search]').val(search);
+
             responsiveHelper_table_campaign.respond();
         },
         "order": [],
@@ -331,18 +348,19 @@ function initDataTable() {
             type: "GET",
             data: function (d) {
                 d.source_id         = source_id,
-                    d.team_id           = team_id,
-                    d.marketer_id       = marketer_id,
-                    d.campaign_id       = campaign_id,
-                    d.clevel            = clevel,
-                    d.current_level     = current_level,
-                    d.subcampaign_id    = subcampaign_id,
-                    d.is_export         = is_export,
-                    d.registered_date   = registered_date,
-                    d.checked_date      = checked_date,
-                    d.c3bg_checkbox     = c3bg_checkbox,
-                    d.limit             = limit,
-                    d.landing_page      = landing_page
+                d.team_id           = team_id,
+                d.marketer_id       = marketer_id,
+                d.campaign_id       = campaign_id,
+                d.clevel            = clevel,
+                d.current_level     = current_level,
+                d.subcampaign_id    = subcampaign_id,
+                d.is_export         = is_export,
+                d.registered_date   = registered_date,
+                d.checked_date      = checked_date,
+                d.c3bg_checkbox     = c3bg_checkbox,
+                d.limit             = limit,
+                d.landing_page      = landing_page,
+                d.search_inp        = search
             }
         },
         "columns": [
@@ -351,7 +369,7 @@ function initDataTable() {
                 "render": function ( data, type, row, meta ) {
                     return '<input type="checkbox" class="is_update" id="is_update" onclick="enable_update();edit(this);" value="' + data[0] + '"/>';
                 },
-                "orderable": false
+                "orderable": false,
             },
             {
                 "data" : 'name',
@@ -409,13 +427,17 @@ function initDataTable() {
             }
         },
         "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
+
             if(iTotal == 0){
                 return "";
             }
-            var exported    = $('input[name="exported"]').val();
+            var search = $('input[type=search]').val();
+            $('input[name="search"]').val(search);
+            countExportedWhenSearch();
+            var exported    = $('input[name="exported"]').val();console.log(exported);
             var count_str   = '<span class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
 
-            return "Showing " + iStart + " to " + iEnd + " of " + iTotal + " entries" + count_str;
+            return sPre + count_str;
         },
     });
 }
@@ -434,6 +456,7 @@ function countExported() {
     var subcampaign_id  = $('select[name="subcampaign_id"]').val();
     var landing_page    = $('select[name="landing_page"]').val();
     var is_export       = $('select[name="is_export"]').val();
+    var search          = $('input[name="search"]').val();
 
     if(is_export === '0'){
         $('input[name="exported"]').val(0);
@@ -452,6 +475,7 @@ function countExported() {
     data.registered_date   = registered_date;
     data.landing_page      = landing_page;
     data.is_export         = is_export;
+    data.search            = search;
 
     $.get(url, data, function (data) {
         setTimeout(function(){
@@ -461,6 +485,49 @@ function countExported() {
             $('input[name="exported"]').val(data);
             initDataTable();
         }, 1000);
+    }).fail(
+        function (err) {
+            alert('Cannot connect to server. Please try again later.');
+        });
+}
+
+function countExportedWhenSearch() {
+    var status          = $('select[name="is_export"]').val();
+
+    var url             = $('input[name="exported_url"]').val();
+    var source_id       = $('select[name="source_id"]').val();
+    var team_id         = $('select[name="team_id"]').val();
+    var marketer_id     = $('select[name="marketer_id"]').val();
+    var campaign_id     = $('select[name="campaign_id"]').val();
+    var clevel          = $('select[name="clevel"]').val();
+    var current_level   = $('select[name="current_level"]').val();
+    var registered_date = $('.registered_date').text();
+    var subcampaign_id  = $('select[name="subcampaign_id"]').val();
+    var landing_page    = $('select[name="landing_page"]').val();
+    var is_export       = $('select[name="is_export"]').val();
+    var search          = $('input[name="search"]').val();
+
+    if(is_export === '0'){
+        $('input[name="exported"]').val(0);
+        return;
+    }
+
+    var data = {};
+    data.source_id         = source_id;
+    data.team_id           = team_id;
+    data.marketer_id       = marketer_id;
+    data.campaign_id       = campaign_id;
+    data.clevel            = clevel;
+    data.current_level     = current_level;
+    data.subcampaign_id    = subcampaign_id;
+    data.registered_date   = registered_date;
+    data.landing_page      = landing_page;
+    data.is_export         = is_export;
+    data.search            = search;
+
+    $.get(url, data, function (data) {
+        $('input[name="exported"]').val(data);
+
     }).fail(
         function (err) {
             alert('Cannot connect to server. Please try again later.');

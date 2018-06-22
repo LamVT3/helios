@@ -188,7 +188,7 @@ fieldset:first-of-type {
     min-width: 60px;
 }
 
-#table_ads th.long, #table_report th{
+#table_ads th.long, #table_report th, #table_contacts th.long{
     min-width: 100px;
 }
 
@@ -324,8 +324,8 @@ input#limit
 {
     color: #739e73!important;
 }
-#table_contacts th:last-child{
-    min-width: 80px;
+#table_contacts th:first-child{
+    width: 40px!important;
 }
 .rectangle {
     height: 10px;

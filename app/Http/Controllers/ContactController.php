@@ -97,7 +97,11 @@ class ContactController extends Controller
 
     public function getC3Data()
     {
-        $data_where = $this->getWhereData();
+        $columns     = $this->setColumns();
+        $data_where  = $this->getWhereData();
+        $data_search = $this->getSeachData();
+        $order       = $this->getOrderData();
+
         $request = request();
 
         // DB::connection( 'mongodb' )->enableQueryLog();
@@ -125,7 +129,19 @@ class ContactController extends Controller
 //        {
 //            $query->limit((int)$request->limit);
 //        }
-        $contacts = $query->orderBy('submit_time', 'desc')->get();
+
+        if($data_search != ''){
+            foreach ($columns as $key => $value){
+                $query->orWhere($value, 'like', "%{$data_search}%");
+            }
+        }
+        if($order){
+            $query->orderBy($columns[$order['column']], $order['type']);
+        } else {
+            $query->orderBy('submit_time', 'desc');
+        }
+
+        $contacts = $query->get();
         // DB::connection('mongodb')->getQueryLog();
         $data = $data_where;
         $data['contacts'] = $contacts;
@@ -135,7 +151,9 @@ class ContactController extends Controller
 
     public function countExported()
     {
-        $data_where = $this->getWhereData();
+        $columns     = $this->setColumns();
+        $data_where  = $this->getWhereData();
+        $data_search = $this->getSeachData();
         $request = request();
 
         // DB::connection( 'mongodb' )->enableQueryLog();
@@ -162,6 +180,12 @@ class ContactController extends Controller
             $query->where($data_where);
         }
 
+        if($data_search != ''){
+            foreach ($columns as $key => $value){
+                $query->orWhere($value, 'like', "%{$data_search}%");
+            }
+        }
+
         $count = $query->count();
 
         return $count;
@@ -176,6 +200,8 @@ class ContactController extends Controller
         $date = str_replace('/','',$date);
         $file_name = 'Contact_C3_' . $date;
         Excel::create($file_name, function ($excel) {
+            header('Content-Encoding: UTF-8');
+            header('Content-type: text/csv; charset=UTF-8');
             $excel->sheet('contacts_c3', function ($sheet) {
                 $data = $this->getC3Data();
                 $count = 1;
@@ -193,7 +219,7 @@ class ContactController extends Controller
                     }
                     $datas[] = array(
                         $count++,
-                        $item->name,
+                        $this->checkSpecialSymbols($item->name),
                         $item->email,
                         $item->phone,
                         $item->age,
@@ -498,6 +524,59 @@ class ContactController extends Controller
         }
 
         return array('c3bg', '');
+    }
+
+    private function getSeachData(){
+        $request        = request();
+
+        if($request->search){
+            return $request->search;
+        }
+
+        return '';
+    }
+
+    private function getOrderData(){
+        $request    = request();
+        $order      = array();
+
+        if($request['order'][0]['column'] && $request['order'][0]['dir']){
+            $order['column']    = $request['order'][0]['column'];
+            $order['type']      = $request['order'][0]['dir'];
+        }
+
+        return $order;
+    }
+
+    private function setColumns(){
+        //define index of column
+        $columns = array(
+            0   =>'name',
+            1   =>'email',
+            2   =>'phone',
+            3   =>'age',
+            4   =>'submit_time',
+            5   =>'clevel',
+            6   =>'current_level',
+            7   =>'source_name',
+            8   =>'team_name',
+            9   =>'marketer_name',
+            10  =>'campaign_name',
+            11  =>'subcampaign_name',
+            12  =>'ad_name',
+            13  =>'landing_page',
+        );
+
+        return $columns;
+    }
+
+    private function checkSpecialSymbols($str){
+        $pattern        = get_html_translation_table( HTML_ENTITIES );
+        $pattern['💝']   = '💝';
+
+        $newStr = str_replace($pattern, "", $str);
+
+        return $newStr;
     }
 
 }
