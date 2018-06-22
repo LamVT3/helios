@@ -380,3 +380,11 @@ div.chart{
     border-top: 4px solid #FF8C00;
     width: 40px;
 }
+#table_mol_helios th{
+    width: 20%!important;
+    /*min-width: 30px!important;*/
+}
+#table_helios_mol th{
+    width: 20%!important;
+    /*min-width: 30px!important;*/
+}
