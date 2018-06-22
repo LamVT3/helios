@@ -54,18 +54,20 @@ class ChannelController extends Controller
 
         $user = auth()->user();
 
-        $thankyou_page = request('thankyou_page');
-        $thankyou_page = ThankYouPage::find($thankyou_page);
-
         $channel                = request('channel_id') ? Channel::find(request('channel_id')) : new Channel();
         $channel->name          = request('name');
         $channel->fb_id         = request('fb_id');
-        $channel->thankyou_page_id      = $thankyou_page->id;
-        $channel->thankyou_page_name    = $thankyou_page->name;
-        $channel->thankyou_page_url     = $thankyou_page->url;
+
         $channel->creator_id    = $user->id;
         $channel->creator_name  = $user->username;
         $channel->is_active     = (int) \request('is_active');
+        if(request('thankyou_page')){
+            $thankyou_page = request('thankyou_page');
+            $thankyou_page = ThankYouPage::find($thankyou_page);
+            $channel->thankyou_page_id      = $thankyou_page->id;
+            $channel->thankyou_page_name    = $thankyou_page->name;
+            $channel->thankyou_page_url     = $thankyou_page->url;
+        }
 
         $channel->save();
 
