@@ -111,7 +111,7 @@ class DiffContactsController extends Controller
         $arr_phone_mol      = array();
 
         foreach($helios_contacts as $contact){
-            $arr_phone_helios[] = $contact->phone;
+            $arr_phone_helios[] = '0'.$contact->phone;
         }
 
         foreach($mol_contacts as $contact){
@@ -119,10 +119,10 @@ class DiffContactsController extends Controller
         }
 
         $mol_diff = array_diff($arr_phone_mol, $arr_phone_helios);
-        $helios_diff = array_diff($arr_phone_helios, $arr_phone_mol); // helios co , mol ko
+        $helios_diff = array_diff($arr_phone_helios, $arr_phone_mol);
 
         foreach($helios_contacts as $key => $contact){
-            if(!in_array($contact->phone, $helios_diff)){
+            if(!in_array('0'.$contact->phone, $helios_diff)){
                 unset($helios_contacts[$key]);
             }
         }

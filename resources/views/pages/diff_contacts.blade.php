@@ -49,7 +49,7 @@
                                                     <td>{{ $item->email }}</td>
                                                     <td>{{ $item->phone }}</td>
                                                     <td>{{ $item->age }}</td>
-                                                    <td>{{ $item->submit_time }}</td>
+                                                    <td>{{ $item->submit_time ? date('d-m-Y H:i:s', $item->submit_time/1000) : ""}}</td>
                                                     </tr>
                                                     @endforeach
 
