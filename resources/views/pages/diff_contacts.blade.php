@@ -26,8 +26,14 @@
                                         <span class="registered_date"></span> <b class="caret"></b>
                                     </div>
                                 </div>
+
                                 <hr>
-                                <div class="row table-responsive">
+                                <div class="loading" style="display: none">
+                                    <div class="col-md-12 text-center">
+                                        <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
+                                    </div>
+                                </div>
+                                <div class="row table-responsive wrapper_table">
                                     <div class="col-md-6">
                                         <h1>Helios vs MOL</h1>
                                         <div class="row">
@@ -79,7 +85,7 @@
                                                             <td>{{ $item['email'] }}</td>
                                                             <td>{{ $item['phone'] }}</td>
                                                             <td>{{ $item['age'] != '20 - 30 ??' ? $item['age'] : 21 }}</td>
-                                                            <td>{{ $item['datetime_submitted'] ? date_format($item['datetime_submitted'],"d-m-Y H:i:s") : '' }}</td>
+                                                            <td>{{ $item['datetime_submitted'] }}</td>
                                                         </tr>
                                                     @endforeach
 
@@ -87,7 +93,7 @@
                                                 </table>
                                             </article>
                                         </div>
-                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         @endcomponent
@@ -106,6 +112,7 @@
 
     </div>
     <input type="hidden" name="page_size" value="{{$page_size}}">
+    <input type="hidden" name="filter_url" value="{{route('diff-contacts.filter')}}">
     <!-- END MAIN PANEL -->
 
 @endsection
@@ -127,94 +134,7 @@
 
     <script type="text/javascript">
 
-        // DO NOT REMOVE : GLOBAL FUNCTIONS!
 
-        $(document).ready(function () {
-            var page_size   = $('input[name="page_size"]').val();
-            /* BASIC ;*/
-            var responsiveHelper_table_channel = undefined;
-
-            var breakpointDefinition = {
-                tablet: 1024,
-                phone: 480
-            };
-
-            $('#table_helios_mol').dataTable({
-                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-6 hidden-xs'C>r>" +
-                "t" +
-                "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-sm-6 col-xs-12'p>>",
-                "autoWidth": true,
-                "preDrawCallback": function () {
-                    // Initialize the responsive datatables helper once.
-                    if (!responsiveHelper_table_channel) {
-                        responsiveHelper_table_channel = new ResponsiveDatatablesHelper($('#table_helios_mol'), breakpointDefinition);
-                    }
-                },
-                "rowCallback": function (nRow) {
-                    responsiveHelper_table_channel.createExpandIcon(nRow);
-                },
-                "drawCallback": function (oSettings) {
-                    responsiveHelper_table_channel.respond();
-                },
-                "order": [[4, "desc"]],
-                "iDisplayLength": parseInt(page_size),
-                'scrollY'       : '55vh',
-                "scrollX"       : true,
-                'scrollCollapse': true,
-                "columnDefs": [
-                    { "width": "20%", "targets": '_all' },
-                ]
-            });
-
-
-            /* END BASIC */
-        })
-
-        $(document).ready(function () {
-            var page_size   = $('input[name="page_size"]').val();
-            /* BASIC ;*/
-            var responsiveHelper_table_channel = undefined;
-
-            var breakpointDefinition = {
-                tablet: 1024,
-                phone: 480
-            };
-
-            $('#table_mol_helios').dataTable({
-                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-6 hidden-xs'C>r>" +
-                "t" +
-                "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-sm-6 col-xs-12'p>>",
-                "autoWidth": true,
-                "preDrawCallback": function () {
-                    // Initialize the responsive datatables helper once.
-                    if (!responsiveHelper_table_channel) {
-                        responsiveHelper_table_channel = new ResponsiveDatatablesHelper($('#table_mol_helios'), breakpointDefinition);
-                    }
-                },
-                "rowCallback": function (nRow) {
-                    responsiveHelper_table_channel.createExpandIcon(nRow);
-                },
-                "drawCallback": function (oSettings) {
-                    responsiveHelper_table_channel.respond();
-                },
-                "order": [[4, "desc"]],
-                "iDisplayLength": parseInt(page_size),
-                'scrollY'       : '55vh',
-                "scrollX"       : true,
-                'scrollCollapse': true,
-                "columns": [
-                    { "width": "20%" },
-                    { "width": "20%" },
-                    { "width": "20%" },
-                    { "width": "20%" },
-                    { "width": "20%" },
-                ]
-            });
-
-
-
-            /* END BASIC */
-        })
 
     </script>
     @include('components.script-diff_contacts')

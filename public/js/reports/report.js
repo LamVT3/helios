@@ -243,6 +243,7 @@ $(document).ready(function () {
                 'scrollCollapse': true,
             });
         });
+        $('.loading').hide();
     });
 });
 
