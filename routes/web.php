@@ -180,4 +180,6 @@ Route::group(['prefix' => 'channel'], function () {
 
 Route::group(['prefix' => 'diff-contacts'], function () {
     Route::get('/', 'DiffContactsController@index')->name('diff-contacts');
+    Route::get('/filter', 'DiffContactsController@filter')->name('diff-contacts.filter');
+
 });
