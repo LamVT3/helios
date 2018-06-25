@@ -108,7 +108,11 @@ class DiffContactsController extends Controller
         }
 
         $helios_contacts    = Contact::where('submit_time', '>=', strtotime($start_date)*1000)
+<<<<<<< Updated upstream
             ->where('submit_time', '<', strtotime($end_date)*1000)
+=======
+            ->where('submit_time', '<', strtotime("+1 day", strtotime($end_date)*1000))
+>>>>>>> Stashed changes
             ->where('clevel', 'like', '%c3b%')
             ->orderBy('submit_time', 'desc')->get();
 
