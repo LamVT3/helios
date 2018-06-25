@@ -219,7 +219,8 @@ class ContactController extends Controller
                     }
                     $datas[] = array(
                         $count++,
-                        $this->checkSpecialSymbols($item->name),
+//                        $this->checkSpecialSymbols($item->name),
+                        $item->name,
                         $item->email,
                         $item->phone,
                         $item->age,
@@ -253,7 +254,7 @@ class ContactController extends Controller
                 }
             });
 
-        })->export('xls');
+        })->export('xlsx');
 
 //        } else {
 //            return back();
