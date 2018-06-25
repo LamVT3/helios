@@ -242,7 +242,7 @@ class ContactController extends Controller
                 $sheet->fromArray($datas, NULL, 'A1', FALSE, FALSE);
                 $headings = \config('constants.TEMPLATE_EXPORT');
                 $sheet->prependRow(1, $headings);
-                $sheet->cells('A1:O1', function ($cells) {
+                $sheet->cells('A1:N1', function ($cells) {
                     $cells->setBackground('#191919');
                     $cells->setFontColor('#DBAC69');
                     $cells->setFontSize(12);
