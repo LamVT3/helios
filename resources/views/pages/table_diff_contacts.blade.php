@@ -45,11 +45,11 @@
                 <tbody>
                 @foreach ($mol_diff as $item)
                     <tr>
-                        <td>{{ $item['name'] }}</td>
-                        <td>{{ $item['email'] }}</td>
-                        <td>{{ $item['phone'] }}</td>
-                        <td>{{ $item['age'] == '20 - 30 ??' ? 21 : $item['age'] }}</td>
-                        <td>{{ $item['datetime_submitted'] }}</td>
+                        <td>{{ @$item['name'] }}</td>
+                        <td>{{ @$item['email'] }}</td>
+                        <td>{{ @$item['phone'] }}</td>
+                        <td>{{ @$item['age'] == '20 - 30 ??' ? 21 : $item['age'] }}</td>
+                        <td>{{ @$item['datetime_submitted'] }}</td>
                     </tr>
                 @endforeach
 
