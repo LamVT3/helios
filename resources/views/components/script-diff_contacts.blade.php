@@ -37,6 +37,12 @@
             "scrollX"       : true,
             'scrollCollapse': true,
             "destroy": true,
+            "columnDefs": [
+                {
+                    "targets": [ 0 ],
+                    "visible": false,
+                }
+            ]
         });
     }
 
