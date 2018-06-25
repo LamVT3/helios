@@ -132,8 +132,7 @@ class DiffContactsController extends Controller
                     unset($mol_contacts[$key]);
                     continue;
                 }
-//                $date = date_create($mol['datetime_submitted']);
-//                $mol['datetime_submitted'] = date_format($date,"d-m-Y H:i:s");
+
             }
         }
 

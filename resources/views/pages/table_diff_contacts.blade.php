@@ -49,7 +49,8 @@
                         <td>{{ @$item['email'] }}</td>
                         <td>{{ @$item['phone'] }}</td>
                         <td>{{ @$item['age'] != '20 - 30 ??' ? $item['age'] : 21 }}</td>
-                        <td>{{ @$item['datetime_submitted'] }}</td>
+                        <td>{{ @$item['datetime_submitted'] ? date('d-m-Y h:m:s',
+                        strtotime($item['datetime_submitted'])) : ''}}</td>
                     </tr>
                 @endforeach
 
