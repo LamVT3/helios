@@ -249,6 +249,7 @@
                                         <th class="long">C Level</th>
                                         <th class="long">CRM level</th>
                                         <th>Ads</th>
+                                        <th>Channel</th>
                                         <th>Source</th>
                                         <th>Team</th>
                                         <th>Marketer</th>

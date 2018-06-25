@@ -93,15 +93,11 @@
                 $('.wrapper_table').html(response);
                 inittable($('#table_mol_helios'));
                 inittable($('#table_helios_mol'));
-                console.log(response);
             });
             setTimeout(function(){
                 // initDataTable();
                 $('.loading').hide();
-            }, 1000);
-
-
-
+            }, 2000);
         });
 
     });

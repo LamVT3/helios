@@ -229,6 +229,7 @@ class ContactController extends Controller
                         $item->campaign_name,
                         $item->subcampaign_name,
                         $item->ad_name,
+                        $item->channel_name,
                         $item->landing_page,
                         $item->contact_id,
                         $item->ads_link
@@ -238,7 +239,7 @@ class ContactController extends Controller
                     }
                 }
                 $sheet->fromArray($datas, NULL, 'A1', FALSE, FALSE);
-                $headings = array('STT', 'Name', 'Email', 'Phone', 'Age', 'Time', 'Current level', 'Marketer', 'Campaign', 'Subcampaign', 'Ads', 'Landing page', 'ContactID', 'Link Tracking');
+                $headings = \config('constants.TEMPLATE_EXPORT');
                 $sheet->prependRow(1, $headings);
                 $sheet->cells('A1:N1', function ($cells) {
                     $cells->setBackground('#191919');

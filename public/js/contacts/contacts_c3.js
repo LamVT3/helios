@@ -384,6 +384,7 @@ function initDataTable() {
             { "data" : 'clevel'},
             { "data" : 'current_level',     "defaultContent": "-"},
             { "data" : 'ad_name',           "defaultContent": "-"},
+            { "data" : 'channel_name',      "defaultContent": "-"},
             { "data" : 'source_name',       "defaultContent": "-"},
             { "data" : 'team_name',         "defaultContent": "-"},
             { "data" : 'marketer_name',     "defaultContent": "-"},
