@@ -108,12 +108,8 @@ class DiffContactsController extends Controller
         }
 
         $helios_contacts    = Contact::where('submit_time', '>=', strtotime($start_date)*1000)
-<<<<<<< Updated upstream
             ->where('submit_time', '<', strtotime($end_date)*1000)
-=======
             ->where('submit_time', '<', strtotime("+1 day", strtotime($end_date)*1000))
->>>>>>> Stashed changes
-            ->where('clevel', 'like', '%c3b%')
             ->orderBy('submit_time', 'desc')->get();
 
         $mol_contacts       = $this->getMOLContacts($start_date, $end_date);
@@ -132,12 +128,12 @@ class DiffContactsController extends Controller
         foreach($helios_contacts as $helios){
 
             foreach($mol_contacts as $key => $mol){
-                if (strpos($mol['phone'], $helios->phone) !== false) {
+                if (strpos(@$mol['phone'], $helios->phone) !== false) {
                     unset($mol_contacts[$key]);
                     continue;
                 }
-                $date = date_create($mol['datetime_submitted']);
-                $mol['datetime_submitted'] = date_format($date,"d-m-Y H:i:s");
+//                $date = date_create($mol['datetime_submitted']);
+//                $mol['datetime_submitted'] = date_format($date,"d-m-Y H:i:s");
             }
         }
 
