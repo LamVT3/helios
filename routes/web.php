@@ -116,6 +116,11 @@ Route::group(['prefix' => 'users'], function () {
     Route::post('/roles/save', 'UserController@roleStore')->name('users-roles-save');
 });
 
+Route::group(['prefix' => 'kpi-user'], function () {
+    Route::post('/save/{userId}', 'KPIUserController@get')->name('kpi-user-store');
+    Route::get('/get/{userId}', 'KPIUserController@get')->name('kpi-user-getting');
+});
+
 Route::group(['prefix' => 'profile'], function () {
     Route::get('/', 'UserController@profile')->name('profile');
     Route::get('/{username}', 'UserController@profile')->name('profile-user');
@@ -125,7 +130,6 @@ Route::post('{related}/{model}/delete', 'Controller@deleteRelated')->name('delet
 Route::post('{model}/delete', 'Controller@delete')->name('delete');
 
 Route::group(['prefix' => 'config'], function () {
-
     Route::get('/', 'ConfigController@index')->name('config');
     Route::post('/create', 'ConfigController@store')->name('config-create');
     Route::get('/get/{id}', 'ConfigController@get')->name('config-get');

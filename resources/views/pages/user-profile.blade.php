@@ -60,6 +60,51 @@
 
                             </tbody>
                         </table>
+                        <button id="kpiSetting" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#kpiSettingModal">
+                            <i class="fa fa-calendar-minus-o"></i> KPI Setting
+                        </button>
+
+                        <!-- KPI Setting Modal -->
+                        <div class="modal fade" id="kpiSettingModal" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h3 class="modal-title">KPI Setting</h3>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-sm-3 col-md-3">MKT Name : </div>
+                                            <div class="col-sm-4 col-md-4">ABC</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-3 col-md-3">Select month : </div>
+                                            <div class="col-sm-4 col-md-4"><input type="text" id="kpiMonth" /></div>
+                                        </div>
+                                        <div class="row">
+                                            <section class="col col-5">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr class="font-medium orange">
+                                                            <th>Day</th>
+                                                            <th>KPI C3B</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="kpiTable">
+
+                                                    </tbody>
+                                                </table>
+                                            </section>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="confirm_setting" type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -331,8 +376,49 @@
 
             }
 
+            $("#kpiMonth").datepicker().datepicker("setDate", new Date());
+
+            inputKpi();
+
+            $("#kpiMonth").change(function () { inputKpi(); });
+
+            $("#kpiSettingModal").on('click', 'button#confirm_setting', function (){
+                var date = $("#kpiMonth").datepicker('getDate');
+                var month = date.getMonth() + 1;
+                var year =  date.getFullYear();
+                var output = [];
+                $("#kpiTable tr").each(function (rowIndex) {
+                    output[rowIndex] = $(this).find("td").eq(1).find("input").val();
+                });
+                $.post('{{ route("kpi-user-store", ["userId" => $user->id]) }}', {data: output, month: month, year: year})
+                .fail(function (e) {
+                    console.log(e);
+                    alert("Cannot connect to server. Please try again later.");
+                });
+            });
 
         });
+
+        function inputKpi() {
+            $.ajax({}).done(function () {
+                var date = $("#kpiMonth").datepicker('getDate');
+                var day = date.getDate();
+                var month = date.getMonth() + 1;
+                var year =  date.getFullYear();
+                date = year + "-" + month + "-" + day;
+                var dayInMonth = new Date(year, month, 0).getDate();
+                $.get('{{ route("kpi-user-getting", ["userId" => $user->id]) }}', {date: date}, function (response) {
+                    var data = "";
+                    for (var i = 0; i < dayInMonth; i++) {
+                        data += "<tr><td>"+(i+1)+"</td><td><input type='text'/></td></tr>";
+                    }
+                    document.getElementById("kpiTable").innerHTML = data;
+                }).fail(function (e) {
+                    console.log(e);
+                    alert("Cannot connect to server. Please try again later.");
+                });
+            });
+        }
 
         /* end flot charts */
 
