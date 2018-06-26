@@ -98,21 +98,27 @@ class DiffContactsController extends Controller
 
     private function diff_contact(){
 
-        $start_date = Date('Y-m-d');
-        $end_date = Date('Y-m-d');
-        if(request('registered_date')){
-            $date_place = str_replace('-', ' ', request('registered_date'));
-            $date_arr = explode(' ', str_replace('/', '-', $date_place));
-            $start_date = Date('Y-m-d', strtotime($date_arr[0]));
-            $end_date = Date('Y-m-d', strtotime($date_arr[1]));
+        $request = request();
+
+        $start_date = strtotime("midnight")*1000;
+        $end_date = strtotime("tomorrow")*1000;
+
+        $start_date_mol = $end_date_mol = date('Y-m-d');
+        if($request->registered_date){
+            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $start_date = strtotime($date_arr[0])*1000;
+            $end_date   = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+
+            $start_date_mol = date('Y-m-d', $start_date / 1000);
+            $end_date_mol   = date('Y-m-d', $end_date / 1000);
         }
 
-        $helios_contacts    = Contact::where('submit_time', '>=', strtotime($start_date)*1000)
-            ->where('submit_time', '<', strtotime($end_date)*1000)
-            ->where('submit_time', '<', strtotime("+1 day", strtotime($end_date)*1000))
+        $helios_contacts    = Contact::where('submit_time', '>=', $start_date)
+            ->where('submit_time', '<', $end_date)
             ->orderBy('submit_time', 'desc')->get();
 
-        $mol_contacts       = $this->getMOLContacts($start_date, $end_date);
+        $mol_contacts       = $this->getMOLContacts($start_date_mol, $end_date_mol);
 
         $mol_diff       = $this->diff_contact_mol($helios_contacts, $mol_contacts);
         $helios_diff    = $this->diff_contact_helios($helios_contacts, $mol_contacts);
@@ -121,18 +127,14 @@ class DiffContactsController extends Controller
 
     }
 
-
     // mol co, helios ko
     private function diff_contact_mol($helios_contacts, $mol_contacts){
-
         foreach($helios_contacts as $helios){
 
             foreach($mol_contacts as $key => $mol){
                 if (strpos(@$mol['phone'], $helios->phone) !== false) {
                     unset($mol_contacts[$key]);
-                    continue;
                 }
-
             }
         }
 
@@ -148,7 +150,6 @@ class DiffContactsController extends Controller
             foreach($helios_contacts as $key => $helios) {
                 if (strpos($mol['phone'], $helios->phone) !== false) {
                     unset($helios_contacts[$key]);
-                    continue;
                 }
             }
         }
