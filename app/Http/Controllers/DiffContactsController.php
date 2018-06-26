@@ -110,8 +110,8 @@ class DiffContactsController extends Controller
             $start_date = strtotime($date_arr[0])*1000;
             $end_date   = strtotime("+1 day", strtotime($date_arr[1]))*1000;
 
-            $start_date_mol = date('Y-m-d', $start_date / 1000);
-            $end_date_mol   = date('Y-m-d', $end_date / 1000);
+            $start_date_mol = date('Y-m-d', strtotime($date_arr[0]));
+            $end_date_mol   = date('Y-m-d', strtotime($date_arr[1]));
         }
 
         $helios_contacts    = Contact::where('submit_time', '>=', $start_date)
