@@ -40,13 +40,14 @@ Route::post( '/get-thankyou-page', function ( Request $request ) {
 	if (!$ads_name)
 		return response()->json( [ 'result' => 'Field ad_name doesn\'t exists' ] );
 	$ad = \App\Ad::where( 'name', $ads_name )->first();
-	if ( $ad ) {
+	if ( $ad && !empty($ad->channel_id)) {
 		$channel = \App\Channel::findOrFail($ad->channel_id);
 		if ($channel){
 			return response()->json( [
 				                         'url'      => $channel->thankyou_page_url,
 			                         ] );
 		}
+		return response()->json( [ 'result' => 'Not found' ] );
 	}
 	return response()->json( [ 'result' => 'Not found' ] );
 } );
