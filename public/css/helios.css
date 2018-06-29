@@ -232,6 +232,8 @@ table#table_contact_details td:last-child {
 
 .c3_leaderboard, .revenue_leaderboard, .spent_leaderboard{
     text-align: center;
+    max-height: 210px;
+    overflow: auto;
 }
 
 #login-form header{

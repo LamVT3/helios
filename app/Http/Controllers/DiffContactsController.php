@@ -23,15 +23,10 @@ class DiffContactsController extends Controller
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active = 'diff_contacts';
         $page_title = "Diff Contacts | Helios";
-        // 2018-04-04 lamvt update title
         $breadcrumbs = "<i class=\"fa-fw fa fa-exclamation-triangle\"></i> Diff Contacts";
-        // end 2018-04-04
 
         $config = Config::all();
         $page_size  = Config::getByKey('PAGE_SIZE');
-
-//        $start_date = '2018-06-17';
-
 
         list($helios_diff, $mol_diff) = $this->diff_contact();
 

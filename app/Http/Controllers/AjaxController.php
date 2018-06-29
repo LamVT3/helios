@@ -349,7 +349,7 @@ class AjaxController extends Controller
                             <tbody>';
 
         foreach ($query as $i => $item) {
-            if($i > 4) break;
+//            if($i > 4) break;
 //            if(!$item->c3) continue;  // not show if c3 = 0
 
             $user = User::find($item->_id);
@@ -420,7 +420,7 @@ class AjaxController extends Controller
                             <tbody>';
 
         foreach ($query as $i => $item) {
-            if($i > 4) break;
+//            if($i > 4) break;
 //            if(!$item->revenue) continue;
 
             $user = User::find($item->_id);
@@ -491,7 +491,7 @@ class AjaxController extends Controller
                             <tbody>';
 
         foreach ($query as $i => $item) {
-            if($i > 4) break;
+//            if($i > 4) break;
 //            if(!$item->spent) continue;
 
             $user = User::find($item->_id);

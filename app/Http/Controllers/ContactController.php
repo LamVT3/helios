@@ -223,16 +223,16 @@ class ContactController extends Controller
                         $item->name,
                         $item->email,
                         $item->phone,
-                        $item->age,
                         Date('Y-m-d H:i:s', (int)$item->submit_time/1000),
+                        $item->landing_page,
+                        $item->channel_name,
+                        $item->contact_id,
+                        $item->age,
                         $item->current_level,
                         $item->marketer_name,
                         $item->campaign_name,
                         $item->subcampaign_name,
                         $item->ad_name,
-                        $item->channel_name,
-                        $item->landing_page,
-                        $item->contact_id,
                         $item->ads_link
                     );
                     if(\request('limit') && $count > $limit){
