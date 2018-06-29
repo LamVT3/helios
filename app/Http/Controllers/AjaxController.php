@@ -1186,59 +1186,46 @@ class AjaxController extends Controller
 			$array_month[$i] = $timestamp;
 		}
 
-		$contacts_month = Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
-		                         ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
-		                         ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
-		                         ->get()
-		                         ->groupBy( function ( $contact ) {
-			                         return (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
-		                         } )->transform( function ( $item, $k ) {
-				return $item->groupBy( function ( $i ) {
-					return (string) $i->clevel;
-				} );
-			} );
-
 		foreach ($array_month as $key => $timestamp){
-			if (isset($contacts_month[$timestamp])){
-				$data_c3a[$timestamp] = [];
-				$data_c3b[$timestamp] = [];
-				$data_c3bg[$timestamp] = [];
-				if (isset($contacts_month[$timestamp]['c3a'])){
-					foreach ($contacts_month[$timestamp]['c3a'] as $item){
-						$hour = (int) date( "H", $item->submit_time / 1000 );
-						if (isset($data_c3a[$timestamp][$hour]))
-							$data_c3a[$timestamp][$hour] += 1;
-						else{
-							$data_c3a[$timestamp][$hour] = 1;
-						}
-					}
-
-				}
-				if (isset($contacts_month[$timestamp]['c3b'])){
-					foreach ($contacts_month[$timestamp]['c3b'] as $item){
-						$hour = (int) date( "H", $item->submit_time / 1000 );
-						if (isset($data_c3b[$timestamp][$hour]))
-							$data_c3b[$timestamp][$hour] += 1;
-						else{
-							$data_c3b[$timestamp][$hour] = 1;
-						}
-					}
-
-				}
-				if (isset($contacts_month[$timestamp]['c3bg'])){
-					foreach ($contacts_month[$timestamp]['c3bg'] as $item){
-						$hour = (int) date( "H", $item->submit_time / 1000 );
-						if (isset($data_c3bg[$timestamp][$hour]))
-							$data_c3bg[$timestamp][$hour] += 1;
-						else{
-							$data_c3bg[$timestamp][$hour] = 1;
-						}
-					}
-
-				}
-
-			}
+			$data_c3a[ $timestamp ]  = [];
+			$data_c3b[ $timestamp ]  = [];
+			$data_c3bg[ $timestamp ] = [];
 		}
+
+		Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
+		       ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
+		       ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
+		       ->chunk( 1000, function ( $contacts ) use ( &$data_c3a , &$data_c3b, &$data_c3bg) {
+			       foreach ( $contacts as $contact ) {
+				       if ($contact->clevel == 'c3a'){
+					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
+					       $hour = (int) date( "H", $contact->submit_time / 1000 );
+					       if (isset($data_c3a[$timestamp][$hour]))
+						       $data_c3a[$timestamp][$hour] += 1;
+					       else{
+						       $data_c3a[$timestamp][$hour] = 1;
+					       }
+				       }
+				       else if ($contact->clevel == 'c3b'){
+					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
+					       $hour = (int) date( "H", $contact->submit_time / 1000 );
+					       if (isset($data_c3b[$timestamp][$hour]))
+						       $data_c3b[$timestamp][$hour] += 1;
+					       else{
+						       $data_c3b[$timestamp][$hour] = 1;
+					       }
+				       }
+				       else if ($contact->clevel == 'c3bg'){
+					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
+					       $hour = (int) date( "H", $contact->submit_time / 1000 );
+					       if (isset($data_c3bg[$timestamp][$hour]))
+						       $data_c3bg[$timestamp][$hour] += 1;
+					       else{
+						       $data_c3bg[$timestamp][$hour] = 1;
+					       }
+				       }
+			       }
+		       } );
 
 		for ($h = 0; $h < 24; $h++){
 			foreach ($array_month as $key => $timestamp){
@@ -1275,35 +1262,26 @@ class AjaxController extends Controller
 			$array_month[$i] = $timestamp;
 		}
 
-		$contacts_month = Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
-		                         ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
-		                         ->whereIn( 'clevel', ['c3b'] )
-		                         ->get()
-		                         ->groupBy( function ( $contact ) {
-			                         return (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
-		                         } )->transform( function ( $item, $k ) {
-				return $item->groupBy( function ( $i ) {
-					return (string) $i->clevel;
-				} );
-			} );
-
 		foreach ($array_month as $key => $timestamp){
-			if (isset($contacts_month[$timestamp])){
-				$data_c3b[$timestamp] = [];
-				if (isset($contacts_month[$timestamp]['c3b'])){
-					foreach ($contacts_month[$timestamp]['c3b'] as $item){
-						$hour = (int) date( "H", $item->submit_time / 1000 );
-						if (isset($data_c3b[$timestamp][$hour]))
-							$data_c3b[$timestamp][$hour] += 1;
-						else{
-							$data_c3b[$timestamp][$hour] = 1;
-						}
-					}
-
-				}
-
-			}
+			$data_c3b[ $timestamp ] = [];
 		}
+
+		Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
+		       ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
+		       ->whereIn( 'clevel', [ 'c3bg' ] )
+		       ->chunk( 1000, function ( $contacts ) use ( &$data_c3b ) {
+			       foreach ( $contacts as $contact ) {
+				       if ($contact->clevel == 'c3b'){
+					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
+					       $hour = (int) date( "H", $contact->submit_time / 1000 );
+					       if (isset($data_c3b[$timestamp][$hour]))
+						       $data_c3b[$timestamp][$hour] += 1;
+					       else{
+						       $data_c3b[$timestamp][$hour] = 1;
+					       }
+				       }
+			       }
+		       } );
 
 		for ($h = 0; $h < 24; $h++){
 			foreach ($array_month as $key => $timestamp){
@@ -1332,35 +1310,26 @@ class AjaxController extends Controller
 			$array_month[$i] = $timestamp;
 		}
 
-		$contacts_month = Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
-		                         ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
-		                         ->whereIn( 'clevel', ['c3bg'] )
-		                         ->get()
-		                         ->groupBy( function ( $contact ) {
-			                         return (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
-		                         } )->transform( function ( $item, $k ) {
-				return $item->groupBy( function ( $i ) {
-					return (string) $i->clevel;
-				} );
-			} );
-
 		foreach ($array_month as $key => $timestamp){
-			if (isset($contacts_month[$timestamp])){
-				$data_c3bg[$timestamp] = [];
-				if (isset($contacts_month[$timestamp]['c3bg'])){
-					foreach ($contacts_month[$timestamp]['c3bg'] as $item){
-						$hour = (int) date( "H", $item->submit_time / 1000 );
-						if (isset($data_c3bg[$timestamp][$hour]))
-							$data_c3bg[$timestamp][$hour] += 1;
-						else{
-							$data_c3bg[$timestamp][$hour] = 1;
-						}
-					}
-
-				}
-
-			}
+			$data_c3bg[ $timestamp ] = [];
 		}
+
+		Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
+		       ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
+		       ->whereIn( 'clevel', [ 'c3bg' ] )
+		       ->chunk( 1000, function ( $contacts ) use ( &$data_c3bg) {
+			       foreach ( $contacts as $contact ) {
+				       if ($contact->clevel == 'c3bg'){
+					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
+					       $hour = (int) date( "H", $contact->submit_time / 1000 );
+					       if (isset($data_c3bg[$timestamp][$hour]))
+						       $data_c3bg[$timestamp][$hour] += 1;
+					       else{
+						       $data_c3bg[$timestamp][$hour] = 1;
+					       }
+				       }
+			       }
+		       } );
 
 		for ($h = 0; $h < 24; $h++){
 			foreach ($array_month as $key => $timestamp){
