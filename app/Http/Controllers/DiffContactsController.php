@@ -113,7 +113,7 @@ class DiffContactsController extends Controller
             ->where('submit_time', '<', $end_date)
             ->orderBy('submit_time', 'desc')->get();
 
-        $mol_contacts       = $this->getMOLContacts($start_date_mol, $end_date_mol);
+        $mol_contacts   = $this->getMOLContacts($start_date_mol, $end_date_mol);
 
         $mol_diff       = $this->diff_contact_mol($helios_contacts, $mol_contacts);
         $helios_diff    = $this->diff_contact_helios($helios_contacts, $mol_contacts);

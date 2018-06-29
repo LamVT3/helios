@@ -332,9 +332,9 @@ function initDataTable() {
                 $('input[name="search"]').val(search);
                 countExportedWhenSearch();
             })
-
-            var search =  $('input[name="search"]').val();
-            $('input[type=search]').val(search);
+            //
+            // var search =  $('input[name="search"]').val();
+            // $('input[type=search]').val(search);
 
             responsiveHelper_table_campaign.respond();
         },

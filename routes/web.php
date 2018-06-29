@@ -164,6 +164,10 @@ Route::group(['prefix' => 'sub_report'], function () {
     Route::get('/getByWeeks', 'SubReportController@getDataByWeeks')->name('line-chart.getByWeeks');
     Route::get('/getByMonths', 'SubReportController@getDataByMonths')->name('line-chart.getByMonths');
 
+    Route::get('/assign-kpi', 'KpiController@assign_kpi')->name('assign-kpi');
+    Route::get('/assign-kpi', 'KpiController@assign_kpi')->name('assign-kpi');
+    Route::get('/get-kpi', 'KpiController@get_kpi')->name('get-kpi');
+
 });
 
 Route::group(['prefix' => 'thankyou_page'], function () {
