@@ -99,6 +99,10 @@ Route::group(['prefix' => 'ajax'], function () {
     Route::get('updateStatusExport', 'AjaxController@updateStatusExport')->name('ajax-updateStatusExport');
     Route::get('/setStatisticChart', 'AjaxController@prepareStatisticChart')->name('ajax-setStatisticChart');
     Route::get('getFilterSubCampaign', 'AjaxController@getFilterSubCampaign')->name('ajax-getFilterSubCampaign');
+	Route::get('/getHourC3Chart', 'AjaxController@getHourC3Chart')->name('ajax-getHourC3Chart');
+	Route::get('/getHourC3BChart', 'AjaxController@getHourC3BChart')->name('ajax-getHourC3BChart');
+	Route::get('/getHourC3BGChart', 'AjaxController@getHourC3BGChart')->name('ajax-getHourC3BGChart');
+
 });
 
 Route::get('/test', 'Test@index')->name('test');

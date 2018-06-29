@@ -26,13 +26,6 @@
 
                                 <form id="search-form-hour-report" class="smart-form" method="post" action="{!! route('hour-report.filter') !!}">
                                     {{csrf_field()}}
-                                    {{--<div class="row">--}}
-                                    {{--<div id="sub_reportrange" class="pull-left"--}}
-                                    {{--style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; margin: 10px 15px">--}}
-                                    {{--<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;--}}
-                                    {{--<span class="registered_date"></span> <b class="caret"></b>--}}
-                                    {{--</div>--}}
-                                    {{--</div>--}}
                                     <div class="row" id="filter">
                                         <section class="col col-2">
                                             <label class="label">Source</label>
@@ -137,7 +130,7 @@
                                                 @for($i = 0; $i < 24; $i++)
                                                     <tr>
                                                         <td>{{$i}}h</td>
-                                                        <td style="color:{{$table['c3'][$i] >= $table['c3_week'][$i] ? 'green' : 'red'}}">{{$table['c3'][$i]}}</td>
+                                                        <td style="color:{{($table['c3'][$i]) >= ($table['c3_week'][$i]) ? 'green' : 'red'}}">{{$table['c3'][$i]}}</td>
                                                         <td style="color:{{$table['c3b'][$i] >= $table['c3b_week'][$i] ? 'green' : 'red'}}">{{$table['c3b'][$i]}}</td>
                                                         <td style="color:{{$table['c3bg'][$i] >= $table['c3bg_week'][$i] ? 'green' : 'red'}}">{{$table['c3bg'][$i]}}</td>
                                                     </tr>
@@ -156,7 +149,7 @@
                                     <div class="col-sm-8">
                                         <article class="col-sm-12 col-md-12">
                                         @component('components.jarviswidget',
-                                        ['id' => 'budget', 'icon' => 'fa-line-chart', 'title' => "C3A ", 'dropdown' => 'false'])
+                                        ['id' => 'c3', 'icon' => 'fa-line-chart', 'title' => "C3", 'dropdown' => 'false'])
                                             <!-- widget content -->
                                                 <div class="widget-body no-padding">
                                                     <div id="c3_chart" class="chart has-legend"></div>
@@ -166,7 +159,7 @@
 
                                         <article class="col-sm-12 col-md-12">
                                         @component('components.jarviswidget',
-                                        ['id' => 'quantity', 'icon' => 'fa-line-chart', 'title' => "C3B ", 'dropdown' => 'false'])
+                                        ['id' => 'c3b', 'icon' => 'fa-line-chart', 'title' => "C3B ", 'dropdown' => 'false'])
                                             <!-- widget content -->
                                                 <div class="widget-body no-padding">
                                                     <div id="c3b_chart" class="chart has-legend"></div>
@@ -192,6 +185,90 @@
 
                     </article>
 
+                    <article class="col-sm-12 col-md-12">
+
+                        @component('components.jarviswidget',
+                        ['id' => 2, 'icon' => 'fa-table', 'title' => 'Report Accumulated'])
+                            <div class="widget-body">
+
+                                <div class="loading" style="display: none">
+                                    <div class="col-md-12 text-center">
+                                        <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""
+                                             style="width: 2%;"/>
+                                    </div>
+                                </div>
+                                <hr>
+
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <article class="col-sm-12 col-md-12">
+                                            <table class="table table-bordered table-hover"
+                                                   width="100%">
+                                                <thead>
+                                                <tr>
+                                                    <th>Time</th>
+                                                    <th>C3</th>
+                                                    <th>C3B</th>
+                                                    <th>C3BG</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                @for($i = 0; $i <= 23; $i++)
+                                                    <tr>
+                                                        <td>{{$i}}h</td>
+                                                        <td>{{$table_accumulated['c3'][$i]}}</td>
+                                                        <td>{{$table_accumulated['c3b'][$i]}}</td>
+                                                        <td>{{$table_accumulated['c3bg'][$i]}}</td>
+                                                    </tr>
+                                                @endfor
+                                                </tbody>
+                                            </table>
+                                        </article>
+                                    </div>
+
+                                    <div class="col-sm-8">
+                                        <article class="col-sm-12 col-md-12">
+                                        @component('components.jarviswidget',
+                                        ['id' => 'c3_accumulated', 'icon' => 'fa-line-chart', 'title' => "C3 ", 'dropdown' => 'true'])
+                                            <!-- widget content -->
+                                                <div class="widget-body no-padding">
+                                                    @component('components.hour_chart', ['id' => 'c3_chart_accumulated', 'chk' => 'hourc3_chk'])
+                                                    @endcomponent
+                                                </div>
+                                            @endcomponent
+                                        </article>
+
+                                        <article class="col-sm-12 col-md-12">
+                                        @component('components.jarviswidget',
+                                        ['id' => 'c3b_accumulated', 'icon' => 'fa-line-chart', 'title' => "C3B ", 'dropdown' => 'true'])
+                                            <!-- widget content -->
+                                                <div class="widget-body no-padding">
+                                                    @component('components.hour_chart', ['id' => 'c3b_chart_accumulated', 'chk' => 'hourc3b_chk'])
+                                                    @endcomponent
+                                                </div>
+                                            @endcomponent
+                                        </article>
+
+                                        <article class="col-sm-12 col-md-12">
+                                        @component('components.jarviswidget',
+                                        ['id' => 'c3bg_accumulated', 'icon' => 'fa-line-chart', 'title' => "C3BG ", 'dropdown' => 'true'])
+                                            <!-- widget content -->
+                                                <div class="widget-body no-padding">
+                                                    @component('components.hour_chart', ['id' => 'c3bg_chart_accumulated', 'chk' => 'hourc3bg_chk'])
+                                                    @endcomponent
+                                                </div>
+                                            @endcomponent
+                                        </article>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        @endcomponent
+
+                    </article>
+
                 </div>
                 <!-- end row -->
 
@@ -203,6 +280,9 @@
 
     </div>
     <!-- END MAIN PANEL -->
+    <input type="hidden" name="c3_month">
+    <input type="hidden" name="c3b_month">
+    <input type="hidden" name="c3bg_month">
 
 @endsection
 
@@ -221,20 +301,26 @@
 
     <script type="text/javascript">
 
-        var arr_color = ["#800000", "#6A5ACD", "#808080", "#7CFC00", "#FF8C00", "#1E90FF", "#000", "#008000"];
+        var arr_color = ["#800000", "#6A5ACD", "#808080", "#7CFC00", "#FF8C00", "#1E90FF", "#000", "#008000",
+                         "#FFCCCC", "#999933", "#FF6600", "#9999FF", "#FF66FF", "#000088", "#000022", "#99FF99",
+                         "#33FF66", "#FFCC33", "#CCCC00", "#CC0099", "#990099", "#FF3333", "#009999", "#006666"
+        ];
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
         $(document).ready(function () {
+            pageSetUp();
             initC3();
             initC3B();
             initC3BG();
-
+            initC3Accumulated();
+            initC3BAccumulated();
+            initC3BGAccumulated();
         });
 
         function initC3() {
             var item = $("#c3_chart");
             var data = [
-                {data : {{ $chart["c3_week"] }},label : "C3A Week", color: "#FF8C00"},
-                {data: {{$chart['c3']}}, label: "C3A", color: "#7CFC00"},
+                {data : {{ $chart["c3_week"] }},label : "C3 Week", color: "#FF8C00"},
+                {data: {{$chart['c3']}}, label: "C3", color: "#7CFC00"},
             ];
 
             initChart(item, data);
@@ -263,6 +349,139 @@
             $("#c3bg_chart").UseC3BGTooltip();
         }
 
+        function initC3Accumulated() {
+            var item = $("#c3_chart_accumulated");
+            var data = [
+                    {data: {{ $chart_c3[$current_hour] }}, label: "{{$current_hour}}h"},
+            ];
+            initChartA(item, data, arr_color[{{$current_hour}}]);
+            item.UseTooltip();
+        }
+
+        function initC3BAccumulated() {
+            var item = $("#c3b_chart_accumulated");
+            var data = [
+                {data: {{ $chart_c3b[$current_hour] }}, label: "{{$current_hour}}h"},
+            ];
+
+            initChartA(item, data, arr_color[{{$current_hour}}]);
+            item.UseTooltip();
+        }
+
+        function initC3BGAccumulated() {
+            var item = $("#c3bg_chart_accumulated");
+            var data = [
+                {data: {{ $chart_c3bg[$current_hour] }}, label: "{{$current_hour}}h"},
+            ];
+
+            initChartA(item, data, arr_color[{{$current_hour}}]);
+            item.UseTooltip();
+        }
+
     </script>
-    @include('components.script-jarviswidget')
+    <script type="text/javascript">
+        var __arr_month = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
+
+        $( document ).ready(function() {
+            var d = new Date();
+            var current_month = parseInt(d.getMonth() + 1);
+            var current_hour = {{$current_hour}};
+            var dropdown = $('button#dropdown');
+            dropdown.html(__arr_month[current_month-1]);
+
+            $('input[name="c3_month"]').val(current_month);
+            $('input[name="c3b_month"]').val(current_month);
+            $('input[name="c3bg_month"]').val(current_month);
+
+            $('h2#c3_accumulated').html('C3 in ' + dropdown.html());
+            $('h2#c3b_accumulated').html('C3B in ' + dropdown.html());
+            $('h2#c3bg_accumulated').html('C3BG in ' + dropdown.html());
+
+            var dropdownLst = document.getElementsByClassName('dropdown-toggle');
+            for (var i = 0; i < dropdownLst.length; i++) {
+                dropdownLst[i].parentElement.parentElement.parentElement.classList.add('sticky');
+            }
+
+            jQuery.each($('#hourc3_chk').find('input[type=checkbox]'), function (index, checkbox) {
+                $label = $(checkbox).val();
+                if ($label == current_hour) {
+                    $(this).prop('checked',true);
+                }
+            });
+            jQuery.each($('#hourc3b_chk').find('input[type=checkbox]'), function (index, checkbox) {
+                $label = $(checkbox).val();
+                if ($label == current_hour) {
+                    $(this).prop('checked',true);
+                }
+            });
+            jQuery.each($('#hourc3bg_chk').find('input[type=checkbox]'), function (index, checkbox) {
+                $label = $(checkbox).val();
+                if ($label == current_hour) {
+                    $(this).prop('checked',true);
+                }
+            });
+
+            $('#c3_accumulated').click();
+
+            function get_accumulated_chart(element, url, month) {
+
+                if(month < 10){
+                    month = "0" + month.toString();
+                }
+                else {
+                    month = month.toString();
+                }
+
+                $.get(url, {month: month}, function (rs) {
+                    var data = [
+                        {data: jQuery.parseJSON(rs[current_hour] ), label: current_hour + "h"},
+                        ];
+                    initChartA(element, data, arr_color);
+                    element.UseTooltip();
+                }).fail(
+                    function (err) {
+                        alert('Cannot connect to server. Please try again later.');
+                    });
+            }
+
+            $('li#month').click(function() {
+                var month       = $(this).val();
+                var dropdown    = $(this).closest('ul').siblings();
+                dropdown.html(__arr_month[month - 1]);
+
+                var title       = $(this).parents('div.widget-toolbar').siblings('h2');
+                var title_id    = title.attr('id');
+                if(title_id == 'c3_accumulated'){
+                    title.html('C3 in ' + dropdown.html());
+                    $('input[name="c3_month"]').val(month);
+                    get_accumulated_chart($("#c3_chart_accumulated"), "{{route('ajax-getHourC3Chart')}}", month);
+                } else if (title_id == 'c3b_accumulated'){
+                    title.html('C3B in ' + dropdown.html());
+                    $('input[name="c3b_month"]').val(month);
+                    get_accumulated_chart($("#c3b_chart_accumulated"), "{{route('ajax-getHourC3BChart')}}", month);
+                } else if (title_id == 'c3bg_accumulated'){
+                    title.html('C3BG in ' + dropdown.html());
+                    $('input[name="c3bg_month"]').val(month);
+                    get_accumulated_chart($("#c3bg_chart_accumulated"), "{{route('ajax-getHourC3BGChart')}}", month);
+                }
+            });
+
+            $('#hourc3_chk input[type=checkbox]').change(function () {
+                var month = $('input[name="c3_month"]').val();
+                get_chart($('#hourc3_chk'), $("#c3_chart_accumulated"), "{{route('ajax-getHourC3Chart')}}", month);
+            });
+            $('#hourc3b_chk input[type=checkbox]').change(function () {
+                var month = $('input[name="c3b_month"]').val();
+                get_chart($('#hourc3b_chk'), $("#c3b_chart_accumulated"), "{{route('ajax-getHourC3BChart')}}", month);
+            });
+            $('#hourc3bg_chk input[type=checkbox]').change(function () {
+                var month = $('input[name="c3bg_month"]').val();
+                get_chart($('#hourc3bg_chk'), $("#c3bg_chart_accumulated"), "{{route('ajax-getHourC3BGChart')}}", month);
+            });
+
+        });
+
+    </script>
+
 @endsection

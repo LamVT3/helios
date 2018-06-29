@@ -1169,4 +1169,208 @@ class AjaxController extends Controller
         return $data_where;
     }
 
+	public function getHourC3Chart(){
+
+		/*  phan date*/
+		$month  = request('month');
+		$year   = date('Y'); /* nam hien tai*/
+		$d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+		$first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
+		$last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+		/* end date */
+
+		$array_month = array();
+		for ($i = 1; $i <= $d; $i++) {
+			//$array_month[date($i)] = 0;
+			$timestamp = strtotime($year . "-" . $month . "-" . $i) * 1000;
+			$array_month[$i] = $timestamp;
+		}
+
+		$contacts_month = Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
+		                         ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
+		                         ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
+		                         ->get()
+		                         ->groupBy( function ( $contact ) {
+			                         return (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
+		                         } )->transform( function ( $item, $k ) {
+				return $item->groupBy( function ( $i ) {
+					return (string) $i->clevel;
+				} );
+			} );
+
+		foreach ($array_month as $key => $timestamp){
+			if (isset($contacts_month[$timestamp])){
+				$data_c3a[$timestamp] = [];
+				$data_c3b[$timestamp] = [];
+				$data_c3bg[$timestamp] = [];
+				if (isset($contacts_month[$timestamp]['c3a'])){
+					foreach ($contacts_month[$timestamp]['c3a'] as $item){
+						$hour = (int) date( "H", $item->submit_time / 1000 );
+						if (isset($data_c3a[$timestamp][$hour]))
+							$data_c3a[$timestamp][$hour] += 1;
+						else{
+							$data_c3a[$timestamp][$hour] = 1;
+						}
+					}
+
+				}
+				if (isset($contacts_month[$timestamp]['c3b'])){
+					foreach ($contacts_month[$timestamp]['c3b'] as $item){
+						$hour = (int) date( "H", $item->submit_time / 1000 );
+						if (isset($data_c3b[$timestamp][$hour]))
+							$data_c3b[$timestamp][$hour] += 1;
+						else{
+							$data_c3b[$timestamp][$hour] = 1;
+						}
+					}
+
+				}
+				if (isset($contacts_month[$timestamp]['c3bg'])){
+					foreach ($contacts_month[$timestamp]['c3bg'] as $item){
+						$hour = (int) date( "H", $item->submit_time / 1000 );
+						if (isset($data_c3bg[$timestamp][$hour]))
+							$data_c3bg[$timestamp][$hour] += 1;
+						else{
+							$data_c3bg[$timestamp][$hour] = 1;
+						}
+					}
+
+				}
+
+			}
+		}
+
+		for ($h = 0; $h < 24; $h++){
+			foreach ($array_month as $key => $timestamp){
+
+				$line_c3a[$h][] = isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? [$timestamp, $data_c3a[$timestamp][$h]] : [$timestamp, 0] ;
+				$line_c3b[$h][] = isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? [$timestamp, $data_c3b[$timestamp][$h]] : [$timestamp, 0] ;
+				$line_c3bg[$h][] = isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? [$timestamp, $data_c3bg[$timestamp][$h]] : [$timestamp, 0] ;
+				$line_c3[$h][] = [$timestamp, (isset($data_c3a[$timestamp][$h]) ? $data_c3a[$timestamp][$h] : 0)
+				                              + (isset($data_c3b[$timestamp][$h]) ? $data_c3b[$timestamp][$h] : 0)
+				                              + (isset($data_c3bg[$timestamp][$h]) ? $data_c3bg[$timestamp][$h] : 0) ];
+			}
+			$chart_c3[$h] = json_encode($line_c3[$h]);
+			$chart_c3b[$h] = json_encode($line_c3b[$h]);
+			$chart_c3bg[$h] = json_encode($line_c3bg[$h]);
+		}
+
+		return $chart_c3;
+	}
+
+	public function getHourC3BChart(){
+
+		/*  phan date*/
+		$month  = request('month');
+		$year   = date('Y'); /* nam hien tai*/
+		$d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+		$first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
+		$last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+		/* end date */
+
+		$array_month = array();
+		for ($i = 1; $i <= $d; $i++) {
+			//$array_month[date($i)] = 0;
+			$timestamp = strtotime($year . "-" . $month . "-" . $i) * 1000;
+			$array_month[$i] = $timestamp;
+		}
+
+		$contacts_month = Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
+		                         ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
+		                         ->whereIn( 'clevel', ['c3b'] )
+		                         ->get()
+		                         ->groupBy( function ( $contact ) {
+			                         return (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
+		                         } )->transform( function ( $item, $k ) {
+				return $item->groupBy( function ( $i ) {
+					return (string) $i->clevel;
+				} );
+			} );
+
+		foreach ($array_month as $key => $timestamp){
+			if (isset($contacts_month[$timestamp])){
+				$data_c3b[$timestamp] = [];
+				if (isset($contacts_month[$timestamp]['c3b'])){
+					foreach ($contacts_month[$timestamp]['c3b'] as $item){
+						$hour = (int) date( "H", $item->submit_time / 1000 );
+						if (isset($data_c3b[$timestamp][$hour]))
+							$data_c3b[$timestamp][$hour] += 1;
+						else{
+							$data_c3b[$timestamp][$hour] = 1;
+						}
+					}
+
+				}
+
+			}
+		}
+
+		for ($h = 0; $h < 24; $h++){
+			foreach ($array_month as $key => $timestamp){
+				$line_c3b[$h][] = isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? [$timestamp, $data_c3b[$timestamp][$h]] : [$timestamp, 0] ;
+			}
+			$chart_c3b[$h] = json_encode($line_c3b[$h]);
+		}
+
+		return $chart_c3b;
+	}
+
+	public function getHourC3BGChart(){
+
+		/*  phan date*/
+		$month  = request('month');
+		$year   = date('Y'); /* nam hien tai*/
+		$d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+		$first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
+		$last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+		/* end date */
+
+		$array_month = array();
+		for ($i = 1; $i <= $d; $i++) {
+			//$array_month[date($i)] = 0;
+			$timestamp = strtotime($year . "-" . $month . "-" . $i) * 1000;
+			$array_month[$i] = $timestamp;
+		}
+
+		$contacts_month = Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
+		                         ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
+		                         ->whereIn( 'clevel', ['c3bg'] )
+		                         ->get()
+		                         ->groupBy( function ( $contact ) {
+			                         return (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
+		                         } )->transform( function ( $item, $k ) {
+				return $item->groupBy( function ( $i ) {
+					return (string) $i->clevel;
+				} );
+			} );
+
+		foreach ($array_month as $key => $timestamp){
+			if (isset($contacts_month[$timestamp])){
+				$data_c3bg[$timestamp] = [];
+				if (isset($contacts_month[$timestamp]['c3bg'])){
+					foreach ($contacts_month[$timestamp]['c3bg'] as $item){
+						$hour = (int) date( "H", $item->submit_time / 1000 );
+						if (isset($data_c3bg[$timestamp][$hour]))
+							$data_c3bg[$timestamp][$hour] += 1;
+						else{
+							$data_c3bg[$timestamp][$hour] = 1;
+						}
+					}
+
+				}
+
+			}
+		}
+
+		for ($h = 0; $h < 24; $h++){
+			foreach ($array_month as $key => $timestamp){
+				$line_c3bg[$h][] = isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? [$timestamp, $data_c3bg[$timestamp][$h]] : [$timestamp, 0] ;
+			}
+			$chart_c3bg[$h] = json_encode($line_c3bg[$h]);
+		}
+
+		return $chart_c3bg;
+	}
+
+
 }

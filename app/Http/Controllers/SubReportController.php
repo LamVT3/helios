@@ -476,13 +476,98 @@ class SubReportController extends Controller
 		$subcampaigns   = Subcampaign::where('is_active', 1)->get();
 
 		$table['c3'] = [];
+		$table['c3a'] = [];
 		$table['c3b'] = [];
 		$table['c3bg'] = [];
 		$table['c3_week'] = [];
+		$table['c3a_week'] = [];
 		$table['c3b_week'] = [];
 		$table['c3bg_week'] = [];
 
+		$table_accumulated['c3'] = [];
+		$table_accumulated['c3b'] = [];
+		$table_accumulated['c3bg'] = [];
+
+		list($year, $month, $d, $first_day_this_month, $last_day_this_month) = $this->getDate(null);
+
+		$array_month = array();
+		for ($i = 1; $i <= $d; $i++) {
+			//$array_month[date($i)] = 0;
+			$timestamp = strtotime($year . "-" . $month . "-" . $i) * 1000;
+			$array_month[$i] = $timestamp;
+		}
+
 		$date_time   = date('Y-m-d');
+		$current_hour = date('H');
+
+		$contacts_month = Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
+		                   ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
+		                   ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
+		                   ->get()
+		                   ->groupBy( function ( $contact ) {
+			                   return (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
+		                   } )->transform( function ( $item, $k ) {
+				return $item->groupBy( function ( $i ) {
+					return (string) $i->clevel;
+				} );
+			} );
+
+		foreach ($array_month as $key => $timestamp){
+			if (isset($contacts_month[$timestamp])){
+				$data_c3a[$timestamp] = [];
+				$data_c3b[$timestamp] = [];
+				$data_c3bg[$timestamp] = [];
+				if (isset($contacts_month[$timestamp]['c3a'])){
+					foreach ($contacts_month[$timestamp]['c3a'] as $item){
+						$hour = (int) date( "H", $item->submit_time / 1000 );
+						if (isset($data_c3a[$timestamp][$hour]))
+							$data_c3a[$timestamp][$hour] += 1;
+						else{
+							$data_c3a[$timestamp][$hour] = 1;
+						}
+					}
+
+				}
+				if (isset($contacts_month[$timestamp]['c3b'])){
+					foreach ($contacts_month[$timestamp]['c3b'] as $item){
+						$hour = (int) date( "H", $item->submit_time / 1000 );
+						if (isset($data_c3b[$timestamp][$hour]))
+							$data_c3b[$timestamp][$hour] += 1;
+						else{
+							$data_c3b[$timestamp][$hour] = 1;
+						}
+					}
+
+				}
+				if (isset($contacts_month[$timestamp]['c3bg'])){
+					foreach ($contacts_month[$timestamp]['c3bg'] as $item){
+						$hour = (int) date( "H", $item->submit_time / 1000 );
+						if (isset($data_c3bg[$timestamp][$hour]))
+							$data_c3bg[$timestamp][$hour] += 1;
+						else{
+							$data_c3bg[$timestamp][$hour] = 1;
+						}
+					}
+
+				}
+
+			}
+		}
+
+		for ($h = 0; $h < 24; $h++){
+			foreach ($array_month as $key => $timestamp){
+
+				$line_c3a[$h][] = isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? [$timestamp, $data_c3a[$timestamp][$h]] : [$timestamp, 0] ;
+				$line_c3b[$h][] = isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? [$timestamp, $data_c3b[$timestamp][$h]] : [$timestamp, 0] ;
+				$line_c3bg[$h][] = isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? [$timestamp, $data_c3bg[$timestamp][$h]] : [$timestamp, 0] ;
+				$line_c3[$h][] = [$timestamp, (isset($data_c3a[$timestamp][$h]) ? $data_c3a[$timestamp][$h] : 0)
+				                      + (isset($data_c3b[$timestamp][$h]) ? $data_c3b[$timestamp][$h] : 0)
+				                      + (isset($data_c3bg[$timestamp][$h]) ? $data_c3bg[$timestamp][$h] : 0) ];
+			}
+			$chart_c3[$h] = json_encode($line_c3[$h]);
+			$chart_c3b[$h] = json_encode($line_c3b[$h]);
+			$chart_c3bg[$h] = json_encode($line_c3bg[$h]);
+		}
 
 		$contacts = Contact::where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 )
 		                   ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
@@ -509,63 +594,40 @@ class SubReportController extends Controller
 			} );
 
 		for ($i = 0; $i < 24; $i++){
-			if(isset($contacts[$i]['c3a'])){
-				$table['c3'][$i] =  count($contacts[$i]['c3a']);
-				$c3_line[] =  [$i, count($contacts[$i]['c3a'])];
-			}
-			else{
-				$table['c3'][$i] =  0;
-				$c3_line[] =  [$i, 0];
-			}
-			if(isset($contacts[$i]['c3b']))
-			{
-				$table['c3b'][$i] =  count($contacts[$i]['c3b']);
-				$c3b_line[] =  [$i, count($contacts[$i]['c3b'])];
-			}
-			else
-			{
-				$table['c3b'][$i] =  0;
-				$c3b_line[] =  [$i, 0];
-			}
-			if(isset($contacts[$i]['c3bg'])){
-				$table['c3bg'][$i] =  count($contacts[$i]['c3bg']);
-				$c3bg_line[] =  [$i, count($contacts[$i]['c3bg'])];
-			}
-			else
-			{
-				$table['c3bg'][$i] =  0;
-				$c3bg_line[] =  [$i, 0];
-			}
+			$table['c3a'][$i] = isset($contacts[$i]['c3a']) ? count($contacts[$i]['c3a']) : 0;
+			$table['c3b'][$i] = isset($contacts[$i]['c3b']) ? count($contacts[$i]['c3b']) : 0;
+			$table['c3bg'][$i] = isset($contacts[$i]['c3bg']) ? count($contacts[$i]['c3bg']) : 0;
+
+			$table['c3'][$i] =  $table['c3a'][$i] + $table['c3b'][$i] + $table['c3bg'][$i];
+
+			$c3_line[] =  [$i, $table['c3'][$i]];
+			$c3b_line[] =  [$i, $table['c3b'][$i]];
+			$c3bg_line[] =  [$i, $table['c3bg'][$i]];
+
 		}
 
 		for ($i = 0; $i < 24; $i++){
-			if(isset($contacts_week[$i]['c3a'])){
-				$table['c3_week'][$i] =  intval( round(count($contacts_week[$i]['c3a']) / 7));
-				$c3_week_line[] =  [$i, intval( round(count($contacts_week[$i]['c3a']) / 7))];
-			}
-			else{
-				$table['c3_week'][$i] =  0;
-				$c3_week_line[] =  [$i, 0];
-			}
-			if(isset($contacts_week[$i]['c3b']))
-			{
-				$table['c3b_week'][$i] =  intval( round(count($contacts_week[$i]['c3b']) / 7));
-				$c3b_week_line[] =  [$i, intval( round(count($contacts_week[$i]['c3b']) / 7))];
-			}
-			else
-			{
-				$table['c3b_week'][$i] =  0;
-				$c3b_week_line[] =  [$i, 0];
-			}
-			if(isset($contacts_week[$i]['c3bg'])){
-				$table['c3bg_week'][$i] =  intval( round(count($contacts_week[$i]['c3bg']) / 7));
+			$table['c3a_week'][$i] = isset($contacts_week[$i]['c3a']) ? intval( round(count($contacts_week[$i]['c3a']) / 7)) : 0;
+			$table['c3b_week'][$i] = isset($contacts_week[$i]['c3b']) ? intval( round(count($contacts_week[$i]['c3b']) / 7)) : 0;
+			$table['c3bg_week'][$i] = isset($contacts_week[$i]['c3bg']) ? intval( round(count($contacts_week[$i]['c3bg']) / 7)) : 0;
 
-				$c3bg_week_line[] =  [$i, intval( round(count($contacts_week[$i]['c3bg']) / 7))];
-			}
-			else
-			{
-				$table['c3bg_week'][$i] =  0;
-				$c3bg_week_line[] =  [$i, 0];
+			$table['c3_week'][$i] =  $table['c3a_week'][$i] + $table['c3b_week'][$i] + $table['c3bg_week'][$i];
+
+			$c3_week_line[] =  [$i, $table['c3_week'][$i]];
+			$c3b_week_line[] =  [$i, $table['c3b_week'][$i]];
+			$c3bg_week_line[] =  [$i, $table['c3bg_week'][$i]];
+		}
+
+		for ($i = 0; $i < 24; $i++){
+			$table_accumulated['c3'][$i] = 0;
+			$table_accumulated['c3b'][$i] = 0;
+			$table_accumulated['c3bg'][$i] = 0;
+			for ($j = 0; $j <= $i; $j++){
+				$table_accumulated['c3'][$i] += $table['c3a'][$j];
+				$table_accumulated['c3'][$i] += $table['c3b'][$j];
+				$table_accumulated['c3'][$i] += $table['c3bg'][$j];
+				$table_accumulated['c3b'][$i] += $table['c3b'][$j];
+				$table_accumulated['c3bg'][$i] += $table['c3bg'][$j];
 			}
 		}
 
@@ -589,6 +651,11 @@ class SubReportController extends Controller
 			'page_size',
 			'subcampaigns',
 			'table',
+			'table_accumulated',
+			'chart_c3',
+			'chart_c3b',
+			'chart_c3bg',
+			'current_hour',
 			'chart',
 			'data_where',
 			'date_time'
@@ -610,12 +677,96 @@ class SubReportController extends Controller
 		$subcampaigns   = Subcampaign::where('is_active', 1)->get();
 
 
-		$table['c3'] = [];
+		$table['c3a'] = [];
 		$table['c3b'] = [];
 		$table['c3bg'] = [];
 		$table['c3_week'] = [];
 		$table['c3b_week'] = [];
 		$table['c3bg_week'] = [];
+
+		$table_accumulated['c3'] = [];
+		$table_accumulated['c3b'] = [];
+		$table_accumulated['c3bg'] = [];
+
+		list($year, $month, $d, $first_day_this_month, $last_day_this_month) = $this->getDate(null);
+
+		$array_month = array();
+		for ($i = 1; $i <= $d; $i++) {
+			//$array_month[date($i)] = 0;
+			$timestamp = strtotime($year . "-" . $month . "-" . $i) * 1000;
+			$array_month[$i] = $timestamp;
+		}
+
+		$current_hour = date('H');
+
+		$contacts_month = Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
+		                         ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
+		                         ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
+		                         ->get()
+		                         ->groupBy( function ( $contact ) {
+			                         return (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
+		                         } )->transform( function ( $item, $k ) {
+				return $item->groupBy( function ( $i ) {
+					return (string) $i->clevel;
+				} );
+			} );
+
+		foreach ($array_month as $key => $timestamp){
+			if (isset($contacts_month[$timestamp])){
+				$data_c3a[$timestamp] = [];
+				$data_c3b[$timestamp] = [];
+				$data_c3bg[$timestamp] = [];
+				if (isset($contacts_month[$timestamp]['c3a'])){
+					foreach ($contacts_month[$timestamp]['c3a'] as $item){
+						$hour = (int) date( "H", $item->submit_time / 1000 );
+						if (isset($data_c3a[$timestamp][$hour]))
+							$data_c3a[$timestamp][$hour] += 1;
+						else{
+							$data_c3a[$timestamp][$hour] = 1;
+						}
+					}
+
+				}
+				if (isset($contacts_month[$timestamp]['c3b'])){
+					foreach ($contacts_month[$timestamp]['c3b'] as $item){
+						$hour = (int) date( "H", $item->submit_time / 1000 );
+						if (isset($data_c3b[$timestamp][$hour]))
+							$data_c3b[$timestamp][$hour] += 1;
+						else{
+							$data_c3b[$timestamp][$hour] = 1;
+						}
+					}
+
+				}
+				if (isset($contacts_month[$timestamp]['c3bg'])){
+					foreach ($contacts_month[$timestamp]['c3bg'] as $item){
+						$hour = (int) date( "H", $item->submit_time / 1000 );
+						if (isset($data_c3bg[$timestamp][$hour]))
+							$data_c3bg[$timestamp][$hour] += 1;
+						else{
+							$data_c3bg[$timestamp][$hour] = 1;
+						}
+					}
+
+				}
+
+			}
+		}
+
+		for ($h = 0; $h < 24; $h++){
+			foreach ($array_month as $key => $timestamp){
+
+				$line_c3a[$h][] = isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? [$timestamp, $data_c3a[$timestamp][$h]] : [$timestamp, 0] ;
+				$line_c3b[$h][] = isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? [$timestamp, $data_c3b[$timestamp][$h]] : [$timestamp, 0] ;
+				$line_c3bg[$h][] = isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? [$timestamp, $data_c3bg[$timestamp][$h]] : [$timestamp, 0] ;
+				$line_c3[$h][] = [$timestamp, (isset($data_c3a[$timestamp][$h]) ? $data_c3a[$timestamp][$h] : 0)
+				                              + (isset($data_c3b[$timestamp][$h]) ? $data_c3b[$timestamp][$h] : 0)
+				                              + (isset($data_c3bg[$timestamp][$h]) ? $data_c3bg[$timestamp][$h] : 0) ];
+			}
+			$chart_c3[$h] = json_encode($line_c3[$h]);
+			$chart_c3b[$h] = json_encode($line_c3b[$h]);
+			$chart_c3bg[$h] = json_encode($line_c3bg[$h]);
+		}
 
 		$data_where = $this->getWhereData();
 
@@ -647,63 +798,40 @@ class SubReportController extends Controller
 			} );
 
 		for ($i = 0; $i < 24; $i++){
-			if(isset($contacts[$i]['c3a'])){
-				$table['c3'][$i] =  count($contacts[$i]['c3a']);
-				$c3_line[] =  [$i, count($contacts[$i]['c3a'])];
-			}
-			else{
-				$table['c3'][$i] =  0;
-				$c3_line[] =  [$i, 0];
-			}
-			if(isset($contacts[$i]['c3b']))
-			{
-				$table['c3b'][$i] =  count($contacts[$i]['c3b']);
-				$c3b_line[] =  [$i, count($contacts[$i]['c3b'])];
-			}
-			else
-			{
-				$table['c3b'][$i] =  0;
-				$c3b_line[] =  [$i, 0];
-			}
-			if(isset($contacts[$i]['c3bg'])){
-				$table['c3bg'][$i] =  count($contacts[$i]['c3bg']);
-				$c3bg_line[] =  [$i, count($contacts[$i]['c3bg'])];
-			}
-			else
-			{
-				$table['c3bg'][$i] =  0;
-				$c3bg_line[] =  [$i, 0];
-			}
+			$table['c3a'][$i] = isset($contacts[$i]['c3a']) ? count($contacts[$i]['c3a']) : 0;
+			$table['c3b'][$i] = isset($contacts[$i]['c3b']) ? count($contacts[$i]['c3b']) : 0;
+			$table['c3bg'][$i] = isset($contacts[$i]['c3bg']) ? count($contacts[$i]['c3bg']) : 0;
+
+			$table['c3'][$i] =  $table['c3a'][$i] + $table['c3b'][$i] + $table['c3bg'][$i];
+
+			$c3_line[] =  [$i, $table['c3'][$i]];
+			$c3b_line[] =  [$i, $table['c3b'][$i]];
+			$c3bg_line[] =  [$i, $table['c3bg'][$i]];
+
 		}
 
 		for ($i = 0; $i < 24; $i++){
-			if(isset($contacts_week[$i]['c3a'])){
-				$table['c3_week'][$i] =  intval( round(count($contacts_week[$i]['c3a']) / 7));
-				$c3_week_line[] =  [$i, intval( round(count($contacts_week[$i]['c3a']) / 7))];
-			}
-			else{
-				$table['c3_week'][$i] =  0;
-				$c3_week_line[] =  [$i, 0];
-			}
-			if(isset($contacts_week[$i]['c3b']))
-			{
-				$table['c3b_week'][$i] =  intval( round(count($contacts_week[$i]['c3b']) / 7));
-				$c3b_week_line[] =  [$i, intval( round(count($contacts_week[$i]['c3b']) / 7))];
-			}
-			else
-			{
-				$table['c3b_week'][$i] =  0;
-				$c3b_week_line[] =  [$i, 0];
-			}
-			if(isset($contacts_week[$i]['c3bg'])){
-				$table['c3bg_week'][$i] =  intval( round(count($contacts_week[$i]['c3bg']) / 7));
+			$table['c3a_week'][$i] = isset($contacts_week[$i]['c3a']) ? intval( round(count($contacts_week[$i]['c3a']) / 7)) : 0;
+			$table['c3b_week'][$i] = isset($contacts_week[$i]['c3b']) ? intval( round(count($contacts_week[$i]['c3b']) / 7)) : 0;
+			$table['c3bg_week'][$i] = isset($contacts_week[$i]['c3bg']) ? intval( round(count($contacts_week[$i]['c3bg']) / 7)) : 0;
 
-				$c3bg_week_line[] =  [$i, intval( round(count($contacts_week[$i]['c3bg']) / 7))];
-			}
-			else
-			{
-				$table['c3bg_week'][$i] =  0;
-				$c3bg_week_line[] =  [$i, 0];
+			$table['c3_week'][$i] =  $table['c3a_week'][$i] + $table['c3b_week'][$i] + $table['c3bg_week'][$i];
+
+			$c3_week_line[] =  [$i, $table['c3_week'][$i]];
+			$c3b_week_line[] =  [$i, $table['c3b_week'][$i]];
+			$c3bg_week_line[] =  [$i, $table['c3bg_week'][$i]];
+		}
+
+		for ($i = 0; $i <= 23; $i++){
+			$table_accumulated['c3'][$i] = 0;
+			$table_accumulated['c3b'][$i] = 0;
+			$table_accumulated['c3bg'][$i] = 0;
+			for ($j = 0; $j <= $i; $j++){
+				$table_accumulated['c3'][$i] += $table['c3a'][$j];
+				$table_accumulated['c3'][$i] += $table['c3b'][$j];
+				$table_accumulated['c3'][$i] += $table['c3bg'][$j];
+				$table_accumulated['c3b'][$i] += $table['c3b'][$j];
+				$table_accumulated['c3bg'][$i] += $table['c3bg'][$j];
 			}
 		}
 
@@ -713,6 +841,7 @@ class SubReportController extends Controller
 		$chart['c3_week']    = json_encode($c3_week_line);
 		$chart['c3b_week']     = json_encode($c3b_week_line);
 		$chart['c3bg_week']     = json_encode($c3bg_week_line);
+
 
 		return view('pages.hour-report', compact(
 			'page_title',
@@ -727,6 +856,11 @@ class SubReportController extends Controller
 			'page_size',
 			'subcampaigns',
 			'table',
+			'table_accumulated',
+			'chart_c3',
+			'chart_c3b',
+			'chart_c3bg',
+			'current_hour',
 			'chart',
 			'data_where',
 			'date_time'
