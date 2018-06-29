@@ -827,8 +827,8 @@ class SubReportController extends Controller
 		$request        = request();
 		$date_time   = $request->date_time;
 
-		$contacts = Contact::where($data_where)->where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 )
-		                   ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
+		$contacts = Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $date_time ) * 1000 )
+		                   ->where( 'submit_time', '<', strtotime( $date_time ) * 1000 + 86400000)
 		                   ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
 		                   ->chunk( 1000, function ( $contacts ) use ( &$table ) {
 			                   foreach ( $contacts as $contact ) {
@@ -860,8 +860,8 @@ class SubReportController extends Controller
 			                   }
 		                   } );
 
-		$contacts_week = Contact::where($data_where)->where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 - 7 * 86400000)
-		                        ->where( 'submit_time', '<', strtotime( "midnight" ) * 1000 )
+		$contacts_week = Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $date_time ) * 1000 )
+		                        ->where( 'submit_time', '<', strtotime( $date_time ) * 1000 + 86400000)
 		                        ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
 		                        ->chunk( 1000, function ( $contacts ) use ( &$table ) {
 			                        foreach ( $contacts as $contact ) {
