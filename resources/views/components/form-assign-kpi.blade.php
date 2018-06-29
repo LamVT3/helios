@@ -14,6 +14,17 @@
                         {{ csrf_field() }}
                         <div class="row">
                             <section class="col col-sm-3">
+                                <label class="label">Marketer</label>
+                                <label class="select">
+                                    <select id="username">
+                                        @foreach($users as $user)
+                                            <option value="{{$user->_id}}">{{$user->username}}</option>
+                                        @endforeach
+                                    </select>
+                                    <i></i>
+                                </label>
+                            </section>
+                            <section class="col col-sm-3">
                                 <label class="label">Month</label>
                                 <label class="select">
                                     <select id="month">
