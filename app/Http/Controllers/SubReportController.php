@@ -656,6 +656,7 @@ class SubReportController extends Controller
 
 		for ($i = 0; $i < 24; $i++){
 			$table['c3'][$i] =  $table['c3a'][$i] + $table['c3b'][$i] + $table['c3bg'][$i];
+			$table['c3b'][$i] =  $table['c3b'][$i] + $table['c3bg'][$i];
 
 			$c3_line[] =  [$i, $table['c3'][$i]];
 			$c3b_line[] =  [$i, $table['c3b'][$i]];
@@ -668,6 +669,7 @@ class SubReportController extends Controller
 			$table['c3bg_week'][$i] = intval( round($table['c3bg_week'][$i] / 7));
 
 			$table['c3_week'][$i] =  $table['c3a_week'][$i] + $table['c3b_week'][$i] + $table['c3bg_week'][$i];
+			$table['c3b_week'][$i] = $table['c3b_week'][$i] + $table['c3bg_week'][$i];
 
 			$c3_week_line[] =  [$i, $table['c3_week'][$i]];
 			$c3b_week_line[] =  [$i, $table['c3b_week'][$i]];
