@@ -1287,7 +1287,7 @@ class AjaxController extends Controller
 
 		Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
 		       ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
-		       ->whereIn( 'clevel', [ 'c3bg' ] )
+		       ->whereIn( 'clevel', [ 'c3b' ] )
 		       ->chunk( 1000, function ( $contacts ) use ( &$data_c3b ) {
 			       foreach ( $contacts as $contact ) {
 				       if ($contact->clevel == 'c3b'){
