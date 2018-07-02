@@ -119,7 +119,7 @@
 
     $(document).ready(function () {
 
-        $("#table_kpi").tableHeadFixer({"left" : 4, 'z-index': 0});
+        $("#table_kpi").tableHeadFixer({"left" : 5, 'z-index': 0});
 
         var month = moment().month() + 1;
         if(month < 10){
@@ -178,7 +178,6 @@
         });
 
         $('#addModal').on('shown.bs.modal', function () {
-
             var user    = $(this).attr('data-user-id');
             var month   = $('#selected_month').val();
 
@@ -214,7 +213,6 @@
     function set_user_id(item){
         var user = $(item).attr('data-user-id');
         $('#addModal').attr('data-user-id', user);
-        console.log(user);
     }
 
     function initFormKPI(user, month){
@@ -231,6 +229,7 @@
         var url  = $('input#get_kpi_url').val();
         var month_name = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        $('#assign-kpi').attr('disabled', 'disabled');
 
         var data ={};
         data.month      = month;
@@ -251,6 +250,7 @@
                     '</section>';
 
                 $("div.lst_days").append(item);
+                $('#assign-kpi').attr('disabled', false);
             }
         }).fail(
             function (err) {
@@ -259,12 +259,12 @@
     }
 
     function initDropdown(month){
-        $('button#dropdown').click();
         var month_name = ["January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"];
         var dropdown = $('button#dropdown');
         dropdown.html(month_name[month]);
         $('h2#report_kpi').html('Report KPI in <span class="yellow">' + dropdown.html()+ '</span>');
+        $('button#dropdown').click();
     }
     
     function initDataKPI(month) {
@@ -279,7 +279,9 @@
             }
         }).done(function (response) {
             $('#wrapper_kpi').html(response);
-            $("#table_kpi").tableHeadFixer({"left" : 4, 'z-index': 0});
+            $("#table_kpi").tableHeadFixer({"left" : 5, 'z-index': 0});
+            initDropdown(parseInt(month) - 1);
+            $('button#dropdown').click();
         });
         setTimeout(function(){
             $('.loading').hide();
