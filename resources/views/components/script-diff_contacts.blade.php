@@ -95,9 +95,8 @@
                 inittable($('#table_helios_mol'));
             });
             setTimeout(function(){
-                // initDataTable();
                 $('.loading').hide();
-            }, 2000);
+            }, 3000);
         });
 
     });

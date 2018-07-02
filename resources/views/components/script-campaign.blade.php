@@ -8,9 +8,9 @@
             return this.optional( element ) || /^[\w.]+$/i.test( value );
         }, "Letters, numbers, dots and underscores only please" );
 
-        $.validator.addMethod( "mol_tracking", function( value, element ) {
-            return this.optional( element ) || /^[\w.\&\=]+$/i.test( value );
-        }, "Alphanumeric, underscores, ampersand(&) and equal(=) only please" );
+        $.validator.addMethod( "special_char", function( value, element ) {
+            return this.optional( element ) || /^[\w.\_\-]+$/i.test( value );
+        }, "Alphanumeric, underscores(_), hyphen(-) and dot(.) only please" );
 
         $('#form-campaign').validate({
             errorClass: errorClass,
@@ -30,18 +30,18 @@
             rules: {
                 campaign_name: {
                     required: true,
-                    // alphanumeric: true
+                    special_char: true
                 },
                 medium: {
                     // alphanumeric: true
                 },
                 subcampaign_name: {
                     required: true,
-                    // alphanumeric: true
+                    special_char: true
                 },
                 ad_name: {
                     required: true,
-                    // alphanumeric: true
+                    special_char: true
                 },
                 mol_link_tracking: {
                     required: true,
