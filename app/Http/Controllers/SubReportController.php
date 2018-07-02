@@ -504,6 +504,11 @@ class SubReportController extends Controller
 			$data_c3a[ $timestamp ]  = [];
 			$data_c3b[ $timestamp ]  = [];
 			$data_c3bg[ $timestamp ] = [];
+
+			$temp['c3'][$timestamp] = 0;
+			$temp['c3a'][$timestamp] = 0;
+			$temp['c3b'][$timestamp] = 0;
+			$temp['c3bg'][$timestamp] = 0;
 		}
 
 		Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
@@ -542,20 +547,26 @@ class SubReportController extends Controller
 		       } );
 
 
-		for ($h = 0; $h < 24; $h++){
+		for ($h = 0; $h <= $current_hour; $h++){
 			foreach ($array_month as $key => $timestamp){
+				$temp['c3a'][$timestamp] += isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0;
+				$temp['c3b'][$timestamp] += isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0;
+				$temp['c3bg'][$timestamp] += isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0;
+				$temp['c3'][$timestamp] += ((isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0)
+										+ (isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0)
+										+ (isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0)) ;
 
-				$line_c3a[$h][] = isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? [$timestamp, $data_c3a[$timestamp][$h]] : [$timestamp, 0] ;
-				$line_c3b[$h][] = isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? [$timestamp, $data_c3b[$timestamp][$h]] : [$timestamp, 0] ;
-				$line_c3bg[$h][] = isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? [$timestamp, $data_c3bg[$timestamp][$h]] : [$timestamp, 0] ;
-				$line_c3[$h][] = [$timestamp, (isset($data_c3a[$timestamp][$h]) ? $data_c3a[$timestamp][$h] : 0)
-				                      + (isset($data_c3b[$timestamp][$h]) ? $data_c3b[$timestamp][$h] : 0)
-				                      + (isset($data_c3bg[$timestamp][$h]) ? $data_c3bg[$timestamp][$h] : 0) ];
 			}
-			$chart_c3[$h] = json_encode($line_c3[$h]);
-			$chart_c3b[$h] = json_encode($line_c3b[$h]);
-			$chart_c3bg[$h] = json_encode($line_c3bg[$h]);
 		}
+
+		foreach ($array_month as $key => $timestamp){
+			$line_c3b[$current_hour][] = [$timestamp, $temp['c3b'][$timestamp]];
+			$line_c3bg[$current_hour][] = [$timestamp, $temp['c3bg'][$timestamp]];
+			$line_c3[$current_hour][] = [$timestamp, $temp['c3'][$timestamp]];
+		}
+		$chart_c3b[$current_hour] = json_encode($line_c3b[$current_hour]);
+		$chart_c3bg[$current_hour] = json_encode($line_c3bg[$current_hour]);
+		$chart_c3[$current_hour] = json_encode($line_c3[$current_hour]);
 
 		foreach ($array_month as $key => $timestamp){
 			$data_c3a[ $timestamp ]  = [];
@@ -742,13 +753,17 @@ class SubReportController extends Controller
 			$array_month[$i] = $timestamp;
 		}
 
-		$date_time   = date('Y-m-d');
 		$current_hour = (int)date('H');
 
 		foreach ($array_month as $key => $timestamp){
 			$data_c3a[ $timestamp ]  = [];
 			$data_c3b[ $timestamp ]  = [];
 			$data_c3bg[ $timestamp ] = [];
+
+			$temp['c3'][$timestamp] = 0;
+			$temp['c3a'][$timestamp] = 0;
+			$temp['c3b'][$timestamp] = 0;
+			$temp['c3bg'][$timestamp] = 0;
 		}
 
 		Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
@@ -787,20 +802,26 @@ class SubReportController extends Controller
 		       } );
 
 
-		for ($h = 0; $h < 24; $h++){
+		for ($h = 0; $h <= $current_hour; $h++){
 			foreach ($array_month as $key => $timestamp){
+				$temp['c3a'][$timestamp] += isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0;
+				$temp['c3b'][$timestamp] += isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0;
+				$temp['c3bg'][$timestamp] += isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0;
+				$temp['c3'][$timestamp] += ((isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0)
+				                            + (isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0)
+				                            + (isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0)) ;
 
-				$line_c3a[$h][] = isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? [$timestamp, $data_c3a[$timestamp][$h]] : [$timestamp, 0] ;
-				$line_c3b[$h][] = isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? [$timestamp, $data_c3b[$timestamp][$h]] : [$timestamp, 0] ;
-				$line_c3bg[$h][] = isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? [$timestamp, $data_c3bg[$timestamp][$h]] : [$timestamp, 0] ;
-				$line_c3[$h][] = [$timestamp, (isset($data_c3a[$timestamp][$h]) ? $data_c3a[$timestamp][$h] : 0)
-				                              + (isset($data_c3b[$timestamp][$h]) ? $data_c3b[$timestamp][$h] : 0)
-				                              + (isset($data_c3bg[$timestamp][$h]) ? $data_c3bg[$timestamp][$h] : 0) ];
 			}
-			$chart_c3[$h] = json_encode($line_c3[$h]);
-			$chart_c3b[$h] = json_encode($line_c3b[$h]);
-			$chart_c3bg[$h] = json_encode($line_c3bg[$h]);
 		}
+
+		foreach ($array_month as $key => $timestamp){
+			$line_c3b[$current_hour][] = [$timestamp, $temp['c3b'][$timestamp]];
+			$line_c3bg[$current_hour][] = [$timestamp, $temp['c3bg'][$timestamp]];
+			$line_c3[$current_hour][] = [$timestamp, $temp['c3'][$timestamp]];
+		}
+		$chart_c3b[$current_hour] = json_encode($line_c3b[$current_hour]);
+		$chart_c3bg[$current_hour] = json_encode($line_c3bg[$current_hour]);
+		$chart_c3[$current_hour] = json_encode($line_c3[$current_hour]);
 
 		foreach ($array_month as $key => $timestamp){
 			$data_c3a[ $timestamp ]  = [];
@@ -860,7 +881,7 @@ class SubReportController extends Controller
 			                   }
 		                   } );
 
-		$contacts_week = Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $date_time ) * 1000 )
+		$contacts_week = Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $date_time ) * 1000  - 7 * 86400000)
 		                        ->where( 'submit_time', '<', strtotime( $date_time ) * 1000 + 86400000)
 		                        ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
 		                        ->chunk( 1000, function ( $contacts ) use ( &$table ) {

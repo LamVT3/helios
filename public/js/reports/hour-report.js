@@ -223,7 +223,7 @@ function initChartA(item, data, color) {
             borderWidth: 0,
             borderColor: $chrt_border_color,
         },
-        colors: [color],
+        colors: color,
     };
 
     if (item.length) {
@@ -236,8 +236,10 @@ function get_chart(checkbox, element, url, month) {
     var data = {};
     data.month = month;
 
+    element.parent().parent().parent().parent().find('.loading').css("display", "block");
     $.get(url, data, function (rs) {
         set_chart(checkbox, element, rs);
+        element.parent().parent().parent().parent().find('.loading').css("display", "none");
     }).fail(
         function (err) {
             alert('Cannot connect to server. Please try again later.');

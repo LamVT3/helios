@@ -149,14 +149,13 @@
                                     <div class="col-sm-8">
                                         <article class="col-sm-12 col-md-12">
                                         @component('components.jarviswidget',
-                                        ['id' => 'c3', 'icon' => 'fa-line-chart', 'title' => "C3", 'dropdown' => 'false'])
+                                        ['id' => 'c3bg', 'icon' => 'fa-line-chart', 'title' => "C3BG ", 'dropdown' => 'false'])
                                             <!-- widget content -->
                                                 <div class="widget-body no-padding">
-                                                    <div id="c3_chart" class="chart has-legend"></div>
+                                                    <div id="c3bg_chart" class="chart has-legend"></div>
                                                 </div>
                                             @endcomponent
                                         </article>
-
                                         <article class="col-sm-12 col-md-12">
                                         @component('components.jarviswidget',
                                         ['id' => 'c3b', 'icon' => 'fa-line-chart', 'title' => "C3B ", 'dropdown' => 'false'])
@@ -169,35 +168,17 @@
 
                                         <article class="col-sm-12 col-md-12">
                                         @component('components.jarviswidget',
-                                        ['id' => 'c3bg', 'icon' => 'fa-line-chart', 'title' => "C3BG ", 'dropdown' => 'false'])
+                                        ['id' => 'c3', 'icon' => 'fa-line-chart', 'title' => "C3", 'dropdown' => 'false'])
                                             <!-- widget content -->
                                                 <div class="widget-body no-padding">
-                                                    <div id="c3bg_chart" class="chart has-legend"></div>
+                                                    <div id="c3_chart" class="chart has-legend"></div>
                                                 </div>
                                             @endcomponent
                                         </article>
+
                                     </div>
 
                                 </div>
-
-                            </div>
-                        @endcomponent
-
-                    </article>
-
-                    <article class="col-sm-12 col-md-12">
-
-                        @component('components.jarviswidget',
-                        ['id' => 2, 'icon' => 'fa-table', 'title' => 'Report Accumulated'])
-                            <div class="widget-body">
-
-                                <div class="loading" style="display: none">
-                                    <div class="col-md-12 text-center">
-                                        <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""
-                                             style="width: 2%;"/>
-                                    </div>
-                                </div>
-                                <hr>
 
                                 <div class="row">
                                     <div class="col-sm-4">
@@ -228,7 +209,49 @@
                                     </div>
 
                                     <div class="col-sm-8">
+
                                         <article class="col-sm-12 col-md-12">
+                                            <div class="loading" style="display: none">
+                                                <div class="col-md-12 text-center">
+                                                    <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""
+                                                         style="width: 2%;"/>
+                                                </div>
+                                            </div>
+                                            <br>
+                                        @component('components.jarviswidget',
+                                        ['id' => 'c3bg_accumulated', 'icon' => 'fa-line-chart', 'title' => "C3BG ", 'dropdown' => 'true'])
+                                            <!-- widget content -->
+                                                <div class="widget-body no-padding">
+                                                    @component('components.hour_chart', ['id' => 'c3bg_chart_accumulated', 'chk' => 'hourc3bg_chk'])
+                                                    @endcomponent
+                                                </div>
+                                            @endcomponent
+                                        </article>
+                                        <article class="col-sm-12 col-md-12">
+                                            <div class="loading" style="display: none">
+                                                <div class="col-md-12 text-center">
+                                                    <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""
+                                                         style="width: 2%;"/>
+                                                </div>
+                                            </div>
+                                            <br>
+                                        @component('components.jarviswidget',
+                                        ['id' => 'c3b_accumulated', 'icon' => 'fa-line-chart', 'title' => "C3B ", 'dropdown' => 'true'])
+                                            <!-- widget content -->
+                                                <div class="widget-body no-padding">
+                                                    @component('components.hour_chart', ['id' => 'c3b_chart_accumulated', 'chk' => 'hourc3b_chk'])
+                                                    @endcomponent
+                                                </div>
+                                            @endcomponent
+                                        </article>
+                                        <article class="col-sm-12 col-md-12">
+                                            <div class="loading" style="display: none">
+                                                <div class="col-md-12 text-center">
+                                                    <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""
+                                                         style="width: 2%;"/>
+                                                </div>
+                                            </div>
+                                            <br>
                                         @component('components.jarviswidget',
                                         ['id' => 'c3_accumulated', 'icon' => 'fa-line-chart', 'title' => "C3 ", 'dropdown' => 'true'])
                                             <!-- widget content -->
@@ -239,27 +262,6 @@
                                             @endcomponent
                                         </article>
 
-                                        <article class="col-sm-12 col-md-12">
-                                        @component('components.jarviswidget',
-                                        ['id' => 'c3b_accumulated', 'icon' => 'fa-line-chart', 'title' => "C3B ", 'dropdown' => 'true'])
-                                            <!-- widget content -->
-                                                <div class="widget-body no-padding">
-                                                    @component('components.hour_chart', ['id' => 'c3b_chart_accumulated', 'chk' => 'hourc3b_chk'])
-                                                    @endcomponent
-                                                </div>
-                                            @endcomponent
-                                        </article>
-
-                                        <article class="col-sm-12 col-md-12">
-                                        @component('components.jarviswidget',
-                                        ['id' => 'c3bg_accumulated', 'icon' => 'fa-line-chart', 'title' => "C3BG ", 'dropdown' => 'true'])
-                                            <!-- widget content -->
-                                                <div class="widget-body no-padding">
-                                                    @component('components.hour_chart', ['id' => 'c3bg_chart_accumulated', 'chk' => 'hourc3bg_chk'])
-                                                    @endcomponent
-                                                </div>
-                                            @endcomponent
-                                        </article>
                                     </div>
 
                                 </div>
@@ -354,7 +356,7 @@
             var data = [
                     {data: {{ $chart_c3[$current_hour] }}, label: "{{$current_hour}}h"},
             ];
-            initChartA(item, data, arr_color[{{$current_hour}}]);
+            initChartA(item, data, [arr_color[{{$current_hour}}]]);
             item.UseTooltip();
         }
 
@@ -364,7 +366,7 @@
                 {data: {{ $chart_c3b[$current_hour] }}, label: "{{$current_hour}}h"},
             ];
 
-            initChartA(item, data, arr_color[{{$current_hour}}]);
+            initChartA(item, data, [arr_color[{{$current_hour}}]]);
             item.UseTooltip();
         }
 
@@ -374,7 +376,7 @@
                 {data: {{ $chart_c3bg[$current_hour] }}, label: "{{$current_hour}}h"},
             ];
 
-            initChartA(item, data, arr_color[{{$current_hour}}]);
+            initChartA(item, data, [arr_color[{{$current_hour}}]]);
             item.UseTooltip();
         }
 
@@ -433,11 +435,13 @@
                     month = month.toString();
                 }
 
+                element.parent().parent().parent().parent().find('.loading').css("display", "block");
                 $.get(url, {month: month}, function (rs) {
                     var data = [
                         {data: jQuery.parseJSON(rs[current_hour] ), label: current_hour + "h"},
                         ];
                     initChartA(element, data, arr_color);
+                    element.parent().parent().parent().parent().find('.loading').css("display", "none");
                     element.UseTooltip();
                 }).fail(
                     function (err) {

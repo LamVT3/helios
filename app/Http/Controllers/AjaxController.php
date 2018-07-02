@@ -1190,6 +1190,13 @@ class AjaxController extends Controller
 			$data_c3a[ $timestamp ]  = [];
 			$data_c3b[ $timestamp ]  = [];
 			$data_c3bg[ $timestamp ] = [];
+
+			for ($hr = 0; $hr <= 23; $hr++) {
+				$temp_c3a[ $timestamp ][ $hr ]  = 0;
+				$temp_c3b[ $timestamp ][ $hr ]  = 0;
+				$temp_c3bg[ $timestamp ][ $hr ] = 0;
+				$temp_c3[ $timestamp ][ $hr ]   = 0;
+			}
 		}
 
 		Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
@@ -1227,19 +1234,28 @@ class AjaxController extends Controller
 			       }
 		       } );
 
-		for ($h = 0; $h < 24; $h++){
-			foreach ($array_month as $key => $timestamp){
+		for ($hr = 0; $hr <= 23; $hr++){
+			for ($h = 0; $h <= $hr; $h++){
+				foreach ($array_month as $key => $timestamp){
+					$temp_c3a[$timestamp][$hr] += isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0;
+					$temp_c3b[$timestamp][$hr] += isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0;
+					$temp_c3bg[$timestamp][$hr] += isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0;
+					$temp_c3[$timestamp][$hr] += ((isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0)
+					                            + (isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0)
+					                            + (isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0)) ;
 
-				$line_c3a[$h][] = isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? [$timestamp, $data_c3a[$timestamp][$h]] : [$timestamp, 0] ;
-				$line_c3b[$h][] = isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? [$timestamp, $data_c3b[$timestamp][$h]] : [$timestamp, 0] ;
-				$line_c3bg[$h][] = isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? [$timestamp, $data_c3bg[$timestamp][$h]] : [$timestamp, 0] ;
-				$line_c3[$h][] = [$timestamp, (isset($data_c3a[$timestamp][$h]) ? $data_c3a[$timestamp][$h] : 0)
-				                              + (isset($data_c3b[$timestamp][$h]) ? $data_c3b[$timestamp][$h] : 0)
-				                              + (isset($data_c3bg[$timestamp][$h]) ? $data_c3bg[$timestamp][$h] : 0) ];
+				}
 			}
-			$chart_c3[$h] = json_encode($line_c3[$h]);
-			$chart_c3b[$h] = json_encode($line_c3b[$h]);
-			$chart_c3bg[$h] = json_encode($line_c3bg[$h]);
+
+			foreach ($array_month as $key => $timestamp){
+				$line_c3b[$hr][] = [$timestamp, $temp_c3b[$timestamp][$hr]];
+				$line_c3bg[$hr][] = [$timestamp, $temp_c3bg[$timestamp][$hr]];
+				$line_c3[$hr][] = [$timestamp, $temp_c3[$timestamp][$hr]];
+			}
+
+			$chart_c3[$hr] = json_encode($line_c3[$hr]);
+			$chart_c3b[$hr] = json_encode($line_c3b[$hr]);
+			$chart_c3bg[$hr] = json_encode($line_c3bg[$hr]);
 		}
 
 		return $chart_c3;
@@ -1264,6 +1280,9 @@ class AjaxController extends Controller
 
 		foreach ($array_month as $key => $timestamp){
 			$data_c3b[ $timestamp ] = [];
+			for ($hr = 0; $hr <= 23; $hr++) {
+				$temp_c3b[ $timestamp ][ $hr ]  = 0;
+			}
 		}
 
 		Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
@@ -1283,11 +1302,19 @@ class AjaxController extends Controller
 			       }
 		       } );
 
-		for ($h = 0; $h < 24; $h++){
-			foreach ($array_month as $key => $timestamp){
-				$line_c3b[$h][] = isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? [$timestamp, $data_c3b[$timestamp][$h]] : [$timestamp, 0] ;
+		for ($hr = 0; $hr <= 23; $hr++){
+			for ($h = 0; $h <= $hr; $h++){
+				foreach ($array_month as $key => $timestamp){
+					$temp_c3b[$timestamp][$hr] += isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0;
+
+				}
 			}
-			$chart_c3b[$h] = json_encode($line_c3b[$h]);
+
+			foreach ($array_month as $key => $timestamp){
+				$line_c3b[$hr][] = [$timestamp, $temp_c3b[$timestamp][$hr]];
+			}
+
+			$chart_c3b[$hr] = json_encode($line_c3b[$hr]);
 		}
 
 		return $chart_c3b;
@@ -1312,6 +1339,9 @@ class AjaxController extends Controller
 
 		foreach ($array_month as $key => $timestamp){
 			$data_c3bg[ $timestamp ] = [];
+			for ($hr = 0; $hr <= 23; $hr++) {
+				$temp_c3bg[ $timestamp ][ $hr ]  = 0;
+			}
 		}
 
 		Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
@@ -1331,11 +1361,19 @@ class AjaxController extends Controller
 			       }
 		       } );
 
-		for ($h = 0; $h < 24; $h++){
-			foreach ($array_month as $key => $timestamp){
-				$line_c3bg[$h][] = isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? [$timestamp, $data_c3bg[$timestamp][$h]] : [$timestamp, 0] ;
+		for ($hr = 0; $hr <= 23; $hr++){
+			for ($h = 0; $h <= $hr; $h++){
+				foreach ($array_month as $key => $timestamp){
+					$temp_c3bg[$timestamp][$hr] += isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0;
+
+				}
 			}
-			$chart_c3bg[$h] = json_encode($line_c3bg[$h]);
+
+			foreach ($array_month as $key => $timestamp){
+				$line_c3bg[$hr][] = [$timestamp, $temp_c3bg[$timestamp][$hr]];
+			}
+
+			$chart_c3bg[$hr] = json_encode($line_c3bg[$hr]);
 		}
 
 		return $chart_c3bg;
