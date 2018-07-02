@@ -684,18 +684,12 @@ class SubReportController extends Controller
 			$table_accumulated['c3b_week'][$i] = 0;
 			$table_accumulated['c3bg_week'][$i] = 0;
 			for ($j = 0; $j <= $i; $j++){
-				$table_accumulated['c3'][$i] += $table['c3a'][$j];
-				$table_accumulated['c3'][$i] += $table['c3b'][$j];
-				$table_accumulated['c3'][$i] += $table['c3bg'][$j];
+				$table_accumulated['c3'][$i] += $table['c3'][$j];
 				$table_accumulated['c3b'][$i] += $table['c3b'][$j];
-				$table_accumulated['c3b'][$i] += $table['c3bg'][$j];
 				$table_accumulated['c3bg'][$i] += $table['c3bg'][$j];
 
-				$table_accumulated['c3_week'][$i] += $table['c3a_week'][$j];
-				$table_accumulated['c3_week'][$i] += $table['c3b_week'][$j];
-				$table_accumulated['c3_week'][$i] += $table['c3bg_week'][$j];
+				$table_accumulated['c3_week'][$i] += $table['c3_week'][$j];
 				$table_accumulated['c3b_week'][$i] += $table['c3b_week'][$j];
-				$table_accumulated['c3b_week'][$i] += $table['c3bg_week'][$j];
 				$table_accumulated['c3bg_week'][$i] += $table['c3bg_week'][$j];
 			}
 
@@ -972,18 +966,12 @@ class SubReportController extends Controller
 			$table_accumulated['c3b_week'][$i] = 0;
 			$table_accumulated['c3bg_week'][$i] = 0;
 			for ($j = 0; $j <= $i; $j++){
-				$table_accumulated['c3'][$i] += $table['c3a'][$j];
-				$table_accumulated['c3'][$i] += $table['c3b'][$j];
-				$table_accumulated['c3'][$i] += $table['c3bg'][$j];
+				$table_accumulated['c3'][$i] += $table['c3'][$j];
 				$table_accumulated['c3b'][$i] += $table['c3b'][$j];
-				$table_accumulated['c3b'][$i] += $table['c3bg'][$j];
 				$table_accumulated['c3bg'][$i] += $table['c3bg'][$j];
 
-				$table_accumulated['c3_week'][$i] += $table['c3a_week'][$j];
-				$table_accumulated['c3_week'][$i] += $table['c3b_week'][$j];
-				$table_accumulated['c3_week'][$i] += $table['c3bg_week'][$j];
+				$table_accumulated['c3_week'][$i] += $table['c3_week'][$j];
 				$table_accumulated['c3b_week'][$i] += $table['c3b_week'][$j];
-				$table_accumulated['c3b_week'][$i] += $table['c3bg_week'][$j];
 				$table_accumulated['c3bg_week'][$i] += $table['c3bg_week'][$j];
 			}
 
