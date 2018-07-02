@@ -132,9 +132,14 @@ class KpiController extends Controller
         /*  phan date*/
         $month = date('m'); /* thang hien tai */
         $year = date('Y'); /* nam hien tai*/
+        $request = request();
+        if($request->month){
+            $month = $request->month;
+        }
+
         $d = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-        $first_day_this_month = date('Y-m-01'); /* ngày đàu tiên của tháng */
-        $last_day_this_month = date('Y-m-t'); /* ngày cuối cùng của tháng */
+        $first_day_this_month = date('Y-'.$month.'-01'); /* ngày đàu tiên của tháng */
+        $last_day_this_month = date('Y-'.$month.'-t'); /* ngày cuối cùng của tháng */
         /* end date */
         $query = AdResult::raw(function($collection) use ($first_day_this_month,$last_day_this_month,$user) {
             return $collection->aggregate([
@@ -165,24 +170,17 @@ class KpiController extends Controller
     function reload_page(){
         $request = request();
 
-        $users = User::all();
+        $users  = User::all();
+        $data   = $this->get_data();
+        $days   = $this->get_days_in_month();
+        $month  = date('M');
+        $year   = date('Y');
 
-        $data = $this->get_data();
-        $days = $this->get_days_in_month();
-        $month= date('M');
-        $year = date('Y');
         if($request->month){
-            $month = $request->month;
+            $month  = date('M', strtotime($year.'-'.$request->month));
         }
 
-
-
-        return view('pages.assign_kpi', compact(
-            'page_title',
-            'page_css',
-            'no_main_header',
-            'active',
-            'breadcrumbs',
+        return view('pages.table_report_kpi', compact(
             'users',
             'data',
             'days',

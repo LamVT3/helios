@@ -8,10 +8,10 @@
         <div id="content">
 
             @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
-                <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
-                   data-toggle="modal"
-                   data-target="#addModal"><i
-                            class="fa fa-map-signs fa-lg"></i> Assign KPI</a>
+                {{--<a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"--}}
+                   {{--data-toggle="modal"--}}
+                   {{--data-target="#addModal"><i--}}
+                            {{--class="fa fa-map-signs fa-lg"></i> Assign KPI</a>--}}
             @endcomponent
 
             @include('layouts.errors')
@@ -57,7 +57,7 @@
                                             <td><span style="font-weight: bold">{{ $user }}</span></td>
                                             <td>
                                                 <a class=' btn-xs btn-default edit_kpi' data-user-id="{{@$item['user_id']}}"
-                                                   href="" data-toggle="modal" data-target="#addModal"
+                                                   href="" data-toggle="modal" data-target="#addModal" onclick="set_user_id(this)"
                                                    data-original-title='Edit Row'><i
                                                             class='fa fa-pencil'></i></a>
                                             </td>
@@ -110,7 +110,7 @@
 <script src="{{ asset('js/plugin/datatables/dataTables.bootstrap.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatable-responsive/datatables.responsive.min.js') }}"></script>
 <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script src="{{ asset('js/fixedTable/tableHeadFixer.js') }}"></script>--}}
+<script src="{{ asset('js/fixedTable/tableHeadFixer.js') }}"></script>
 
 
 <script type="text/javascript">
@@ -154,7 +154,7 @@
             data.user_id   = $('select#username').val();
 
             $.get(url, data, function (data) {
-
+                initDataKPI(month);
             }).fail(
                 function (err) {
                     alert('Cannot connect to server. Please try again later.');
@@ -199,6 +199,8 @@
                 month = '0' + month;
             }
             $('#selected_month').val(month);
+
+            initDataKPI(month);
         });
 
         $('a.edit_kpi').click(function() {
@@ -208,6 +210,12 @@
 
         /* END BASIC */
     })
+
+    function set_user_id(item){
+        var user = $(item).attr('data-user-id');
+        $('#addModal').attr('data-user-id', user);
+        console.log(user);
+    }
 
     function initFormKPI(user, month){
 
@@ -221,6 +229,8 @@
         var year = moment().year();
         var days = new Date(year, month, 0).getDate();
         var url  = $('input#get_kpi_url').val();
+        var month_name = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
         var data ={};
         data.month      = month;
@@ -232,9 +242,10 @@
             var i;
             for (i = 1; i <= days; i++) {
                 var value = data[i] ? data[i] : 0;
+                var day = i < 10 ? '0' + i : i;
                 var item =
                     '<section class="col col-2">' +
-                    i + '/' + month + '/' + year +
+                    day + month_name[month - 1] +
                     '    <input class="form-control" id="day" type="number" value="'+ value +'"' +
                     '           placeholder="" max="" min="1" data-toggle="tooltip" title="Enter KPIs...">' +
                     '</section>';
@@ -256,8 +267,23 @@
         $('h2#report_kpi').html('Report KPI in <span class="yellow">' + dropdown.html()+ '</span>');
     }
     
-    function initDataKPI() {
-        
+    function initDataKPI(month) {
+        var url = $('#reload_page_url').val();
+
+        $('.loading').show();
+        $.ajax({
+            url: url,
+            type: 'GET',
+            data: {
+                month : month
+            }
+        }).done(function (response) {
+            $('#wrapper_kpi').html(response);
+            $("#table_kpi").tableHeadFixer({"left" : 4, 'z-index': 0});
+        });
+        setTimeout(function(){
+            $('.loading').hide();
+        }, 2000);
     }
 
 </script>
