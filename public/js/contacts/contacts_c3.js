@@ -358,8 +358,8 @@ function initDataTable() {
                 d.checked_date      = checked_date,
                 d.c3bg_checkbox     = c3bg_checkbox,
                 d.limit             = limit,
-                d.landing_page      = landing_page,
-                d.search_inp        = search
+                d.landing_page      = landing_page
+                // d.search_inp        = search
             }
         },
         "columns": [
