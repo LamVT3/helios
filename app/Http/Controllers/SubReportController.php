@@ -550,7 +550,8 @@ class SubReportController extends Controller
 		for ($h = 0; $h <= $current_hour; $h++){
 			foreach ($array_month as $key => $timestamp){
 				$temp['c3a'][$timestamp] += isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0;
-				$temp['c3b'][$timestamp] += isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0;
+				$temp['c3b'][$timestamp] += ((isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0)
+				                             + (isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0));
 				$temp['c3bg'][$timestamp] += isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0;
 				$temp['c3'][$timestamp] += ((isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0)
 										+ (isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0)
@@ -618,7 +619,6 @@ class SubReportController extends Controller
 											$table['c3bg'][$hour] = 1;
 										}
 									}
-									$table['c3'][$hour] =  $table['c3a'][$hour] + $table['c3b'][$hour] + $table['c3bg'][$hour];
 								}
 							} );
 
@@ -655,6 +655,8 @@ class SubReportController extends Controller
 							} );
 
 		for ($i = 0; $i < 24; $i++){
+			$table['c3'][$i] =  $table['c3a'][$i] + $table['c3b'][$i] + $table['c3bg'][$i];
+
 			$c3_line[] =  [$i, $table['c3'][$i]];
 			$c3b_line[] =  [$i, $table['c3b'][$i]];
 			$c3bg_line[] =  [$i, $table['c3bg'][$i]];
@@ -676,13 +678,32 @@ class SubReportController extends Controller
 			$table_accumulated['c3'][$i] = 0;
 			$table_accumulated['c3b'][$i] = 0;
 			$table_accumulated['c3bg'][$i] = 0;
+			$table_accumulated['c3_week'][$i] = 0;
+			$table_accumulated['c3b_week'][$i] = 0;
+			$table_accumulated['c3bg_week'][$i] = 0;
 			for ($j = 0; $j <= $i; $j++){
 				$table_accumulated['c3'][$i] += $table['c3a'][$j];
 				$table_accumulated['c3'][$i] += $table['c3b'][$j];
 				$table_accumulated['c3'][$i] += $table['c3bg'][$j];
 				$table_accumulated['c3b'][$i] += $table['c3b'][$j];
+				$table_accumulated['c3b'][$i] += $table['c3bg'][$j];
 				$table_accumulated['c3bg'][$i] += $table['c3bg'][$j];
+
+				$table_accumulated['c3_week'][$i] += $table['c3a_week'][$j];
+				$table_accumulated['c3_week'][$i] += $table['c3b_week'][$j];
+				$table_accumulated['c3_week'][$i] += $table['c3bg_week'][$j];
+				$table_accumulated['c3b_week'][$i] += $table['c3b_week'][$j];
+				$table_accumulated['c3b_week'][$i] += $table['c3bg_week'][$j];
+				$table_accumulated['c3bg_week'][$i] += $table['c3bg_week'][$j];
 			}
+
+			$c3_line_accumulated[] =  [$i, $table_accumulated['c3'][$i]];
+			$c3b_line_accumulated[] =  [$i, $table_accumulated['c3b'][$i]];
+			$c3bg_line_accumulated[] =  [$i, $table_accumulated['c3bg'][$i]];
+
+			$c3_week_line_accumulated[] =  [$i, $table_accumulated['c3_week'][$i]];
+			$c3b_week_line_accumulated[] =  [$i, $table_accumulated['c3b_week'][$i]];
+			$c3bg_week_line_accumulated[] =  [$i, $table_accumulated['c3bg_week'][$i]];
 		}
 
 		$chart['c3']    = json_encode($c3_line);
@@ -691,6 +712,12 @@ class SubReportController extends Controller
 		$chart['c3_week']    = json_encode($c3_week_line);
 		$chart['c3b_week']     = json_encode($c3b_week_line);
 		$chart['c3bg_week']     = json_encode($c3bg_week_line);
+		$chart['c3_accumulated']    = json_encode($c3_line_accumulated);
+		$chart['c3b_accumulated']     = json_encode($c3b_line_accumulated);
+		$chart['c3bg_accumulated']     = json_encode($c3bg_line_accumulated);
+		$chart['c3_week_accumulated']    = json_encode($c3_week_line_accumulated);
+		$chart['c3b_week_accumulated']     = json_encode($c3b_week_line_accumulated);
+		$chart['c3bg_week_accumulated']     = json_encode($c3bg_week_line_accumulated);
 
 		return view('pages.hour-report', compact(
 			'page_title',
@@ -806,6 +833,8 @@ class SubReportController extends Controller
 			foreach ($array_month as $key => $timestamp){
 				$temp['c3a'][$timestamp] += isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0;
 				$temp['c3b'][$timestamp] += isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0;
+				$temp['c3b'][$timestamp] += ((isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0)
+				                             + (isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0));
 				$temp['c3bg'][$timestamp] += isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0;
 				$temp['c3'][$timestamp] += ((isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0)
 				                            + (isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0)
@@ -877,7 +906,6 @@ class SubReportController extends Controller
 						                   $table['c3bg'][$hour] = 1;
 					                   }
 				                   }
-				                   $table['c3'][$hour] =  $table['c3a'][$hour] + $table['c3b'][$hour] + $table['c3bg'][$hour];
 			                   }
 		                   } );
 
@@ -914,6 +942,8 @@ class SubReportController extends Controller
 		                        } );
 
 		for ($i = 0; $i < 24; $i++){
+			$table['c3'][$i] =  $table['c3a'][$i] + $table['c3b'][$i] + $table['c3bg'][$i];
+
 			$c3_line[] =  [$i, $table['c3'][$i]];
 			$c3b_line[] =  [$i, $table['c3b'][$i]];
 			$c3bg_line[] =  [$i, $table['c3bg'][$i]];
@@ -940,6 +970,7 @@ class SubReportController extends Controller
 				$table_accumulated['c3'][$i] += $table['c3b'][$j];
 				$table_accumulated['c3'][$i] += $table['c3bg'][$j];
 				$table_accumulated['c3b'][$i] += $table['c3b'][$j];
+				$table_accumulated['c3b'][$i] += $table['c3bg'][$j];
 				$table_accumulated['c3bg'][$i] += $table['c3bg'][$j];
 			}
 		}

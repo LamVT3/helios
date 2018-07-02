@@ -120,7 +120,7 @@
                                                 <thead>
                                                 <tr>
                                                     <th>Time</th>
-                                                    <th>C3A</th>
+                                                    <th>C3</th>
                                                     <th>C3B</th>
                                                     <th>C3BG</th>
                                                 </tr>
@@ -209,6 +209,34 @@
                                     </div>
 
                                     <div class="col-sm-8">
+                                        <article class="col-sm-12 col-md-12">
+                                        @component('components.jarviswidget',
+                                        ['id' => 'c3bga', 'icon' => 'fa-line-chart', 'title' => "C3BG Accumulated / week ", 'dropdown' => 'false'])
+                                            <!-- widget content -->
+                                                <div class="widget-body no-padding">
+                                                    <div id="c3bg_chart_a" class="chart has-legend"></div>
+                                                </div>
+                                            @endcomponent
+                                        </article>
+                                        <article class="col-sm-12 col-md-12">
+                                        @component('components.jarviswidget',
+                                        ['id' => 'c3ba', 'icon' => 'fa-line-chart', 'title' => "C3B Accumulated / week", 'dropdown' => 'false'])
+                                            <!-- widget content -->
+                                                <div class="widget-body no-padding">
+                                                    <div id="c3b_chart_a" class="chart has-legend"></div>
+                                                </div>
+                                            @endcomponent
+                                        </article>
+
+                                        <article class="col-sm-12 col-md-12">
+                                        @component('components.jarviswidget',
+                                        ['id' => 'c3a', 'icon' => 'fa-line-chart', 'title' => "C3 Accumulated / week", 'dropdown' => 'false'])
+                                            <!-- widget content -->
+                                                <div class="widget-body no-padding">
+                                                    <div id="c3_chart_a" class="chart has-legend"></div>
+                                                </div>
+                                            @endcomponent
+                                        </article>
 
                                         <article class="col-sm-12 col-md-12">
                                             <div class="loading" style="display: none">
@@ -219,7 +247,7 @@
                                             </div>
                                             <br>
                                         @component('components.jarviswidget',
-                                        ['id' => 'c3bg_accumulated', 'icon' => 'fa-line-chart', 'title' => "C3BG ", 'dropdown' => 'true'])
+                                        ['id' => 'c3bg_accumulated', 'icon' => 'fa-line-chart', 'title' => "C3BG Accumulated ", 'dropdown' => 'true'])
                                             <!-- widget content -->
                                                 <div class="widget-body no-padding">
                                                     @component('components.hour_chart', ['id' => 'c3bg_chart_accumulated', 'chk' => 'hourc3bg_chk'])
@@ -236,7 +264,7 @@
                                             </div>
                                             <br>
                                         @component('components.jarviswidget',
-                                        ['id' => 'c3b_accumulated', 'icon' => 'fa-line-chart', 'title' => "C3B ", 'dropdown' => 'true'])
+                                        ['id' => 'c3b_accumulated', 'icon' => 'fa-line-chart', 'title' => "C3B Accumulated ", 'dropdown' => 'true'])
                                             <!-- widget content -->
                                                 <div class="widget-body no-padding">
                                                     @component('components.hour_chart', ['id' => 'c3b_chart_accumulated', 'chk' => 'hourc3b_chk'])
@@ -253,7 +281,7 @@
                                             </div>
                                             <br>
                                         @component('components.jarviswidget',
-                                        ['id' => 'c3_accumulated', 'icon' => 'fa-line-chart', 'title' => "C3 ", 'dropdown' => 'true'])
+                                        ['id' => 'c3_accumulated', 'icon' => 'fa-line-chart', 'title' => "C3 Accumulated ", 'dropdown' => 'true'])
                                             <!-- widget content -->
                                                 <div class="widget-body no-padding">
                                                     @component('components.hour_chart', ['id' => 'c3_chart_accumulated', 'chk' => 'hourc3_chk'])
@@ -310,6 +338,9 @@
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
         $(document).ready(function () {
             pageSetUp();
+            initChartAC3();
+            initChartAC3B();
+            initChartAC3BG();
             initC3();
             initC3B();
             initC3BG();
@@ -317,6 +348,37 @@
             initC3BAccumulated();
             initC3BGAccumulated();
         });
+
+        function initChartAC3() {
+            var item = $("#c3_chart_a");
+            var data = [
+                {data : {{ $chart["c3_week_accumulated"] }},label : "C3 Week", color: "#FF8C00"},
+                {data: {{$chart['c3_accumulated']}}, label: "C3", color: "#7CFC00"},
+            ];
+
+            initChart(item, data);
+            item.UseC3Tooltip();
+        }
+        function initChartAC3B() {
+            var item = $("#c3b_chart_a");
+            var data = [
+                {data : {{ $chart["c3b_week_accumulated"] }},label : "C3B Week", color: "#FF8C00"},
+                {data: {{$chart['c3b_accumulated']}}, label: "C3B", color: "#7CFC00"},
+            ];
+
+            initChart(item, data);
+            item.UseC3Tooltip();
+        }
+        function initChartAC3BG() {
+            var item = $("#c3bg_chart_a");
+            var data = [
+                {data : {{ $chart["c3bg_week_accumulated"] }},label : "C3BG Week", color: "#FF8C00"},
+                {data: {{$chart['c3bg_accumulated']}}, label: "C3BG", color: "#7CFC00"},
+            ];
+
+            initChart(item, data);
+            item.UseC3Tooltip();
+        }
 
         function initC3() {
             var item = $("#c3_chart");
@@ -396,9 +458,9 @@
             $('input[name="c3b_month"]').val(current_month);
             $('input[name="c3bg_month"]').val(current_month);
 
-            $('h2#c3_accumulated').html('C3 in ' + dropdown.html());
-            $('h2#c3b_accumulated').html('C3B in ' + dropdown.html());
-            $('h2#c3bg_accumulated').html('C3BG in ' + dropdown.html());
+            $('h2#c3_accumulated').html('C3 Accumulated in ' + dropdown.html());
+            $('h2#c3b_accumulated').html('C3B Accumulated in ' + dropdown.html());
+            $('h2#c3bg_accumulated').html('C3BG Accumulated in ' + dropdown.html());
 
             var dropdownLst = document.getElementsByClassName('dropdown-toggle');
             for (var i = 0; i < dropdownLst.length; i++) {

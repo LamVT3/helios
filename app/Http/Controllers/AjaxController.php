@@ -1279,16 +1279,19 @@ class AjaxController extends Controller
 		}
 
 		foreach ($array_month as $key => $timestamp){
-			$data_c3b[ $timestamp ] = [];
+			$data_c3b[ $timestamp ]  = [];
+			$data_c3bg[ $timestamp ] = [];
+
 			for ($hr = 0; $hr <= 23; $hr++) {
 				$temp_c3b[ $timestamp ][ $hr ]  = 0;
+				$temp_c3bg[ $timestamp ][ $hr ] = 0;
 			}
 		}
 
 		Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
 		       ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
-		       ->whereIn( 'clevel', [ 'c3b' ] )
-		       ->chunk( 1000, function ( $contacts ) use ( &$data_c3b ) {
+		       ->whereIn( 'clevel', [ 'c3b', 'c3bg' ] )
+		       ->chunk( 1000, function ( $contacts ) use ( &$data_c3b, &$data_c3bg) {
 			       foreach ( $contacts as $contact ) {
 				       if ($contact->clevel == 'c3b'){
 					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
@@ -1299,14 +1302,23 @@ class AjaxController extends Controller
 						       $data_c3b[$timestamp][$hour] = 1;
 					       }
 				       }
+				       else if ($contact->clevel == 'c3bg'){
+					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
+					       $hour = (int) date( "H", $contact->submit_time / 1000 );
+					       if (isset($data_c3bg[$timestamp][$hour]))
+						       $data_c3bg[$timestamp][$hour] += 1;
+					       else{
+						       $data_c3bg[$timestamp][$hour] = 1;
+					       }
+				       }
 			       }
 		       } );
 
 		for ($hr = 0; $hr <= 23; $hr++){
 			for ($h = 0; $h <= $hr; $h++){
 				foreach ($array_month as $key => $timestamp){
-					$temp_c3b[$timestamp][$hr] += isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0;
-
+					$temp_c3b[$timestamp][$hr] += ((isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0)
+					                              + (isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0)) ;
 				}
 			}
 
