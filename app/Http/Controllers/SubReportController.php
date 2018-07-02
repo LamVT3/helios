@@ -623,7 +623,7 @@ class SubReportController extends Controller
 							} );
 
 		$contacts_week = Contact::where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 - 7 * 86400000)
-		                   ->where( 'submit_time', '<', strtotime( "midnight" ) * 1000 )
+		                   ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
 		                   ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
 							->chunk( 1000, function ( $contacts ) use ( &$table ) {
 								foreach ( $contacts as $contact ) {
