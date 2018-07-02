@@ -92,6 +92,10 @@
                     <li class="{{ $active == 'hour-report' ? 'active' : '' }}">
                         <a href="{{ route('hour-report') }}"><i class="fa fa-lg fa-fw fa-calendar-times-o"></i> Hour Report</a>
                     </li>
+
+                    <li class="{{ $active == 'assign_kpi' ? 'active' : '' }}">
+                        <a href="{{ route('assign-kpi') }}"><i class="fa fa-lg fa-fw fa-map-signs"></i> Assign KPI</a>
+                    </li>
                 </ul>
             </li>
 

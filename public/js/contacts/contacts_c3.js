@@ -287,7 +287,7 @@ function initDataTable() {
     var is_export       = $('select[name="is_export"]').val();
     var limit           = $('input#limit').val();
     var landing_page    = $('select[name="landing_page"]').val();
-    var search          = $('input[name="search"]').val();
+    var search          = $('input[type="search"]').val();
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -327,14 +327,13 @@ function initDataTable() {
         },
         "drawCallback": function (oSettings) {
 
-            $('input[type=search]').change(function (e) {
-                var search = $('input[type=search]').val();
-                $('input[name="search"]').val(search);
-                countExportedWhenSearch();
-            })
-
-            var search =  $('input[name="search"]').val();
-            $('input[type=search]').val(search);
+            // $('input[type=search]').change(function (e) {
+            //     var search = $('input[type=search]').val();
+            //     countExportedWhenSearch();
+            // })
+            //
+            // var search =  $('input[name="search"]').val();
+            // $('input[type=search]').val(search);
 
             responsiveHelper_table_campaign.respond();
         },
@@ -432,10 +431,8 @@ function initDataTable() {
             if(iTotal == 0){
                 return "";
             }
-            var search = $('input[type=search]').val();
-            $('input[name="search"]').val(search);
             countExportedWhenSearch();
-            var exported    = $('input[name="exported"]').val();console.log(exported);
+            var exported    = $('input[name="exported"]').val();
             var count_str   = '<span class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
 
             return sPre + count_str;
@@ -457,7 +454,7 @@ function countExported() {
     var subcampaign_id  = $('select[name="subcampaign_id"]').val();
     var landing_page    = $('select[name="landing_page"]').val();
     var is_export       = $('select[name="is_export"]').val();
-    var search          = $('input[name="search"]').val();
+    var search          = $('input[type="search"]').val();
 
     if(is_export === '0'){
         $('input[name="exported"]').val(0);
@@ -506,7 +503,7 @@ function countExportedWhenSearch() {
     var subcampaign_id  = $('select[name="subcampaign_id"]').val();
     var landing_page    = $('select[name="landing_page"]').val();
     var is_export       = $('select[name="is_export"]').val();
-    var search          = $('input[name="search"]').val();
+    var search          = $('input[type="search"]').val();
 
     if(is_export === '0'){
         $('input[name="exported"]').val(0);
