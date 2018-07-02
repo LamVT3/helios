@@ -1,7 +1,7 @@
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="post" id="form-assign-kpi" action="#" url="{{ route("assign-kpi") }}">
+            <form method="post" id="form-assign-kpi" action="{{ route("assign-kpi") }}" url="{{ route("save-kpi") }}">
                 <input type="hidden" name="config_id" value=""/>
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">

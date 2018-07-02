@@ -25,27 +25,28 @@
 
                     <article class="col-sm-12 col-md-12">
                         @component('components.jarviswidget',
-                                                    ['id' => 1, 'icon' => 'fa-table', 'title' => 'Report KPI'])
+                                                    ['id' => 'report_kpi', 'icon' => 'fa-table', 'title' => 'Report KPI', 'dropdown' => 'true'])
                             <div id="wrapper_kpi">
-                                <table id="table_kpi" class="table table-hover">
+                                <table id="table_kpi" class="table table-hover ">
                                     <thead>
                                     <tr>
-                                        <th colspan="4"></th>
+                                        <th colspan="5"></th>
 
                                         @for ($i = 1; $i <= $days; $i++)
-                                            <th colspan="2"> {{$i < 10 ? '0'.$i.$month : $i.$month}} </th>
+                                            <th colspan="2" style="text-align: center"> {{$i < 10 ? '0'.$i.$month : $i.$month}} </th>
                                         @endfor
 
                                     </tr>
                                     <tr>
-                                        <td><span style="font-weight:bold">User</span></td>
-                                        <td><span style="font-weight:bold">Plan</span></td>
-                                        <td><span style="font-weight:bold">Actual</span></td>
-                                        <td><span style="font-weight:bold">Remain</span></td>
+                                        <th>User</th>
+                                        <th></th>
+                                        <th>Plan</th>
+                                        <th>Actual</th>
+                                        <th>Remain</th>
 
                                         @for ($i = 1; $i <= $days; $i++)
-                                            <td>KPI</td>
-                                            <td>Act</td>
+                                            <th>KPI</th>
+                                            <th>Act</th>
                                         @endfor
 
                                     </tr>
@@ -53,12 +54,18 @@
                                     <tbody>
                                     @foreach($data as $user => $item)
                                         <tr>
-                                            <td>{{ $user }}</td>
-                                            <td>{{ $item['total_kpi'] }}</td>
-                                            <td>{{ $item['total_c3b'] }}</td>
-                                            <td>{{ $item['total_c3b'] - $item['total_kpi'] }}</td>
+                                            <td><span style="font-weight: bold">{{ $user }}</span></td>
+                                            <td>
+                                                <a class=' btn-xs btn-default edit_kpi' data-user-id="{{@$item['user_id']}}"
+                                                   href="" data-toggle="modal" data-target="#addModal"
+                                                   data-original-title='Edit Row'><i
+                                                            class='fa fa-pencil'></i></a>
+                                            </td>
+                                            <td>{{ @$item['total_kpi'] }}</td>
+                                            <td>{{ @$item['total_c3b'] }}</td>
+                                            <td>{{ @$item['total_c3b'] - @$item['total_kpi'] }}</td>
                                             @for ($i = 1; $i <= $days; $i++)
-                                                <td>{{ $item['kpi'][$i] ? $item['kpi'][$i] : 0 }}</td>
+                                                <td>{{ @$item['kpi'][$i] ? @$item['kpi'][$i] : 0 }}</td>
                                                 <td>{{ @$item['c3b'][$i] ? @$item['c3b'][$i] : 0 }}</td>
                                             @endfor
 
@@ -87,6 +94,8 @@
     </div>
     <!-- END MAIN PANEL -->
     <input type="hidden" id="get_kpi_url" value="{{route('get-kpi')}}">
+    <input type="hidden" id="reload_page_url" value="{{route('reload-page')}}">
+    <input type="hidden" id="selected_month" value="">
 
 
 @endsection
@@ -116,8 +125,8 @@
         if(month < 10){
             month = '0' + month;
         }
-        $('#month').val(month);
-        initFormKPI(month);
+        $('#selected_month').val(month);
+        initDropdown(parseInt(month) - 1);
 
         $('#assign-kpi').click(function(e){
             e.preventDefault();
@@ -142,7 +151,7 @@
             data.kpi        = kpi;
             data.month      = month;
             data.year       = year;
-            data.username   = $('input#username').val();
+            data.user_id   = $('select#username').val();
 
             $.get(url, data, function (data) {
 
@@ -154,20 +163,61 @@
 
         $('select#month').change(function(e){
             e.preventDefault();
-            var month = $(this).val();
+            var month   = $('select#month').val();
+            var user    = $('select#username').val();
 
-            initFormKPI(month);
+            initFormKPI(user, month);
+        });
+
+        $('select#username').change(function(e){
+            e.preventDefault();
+            var month   = $('select#month').val();
+            var user    = $('select#username').val();
+
+            initFormKPI(user, month);
+        });
+
+        $('#addModal').on('shown.bs.modal', function () {
+
+            var user    = $(this).attr('data-user-id');
+            var month   = $('#selected_month').val();
+
+            initFormKPI(user, month);
+        })
+
+        $('li#month').click(function() {
+            var month_name = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            var month       = $(this).val();
+            var dropdown    = $(this).closest('ul').siblings();
+            dropdown.html(month_name[month-1]);
+
+            var title       = $(this).parents('div.widget-toolbar').siblings('h2');
+            title.html('Report KPI in ' + dropdown.html());
+
+            if(month < 10){
+                month = '0' + month;
+            }
+            $('#selected_month').val(month);
+        });
+
+        $('a.edit_kpi').click(function() {
+            var user = $(this).attr('data-user-id');
+            $('#addModal').attr('data-user-id', user);
         });
 
         /* END BASIC */
     })
 
-    function initFormKPI(month){
+    function initFormKPI(user, month){
 
-        initLstDays(month);
+        $('select#month').val(month);
+        $('select#username').val(user);
+
+        initLstDays(user, month);
     }
 
-    function initLstDays(month) {
+    function initLstDays(user ,month) {
         var year = moment().year();
         var days = new Date(year, month, 0).getDate();
         var url  = $('input#get_kpi_url').val();
@@ -175,7 +225,7 @@
         var data ={};
         data.month      = month;
         data.year       = year;
-        data.username   = $('input#username').val();
+        data.user_id    = user;
 
         $.get(url, data, function (data) {
             $("div.lst_days").html('');
@@ -195,6 +245,19 @@
             function (err) {
                 alert('Cannot connect to server. Please try again later.');
             });
+    }
+
+    function initDropdown(month){
+        $('button#dropdown').click();
+        var month_name = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
+        var dropdown = $('button#dropdown');
+        dropdown.html(month_name[month]);
+        $('h2#report_kpi').html('Report KPI in <span class="yellow">' + dropdown.html()+ '</span>');
+    }
+    
+    function initDataKPI() {
+        
     }
 
 </script>

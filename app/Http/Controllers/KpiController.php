@@ -62,10 +62,10 @@ class KpiController extends Controller
     public function save_kpi(){
 
         $request    = request();
-        $username   = $request->username;
+        $user       = $request->user_id;
         $month      = $request->month;
         $year       = $request->year;
-        $user       = $username ? User::where('username', $username)->firstOrFail() : auth()->user();
+        $user       = User::find($user);
 
         $kpi        = $user->kpi;
         $kpi[$year][$month] = $request->kpi;
@@ -77,10 +77,10 @@ class KpiController extends Controller
     public function get_kpi(){
 
         $request    = request();
-        $username   = $request->username;
+        $user       = $request->user_id;
         $month      = $request->month;
         $year       = $request->year;
-        $user       = $username ? User::where('username', $username)->firstOrFail() : auth()->user();
+        $user       = User::where('_id', $user)->firstOrFail();
 
         $kpi        = $user->kpi;
         return @$kpi[$year][$month];
@@ -99,13 +99,18 @@ class KpiController extends Controller
         }
 
         $users = User::all();
-
         foreach ($users as $user){
-            $data[$user->username]['kpi']   = $user->kpi[$year][$month];
-            $data[$user->username]['c3b']   = $this->get_c3b_data($user);
-            $data[$user->username]['total_kpi'] = $user->kpi[$year][$month] ? array_sum($user->kpi[$year][$month]) : 0;
-            $data[$user->username]['total_c3b'] = $data[$user->username]['c3b'] ? array_sum($data[$user->username]['c3b']) : 0;
+
+            $kpi = isset($user->kpi[$year][$month]) ? $user->kpi[$year][$month] : array();
+            $data[$user->username]['kpi']       = $kpi;
+            $data[$user->username]['total_kpi'] = array_sum($kpi);
+
+            $data[$user->username]['c3b']       = $this->get_c3b_data($user);
+            $c3b = isset($data[$user->username]['c3b']) ? $data[$user->username]['c3b'] : array();
+            $data[$user->username]['total_c3b'] = array_sum($c3b);
+            $data[$user->username]['user_id']   = $user->id;
         }
+
         return $data;
 
     }
@@ -131,7 +136,6 @@ class KpiController extends Controller
         $first_day_this_month = date('Y-m-01'); /* ngày đàu tiên của tháng */
         $last_day_this_month = date('Y-m-t'); /* ngày cuối cùng của tháng */
         /* end date */
-
         $query = AdResult::raw(function($collection) use ($first_day_this_month,$last_day_this_month,$user) {
             return $collection->aggregate([
                 ['$match' => [
@@ -150,12 +154,42 @@ class KpiController extends Controller
         });
         $data = array();
         foreach ($query as $item){
-            $day = explode("-",$item['_id']);
+            $day = explode("-",@$item['_id']);
             $key = intval($day[2]);
             $data[$key] = @$item['c3b'];
         }
 
         return $data;
+    }
+
+    function reload_page(){
+        $request = request();
+
+        $users = User::all();
+
+        $data = $this->get_data();
+        $days = $this->get_days_in_month();
+        $month= date('M');
+        $year = date('Y');
+        if($request->month){
+            $month = $request->month;
+        }
+
+
+
+        return view('pages.assign_kpi', compact(
+            'page_title',
+            'page_css',
+            'no_main_header',
+            'active',
+            'breadcrumbs',
+            'users',
+            'data',
+            'days',
+            'month',
+            'year'
+        ));
+
     }
 
 

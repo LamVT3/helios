@@ -165,8 +165,9 @@ Route::group(['prefix' => 'sub_report'], function () {
     Route::get('/getByMonths', 'SubReportController@getDataByMonths')->name('line-chart.getByMonths');
 
     Route::get('/assign-kpi', 'KpiController@assign_kpi')->name('assign-kpi');
-    Route::get('/assign-kpi', 'KpiController@assign_kpi')->name('assign-kpi');
     Route::get('/get-kpi', 'KpiController@get_kpi')->name('get-kpi');
+    Route::get('/save-kpi', 'KpiController@save_kpi')->name('save-kpi');
+    Route::get('/reload-page', 'KpiController@reload_page')->name('reload-page');
 
 });
 

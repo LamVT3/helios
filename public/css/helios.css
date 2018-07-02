@@ -391,14 +391,18 @@ div.chart{
     /*min-width: 30px!important;*/
 }
 #table_kpi th{
-    text-align: center;
+    font-size: 15px;
+    color: white;
     border: none;
+    background-color: #3276b1;
+    font-weight: lighter;
 }
 div#wrapper_kpi{
     overflow-x:auto;
     width: 100%;
     padding: auto;
-    max-height: 500px;
+    max-height: 550px;
 }
+
 
 
