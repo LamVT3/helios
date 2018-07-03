@@ -18,12 +18,13 @@ return [
     'TEMPLATE_IMPORT'       => ['submit_time', 'utm_source', 'utm_team', 'utm_agent', 'utm_medium', 'utm_campaign',
         'utm_subcampaign', 'utm_ad', 'fullname', 'email', 'phone', 'age', 'landing_page', 'ad_link', 'channel'],
     'TEMPLATE_EXPORT'       => ['STT', 'Name', 'Email', 'Phone', 'Time', 'Landing page', 'Channel', 'ContactID', 'Age',
-        'Current level', 'Marketer', 'Campaign', 'Subcampaign', 'Ads', 'Link Tracking'],
+        'Current level', 'Marketer', 'Campaign', 'Subcampaign', 'Ads', 'Link Tracking', 'C Level'],
     'THANKYOU_PAGE_INVALID' => 'The Thank you page name has already been taken.',
     'CHANNEL_INVALID'       => 'The Channel name has already been taken.',
     'ROLE_ADMIN'            => 'Admin',
     'ROLE_MANAGER'          => 'Manager',
     'ROLE_MARKETER'         => 'Marketer',
+    'CURRENT_LEVEL'         => ['l1', 'l2', 'l3', 'l4', 'l5', 'l6', 'l7', 'l8']
 ];
 
 

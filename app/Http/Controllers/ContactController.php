@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Ad;
 use App\AdResult;
 use App\Campaign;
+use App\Channel;
 use App\Contact;
 use App\LandingPage;
 use App\Subcampaign;
@@ -39,13 +40,14 @@ class ContactController extends Controller
             ->where('submit_time', '<', strtotime("tomorrow")*1000)
             ->where('clevel', 'like', '%c3b%')
             ->orderBy('submit_time', 'desc')->limit((int)$page_size)->get();
-        $sources        = Source::all();
-        $teams          = Team::all();
-        $marketers      = User::all();
-        $campaigns      = Campaign::where('is_active', 1)->get();
-        $subcampaigns   = Subcampaign::where('is_active', 1)->get();
+        $sources        = Source::orderBy('name')->get();
+        $teams          = Team::orderBy('name')->get();
+        $marketers      = User::where('is_active', 1)->orderBy('username')->get();
+        $campaigns      = Campaign::orderBy('name')->get();
+        $subcampaigns   = Subcampaign::orderBy('name')->get();
         $exported       = $this->countExported();
-        $landing_page   = LandingPage::where('is_active', 1)->get();
+        $landing_page   = LandingPage::where('is_active', 1)->orderBy('name')->get();
+        $channel        = Channel::where('is_active', 1)->orderBy('name')->get();
 
         return view('pages.contacts-c3', compact(
             'page_title',
@@ -61,7 +63,8 @@ class ContactController extends Controller
             'page_size',
             'subcampaigns',
             'exported',
-            'landing_page'
+            'landing_page',
+            'channel'
         ));
     }
 
@@ -123,6 +126,10 @@ class ContactController extends Controller
                 $query->where('clevel', 'like', '%c3b%');
                 unset($data_where['clevel']);
             }
+            if(@$data_where['current_level'] == 'l0'){
+                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+                unset($data_where['current_level']);
+            }
             $query->where($data_where);
         }
 //        if($request->limit)
@@ -176,6 +183,10 @@ class ContactController extends Controller
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
                 unset($data_where['clevel']);
+            }
+            if(@$data_where['current_level'] == 'l0'){
+                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+                unset($data_where['current_level']);
             }
             $query->where($data_where);
         }
@@ -233,7 +244,8 @@ class ContactController extends Controller
                         $item->campaign_name,
                         $item->subcampaign_name,
                         $item->ad_name,
-                        $item->ads_link
+                        $item->ads_link,
+                        $item->clevel
                     );
                     if(\request('limit') && $count > $limit){
                         break;
@@ -242,7 +254,7 @@ class ContactController extends Controller
                 $sheet->fromArray($datas, NULL, 'A1', FALSE, FALSE);
                 $headings = \config('constants.TEMPLATE_EXPORT');
                 $sheet->prependRow(1, $headings);
-                $sheet->cells('A1:O1', function ($cells) {
+                $sheet->cells('A1:P1', function ($cells) {
                     $cells->setBackground('#191919');
                     $cells->setFontColor('#DBAC69');
                     $cells->setFontSize(12);
@@ -288,6 +300,9 @@ class ContactController extends Controller
         if ($request->landing_page) {
             $data_where['landing_page']     = $request->landing_page;
         }
+        if ($request->channel) {
+            $data_where['channel_name']     = $request->channel;
+        }
 
         return $data_where;
     }
@@ -315,6 +330,10 @@ class ContactController extends Controller
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
                 unset($data_where['clevel']);
+            }
+            if(@$data_where['current_level'] == 'l0'){
+                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+                unset($data_where['current_level']);
             }
             $query->where($data_where);
         }
@@ -567,6 +586,7 @@ class ContactController extends Controller
             11  =>'subcampaign_name',
             12  =>'ad_name',
             13  =>'landing_page',
+            14  =>'channel_name'
         );
 
         return $columns;

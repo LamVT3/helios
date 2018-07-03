@@ -74,6 +74,10 @@ $(document).ready(function () {
             $("#campaign_id").select2();
             $('#subcampaign_id').html(response.content_subcampaign);
             $("#subcampaign_id").select2();
+            $('#landing_page').html(response.content_landingpage);
+            $("#landing_page").select2();
+            $('#channel_id').html(response.content_channel);
+            $("#channel_id").select2();
         });
     })
 
@@ -96,6 +100,10 @@ $(document).ready(function () {
             $("#campaign_id").select2();
             $('#subcampaign_id').html(response.content_subcampaign);
             $("#subcampaign_id").select2();
+            $('#landing_page').html(response.content_landingpage);
+            $("#landing_page").select2();
+            $('#channel_id').html(response.content_channel);
+            $("#channel_id").select2();
         });
     })
 
@@ -116,6 +124,10 @@ $(document).ready(function () {
             $("#campaign_id").select2();
             $('#subcampaign_id').html(response.content_subcampaign);
             $("#subcampaign_id").select2();
+            $('#landing_page').html(response.content_landingpage);
+            $("#landing_page").select2();
+            $('#channel_id').html(response.content_channel);
+            $("#channel_id").select2();
         });
     })
 
@@ -135,6 +147,8 @@ $(document).ready(function () {
             $("#subcampaign_id").select2();
             $('#landing_page').html(response.content_landingpage);
             $("#landing_page").select2();
+            $('#channel_id').html(response.content_channel);
+            $("#channel_id").select2();
         });
     })
 
@@ -152,6 +166,8 @@ $(document).ready(function () {
         }).done(function (response) {
             $('#landing_page').html(response.content_landingpage);
             $("#landing_page").select2();
+            $('#channel_id').html(response.content_channel);
+            $("#channel_id").select2();
         });
     })
 
@@ -288,6 +304,8 @@ function initDataTable() {
     var limit           = $('input#limit').val();
     var landing_page    = $('select[name="landing_page"]').val();
     var search          = $('input[type="search"]').val();
+    var channel         = $('select[name="channel_id"]').val();
+
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -302,6 +320,7 @@ function initDataTable() {
     $('input[name="is_export"]').val(is_export);
     $('input[name="limit"]').val(limit);
     $('input[name="landing_page"]').val(landing_page);
+    $('input[name="channel"]').val(channel);
 
     /* BASIC ;*/
     var responsiveHelper_table_campaign = undefined;
@@ -358,7 +377,8 @@ function initDataTable() {
                 d.checked_date      = checked_date,
                 d.c3bg_checkbox     = c3bg_checkbox,
                 d.limit             = limit,
-                d.landing_page      = landing_page
+                d.landing_page      = landing_page,
+                d.channel           = channel
                 // d.search_inp        = search
             }
         },
@@ -455,6 +475,7 @@ function countExported() {
     var landing_page    = $('select[name="landing_page"]').val();
     var is_export       = $('select[name="is_export"]').val();
     var search          = $('input[type="search"]').val();
+    var channel         = $('select[name="channel_id"]').val();
 
     if(is_export === '0'){
         $('input[name="exported"]').val(0);
@@ -474,6 +495,7 @@ function countExported() {
     data.landing_page      = landing_page;
     data.is_export         = is_export;
     data.search            = search;
+    data.channel           = channel;
 
     $.get(url, data, function (data) {
         setTimeout(function(){
@@ -504,6 +526,7 @@ function countExportedWhenSearch() {
     var landing_page    = $('select[name="landing_page"]').val();
     var is_export       = $('select[name="is_export"]').val();
     var search          = $('input[type="search"]').val();
+    var channel         = $('select[name="channel_id"]').val();
 
     if(is_export === '0'){
         $('input[name="exported"]').val(0);
@@ -522,6 +545,7 @@ function countExportedWhenSearch() {
     data.landing_page      = landing_page;
     data.is_export         = is_export;
     data.search            = search;
+    data.channel           = channel;
 
     $.get(url, data, function (data) {
         $('input[name="exported"]').val(data);
@@ -604,6 +628,7 @@ function updateStatusExport(id) {
     var subcampaign_id  = $('input[name="subcampaign_id"]').val();
     var old_status      = $('input[name="status"]').val();
     var landing_page    = $('select[name="landing_page"]').val();
+    var channel         = $('select[name="channel_id"]').val();
 
     if(id == '' && status == ''){
         setTimeout(function(){
@@ -630,6 +655,7 @@ function updateStatusExport(id) {
     data.old_status        = old_status;
     data.new_status        = status;
     data.landing_page      = landing_page;
+    data.channel           = channel;
 
     $.get(url, data, function (data) {
         setTimeout(function(){

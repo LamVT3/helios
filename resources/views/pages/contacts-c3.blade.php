@@ -107,6 +107,17 @@
                                         </select>
                                         <i></i>
                                     </section>
+                                    <section class="col col-2">
+                                        <label class="label">Channel</label>
+                                        <select name="channel_id" id="channel_id" class="select2" style="width: 280px"
+                                                data-url="">
+                                            <option value="">All</option>
+                                            @foreach($channel as $item)
+                                                <option value="{{ $item->name }}">{{ $item->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <i></i>
+                                    </section>
                                 </div>
                                 <div class="row" id="filter">
                                     <section class="col col-2">
@@ -125,6 +136,7 @@
                                         <select name="current_level" id="current_level" class="select2"
                                                 style="width: 280px">
                                             <option value="">All</option>
+                                            <option value="l0">l0</option>
                                             <option value="l1">l1</option>
                                             <option value="l2">l2</option>
                                             <option value="l3">l3</option>
@@ -224,6 +236,7 @@
                                 <input type="hidden" name="mark_exported" value="0">
                                 <input type="hidden" name="status">
                                 <input type="hidden" name="landing_page">
+                                <input type="hidden" name="channel">
                                 <input type="hidden" name="search" value="">
                             </form>
                         </div>
