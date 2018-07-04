@@ -27,7 +27,7 @@
                         @component('components.jarviswidget',
                                                     ['id' => 'report_kpi', 'icon' => 'fa-table', 'title' => 'Report KPI', 'dropdown' => 'true'])
                             <div id="wrapper_kpi">
-                                <table id="table_kpi" class="table table-hover ">
+                                <table id="table_kpi" class="table table-hover table-bordered no-boder-top no-boder-left">
                                     <thead>
                                     <tr>
                                         <th colspan="5"></th>
@@ -66,7 +66,7 @@
                                             <td>{{ @$item['total_c3b'] - @$item['total_kpi'] }}</td>
                                             @for ($i = 1; $i <= $days; $i++)
                                                 <td>{{ @$item['kpi'][$i] ? @$item['kpi'][$i] : 0 }}</td>
-                                                <td>{{ @$item['c3b'][$i] ? @$item['c3b'][$i] : 0 }}</td>
+                                                <td class="no-boder-left">{{ @$item['c3b'][$i] ? @$item['c3b'][$i] : 0 }}</td>
                                             @endfor
 
                                         </tr>

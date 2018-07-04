@@ -150,9 +150,7 @@ class KpiController extends Controller
                 [
                     '$group' => [
                         '_id' => '$date',
-                        'c3b' => [
-                            '$sum' => '$c3b'
-                        ],
+                        'c3b' => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                     ]
                 ]
             ]);

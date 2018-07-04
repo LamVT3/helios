@@ -451,6 +451,16 @@ div#wrapper_kpi{
     padding: auto;
     max-height: 480px;
 }
+.no-boder-top{
+    border-collapse: separate;
+    border-top: none!important;
+}
+
+.no-boder-left{
+    border-collapse: separate;
+    border-left: none!important;
+}
+
 
 
 

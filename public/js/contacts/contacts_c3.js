@@ -201,11 +201,6 @@ $(document).ready(function () {
         }
     });
 
-    // $('input[type=search]').change(function (e) {
-    //     countExportedWhenSearch();
-    //     console.log(1111);
-    // })
-
 });
 
 $(document).ready(function () {
@@ -229,26 +224,30 @@ $(document).ready(function () {
 
     $('#search-form-c3').submit(function (e) {
         e.preventDefault();
+        $('.loading').show();
+
         countExported();
 
-        $('.loading').show();
         setTimeout(function(){
             // initDataTable();
+            // countExported();
+            initDataTable();
             $('.loading').hide();
-        }, 1000);
+        },1000);
     });
 
     $('button#confirm_export').click(function (e) {
         e.preventDefault();
 
         $('#export-form-c3').submit();
+
         setTimeout(function(){
             countExported();
+            initDataTable();
             $('div#export_success').show();
             $('div#update_success').hide();
             $('input#update_all').prop('checked', false); // Unchecks checkbox all
-
-        }, 1000);
+        }, 2000);
     });
 
     $('button#update_contact').click(function (e) {
@@ -303,7 +302,7 @@ function initDataTable() {
     var is_export       = $('select[name="is_export"]').val();
     var limit           = $('input#limit').val();
     var landing_page    = $('select[name="landing_page"]').val();
-    var search          = $('input[type="search"]').val();
+    var search          = $('input[name="search_text"]').val();
     var channel         = $('select[name="channel_id"]').val();
 
 
@@ -346,10 +345,11 @@ function initDataTable() {
         },
         "drawCallback": function (oSettings) {
 
-            // $('input[type=search]').change(function (e) {
-            //     var search = $('input[type=search]').val();
-            //     countExportedWhenSearch();
-            // })
+            $('input[type=search]').change(function (e) {
+                var search = $(this).val();
+                $('input[name=search_text]').val(search);
+                countExported();
+            })
             //
             // var search =  $('input[name="search"]').val();
             // $('input[type=search]').val(search);
@@ -379,7 +379,7 @@ function initDataTable() {
                 d.limit             = limit,
                 d.landing_page      = landing_page,
                 d.channel           = channel
-                // d.search_inp        = search
+                d.search_text       = search
             }
         },
         "columns": [
@@ -451,13 +451,14 @@ function initDataTable() {
             if(iTotal == 0){
                 return "";
             }
-            countExportedWhenSearch();
+            // countExportedWhenSearch();
             var exported    = $('input[name="exported"]').val();
-            var count_str   = '<span class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
+            var count_str   = '<span id="cnt_exported" class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
 
             return sPre + count_str;
         },
     });
+
 }
 
 function countExported() {
@@ -479,7 +480,8 @@ function countExported() {
 
     if(is_export === '0'){
         $('input[name="exported"]').val(0);
-        initDataTable();
+        // $('span#cnt_exported').text('(0 exported)');
+        // initDataTable();
         return;
     }
 
@@ -494,17 +496,19 @@ function countExported() {
     data.registered_date   = registered_date;
     data.landing_page      = landing_page;
     data.is_export         = is_export;
-    data.search            = search;
+    data.search_text       = search;
     data.channel           = channel;
 
     $.get(url, data, function (data) {
-        setTimeout(function(){
+        $('input[name="exported"]').val(data);
+        // setTimeout(function(){
             // if(status == '0'){
             //     $('input[name="exported"]').val(0);
             // }
-            $('input[name="exported"]').val(data);
-            initDataTable();
-        }, 1000);
+            // $('input[name="exported"]').val(data);
+            // $('span#cnt_exported').text('(' + data +' exported)');
+            // initDataTable();
+        // }, 1000);
     }).fail(
         function (err) {
             alert('Cannot connect to server. Please try again later.');
@@ -544,7 +548,7 @@ function countExportedWhenSearch() {
     data.registered_date   = registered_date;
     data.landing_page      = landing_page;
     data.is_export         = is_export;
-    data.search            = search;
+    data.search_text       = search;
     data.channel           = channel;
 
     $.get(url, data, function (data) {
@@ -630,17 +634,18 @@ function updateStatusExport(id) {
     var landing_page    = $('select[name="landing_page"]').val();
     var channel         = $('select[name="channel_id"]').val();
 
-    if(id == '' && status == ''){
-        setTimeout(function(){
-            // if(old_status == '0'){
-            //     $('input[name="exported"]').val(0);
-            // }
-            $('input#update_all').prop('checked', false); // Unchecks checkbox all
-            countExported();
-            $('.loading').hide();
-            $('div#update_success').show();
-        }, 1000);
-    }
+    // if(id == '' && status == ''){
+    //     countExported();
+    //     setTimeout(function(){
+    //         // if(old_status == '0'){
+    //         //     $('input[name="exported"]').val(0);
+    //         // }
+    //         $('input#update_all').prop('checked', false); // Unchecks checkbox all
+    //         initDataTable();
+    //         $('.loading').hide();
+    //         $('div#update_success').show();
+    //     }, 1000);
+    // }
 
     var data = {};
     data.id                = id;
@@ -658,12 +663,14 @@ function updateStatusExport(id) {
     data.channel           = channel;
 
     $.get(url, data, function (data) {
+        countExported();
         setTimeout(function(){
             // if(old_status == '0'){
             //     $('input[name="exported"]').val(0);
             // }
+            initDataTable();
             $('input#update_all').prop('checked', false); // Unchecks checkbox all
-            countExported();
+
             $('.loading').hide();
             $('div#update_success').show();
             $('div#export_success').hide();

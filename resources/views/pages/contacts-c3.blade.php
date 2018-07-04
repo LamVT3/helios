@@ -176,7 +176,7 @@
                                     </section>
                                 </div>
                                 <div class="row" id="filter">
-                                    <section class="col col-3">
+                                    <section class="col col-4">
                                         <label class="checkbox">
                                             <input type="checkbox" id="mark_exported"/>
                                             <i></i>Mark contact as “Exported”</label>
@@ -237,7 +237,7 @@
                                 <input type="hidden" name="status">
                                 <input type="hidden" name="landing_page">
                                 <input type="hidden" name="channel">
-                                <input type="hidden" name="search" value="">
+                                <input type="hidden" name="search_text" value="">
                             </form>
                         </div>
 

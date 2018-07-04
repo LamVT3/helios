@@ -550,8 +550,12 @@ class ContactController extends Controller
     private function getSeachData(){
         $request        = request();
 
-        if($request->search){
-            return $request->search;
+        if($request['search']['value']){
+            return $request['search']['value'];
+        }
+
+        if($request->search_text){
+            return $request->search_text;
         }
 
         return '';

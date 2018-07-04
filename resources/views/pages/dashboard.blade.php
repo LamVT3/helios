@@ -277,6 +277,7 @@
     <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+    <script src="{{ asset('js/fixedTable/tableHeadFixer.js') }}"></script>
 
     <script type="text/javascript">
 
@@ -474,6 +475,7 @@
 
             $.get("{{ route('ajax-c3-leaderboard') }}", {period: period}, function (data) {
                 $('.c3_leaderboard').html(data);
+                $("#c3_leaderboard").tableHeadFixer({'z-index': 0});
             }).fail(
                 function (err) {
                     alert('Cannot connect to server. Please try again later.');
@@ -488,6 +490,7 @@
 
             $.get("{{ route('ajax-revenue-leaderboard') }}", {period: period}, function (data) {
                 $('.revenue_leaderboard').html(data);
+                $("#revenue_leaderboard").tableHeadFixer({'z-index': 0});
             }).fail(
                 function (err) {
                     alert('Cannot connect to server. Please try again later.');
@@ -502,6 +505,7 @@
 
             $.get("{{ route('ajax-spent-leaderboard') }}", {period: period}, function (data) {
                 $('.spent_leaderboard').html(data);
+                $("#spent_leaderboard").tableHeadFixer({'z-index': 0});
             }).fail(
                 function (err) {
                     alert('Cannot connect to server. Please try again later.');

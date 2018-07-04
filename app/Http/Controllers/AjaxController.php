@@ -105,18 +105,23 @@ class AjaxController extends Controller
 
                     $ad = Ad::where('team_id', $team->id)->orderBy('channel_name')->get();
                     foreach ($ad as $item) {
-                        $arr_landingpage[]  = $item->landing_page_id;
-                        $arr_channel[]      = $item->channel_id;
-                    }
-                    $landing_page = LandingPage::whereIn('_id', $arr_landingpage)->orderBy('name')->get();
-                    foreach ($landing_page as $item) {
-                        $html_landingpage .= "<option value=" . $item->id . "> " . $item->url . " </option>";
-                    }
-                    $channel = Channel::whereIn('_id', $arr_channel)->where('is_active', 1)->orderBy('name')->get();
-                    foreach ($channel as $item){
-                        $html_channel .= "<option value=" . $item->name . "> " . $item->name . " </option>";
+                        if(!isset($arr_landingpage[$item->landing_page_id])){
+                            $arr_landingpage[$item->landing_page_id]    = $item->landing_page_id;
+                        }
+                        if(!isset($arr_channel[$item->channel_id])){
+                            $arr_channel[$item->channel_id]      = $item->channel_id;
+                        }
                     }
                 }
+            }
+
+            $landing_page = LandingPage::whereIn('_id', $arr_landingpage)->orderBy('name')->get();
+            foreach ($landing_page as $item) {
+                $html_landingpage .= "<option value=" . $item->id . "> " . $item->url . " </option>";
+            }
+            $channel = Channel::whereIn('_id', $arr_channel)->where('is_active', 1)->orderBy('name')->get();
+            foreach ($channel as $item){
+                $html_channel .= "<option value=" . $item->name . "> " . $item->name . " </option>";
             }
         }
         else {
@@ -179,8 +184,12 @@ class AjaxController extends Controller
             $subcampaign    = Subcampaign::where($data_where)->orderBy('name')->get();
             $ad             = Ad::where('team_id', $team->id)->orderBy('channel_name')->get();
             foreach ($ad as $item) {
-                $arr_landingpage[]  = $item->landing_page_id;
-                $arr_channel[]      = $item->channel_id;
+                if(!isset($arr_landingpage[$item->landing_page_id])){
+                    $arr_landingpage[$item->landing_page_id]    = $item->landing_page_id;
+                }
+                if(!isset($arr_channel[$item->channel_id])){
+                    $arr_channel[$item->channel_id]      = $item->channel_id;
+                }
             }
             $landing_page   = LandingPage::whereIn('_id', $arr_landingpage)->orderBy('name')->get();
             $channel        = Channel::whereIn('_id', $arr_channel)->where('is_active', 1)->orderBy('name')->get();
@@ -237,8 +246,12 @@ class AjaxController extends Controller
             $subcampaign    = Subcampaign::where($data_where)->orderBy('name')->get();
             $ad             = Ad::where($data_where)->orderBy('channel_name')->get();
             foreach ($ad as $item) {
-                $arr_landingpage[]  = $item->landing_page_id;
-                $arr_channel[]      = $item->channel_id;
+                if(!isset($arr_landingpage[$item->landing_page_id])){
+                    $arr_landingpage[$item->landing_page_id]    = $item->landing_page_id;
+                }
+                if(!isset($arr_channel[$item->channel_id])){
+                    $arr_channel[$item->channel_id]      = $item->channel_id;
+                }
             }
             $landing_page   = LandingPage::whereIn('_id', $arr_landingpage)->orderBy('name')->get();
             $channel        = Channel::whereIn('_id', $arr_channel)->where('is_active', 1)->orderBy('name')->get();
@@ -286,8 +299,12 @@ class AjaxController extends Controller
             $subcampaign    = Subcampaign::where('campaign_id', $request->campaign_id)->get();
             $ad             = Ad::where('campaign_id', $request->campaign_id)->get();
             foreach ($ad as $item) {
-                $arr_landingpage[]  = $item->landing_page_id;
-                $arr_channel[]      = $item->channel_id;
+                if(!isset($arr_landingpage[$item->landing_page_id])){
+                    $arr_landingpage[$item->landing_page_id]    = $item->landing_page_id;
+                }
+                if(!isset($arr_channel[$item->channel_id])){
+                    $arr_channel[$item->channel_id]      = $item->channel_id;
+                }
             }
             $landing_page   = LandingPage::whereIn('_id', $arr_landingpage)->orderBy('name')->get();
             $channel        = Channel::whereIn('_id', $arr_channel)->where('is_active', 1)->orderBy('name')->get();
@@ -328,8 +345,12 @@ class AjaxController extends Controller
         if ($request->subcampaign_id) {
             $ad = Ad::where('subcampaign_id', $request->subcampaign_id)->get();
             foreach ($ad as $item) {
-                $arr_landingpage[]  = $item->landing_page_id;
-                $arr_channel[]      = $item->channel_id;
+                if(!isset($arr_landingpage[$item->landing_page_id])){
+                    $arr_landingpage[$item->landing_page_id]    = $item->landing_page_id;
+                }
+                if(!isset($arr_channel[$item->channel_id])){
+                    $arr_channel[$item->channel_id]      = $item->channel_id;
+                }
             }
             $landing_page   = LandingPage::whereIn('_id', $arr_landingpage)->orderBy('name')->get();
             $channel        = Channel::whereIn('_id', $arr_channel)->where('is_active', 1)->orderBy('name')->get();
@@ -406,23 +427,20 @@ class AjaxController extends Controller
                 [
                     '$group' => [
                         '_id' => '$creator_id',
-                        'c3' => [
-                            '$sum' => '$c3'
-                        ]
+                        'c3b' => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                     ]
                 ],
-                ['$sort' => ['c3' => -1]]
+                ['$sort' => ['c3b' => -1]]
             ]);
         });
 
-        $table = '<table  class="table table-striped table-bordered table-hover"
-                                           width="100%">
+        $table = '<table id="c3_leaderboard" class="table table-bordered table-hover no-boder-top" width="100%">
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Name</th>
-                                    <th>Rank</th>
-                                    <th>C3</th>
+                                    <th class="text-center">Name</th>
+                                    <th class="text-center">Rank</th>
+                                    <th class="text-center">C3B</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -442,9 +460,9 @@ class AjaxController extends Controller
             $no = $i+1;
             $table .= "<tr>
                                 <th>{$no}</th>
-                                <th>{$user['username']}</th>
-                                <td>{$user['rank']}</td>
-                                <td>{$item->c3}</td>
+                                <th class='text-center'>{$user['username']}</th>
+                                <td class='text-center'>{$user['rank']}</td>
+                                <td class='text-center'>{$item->c3b}</td>
                             </tr>";
         }
 
@@ -486,14 +504,13 @@ class AjaxController extends Controller
             ]);
         });
 
-        $table = '<table  class="table table-striped table-bordered table-hover"
-                                           width="100%">
+        $table = '<table id="revenue_leaderboard" class="table table-striped table-bordered table-hover no-boder-top" width="100%">
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Name</th>
-                                    <th>Rank</th>
-                                    <th>Revenue (baht)</th>
+                                    <th class="text-center">Name</th>
+                                    <th class="text-center">Rank</th>
+                                    <th class="text-center">Revenue (baht)</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -513,9 +530,9 @@ class AjaxController extends Controller
             $no = $i+1;
             $table .= "<tr>
                                 <th>{$no}</th>
-                                <th>{$user['username']}</th>
-                                <td>{$user['rank']}</td>
-                                <td>{$item->revenue}</td>
+                                <th class='text-center'>{$user['username']}</th>
+                                <td class='text-center'>{$user['rank']}</td>
+                                <td class='text-center'>{$item->revenue}</td>
                             </tr>";
         }
 
@@ -557,14 +574,13 @@ class AjaxController extends Controller
             ]);
         });
 
-        $table = '<table  class="table table-striped table-bordered table-hover"
-                                           width="100%">
+        $table = '<table id="spent_leaderboard" class="table table-striped table-bordered table-hover no-boder-top" width="100%">
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Name</th>
-                                    <th>Rank</th>
-                                    <th>Spent (USD)</th>
+                                    <th class="text-center">Name</th>
+                                    <th class="text-center">Rank</th>
+                                    <th class="text-center">Spent (USD)</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -584,9 +600,9 @@ class AjaxController extends Controller
             $no = $i+1;
             $table .= "<tr>
                                 <th>{$no}</th>
-                                <th>{$user['username']}</th>
-                                <td>{$user['rank']}</td>
-                                <td>{$item->spent}</td>
+                                <th class='text-center'>{$user['username']}</th>
+                                <td class='text-center'>{$user['rank']}</td>
+                                <td class='text-center'>{$item->spent}</td>
                             </tr>";
         }
 
