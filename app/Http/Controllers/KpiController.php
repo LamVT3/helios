@@ -111,6 +111,11 @@ class KpiController extends Controller
             $data[$user->username]['user_id']   = $user->id;
         }
 
+        uasort($data, function ($item1, $item2) {
+            if ($item1['total_c3b'] == $item2['total_c3b']) return 0;
+            return $item2['total_c3b'] < $item1['total_c3b'] ? -1 : 1;
+        });
+
         return $data;
 
     }
@@ -187,6 +192,5 @@ class KpiController extends Controller
         ));
 
     }
-
 
 }

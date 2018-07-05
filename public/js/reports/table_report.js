@@ -11,7 +11,7 @@ $(document).ready(function () {
     $('#table_campaigns').dataTable({
         "sDom":
         "<'tb-only't>" +
-        "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-sm-6 col-xs-12'p>>",
+        "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 'i><'col-sm-6 col-xs-12'p>>",
         "autoWidth": true,
         "preDrawCallback": function () {
             // Initialize the responsive datatables helper once.

@@ -441,9 +441,11 @@ div.chart{
 #table_kpi th{
     font-size: 15px;
     color: white;
-    border: none;
+    /*border: none;*/
     background-color: #3276b1;
     font-weight: lighter;
+    text-align: center;
+    border-bottom: 3px solid #ccc!important;
 }
 div#wrapper_kpi{
     overflow-x:auto;
@@ -455,11 +457,28 @@ div#wrapper_kpi{
     border-collapse: separate;
     border-top: none!important;
 }
-
-.no-boder-left{
+#table_kpi{
     border-collapse: separate;
     border-left: none!important;
+    border-top: none!important;
+    text-align: center;
+    border-bottom: 3px solid #ccc!important;
 }
+.border-bold-right{
+    border-right: 3px solid #ccc!important;
+}
+.no-border-right{
+    border-right: none!important;
+    border-left: none!important;
+}
+.gap_text{
+    color: red;
+}
+#table_kpi td.act{
+    width: auto;
+    white-space:nowrap;
+}
+
 
 
 
