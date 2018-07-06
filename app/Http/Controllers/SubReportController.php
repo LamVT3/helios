@@ -24,7 +24,7 @@ class SubReportController extends Controller
     }
 
     public function index(){
-        $page_title = "Sub Report | Helios";
+        $page_title = "Line Chart | Helios";
         $page_css = array();
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active = 'sub-report-line';
@@ -75,7 +75,7 @@ class SubReportController extends Controller
                         '_id'   => '$date',
                         'me'    => ['$sum' => '$spent'],
                         're'    => ['$sum' => '$revenue'],
-                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
                         'l1'    => ['$sum' => '$l1'],
                         'l3'    => ['$sum' => '$l3'],
@@ -92,7 +92,7 @@ class SubReportController extends Controller
                         '_id'   => '$date',
                         'me'    => ['$sum' => '$spent'],
                         're'    => ['$sum' => '$revenue'],
-                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
                         'l1'    => ['$sum' => '$l1'],
                         'l3'    => ['$sum' => '$l3'],
@@ -214,7 +214,7 @@ class SubReportController extends Controller
                 [
                     '$group' => [
                         '_id'   => '$date',
-                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
                         'l1'    => ['$sum' => '$l1'],
                         'l3'    => ['$sum' => '$l3'],
@@ -229,7 +229,7 @@ class SubReportController extends Controller
                 [
                     '$group' => [
                         '_id'   => '$date',
-                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
                         'l1'    => ['$sum' => '$l1'],
                         'l3'    => ['$sum' => '$l3'],
@@ -311,7 +311,7 @@ class SubReportController extends Controller
                 [
                     '$group' => [
                         '_id'   => '$date',
-                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
                         'l1'    => ['$sum' => '$l1'],
                         'l3'    => ['$sum' => '$l3'],
@@ -326,7 +326,7 @@ class SubReportController extends Controller
                 [
                     '$group' => [
                         '_id'   => '$date',
-                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
                         'l1'    => ['$sum' => '$l1'],
                         'l3'    => ['$sum' => '$l3'],
@@ -1040,7 +1040,7 @@ class SubReportController extends Controller
                         '_id'   => '$date',
                         'me'    => ['$sum' => '$spent'],
                         're'    => ['$sum' => '$revenue'],
-                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
                         'l1'    => ['$sum' => '$l1'],
                         'l3'    => ['$sum' => '$l3'],
@@ -1057,7 +1057,7 @@ class SubReportController extends Controller
                         '_id'   => '$date',
                         'me'    => ['$sum' => '$spent'],
                         're'    => ['$sum' => '$revenue'],
-                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
                         'l1'    => ['$sum' => '$l1'],
                         'l3'    => ['$sum' => '$l3'],
@@ -1390,7 +1390,7 @@ class SubReportController extends Controller
                         '_id'   => '$date',
                         'me'    => ['$sum' => '$spent'],
                         're'    => ['$sum' => '$revenue'],
-                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
                         'l1'    => ['$sum' => '$l1'],
                         'l3'    => ['$sum' => '$l3'],
@@ -1407,7 +1407,7 @@ class SubReportController extends Controller
                         '_id'   => '$date',
                         'me'    => ['$sum' => '$spent'],
                         're'    => ['$sum' => '$revenue'],
-                        'c3b'   => ['$sum' => '$c3b'],
+                        'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
                         'l1'    => ['$sum' => '$l1'],
                         'l3'    => ['$sum' => '$l3'],

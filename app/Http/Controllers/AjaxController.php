@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Ad;
 use App\AdResult;
 use App\Campaign;
+use App\Channel;
 use App\Contact;
 use App\LandingPage;
 use App\Source;
@@ -77,10 +78,12 @@ class AjaxController extends Controller
         $html_marketer      = "<option value='' selected>All</option>";
         $html_campaign      = "<option value='' selected>All</option>";
         $html_subcampaign   = "<option value='' selected>All</option>";
+        $html_channel       = "<option value='' selected>All</option>";
+        $html_landingpage   = "<option value='' selected>All</option>";
 
         if ($request->source_id) {
             $data_where['source_id'] = $request->source_id;
-            $teams = Team::all();
+            $teams = Team::orderBy('name')->get();
             foreach ($teams as $team) {
                 $source = array_keys($team->sources);
                 if(in_array($request->source_id, $source)){
@@ -90,20 +93,39 @@ class AjaxController extends Controller
                         $html_marketer .= "<option value='" . $item['user_id'] . "'> " . $item['username'] . " </option>";
                     }
 
-                    $campaigns = Campaign::where('team_id', $team->id)->get();
+                    $campaigns = Campaign::where('team_id', $team->id)->orderBy('name')->get();
                     foreach ($campaigns as $item) {
                         $html_campaign .= "<option value=" . $item->id . "> " . $item->name . " </option>";
                     }
 
-                    $subcampaign    = Subcampaign::where('team_id', $team->id)->get();
+                    $subcampaign = Subcampaign::where('team_id', $team->id)->orderBy('name')->get();
                     foreach ($subcampaign as $item) {
                         $html_subcampaign .= "<option value=" . $item->id . "> " . $item->name . " </option>";
                     }
+
+                    $ad = Ad::where('team_id', $team->id)->orderBy('channel_name')->get();
+                    foreach ($ad as $item) {
+                        if(!isset($arr_landingpage[$item->landing_page_id])){
+                            $arr_landingpage[$item->landing_page_id]    = $item->landing_page_id;
+                        }
+                        if(!isset($arr_channel[$item->channel_id])){
+                            $arr_channel[$item->channel_id]      = $item->channel_id;
+                        }
+                    }
                 }
+            }
+
+            $landing_page = LandingPage::whereIn('_id', $arr_landingpage)->orderBy('name')->get();
+            foreach ($landing_page as $item) {
+                $html_landingpage .= "<option value=" . $item->id . "> " . $item->url . " </option>";
+            }
+            $channel = Channel::whereIn('_id', $arr_channel)->where('is_active', 1)->orderBy('name')->get();
+            foreach ($channel as $item){
+                $html_channel .= "<option value=" . $item->name . "> " . $item->name . " </option>";
             }
         }
         else {
-            $teams = Team::all();
+            $teams = Team::orderBy('name')->get();
             foreach ($teams as $team) {
                 $html_team .= "<option value=" . $team->id . "> " . $team->name . " </option>";
                 $marketers  = $team->members;
@@ -111,14 +133,22 @@ class AjaxController extends Controller
                     $html_marketer .= "<option value='" . $item['user_id'] . "'> " . $item['username'] . " </option>";
                 }
             }
-            $campaigns = Campaign::all();
+            $campaigns = Campaign::orderBy('name')->get();
             foreach ($campaigns as $item) {
                 $html_campaign .= "<option value=" . $item->id . "> " . $item->name . " </option>";
             }
 
-            $subcampaign    = Subcampaign::all();
+            $subcampaign    = Subcampaign::orderBy('name')->get();
             foreach ($subcampaign as $item) {
                 $html_subcampaign .= "<option value=" . $item->id . "> " . $item->name . " </option>";
+            }
+            $channel = Channel::where('is_active', 1)->orderBy('name')->get();
+            foreach ($channel as $item) {
+                $html_channel .= "<option value=" . $item->name . "> " . $item->name . " </option>";
+            }
+            $landing_page = LandingPage::orderBy('name')->get();
+            foreach ($landing_page as $item) {
+                $html_landingpage .= "<option value=" . $item->id . "> " . $item->url . " </option>";
             }
         }
 
@@ -127,7 +157,9 @@ class AjaxController extends Controller
             'content_team'          => $html_team,
             'content_campaign'      => $html_campaign,
             'content_marketer'      => $html_marketer,
-            'content_subcampaign'   => $html_subcampaign
+            'content_subcampaign'   => $html_subcampaign,
+            'content_channel'       => $html_channel,
+            'content_landingpage'   => $html_landingpage
         );
         echo json_encode($data_return);
 
@@ -137,23 +169,38 @@ class AjaxController extends Controller
     {
         $data_where = array();
         $request = request();
-        DB::connection( 'mongodb' )->enableQueryLog();
 
-        $html_campaign      = "<option value=''>All</option>";
-        $html_marketer      = "<option value=''>All</option>";
+        $html_campaign      = "<option value='' selected>All</option>";
+        $html_marketer      = "<option value='' selected>All</option>";
         $html_subcampaign   = "<option value='' selected>All</option>";
+        $html_channel       = "<option value='' selected>All</option>";
+        $html_landingpage   = "<option value='' selected>All</option>";
 
         if ($request->team_id) {
             $data_where['team_id'] = $request->team_id;
             $team           = Team::find($request->team_id);
-            $campaigns      = Campaign::where($data_where)->get();
+            $campaigns      = Campaign::where($data_where)->orderBy('name')->get();
             $marketers      = $team->members;
-            $subcampaign    = Subcampaign::where($data_where)->get();
+            $subcampaign    = Subcampaign::where($data_where)->orderBy('name')->get();
+            $ad             = Ad::where('team_id', $team->id)->orderBy('channel_name')->get();
+            foreach ($ad as $item) {
+                if(!isset($arr_landingpage[$item->landing_page_id])){
+                    $arr_landingpage[$item->landing_page_id]    = $item->landing_page_id;
+                }
+                if(!isset($arr_channel[$item->channel_id])){
+                    $arr_channel[$item->channel_id]      = $item->channel_id;
+                }
+            }
+            $landing_page   = LandingPage::whereIn('_id', $arr_landingpage)->orderBy('name')->get();
+            $channel        = Channel::whereIn('_id', $arr_channel)->where('is_active', 1)->orderBy('name')->get();
 
         }else{
-            $campaigns      = Campaign::all();
-            $marketers      = User::all();
-            $subcampaign    = Subcampaign::all();
+            $campaigns      = Campaign::orderBy('name')->get();
+            $marketers      = User::where('is_active', 1)->orderBy('username')->get();
+            $subcampaign    = Subcampaign::orderBy('name')->get();
+            $ad             = Ad::orderBy('channel_name')->get();
+            $landing_page   = LandingPage::orderBy('name')->get();
+            $channel        = Channel::where('is_active', 1)->orderBy('name')->get();
         }
 
         foreach ($marketers as $item) {
@@ -165,12 +212,21 @@ class AjaxController extends Controller
         foreach ($subcampaign as $item) {
             $html_subcampaign .= "<option value=" . $item->id . "> " . $item->name . " </option>";
         }
-        DB::connection('mongodb')->getQueryLog();
+        foreach ($landing_page as $item) {
+            $html_landingpage .= "<option value=" . $item->id . "> " . $item->url . " </option>";
+        }
+
+        foreach ($channel as $item) {
+            $html_channel .= "<option value=" . $item->name . "> " . $item->name . " </option>";
+        }
+
         $data_return = array(
             'status'                => TRUE,
             'content_campaign'      => $html_campaign,
             'content_marketer'      => $html_marketer,
-            'content_subcampaign'   => $html_subcampaign
+            'content_subcampaign'   => $html_subcampaign,
+            'content_channel'       => $html_channel,
+            'content_landingpage'   => $html_landingpage
         );
         echo json_encode($data_return);
 
@@ -181,27 +237,51 @@ class AjaxController extends Controller
         $request = request();
         $html_campaign      = "<option value='' selected>All</option>";
         $html_subcampaign   = "<option value='' selected>All</option>";
+        $html_channel       = "<option value='' selected>All</option>";
+        $html_landingpage   = "<option value='' selected>All</option>";
 
         if ($request->creator_id) {
             $data_where['creator_id'] = $request->creator_id;
-            $campaigns      = Campaign::where($data_where)->get();
-            $subcampaign    = Subcampaign::where($data_where)->get();
+            $campaigns      = Campaign::where($data_where)->orderBy('name')->get();
+            $subcampaign    = Subcampaign::where($data_where)->orderBy('name')->get();
+            $ad             = Ad::where($data_where)->orderBy('channel_name')->get();
+            foreach ($ad as $item) {
+                if(!isset($arr_landingpage[$item->landing_page_id])){
+                    $arr_landingpage[$item->landing_page_id]    = $item->landing_page_id;
+                }
+                if(!isset($arr_channel[$item->channel_id])){
+                    $arr_channel[$item->channel_id]      = $item->channel_id;
+                }
+            }
+            $landing_page   = LandingPage::whereIn('_id', $arr_landingpage)->orderBy('name')->get();
+            $channel        = Channel::whereIn('_id', $arr_channel)->where('is_active', 1)->orderBy('name')->get();
         }else{
-            $campaigns      = Campaign::all();
-            $subcampaign    = Subcampaign::all();
+            $campaigns      = Campaign::orderBy('name')->get();
+            $subcampaign    = Subcampaign::orderBy('name')->get();
+            $ad             = Ad::orderBy('channel_name')->get();
+            $landing_page   = LandingPage::orderBy('name')->get();
+            $channel        = Channel::where('is_active', 1)->orderBy('name')->get();
         }
 
         foreach ($campaigns as $item) {
-            $html_campaign .= "<option value=" . $item->id . "> " . $item->name . " </option>";
+            $html_campaign      .= "<option value=" . $item->id . "> " . $item->name . " </option>";
         }
         foreach ($subcampaign as $item) {
-            $html_subcampaign .= "<option value=" . $item->id . "> " . $item->name . " </option>";
+            $html_subcampaign   .= "<option value=" . $item->id . "> " . $item->name . " </option>";
+        }
+        foreach ($landing_page as $item) {
+            $html_landingpage   .= "<option value=" . $item->id . "> " . $item->url . " </option>";
+        }
+        foreach ($channel as $item) {
+            $html_channel       .= "<option value=" . $item->name . "> " . $item->name . " </option>";
         }
 
         $data_return = array(
             'status'                => TRUE,
             'content_campaign'      => $html_campaign,
             'content_subcampaign'   => $html_subcampaign,
+            'content_channel'       => $html_channel,
+            'content_landingpage'   => $html_landingpage
         );
         echo json_encode($data_return);
 
@@ -213,31 +293,42 @@ class AjaxController extends Controller
 
         $html_subcampaign   = "<option value='' selected>All</option>";
         $html_landingpage   = "<option value='' selected>All</option>";
+        $html_channel       = "<option value='' selected>All</option>";
 
         if ($request->campaign_id) {
             $subcampaign    = Subcampaign::where('campaign_id', $request->campaign_id)->get();
             $ad             = Ad::where('campaign_id', $request->campaign_id)->get();
+            foreach ($ad as $item) {
+                if(!isset($arr_landingpage[$item->landing_page_id])){
+                    $arr_landingpage[$item->landing_page_id]    = $item->landing_page_id;
+                }
+                if(!isset($arr_channel[$item->channel_id])){
+                    $arr_channel[$item->channel_id]      = $item->channel_id;
+                }
+            }
+            $landing_page   = LandingPage::whereIn('_id', $arr_landingpage)->orderBy('name')->get();
+            $channel        = Channel::whereIn('_id', $arr_channel)->where('is_active', 1)->orderBy('name')->get();
         }else{
-            $subcampaign    = Subcampaign::all();
+            $subcampaign    = Subcampaign::orderBy('name')->get();
             $ad = Ad::all();
+            $landing_page   = LandingPage::orderBy('name')->get();
+            $channel        = Channel::where('is_active', 1)->orderBy('name')->get();
         }
 
         foreach ($subcampaign as $item) {
-            $html_subcampaign .= "<option value=" . $item->id . "> " . $item->name . " </option>";
+            $html_subcampaign   .= "<option value=" . $item->id . "> " . $item->name . " </option>";
         }
-
-        $arr_landingpage = array();
-        foreach ($ad as $item) {
-            $arr_landingpage[] = $item->landing_page_id;
-        }
-        $landing_page = LandingPage::whereIn('_id', $arr_landingpage)->get();
         foreach ($landing_page as $item) {
-            $html_landingpage .= "<option value=" . $item->id . "> " . $item->url . " </option>";
+            $html_landingpage   .= "<option value=" . $item->id . "> " . $item->url . " </option>";
+        }
+        foreach ($channel as $item) {
+            $html_channel       .= "<option value=" . $item->name . "> " . $item->name . " </option>";
         }
 
         $data_return = array(
             'status'                => TRUE,
             'content_subcampaign'   => $html_subcampaign,
+            'content_channel'       => $html_channel,
             'content_landingpage'   => $html_landingpage
         );
         echo json_encode($data_return);
@@ -249,36 +340,45 @@ class AjaxController extends Controller
         $request = request();
 
         $html_landingpage   = "<option value='' selected>All</option>";
+        $html_channel       = "<option value='' selected>All</option>";
 
         if ($request->subcampaign_id) {
             $ad = Ad::where('subcampaign_id', $request->subcampaign_id)->get();
+            foreach ($ad as $item) {
+                if(!isset($arr_landingpage[$item->landing_page_id])){
+                    $arr_landingpage[$item->landing_page_id]    = $item->landing_page_id;
+                }
+                if(!isset($arr_channel[$item->channel_id])){
+                    $arr_channel[$item->channel_id]      = $item->channel_id;
+                }
+            }
+            $landing_page   = LandingPage::whereIn('_id', $arr_landingpage)->orderBy('name')->get();
+            $channel        = Channel::whereIn('_id', $arr_channel)->where('is_active', 1)->orderBy('name')->get();
         }else{
-            $ad = Ad::all();
+            $ad = Ad::orderBy('name')->get();
+            $landing_page   = LandingPage::orderBy('name')->get();
+            $channel        = Channel::where('is_active', 1)->orderBy('name')->get();
         }
 
-        $arr_landingpage = array();
-        foreach ($ad as $item) {
-            $arr_landingpage[] = $item->landing_page_id;
-        }
-        $landing_page = LandingPage::whereIn('_id', $arr_landingpage)->get();
         foreach ($landing_page as $item) {
-            $html_landingpage .= "<option value=" . $item->id . "> " . $item->url . " </option>";
+            $html_landingpage   .= "<option value=" . $item->id . "> " . $item->url . " </option>";
+        }
+        foreach ($channel as $item) {
+            $html_channel       .= "<option value=" . $item->name . "> " . $item->name . " </option>";
         }
 
         $data_return = array(
             'status'                => TRUE,
+            'content_channel'       => $html_channel,
             'content_landingpage'   => $html_landingpage
         );
         echo json_encode($data_return);
-
     }
 
     public function dashboard()
     {
-        // 2018-04-18 LamVT [HEL_9] Add more setting for VND/USD conversion
         $config     = Config::getByKeys(['USD_VND', 'USD_THB']);
         $rate       = $config['USD_VND'];
-        // end 2018-04-18 LamVT [HEL_9] Add more setting for VND/USD conversion
 
         $request = request();
         /* phan dashboard*/
@@ -327,23 +427,20 @@ class AjaxController extends Controller
                 [
                     '$group' => [
                         '_id' => '$creator_id',
-                        'c3' => [
-                            '$sum' => '$c3'
-                        ]
+                        'c3b' => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                     ]
                 ],
-                ['$sort' => ['c3' => -1]]
+                ['$sort' => ['c3b' => -1]]
             ]);
         });
 
-        $table = '<table  class="table table-striped table-bordered table-hover"
-                                           width="100%">
+        $table = '<table id="c3_leaderboard" class="table table-bordered table-hover no-boder-top" width="100%">
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Name</th>
-                                    <th>Rank</th>
-                                    <th>C3</th>
+                                    <th class="text-center">Name</th>
+                                    <th class="text-center">Rank</th>
+                                    <th class="text-center">C3B</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -363,9 +460,9 @@ class AjaxController extends Controller
             $no = $i+1;
             $table .= "<tr>
                                 <th>{$no}</th>
-                                <th>{$user['username']}</th>
-                                <td>{$user['rank']}</td>
-                                <td>{$item->c3}</td>
+                                <th class='text-center'>{$user['username']}</th>
+                                <td class='text-center'>{$user['rank']}</td>
+                                <td class='text-center'>{$item->c3b}</td>
                             </tr>";
         }
 
@@ -407,14 +504,13 @@ class AjaxController extends Controller
             ]);
         });
 
-        $table = '<table  class="table table-striped table-bordered table-hover"
-                                           width="100%">
+        $table = '<table id="revenue_leaderboard" class="table table-striped table-bordered table-hover no-boder-top" width="100%">
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Name</th>
-                                    <th>Rank</th>
-                                    <th>Revenue (baht)</th>
+                                    <th class="text-center">Name</th>
+                                    <th class="text-center">Rank</th>
+                                    <th class="text-center">Revenue (baht)</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -434,9 +530,9 @@ class AjaxController extends Controller
             $no = $i+1;
             $table .= "<tr>
                                 <th>{$no}</th>
-                                <th>{$user['username']}</th>
-                                <td>{$user['rank']}</td>
-                                <td>{$item->revenue}</td>
+                                <th class='text-center'>{$user['username']}</th>
+                                <td class='text-center'>{$user['rank']}</td>
+                                <td class='text-center'>{$item->revenue}</td>
                             </tr>";
         }
 
@@ -478,14 +574,13 @@ class AjaxController extends Controller
             ]);
         });
 
-        $table = '<table  class="table table-striped table-bordered table-hover"
-                                           width="100%">
+        $table = '<table id="spent_leaderboard" class="table table-striped table-bordered table-hover no-boder-top" width="100%">
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Name</th>
-                                    <th>Rank</th>
-                                    <th>Spent (USD)</th>
+                                    <th class="text-center">Name</th>
+                                    <th class="text-center">Rank</th>
+                                    <th class="text-center">Spent (USD)</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -505,9 +600,9 @@ class AjaxController extends Controller
             $no = $i+1;
             $table .= "<tr>
                                 <th>{$no}</th>
-                                <th>{$user['username']}</th>
-                                <td>{$user['rank']}</td>
-                                <td>{$item->spent}</td>
+                                <th class='text-center'>{$user['username']}</th>
+                                <td class='text-center'>{$user['rank']}</td>
+                                <td class='text-center'>{$item->spent}</td>
                             </tr>";
         }
 
@@ -923,6 +1018,10 @@ class AjaxController extends Controller
                 $query->where('clevel', 'like', '%c3b%');
                 unset($data_where['clevel']);
             }
+            if(@$data_where['current_level'] == 'l0'){
+                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+                unset($data_where['current_level']);
+            }
             $query->where($data_where);
         }
         if($status == '1'){
@@ -973,10 +1072,6 @@ class AjaxController extends Controller
     private function getSeachData(){
         $request        = request();
 
-        if($request->search_inp){
-            return $request->search_inp;
-        }
-
         if($request['search']['value']){
             return $request['search']['value'];
         }
@@ -1013,6 +1108,7 @@ class AjaxController extends Controller
             11  =>'subcampaign_name',
             12  =>'ad_name',
             13  =>'landing_page',
+            14  =>'channel_name'
         );
 
         return $columns;
@@ -1044,6 +1140,9 @@ class AjaxController extends Controller
         }
         if ($request->landing_page) {
             $data_where['landing_page']     = $request->landing_page;
+        }
+        if ($request->channel) {
+            $data_where['channel_name']     = $request->channel;
         }
 
         return $data_where;
@@ -1105,6 +1204,10 @@ class AjaxController extends Controller
                 $query->where('clevel', 'like', '%c3b%');
                 unset($data_where['clevel']);
             }
+            if(@$data_where['current_level'] == 'l0'){
+                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+                unset($data_where['current_level']);
+            }
             $query->where($data_where);
         }
         $id = [];
@@ -1164,6 +1267,9 @@ class AjaxController extends Controller
         }
         if ($request->landing_page) {
             $data_where['landing_page']     = $request->landing_page;
+        }
+        if ($request->channel) {
+            $data_where['channel_name']     = $request->channel;
         }
 
         return $data_where;

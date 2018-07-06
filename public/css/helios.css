@@ -438,19 +438,52 @@ div.chart{
     width: 20%!important;
     /*min-width: 30px!important;*/
 }
-#table_kpi th{
+#table_kpi th, #table_kpi_by_team th{
     font-size: 15px;
     color: white;
-    border: none;
+    /*border: none;*/
     background-color: #3276b1;
     font-weight: lighter;
+    text-align: center;
+    border-bottom: 3px solid #ccc!important;
 }
-div#wrapper_kpi{
+div#wrapper_kpi, div#wrapper_kpi_by_team{
     overflow-x:auto;
     width: 100%;
     padding: auto;
     max-height: 480px;
 }
+.no-boder-top{
+    border-collapse: separate;
+    border-top: none!important;
+}
+#table_kpi, #table_kpi_by_team{
+    border-collapse: separate;
+    border-left: none!important;
+    border-top: none!important;
+    text-align: center;
+    border-bottom: 3px solid #ccc!important;
+}
+.border-bold-right{
+    border-right: 3px solid #ccc!important;
+}
+.no-border-right{
+    border-right: none!important;
+    border-left: none!important;
+}
+.gap_text{
+    color: red;
+}
+#table_kpi td.act, #table_kpi_by_team td.act{
+    width: auto;
+    white-space:nowrap;
+}
+#maketer, #team{
+    width: 100%;
+    padding-top: 20px;
+}
+
+
 
 
 

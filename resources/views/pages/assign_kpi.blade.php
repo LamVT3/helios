@@ -26,55 +26,25 @@
                     <article class="col-sm-12 col-md-12">
                         @component('components.jarviswidget',
                                                     ['id' => 'report_kpi', 'icon' => 'fa-table', 'title' => 'Report KPI', 'dropdown' => 'true'])
-                            <div id="wrapper_kpi">
-                                <table id="table_kpi" class="table table-hover ">
-                                    <thead>
-                                    <tr>
-                                        <th colspan="5"></th>
+                            <!-- Nav tabs -->
+                                <ul class="nav nav-tabs" style="padding-bottom: 10px">
+                                    <li class="active"><a data-toggle="tab" href="#maketer">By Maketer</a></li>
+                                    <li><a data-toggle="tab" href="#team">By Team</a></li>
+                                </ul>
 
-                                        @for ($i = 1; $i <= $days; $i++)
-                                            <th colspan="2" style="text-align: center"> {{$i < 10 ? '0'.$i.$month : $i.$month}} </th>
-                                        @endfor
-
-                                    </tr>
-                                    <tr>
-                                        <th>User</th>
-                                        <th></th>
-                                        <th>Plan</th>
-                                        <th>Actual</th>
-                                        <th>Remain</th>
-
-                                        @for ($i = 1; $i <= $days; $i++)
-                                            <th>KPI</th>
-                                            <th>Act</th>
-                                        @endfor
-
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach($data as $user => $item)
-                                        <tr>
-                                            <td><span style="font-weight: bold">{{ $user }}</span></td>
-                                            <td>
-                                                <a class=' btn-xs btn-default edit_kpi' data-user-id="{{@$item['user_id']}}"
-                                                   href="" data-toggle="modal" data-target="#addModal" onclick="set_user_id(this)"
-                                                   data-original-title='Edit Row'><i
-                                                            class='fa fa-pencil'></i></a>
-                                            </td>
-                                            <td>{{ @$item['total_kpi'] }}</td>
-                                            <td>{{ @$item['total_c3b'] }}</td>
-                                            <td>{{ @$item['total_c3b'] - @$item['total_kpi'] }}</td>
-                                            @for ($i = 1; $i <= $days; $i++)
-                                                <td>{{ @$item['kpi'][$i] ? @$item['kpi'][$i] : 0 }}</td>
-                                                <td>{{ @$item['c3b'][$i] ? @$item['c3b'][$i] : 0 }}</td>
-                                            @endfor
-
-                                        </tr>
-                                    @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div class="tab-pane container fade in active" id="maketer">
+                                        <div id="wrapper_kpi">
+                                            @include('pages.table_report_kpi')
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane container fade" id="team">
+                                        <div id="wrapper_kpi_by_team">
+                                            @include('pages.table_report_kpi_by_team')
+                                        </div>
+                                    </div>
+                                </div>
 
                         @endcomponent
                     </article>
@@ -94,7 +64,8 @@
     </div>
     <!-- END MAIN PANEL -->
     <input type="hidden" id="get_kpi_url" value="{{route('get-kpi')}}">
-    <input type="hidden" id="reload_page_url" value="{{route('reload-page')}}">
+    <input type="hidden" id="kpi_by_team_url" value="{{route('kpi-by-team')}}">
+    <input type="hidden" id="kpi_by_maketer_url" value="{{route('kpi-by-maketer')}}">
     <input type="hidden" id="selected_month" value="">
 
 
@@ -119,7 +90,8 @@
 
     $(document).ready(function () {
 
-        $("#table_kpi").tableHeadFixer({"left" : 4, 'z-index': 0});
+        $("#table_kpi").tableHeadFixer({"left" : 5, 'z-index': 0});
+        $("#table_kpi_by_team").tableHeadFixer({"left" : 5, 'z-index': 0});
 
         var month = moment().month() + 1;
         if(month < 10){
@@ -155,6 +127,7 @@
 
             $.get(url, data, function (data) {
                 initDataKPI(month);
+                initDataKPIByteam(month);
             }).fail(
                 function (err) {
                     alert('Cannot connect to server. Please try again later.');
@@ -178,7 +151,6 @@
         });
 
         $('#addModal').on('shown.bs.modal', function () {
-
             var user    = $(this).attr('data-user-id');
             var month   = $('#selected_month').val();
 
@@ -201,6 +173,7 @@
             $('#selected_month').val(month);
 
             initDataKPI(month);
+            initDataKPIByteam(month)
         });
 
         $('a.edit_kpi').click(function() {
@@ -214,7 +187,6 @@
     function set_user_id(item){
         var user = $(item).attr('data-user-id');
         $('#addModal').attr('data-user-id', user);
-        console.log(user);
     }
 
     function initFormKPI(user, month){
@@ -231,6 +203,7 @@
         var url  = $('input#get_kpi_url').val();
         var month_name = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        $('#assign-kpi').attr('disabled', 'disabled');
 
         var data ={};
         data.month      = month;
@@ -251,6 +224,7 @@
                     '</section>';
 
                 $("div.lst_days").append(item);
+                $('#assign-kpi').attr('disabled', false);
             }
         }).fail(
             function (err) {
@@ -259,16 +233,16 @@
     }
 
     function initDropdown(month){
-        $('button#dropdown').click();
         var month_name = ["January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"];
         var dropdown = $('button#dropdown');
         dropdown.html(month_name[month]);
         $('h2#report_kpi').html('Report KPI in <span class="yellow">' + dropdown.html()+ '</span>');
+        $('button#dropdown').click();
     }
     
     function initDataKPI(month) {
-        var url = $('#reload_page_url').val();
+        var url = $('#kpi_by_maketer_url').val();
 
         $('.loading').show();
         $.ajax({
@@ -279,7 +253,30 @@
             }
         }).done(function (response) {
             $('#wrapper_kpi').html(response);
-            $("#table_kpi").tableHeadFixer({"left" : 4, 'z-index': 0});
+            $("#table_kpi").tableHeadFixer({"left" : 5, 'z-index': 0});
+            initDropdown(parseInt(month) - 1);
+            $('button#dropdown').click();
+        });
+        setTimeout(function(){
+            $('.loading').hide();
+        }, 2000);
+    }
+
+    function initDataKPIByteam(month) {
+        var url = $('#kpi_by_team_url').val();
+
+        $('.loading').show();
+        $.ajax({
+            url: url,
+            type: 'GET',
+            data: {
+                month : month
+            }
+        }).done(function (response) {
+            $('#wrapper_kpi_by_team').html(response);
+            $("#table_kpi_by_team").tableHeadFixer({"left" : 5, 'z-index': 0});
+            initDropdown(parseInt(month) - 1);
+            $('button#dropdown').click();
         });
         setTimeout(function(){
             $('.loading').hide();
