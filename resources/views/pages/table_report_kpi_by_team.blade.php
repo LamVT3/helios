@@ -1,4 +1,4 @@
-<table id="table_kpi" class="table table-hover table-bordered table-responsive">
+<table id="table_kpi_by_team" class="table table-hover table-bordered table-responsive">
     <thead>
     <tr>
         <th colspan="5" class="border-bold-right"></th>
@@ -9,7 +9,7 @@
 
     </tr>
     <tr>
-        <th class="no-border-right">Maketer</th>
+        <th class="no-border-right">Team</th>
         <th class="border-bold-right" style="border-left: none"></th>
         <th class="border-bold-right">Plan</th>
         <th class="border-bold-right">Actual</th>
@@ -23,21 +23,18 @@
     </tr>
     </thead>
     <tbody>
-    @foreach($data_maketer as $user => $item)
+    @foreach($data_team as $team => $item)
         <tr>
             <?php $gap =  @$item['total_c3b'] - @$item['total_kpi']?>
 
             @if($gap < 0)
-                <td class="no-border-right gap_text"><span style="font-weight: bold">{{ @$user }}</span></td>
+                <td class="no-border-right gap_text"><span style="font-weight: bold">{{ $team }}</span></td>
             @else
-                <td class="no-border-right"><span style="font-weight: bold">{{ @$user }}</span></td>
+                <td class="no-border-right"><span style="font-weight: bold">{{ $team }}</span></td>
             @endif
 
             <td class="border-bold-right">
-                <a class=' btn-xs btn-default edit_kpi' data-user-id="{{@$item['user_id']}}"
-                   href="" data-toggle="modal" data-target="#addModal" onclick="set_user_id(this)"
-                   data-original-title='Edit Row'><i
-                            class='fa fa-pencil'></i></a>
+
             </td>
             <td class="border-bold-right">{{ @$item['total_kpi'] }}</td>
             <td class="border-bold-right">{{ @$item['total_c3b'] }}</td>

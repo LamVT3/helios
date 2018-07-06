@@ -178,7 +178,7 @@
                     <article class="col-sm-12 col-md-12 col-lg-4">
 
                     @component('components.jarviswidget',
-                    ['id' => 0, 'icon' => 'fa-table', 'title' => "C3 Leaderboard"])
+                    ['id' => 0, 'icon' => 'fa-table', 'title' => "C3B Leaderboard"])
 
                         <!-- widget content -->
                             <div class="widget-body no-padding widget-c3-leaderboard">

@@ -438,7 +438,7 @@ div.chart{
     width: 20%!important;
     /*min-width: 30px!important;*/
 }
-#table_kpi th{
+#table_kpi th, #table_kpi_by_team th{
     font-size: 15px;
     color: white;
     /*border: none;*/
@@ -447,7 +447,7 @@ div.chart{
     text-align: center;
     border-bottom: 3px solid #ccc!important;
 }
-div#wrapper_kpi{
+div#wrapper_kpi, div#wrapper_kpi_by_team{
     overflow-x:auto;
     width: 100%;
     padding: auto;
@@ -457,7 +457,7 @@ div#wrapper_kpi{
     border-collapse: separate;
     border-top: none!important;
 }
-#table_kpi{
+#table_kpi, #table_kpi_by_team{
     border-collapse: separate;
     border-left: none!important;
     border-top: none!important;
@@ -474,9 +474,13 @@ div#wrapper_kpi{
 .gap_text{
     color: red;
 }
-#table_kpi td.act{
+#table_kpi td.act, #table_kpi_by_team td.act{
     width: auto;
     white-space:nowrap;
+}
+#maketer, #team{
+    width: 100%;
+    padding-top: 20px;
 }
 
 

@@ -26,9 +26,26 @@
                     <article class="col-sm-12 col-md-12">
                         @component('components.jarviswidget',
                                                     ['id' => 'report_kpi', 'icon' => 'fa-table', 'title' => 'Report KPI', 'dropdown' => 'true'])
-                            <div id="wrapper_kpi">
-                                @include('pages.table_report_kpi')
-                            </div>
+                            <!-- Nav tabs -->
+                                <ul class="nav nav-tabs" style="padding-bottom: 10px">
+                                    <li class="active"><a data-toggle="tab" href="#maketer">By Maketer</a></li>
+                                    <li><a data-toggle="tab" href="#team">By Team</a></li>
+                                </ul>
+
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div class="tab-pane container fade in active" id="maketer">
+                                        <div id="wrapper_kpi">
+                                            @include('pages.table_report_kpi')
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane container fade" id="team">
+                                        <div id="wrapper_kpi_by_team">
+                                            @include('pages.table_report_kpi_by_team')
+                                        </div>
+                                    </div>
+                                </div>
+
                         @endcomponent
                     </article>
 
@@ -47,7 +64,8 @@
     </div>
     <!-- END MAIN PANEL -->
     <input type="hidden" id="get_kpi_url" value="{{route('get-kpi')}}">
-    <input type="hidden" id="reload_page_url" value="{{route('reload-page')}}">
+    <input type="hidden" id="kpi_by_team_url" value="{{route('kpi-by-team')}}">
+    <input type="hidden" id="kpi_by_maketer_url" value="{{route('kpi-by-maketer')}}">
     <input type="hidden" id="selected_month" value="">
 
 
@@ -73,6 +91,7 @@
     $(document).ready(function () {
 
         $("#table_kpi").tableHeadFixer({"left" : 5, 'z-index': 0});
+        $("#table_kpi_by_team").tableHeadFixer({"left" : 5, 'z-index': 0});
 
         var month = moment().month() + 1;
         if(month < 10){
@@ -108,6 +127,7 @@
 
             $.get(url, data, function (data) {
                 initDataKPI(month);
+                initDataKPIByteam(month);
             }).fail(
                 function (err) {
                     alert('Cannot connect to server. Please try again later.');
@@ -153,6 +173,7 @@
             $('#selected_month').val(month);
 
             initDataKPI(month);
+            initDataKPIByteam(month)
         });
 
         $('a.edit_kpi').click(function() {
@@ -221,7 +242,7 @@
     }
     
     function initDataKPI(month) {
-        var url = $('#reload_page_url').val();
+        var url = $('#kpi_by_maketer_url').val();
 
         $('.loading').show();
         $.ajax({
@@ -233,6 +254,27 @@
         }).done(function (response) {
             $('#wrapper_kpi').html(response);
             $("#table_kpi").tableHeadFixer({"left" : 5, 'z-index': 0});
+            initDropdown(parseInt(month) - 1);
+            $('button#dropdown').click();
+        });
+        setTimeout(function(){
+            $('.loading').hide();
+        }, 2000);
+    }
+
+    function initDataKPIByteam(month) {
+        var url = $('#kpi_by_team_url').val();
+
+        $('.loading').show();
+        $.ajax({
+            url: url,
+            type: 'GET',
+            data: {
+                month : month
+            }
+        }).done(function (response) {
+            $('#wrapper_kpi_by_team').html(response);
+            $("#table_kpi_by_team").tableHeadFixer({"left" : 5, 'z-index': 0});
             initDropdown(parseInt(month) - 1);
             $('button#dropdown').click();
         });
