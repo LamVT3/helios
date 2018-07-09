@@ -74,6 +74,10 @@ $(document).ready(function () {
             $("#campaign_id").select2();
             $('#subcampaign_id').html(response.content_subcampaign);
             $("#subcampaign_id").select2();
+            $('#landing_page').html(response.content_landingpage);
+            $("#landing_page").select2();
+            $('#channel_id').html(response.content_channel);
+            $("#channel_id").select2();
         });
     })
 
@@ -96,6 +100,10 @@ $(document).ready(function () {
             $("#campaign_id").select2();
             $('#subcampaign_id').html(response.content_subcampaign);
             $("#subcampaign_id").select2();
+            $('#landing_page').html(response.content_landingpage);
+            $("#landing_page").select2();
+            $('#channel_id').html(response.content_channel);
+            $("#channel_id").select2();
         });
     })
 
@@ -116,6 +124,10 @@ $(document).ready(function () {
             $("#campaign_id").select2();
             $('#subcampaign_id').html(response.content_subcampaign);
             $("#subcampaign_id").select2();
+            $('#landing_page').html(response.content_landingpage);
+            $("#landing_page").select2();
+            $('#channel_id').html(response.content_channel);
+            $("#channel_id").select2();
         });
     })
 
@@ -135,6 +147,8 @@ $(document).ready(function () {
             $("#subcampaign_id").select2();
             $('#landing_page').html(response.content_landingpage);
             $("#landing_page").select2();
+            $('#channel_id').html(response.content_channel);
+            $("#channel_id").select2();
         });
     })
 
@@ -152,6 +166,8 @@ $(document).ready(function () {
         }).done(function (response) {
             $('#landing_page').html(response.content_landingpage);
             $("#landing_page").select2();
+            $('#channel_id').html(response.content_channel);
+            $("#channel_id").select2();
         });
     })
 
@@ -185,11 +201,6 @@ $(document).ready(function () {
         }
     });
 
-    // $('input[type=search]').change(function (e) {
-    //     countExportedWhenSearch();
-    //     console.log(1111);
-    // })
-
 });
 
 $(document).ready(function () {
@@ -213,26 +224,30 @@ $(document).ready(function () {
 
     $('#search-form-c3').submit(function (e) {
         e.preventDefault();
+        $('.loading').show();
+
         countExported();
 
-        $('.loading').show();
         setTimeout(function(){
             // initDataTable();
+            // countExported();
+            initDataTable();
             $('.loading').hide();
-        }, 1000);
+        },1000);
     });
 
     $('button#confirm_export').click(function (e) {
         e.preventDefault();
 
         $('#export-form-c3').submit();
+
         setTimeout(function(){
             countExported();
+            initDataTable();
             $('div#export_success').show();
             $('div#update_success').hide();
             $('input#update_all').prop('checked', false); // Unchecks checkbox all
-
-        }, 1000);
+        }, 2000);
     });
 
     $('button#update_contact').click(function (e) {
@@ -287,7 +302,9 @@ function initDataTable() {
     var is_export       = $('select[name="is_export"]').val();
     var limit           = $('input#limit').val();
     var landing_page    = $('select[name="landing_page"]').val();
-    var search          = $('input[type="search"]').val();
+    var search          = $('input[name="search_text"]').val();
+    var channel         = $('select[name="channel_id"]').val();
+
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -302,6 +319,7 @@ function initDataTable() {
     $('input[name="is_export"]').val(is_export);
     $('input[name="limit"]').val(limit);
     $('input[name="landing_page"]').val(landing_page);
+    $('input[name="channel"]').val(channel);
 
     /* BASIC ;*/
     var responsiveHelper_table_campaign = undefined;
@@ -312,9 +330,9 @@ function initDataTable() {
     };
 
     $('#table_contacts').dataTable({
-        "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-6 hidden-xs'C>r>" +
+        "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-6'C>r>" +
         "<'tb-only't>" +
-        "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-sm-6 col-xs-12'p>>",
+        "<'dt-toolbar-footer'<'col-sm-6 col-xs-12'i><'col-sm-6 col-xs-12'p>>",
         "autoWidth": true,
         "preDrawCallback": function () {
             // Initialize the responsive datatables helper once.
@@ -327,10 +345,11 @@ function initDataTable() {
         },
         "drawCallback": function (oSettings) {
 
-            // $('input[type=search]').change(function (e) {
-            //     var search = $('input[type=search]').val();
-            //     countExportedWhenSearch();
-            // })
+            $('input[type=search]').change(function (e) {
+                var search = $(this).val();
+                $('input[name=search_text]').val(search);
+                countExported();
+            })
             //
             // var search =  $('input[name="search"]').val();
             // $('input[type=search]').val(search);
@@ -358,8 +377,9 @@ function initDataTable() {
                 d.checked_date      = checked_date,
                 d.c3bg_checkbox     = c3bg_checkbox,
                 d.limit             = limit,
-                d.landing_page      = landing_page
-                // d.search_inp        = search
+                d.landing_page      = landing_page,
+                d.channel           = channel
+                d.search_text       = search
             }
         },
         "columns": [
@@ -431,13 +451,14 @@ function initDataTable() {
             if(iTotal == 0){
                 return "";
             }
-            countExportedWhenSearch();
+            // countExportedWhenSearch();
             var exported    = $('input[name="exported"]').val();
-            var count_str   = '<span class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
+            var count_str   = '<span id="cnt_exported" class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
 
             return sPre + count_str;
         },
     });
+
 }
 
 function countExported() {
@@ -455,10 +476,12 @@ function countExported() {
     var landing_page    = $('select[name="landing_page"]').val();
     var is_export       = $('select[name="is_export"]').val();
     var search          = $('input[type="search"]').val();
+    var channel         = $('select[name="channel_id"]').val();
 
     if(is_export === '0'){
         $('input[name="exported"]').val(0);
-        initDataTable();
+        // $('span#cnt_exported').text('(0 exported)');
+        // initDataTable();
         return;
     }
 
@@ -473,16 +496,19 @@ function countExported() {
     data.registered_date   = registered_date;
     data.landing_page      = landing_page;
     data.is_export         = is_export;
-    data.search            = search;
+    data.search_text       = search;
+    data.channel           = channel;
 
     $.get(url, data, function (data) {
-        setTimeout(function(){
+        $('input[name="exported"]').val(data);
+        // setTimeout(function(){
             // if(status == '0'){
             //     $('input[name="exported"]').val(0);
             // }
-            $('input[name="exported"]').val(data);
-            initDataTable();
-        }, 1000);
+            // $('input[name="exported"]').val(data);
+            // $('span#cnt_exported').text('(' + data +' exported)');
+            // initDataTable();
+        // }, 1000);
     }).fail(
         function (err) {
             alert('Cannot connect to server. Please try again later.');
@@ -504,6 +530,7 @@ function countExportedWhenSearch() {
     var landing_page    = $('select[name="landing_page"]').val();
     var is_export       = $('select[name="is_export"]').val();
     var search          = $('input[type="search"]').val();
+    var channel         = $('select[name="channel_id"]').val();
 
     if(is_export === '0'){
         $('input[name="exported"]').val(0);
@@ -521,7 +548,8 @@ function countExportedWhenSearch() {
     data.registered_date   = registered_date;
     data.landing_page      = landing_page;
     data.is_export         = is_export;
-    data.search            = search;
+    data.search_text       = search;
+    data.channel           = channel;
 
     $.get(url, data, function (data) {
         $('input[name="exported"]').val(data);
@@ -604,18 +632,20 @@ function updateStatusExport(id) {
     var subcampaign_id  = $('input[name="subcampaign_id"]').val();
     var old_status      = $('input[name="status"]').val();
     var landing_page    = $('select[name="landing_page"]').val();
+    var channel         = $('select[name="channel_id"]').val();
 
-    if(id == '' && status == ''){
-        setTimeout(function(){
-            // if(old_status == '0'){
-            //     $('input[name="exported"]').val(0);
-            // }
-            $('input#update_all').prop('checked', false); // Unchecks checkbox all
-            countExported();
-            $('.loading').hide();
-            $('div#update_success').show();
-        }, 1000);
-    }
+    // if(id == '' && status == ''){
+    //     countExported();
+    //     setTimeout(function(){
+    //         // if(old_status == '0'){
+    //         //     $('input[name="exported"]').val(0);
+    //         // }
+    //         $('input#update_all').prop('checked', false); // Unchecks checkbox all
+    //         initDataTable();
+    //         $('.loading').hide();
+    //         $('div#update_success').show();
+    //     }, 1000);
+    // }
 
     var data = {};
     data.id                = id;
@@ -630,14 +660,17 @@ function updateStatusExport(id) {
     data.old_status        = old_status;
     data.new_status        = status;
     data.landing_page      = landing_page;
+    data.channel           = channel;
 
     $.get(url, data, function (data) {
+        countExported();
         setTimeout(function(){
             // if(old_status == '0'){
             //     $('input[name="exported"]').val(0);
             // }
+            initDataTable();
             $('input#update_all').prop('checked', false); // Unchecks checkbox all
-            countExported();
+
             $('.loading').hide();
             $('div#update_success').show();
             $('div#export_success').hide();
