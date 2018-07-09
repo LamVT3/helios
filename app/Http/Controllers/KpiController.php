@@ -40,15 +40,13 @@ class KpiController extends Controller
         $breadcrumbs    = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Assign KPI </span>";
 
         $users  = User::all();
+        $days   = $this->get_days_in_month();
+        $month  = date('M');
+        $year   = date('Y');
         $result = $this->get_data();
 
         $data_maketer   = $this->get_data_by_maketer($result);
-        $data_team      = $this->get_data_by_team($result);
-
-        $days = $this->get_days_in_month();
-        $month= date('M');
-        $year = date('Y');
-
+        $data_team      = $this->get_data_by_team($result, $days);
 
         return view('pages.assign_kpi', compact(
             'page_title',
@@ -125,7 +123,7 @@ class KpiController extends Controller
             $data[$user->username]['user_id']   = $user->id;
 
             $team_name = $this->get_team($user->id);
-            $data[$user->username]['team'] = $team_name;
+            $data[$user->username]['team']      = $team_name;
         }
 
         return $data;
@@ -206,18 +204,18 @@ class KpiController extends Controller
     }
 
     public function kpi_by_team(){
-        $request = request();
+        $request    = request();
+        $users      = User::all();
 
-        $users          = User::all();
-        $result         = $this->get_data();
-        $data_team      = $this->get_data_by_team($result);
-        $days   = $this->get_days_in_month();
         $month  = date('M');
         $year   = date('Y');
-
         if($request->month){
             $month  = date('M', strtotime($year.'-'.$request->month));
         }
+
+        $days   = $this->get_days_in_month();
+        $result         = $this->get_data();
+        $data_team      = $this->get_data_by_team($result, $days);
 
         return view('pages.table_report_kpi_by_team', compact(
             'users',
@@ -228,7 +226,7 @@ class KpiController extends Controller
         ));
     }
 
-    public function get_data_by_team($data){
+    public function get_data_by_team($data, $day){
         $res = [];
         foreach ($data as $item){
             $team = $item['team'];
@@ -243,7 +241,7 @@ class KpiController extends Controller
                 $res[$team]['total_c3b']  = @$item['total_c3b'];
             }
             else{
-                $cnt = count(@$item['kpi']);
+                $cnt = $day;
                 for($i = 1; $i <= $cnt; $i++){
                     @$res[$team]['kpi'][$i] += @$item['kpi'][$i];
                     @$res[$team]['c3b'][$i] += @$item['c3b'][$i];
@@ -252,7 +250,6 @@ class KpiController extends Controller
                 @$res[$team]['total_kpi']  += @$item['total_kpi'];
                 @$res[$team]['total_c3b']  += @$item['total_c3b'];
             }
-
         }
 
         uasort($res, function ($item1, $item2) {
