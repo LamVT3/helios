@@ -518,17 +518,17 @@ class AjaxController extends Controller
         foreach ($query as $i => $item) {
 //            if($i > 4) break;
 //            if(!$item->revenue) continue;
-
-            $user = User::find($item->_id);
-            if(!$user && $item->_id == config('constants.SALE_CRM')){ // if not found user
+            if($item->_id == config('constants.SALE_CRM')){
                 $sale_crm           = config('constants.SALE_CRM');
                 $user['username']   = $sale_crm;
                 $user['rank']       = $sale_crm;
-            }
-            elseif(!$user && $item->_id != config('constants.SALE_CRM')){
-                $unknown            = config('constants.UNKNOWN');
-                $user['username']   = $unknown;
-                $user['rank']       = $unknown;
+            }else{
+                $user = User::find($item->_id);
+                if(!$user){
+                    $unknown            = config('constants.UNKNOWN');
+                    $user['username']   = $unknown;
+                    $user['rank']       = $unknown;
+                }
             }
 
             $no = $i+1;
