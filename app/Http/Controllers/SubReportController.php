@@ -1131,7 +1131,7 @@ class SubReportController extends Controller
 					}
 				} );
 
-		foreach ($array_channel as $i){
+		foreach ($array_channel as $key=>$i){
 			$temp['c3a'] = isset($table['c3a'][$i]) ? $table['c3a'][$i] : 0;
 			$temp['c3b'] = isset($table['c3b'][$i]) ? $table['c3b'][$i] : 0;
 			$temp['c3bg'] = isset($table['c3bg'][$i]) ? $table['c3bg'][$i] : 0;
@@ -1149,7 +1149,14 @@ class SubReportController extends Controller
 
 			$table['c3_week'][$i] =  $table['c3a_week'][$i] + $table['c3b_week'][$i] + $table['c3bg_week'][$i];
 			$table['c3b_week'][$i] = $table['c3b_week'][$i] + $table['c3bg_week'][$i];
+
+			if ($table['c3'][$i]==0 && $table['c3b'][$i]==0 && $table['c3bg'][$i]==0 &&
+			    $table['c3_week'][$i]==0 && $table['c3b_week'][$i]==0 && $table['c3bg_week'][$i]==0){
+				unset($array_channel[$key]);
+			}
 		}
+
+		$array_channel = array_values($array_channel);
 
 		return view('pages.channel-report', compact(
 			'page_title',
@@ -1282,7 +1289,7 @@ class SubReportController extends Controller
 			       }
 		       } );
 
-		foreach ($array_channel as $i){
+		foreach ($array_channel as $key=>$i){
 			$temp['c3a'] = isset($table['c3a'][$i]) ? $table['c3a'][$i] : 0;
 			$temp['c3b'] = isset($table['c3b'][$i]) ? $table['c3b'][$i] : 0;
 			$temp['c3bg'] = isset($table['c3bg'][$i]) ? $table['c3bg'][$i] : 0;
@@ -1300,7 +1307,14 @@ class SubReportController extends Controller
 
 			$table['c3_week'][$i] =  $table['c3a_week'][$i] + $table['c3b_week'][$i] + $table['c3bg_week'][$i];
 			$table['c3b_week'][$i] = $table['c3b_week'][$i] + $table['c3bg_week'][$i];
+
+			if ($table['c3'][$i]==0 && $table['c3b'][$i]==0 && $table['c3bg'][$i]==0 &&
+			    $table['c3_week'][$i]==0 && $table['c3b_week'][$i]==0 && $table['c3bg_week'][$i]==0){
+				unset($array_channel[$key]);
+			}
 		}
+
+		$array_channel = array_values($array_channel);
 
 		return view('pages.channel-report', compact(
 			'page_title',
