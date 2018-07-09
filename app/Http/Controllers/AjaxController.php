@@ -525,7 +525,7 @@ class AjaxController extends Controller
                 $user['username']   = $sale_crm;
                 $user['rank']       = $sale_crm;
             }
-            else{
+            elseif(!$user && $item->_id != config('constants.SALE_CRM')){
                 $unknown            = config('constants.UNKNOWN');
                 $user['username']   = $unknown;
                 $user['rank']       = $unknown;
