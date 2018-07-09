@@ -191,6 +191,7 @@
                                                     <th>C3</th>
                                                     <th>C3B</th>
                                                     <th>C3BG</th>
+                                                    <th>C3BG / C3B (%)</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -201,6 +202,7 @@
                                                         <td>{{$table_accumulated['c3'][$i]}}</td>
                                                         <td>{{$table_accumulated['c3b'][$i]}}</td>
                                                         <td>{{$table_accumulated['c3bg'][$i]}}</td>
+                                                        <td>{{round($table_accumulated['c3bg'][$i] * 100 / $table_accumulated['c3b'][$i] , 2)}}</td>
                                                     </tr>
                                                 @endfor
                                                 </tbody>

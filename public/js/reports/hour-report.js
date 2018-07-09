@@ -41,6 +41,31 @@ $.fn.UseTooltip = function () {
     });
 };
 
+$.fn.UseChannelTooltip = function () {
+    $(this).bind("plothover", function (event, pos, item) {
+        if (item) {
+            if ((previousLabel != item.series.label) || (previousPoint != item.dataIndex)) {
+                previousPoint = item.dataIndex;
+                previousLabel = item.series.label;
+                $("#tooltip").remove();
+
+                var x = item.datapoint[0];
+                var y = item.datapoint[1];
+
+                var color = item.series.color;
+
+                showTooltip(item.pageX,
+                    item.pageY,
+                    color,
+                        "<strong>" + item.series.label + "</strong><br>" + item.series.xaxis.ticks[x].label +": "+  y );
+            }
+        } else {
+            $("#tooltip").remove();
+            previousPoint = null;
+        }
+    });
+};
+
 $.fn.UseC3Tooltip = function () {
     $(this).bind("plothover", function (event, pos, item) {
         if (item) {

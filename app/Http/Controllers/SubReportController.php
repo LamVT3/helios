@@ -1022,6 +1022,305 @@ class SubReportController extends Controller
 		));
 	}
 
+	public function channelReport(){
+		$page_title = "Channel Report | Helios";
+		$page_css = array();
+		$no_main_header = FALSE; //set true for lock.php and login.php
+		$active = 'channel-report';
+		$breadcrumbs = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Channel Report </span>";
+
+		$sources        = Source::all();
+		$teams          = Team::all();
+		$marketers      = User::all();
+		$campaigns      = Campaign::where('is_active', 1)->get();
+		$page_size      = Config::getByKey('PAGE_SIZE');
+		$subcampaigns   = Subcampaign::where('is_active', 1)->get();
+
+		$channels      = Channel::all();
+
+		$table['c3'] = [];
+		$table['c3a'] = [];
+		$table['c3b'] = [];
+		$table['c3bg'] = [];
+		$table['c3_week'] = [];
+		$table['c3a_week'] = [];
+		$table['c3b_week'] = [];
+		$table['c3bg_week'] = [];
+
+		$date_time   = date('Y-m-d');
+
+		$array_channel = array();
+		foreach ($channels as $key => $channel) {
+			$array_channel[$key] = $channel->name;
+		}
+
+		$array_channel[] = 'Unknown';
+
+		foreach ($array_channel as $channel) {
+			$table['c3'][$channel] = 0;
+			$table['c3a'][$channel] = 0;
+			$table['c3b'][$channel] = 0;
+			$table['c3bg'][$channel] = 0;
+			$table['c3_week'][$channel] = 0;
+			$table['c3a_week'][$channel] = 0;
+			$table['c3b_week'][$channel] = 0;
+			$table['c3bg_week'][$channel] = 0;
+		}
+
+		Contact::where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 )
+               ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
+               ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
+               ->chunk( 1000, function ( $contacts ) use ( &$table ) {
+                   foreach ( $contacts as $contact ) {
+	                   if ($contact->clevel == 'c3a'){
+		                   $channel = $contact->channel_name;
+		                   if (isset($table['c3a'][$channel]))
+			                   $table['c3a'][$channel] += 1;
+		                   else{
+			                   $table['c3a'][$channel] = 1;
+		                   }
+	                   }
+	                   else if ($contact->clevel == 'c3b'){
+		                   $channel = $contact->channel_name;
+		                   if (isset($table['c3b'][$channel]))
+			                   $table['c3b'][$channel] += 1;
+		                   else{
+			                   $table['c3b'][$channel] = 1;
+		                   }
+	                   }
+	                   else if ($contact->clevel == 'c3bg'){
+		                   $channel = $contact->channel_name;
+		                   if (isset($table['c3bg'][$channel]))
+			                   $table['c3bg'][$channel] += 1;
+		                   else{
+			                   $table['c3bg'][$channel] = 1;
+		                   }
+	                   }
+                   }
+               } );
+
+		Contact::where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 - 7 * 86400000)
+                ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
+                ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
+				->chunk( 1000, function ( $contacts ) use ( &$table ) {
+					foreach ( $contacts as $contact ) {
+						if ($contact->clevel == 'c3a'){
+							$channel = $contact->channel_name;
+							if (isset($table['c3a_week'][$channel]))
+								$table['c3a_week'][$channel] += 1;
+							else{
+								$table['c3a_week'][$channel] = 1;
+							}
+						}
+						else if ($contact->clevel == 'c3b'){
+							$channel = $contact->channel_name;
+							if (isset($table['c3b_week'][$channel]))
+								$table['c3b_week'][$channel] += 1;
+							else{
+								$table['c3b_week'][$channel] = 1;
+							}
+						}
+						else if ($contact->clevel == 'c3bg'){
+							$channel = $contact->channel_name;
+							if (isset($table['c3bg_week'][$channel]))
+								$table['c3bg_week'][$channel] += 1;
+							else{
+								$table['c3bg_week'][$channel] = 1;
+							}
+						}
+					}
+				} );
+
+		foreach ($array_channel as $i){
+			$temp['c3a'] = isset($table['c3a'][$i]) ? $table['c3a'][$i] : 0;
+			$temp['c3b'] = isset($table['c3b'][$i]) ? $table['c3b'][$i] : 0;
+			$temp['c3bg'] = isset($table['c3bg'][$i]) ? $table['c3bg'][$i] : 0;
+
+			$table['c3'][$i] =  $temp['c3a'] + $temp['c3b'] + $temp['c3bg'];
+			$table['c3b'][$i] =  $temp['c3b'] + $temp['c3bg'];
+
+			$temp['c3a_week'] = isset($table['c3a_week'][$i]) ? $table['c3a_week'][$i] : 0;
+			$temp['c3b_week'] = isset($table['c3b_week'][$i]) ? $table['c3b_week'][$i] : 0;
+			$temp['c3bg_week'] = isset($table['c3bg_week'][$i]) ? $table['c3bg_week'][$i] : 0;
+
+			$table['c3a_week'][$i] = intval( round($temp['c3a_week'] / 7));
+			$table['c3b_week'][$i] = intval( round($temp['c3b_week'] / 7));
+			$table['c3bg_week'][$i] = intval( round($temp['c3bg_week'] / 7));
+
+			$table['c3_week'][$i] =  $table['c3a_week'][$i] + $table['c3b_week'][$i] + $table['c3bg_week'][$i];
+			$table['c3b_week'][$i] = $table['c3b_week'][$i] + $table['c3bg_week'][$i];
+		}
+
+		return view('pages.channel-report', compact(
+			'page_title',
+			'page_css',
+			'no_main_header',
+			'active',
+			'breadcrumbs',
+			'sources',
+			'teams',
+			'marketers',
+			'campaigns',
+			'page_size',
+			'subcampaigns',
+			'table',
+			'data_where',
+			'date_time',
+			'array_channel'
+		));
+	}
+
+	public function channelReportFilter(){
+		$page_title = "Channel Report | Helios";
+		$page_css = array();
+		$no_main_header = FALSE; //set true for lock.php and login.php
+		$active = 'channel-report';
+		$breadcrumbs = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Channel Report </span>";
+
+		$sources        = Source::all();
+		$teams          = Team::all();
+		$marketers      = User::all();
+		$campaigns      = Campaign::where('is_active', 1)->get();
+		$page_size      = Config::getByKey('PAGE_SIZE');
+		$subcampaigns   = Subcampaign::where('is_active', 1)->get();
+
+		$channels      = Channel::all();
+
+		$table['c3'] = [];
+		$table['c3a'] = [];
+		$table['c3b'] = [];
+		$table['c3bg'] = [];
+		$table['c3_week'] = [];
+		$table['c3a_week'] = [];
+		$table['c3b_week'] = [];
+		$table['c3bg_week'] = [];
+
+		$data_where = $this->getWhereData();
+
+		$request        = request();
+		$date_time   = $request->date_time;
+
+		$array_channel = array();
+		foreach ($channels as $key => $channel) {
+			$array_channel[$key] = $channel->name;
+		}
+
+		$array_channel[] = 'Unknown';
+
+		foreach ($array_channel as $channel) {
+			$table['c3'][$channel] = 0;
+			$table['c3a'][$channel] = 0;
+			$table['c3b'][$channel] = 0;
+			$table['c3bg'][$channel] = 0;
+			$table['c3_week'][$channel] = 0;
+			$table['c3a_week'][$channel] = 0;
+			$table['c3b_week'][$channel] = 0;
+			$table['c3bg_week'][$channel] = 0;
+		}
+
+		Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $date_time ) * 1000 )
+		       ->where( 'submit_time', '<', strtotime( $date_time ) * 1000 + 86400000)
+		       ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
+		       ->chunk( 1000, function ( $contacts ) use ( &$table ) {
+			       foreach ( $contacts as $contact ) {
+				       if ($contact->clevel == 'c3a'){
+					       $channel = $contact->channel_name;
+					       if (isset($table['c3a'][$channel]))
+						       $table['c3a'][$channel] += 1;
+					       else{
+						       $table['c3a'][$channel] = 1;
+					       }
+				       }
+				       else if ($contact->clevel == 'c3b'){
+					       $channel = $contact->channel_name;
+					       if (isset($table['c3b'][$channel]))
+						       $table['c3b'][$channel] += 1;
+					       else{
+						       $table['c3b'][$channel] = 1;
+					       }
+				       }
+				       else if ($contact->clevel == 'c3bg'){
+					       $channel = $contact->channel_name;
+					       if (isset($table['c3bg'][$channel]))
+						       $table['c3bg'][$channel] += 1;
+					       else{
+						       $table['c3bg'][$channel] = 1;
+					       }
+				       }
+			       }
+		       } );
+
+		Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $date_time ) * 1000  - 7 * 86400000)
+		       ->where( 'submit_time', '<', strtotime( $date_time ) * 1000 + 86400000 )
+		       ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
+		       ->chunk( 1000, function ( $contacts ) use ( &$table ) {
+			       foreach ( $contacts as $contact ) {
+				       if ($contact->clevel == 'c3a'){
+					       $channel = $contact->channel_name;
+					       if (isset($table['c3a_week'][$channel]))
+						       $table['c3a_week'][$channel] += 1;
+					       else{
+						       $table['c3a_week'][$channel] = 1;
+					       }
+				       }
+				       else if ($contact->clevel == 'c3b'){
+					       $channel = $contact->channel_name;
+					       if (isset($table['c3b_week'][$channel]))
+						       $table['c3b_week'][$channel] += 1;
+					       else{
+						       $table['c3b_week'][$channel] = 1;
+					       }
+				       }
+				       else if ($contact->clevel == 'c3bg'){
+					       $channel = $contact->channel_name;
+					       if (isset($table['c3bg_week'][$channel]))
+						       $table['c3bg_week'][$channel] += 1;
+					       else{
+						       $table['c3bg_week'][$channel] = 1;
+					       }
+				       }
+			       }
+		       } );
+
+		foreach ($array_channel as $i){
+			$temp['c3a'] = isset($table['c3a'][$i]) ? $table['c3a'][$i] : 0;
+			$temp['c3b'] = isset($table['c3b'][$i]) ? $table['c3b'][$i] : 0;
+			$temp['c3bg'] = isset($table['c3bg'][$i]) ? $table['c3bg'][$i] : 0;
+
+			$table['c3'][$i] =  $temp['c3a'] + $temp['c3b'] + $temp['c3bg'];
+			$table['c3b'][$i] =  $temp['c3b'] + $temp['c3bg'];
+
+			$temp['c3a_week'] = isset($table['c3a_week'][$i]) ? $table['c3a_week'][$i] : 0;
+			$temp['c3b_week'] = isset($table['c3b_week'][$i]) ? $table['c3b_week'][$i] : 0;
+			$temp['c3bg_week'] = isset($table['c3bg_week'][$i]) ? $table['c3bg_week'][$i] : 0;
+
+			$table['c3a_week'][$i] = intval( round($temp['c3a_week'] / 7));
+			$table['c3b_week'][$i] = intval( round($temp['c3b_week'] / 7));
+			$table['c3bg_week'][$i] = intval( round($temp['c3bg_week'] / 7));
+
+			$table['c3_week'][$i] =  $table['c3a_week'][$i] + $table['c3b_week'][$i] + $table['c3bg_week'][$i];
+			$table['c3b_week'][$i] = $table['c3b_week'][$i] + $table['c3bg_week'][$i];
+		}
+
+		return view('pages.channel-report', compact(
+			'page_title',
+			'page_css',
+			'no_main_header',
+			'active',
+			'breadcrumbs',
+			'sources',
+			'teams',
+			'marketers',
+			'campaigns',
+			'page_size',
+			'subcampaigns',
+			'table',
+			'data_where',
+			'date_time',
+			'array_channel'
+		));
+	}
+
     public function prepareDataByWeeks(){
         // get start date and end date
         $w          = $this->getWeek();

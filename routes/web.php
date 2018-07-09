@@ -161,6 +161,8 @@ Route::group(['prefix' => 'sub_report'], function () {
     Route::get('/getQuality', 'SubReportController@getQuality')->name('get-quality');
 
     Route::get('/line-chart-filter', 'SubReportController@getFilter')->name('line-chart.filter');
+	Route::get('/channel-report', 'SubReportController@channelReport')->name('channel-report');
+	Route::post('/channel-report', 'SubReportController@channelReportFilter')->name('channel-report.filter');
 	Route::get('/hour-report', 'SubReportController@hourReport')->name('hour-report');
 	Route::post('/hour-report', 'SubReportController@hourReportFilter')->name('hour-report.filter');
 
