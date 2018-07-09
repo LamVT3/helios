@@ -520,13 +520,17 @@ class AjaxController extends Controller
 //            if(!$item->revenue) continue;
 
             $user = User::find($item->_id);
-            // 2018-04-18 LamVT update leaderboard
-            if(!$user){ // if not found user
+            if(!$user && $item->_id == config('constants.SALE_CRM')){ // if not found user
+                $sale_crm           = config('constants.SALE_CRM');
+                $user['username']   = $sale_crm;
+                $user['rank']       = $sale_crm;
+            }
+            else{
                 $unknown            = config('constants.UNKNOWN');
                 $user['username']   = $unknown;
                 $user['rank']       = $unknown;
             }
-            // end 2018-04-18 LamVT update leaderboard
+
             $no = $i+1;
             $table .= "<tr>
                                 <th>{$no}</th>
