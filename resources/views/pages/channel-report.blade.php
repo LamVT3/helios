@@ -129,6 +129,7 @@
                                                 <tbody>
 
                                                 @foreach ($array_channel as $i)
+                                                    @if($table['c3'][$i]!=0 && $table['c3b'][$i]!=0 && $table['c3bg'][$i]!=0)
                                                     <tr>
                                                         <td>{{$i}}</td>
                                                         <td style="color:{{($table['c3'][$i]) >= ($table['c3_week'][$i]) ? 'green' : 'red'}}">{{$table['c3'][$i]}}</td>
@@ -136,6 +137,7 @@
                                                         <td style="color:{{$table['c3bg'][$i] >= $table['c3bg_week'][$i] ? 'green' : 'red'}}">{{$table['c3bg'][$i]}}</td>
                                                         <td>{{($table['c3b'][$i] != 0) ? round($table['c3bg'][$i] * 100 / $table['c3b'][$i] , 2) : 0}}</td>
                                                     </tr>
+                                                    @endif
                                                 @endforeach
                                                     <tr>
                                                         <th>Total</th>
@@ -291,7 +293,9 @@
             var data = [
                 {   data :[
                             @foreach ($array_channel as $key => $channel)
-                                [{{$key}},{{$table['c3_week'][$channel]}}],
+                                @if($table['c3_week'][$channel]!=0)
+                                    [{{$key}},{{$table['c3_week'][$channel]}}],
+                                @endif
                             @endforeach
                     ],
                     label : "C3 Week",
@@ -299,8 +303,10 @@
                 },
                 {   data :[
                             @foreach ($array_channel as $key => $channel)
-                        [{{$key}},{{$table['c3'][$channel]}}],
-                        @endforeach
+                                @if($table['c3'][$channel]!=0)
+                                    [{{$key}},{{$table['c3'][$channel]}}],
+                                @endif
+                            @endforeach
                     ],
                     label : "C3",
                     color: "#7CFC00"
@@ -316,13 +322,17 @@
             var data = [
                 {data : [
                             @foreach ($array_channel as $key => $channel)
-                        [{{$key}},{{$table['c3b_week'][$channel]}}],
-                        @endforeach
+                                @if($table['c3b_week'][$channel]!=0)
+                                    [{{$key}},{{$table['c3b_week'][$channel]}}],
+                                @endif
+                            @endforeach
                     ],label : "C3B Week", color: "#FF8C00"},
                 {data: [
                             @foreach ($array_channel as $key => $channel)
-                        [{{$key}},{{$table['c3b'][$channel]}}],
-                        @endforeach
+                                @if($table['c3b'][$channel]!=0)
+                                    [{{$key}},{{$table['c3b'][$channel]}}],
+                                @endif
+                            @endforeach
                     ], label: "C3B", color: "#1E90FF"},
             ];
 
@@ -335,13 +345,17 @@
             var data = [
                 {data : [
                             @foreach ($array_channel as $key => $channel)
-                        [{{$key}},{{$table['c3bg_week'][$channel]}}],
-                        @endforeach
+                                @if($table['c3bg_week'][$channel]!=0)
+                                    [{{$key}},{{$table['c3bg_week'][$channel]}}],
+                                @endif
+                            @endforeach
                     ],label : "C3BG Week", color: "#FF8C00"},
                 {data: [
                             @foreach ($array_channel as $key => $channel)
-                        [{{$key}},{{$table['c3bg'][$channel]}}],
-                        @endforeach
+                                @if($table['c3bg'][$channel]!=0)
+                                    [{{$key}},{{$table['c3bg'][$channel]}}],
+                                @endif
+                            @endforeach
                     ], label: "C3BG", color: "#6A5ACD"},
             ];
 
