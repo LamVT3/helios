@@ -1158,6 +1158,21 @@ class SubReportController extends Controller
 
 		$array_channel = array_values($array_channel);
 
+		arsort($table['c3']);
+
+		foreach ($table['c3'] as $key=>$value) {
+			if ($value != 0){
+				$array_channel_new[] = $key;
+			}
+		}
+		foreach ($table['c3_week'] as $key=>$value) {
+			if ($value != 0 && !in_array($key,$array_channel_new)){
+				$array_channel_new[] = $key;
+			}
+		}
+
+		$array_channel = $array_channel_new;
+
 		return view('pages.channel-report', compact(
 			'page_title',
 			'page_css',
@@ -1315,6 +1330,21 @@ class SubReportController extends Controller
 		}
 
 		$array_channel = array_values($array_channel);
+
+		arsort($table['c3']);
+
+		foreach ($table['c3'] as $key=>$value) {
+			if ($value != 0){
+				$array_channel_new[] = $key;
+			}
+		}
+		foreach ($table['c3_week'] as $key=>$value) {
+			if ($value != 0 && !in_array($key,$array_channel_new)){
+				$array_channel_new[] = $key;
+			}
+		}
+
+		$array_channel = $array_channel_new;
 
 		return view('pages.channel-report', compact(
 			'page_title',
