@@ -571,18 +571,25 @@ class ReportController extends Controller
                 $sheet->fromArray($data, NULL, 'A1', FALSE, FALSE);
 
                 $headings1 = array('MONTHLY MARKETING REPORT');
-                $headings2 = array('Budget :', '', 'Target L1 :', '', 'L3/C3B :', '');
-                $headings3 = array('Spent :', $report['total']->spent, 'Produced :', $report['total']->l1,
-                    'Actual :', ($report['total']->c3bg != 0) ? round($report['total']->l3 / $report['total']->c3bg,4)*100 : '0');
+                $headings2 = array('Budget :','', '', 'Target L1 :','', '', 'L3/C3B :','', '');
+                $headings3 = array('Spent :','', $report['total']->spent, 'Produced :','', $report['total']->l1,
+                    'Actual :','', ($report['total']->c3bg != 0) ? round($report['total']->l3 / $report['total']->c3bg,4)*100 : '0');
                 $sheet->prependRow(1, $headings1);
                 $sheet->prependRow(2, $headings2);
                 $sheet->prependRow(3, $headings3);
+
+                $sheet->mergeCells('A1:J1');
+                $sheet->mergeCells('A2:B2');
+                $sheet->mergeCells('D2:E2');
+                $sheet->mergeCells('G2:H2');
+                $sheet->mergeCells('A3:B3');
+                $sheet->mergeCells('D3:E3');
+                $sheet->mergeCells('G3:H3');
 
                 $sheet->cells('A1:J32', function ($cells) {
                     $cells->setFontSize(12);
                     $cells->setBorder('solid');
                 });
-                $sheet->mergeCells('A1:J1');
                 $sheet->cells('A1', function ($cells) {
                     $cells->setBackground('#fafafa');
                     $cells->setFontColor('#ED8515');
@@ -590,21 +597,17 @@ class ReportController extends Controller
                     $cells->setAlignment('center');
                     $cells->setFontSize(30);
                 });
-                $sheet->cells('A2:F2', function ($cells) {
+                $sheet->cells('A2:J2', function ($cells) {
                     $cells->setFontColor('#157DEC');
                     $cells->setFontWeight('bold');
                     $cells->setFontSize(20);
                 });
-                $sheet->cells('A3:F3', function ($cells) {
+                $sheet->cells('A3:J3', function ($cells) {
                     $cells->setFontColor('#157DEC');
                     $cells->setFontWeight('bold');
                     $cells->setFontSize(20);
                 });
-                $sheet->cells('B2', function ($cells) {
-                    $cells->setFontColor('#ED8515');
-                    $cells->setFontWeight('bold');
-                });
-                $sheet->cells('D2', function ($cells) {
+                $sheet->cells('C2', function ($cells) {
                     $cells->setFontColor('#ED8515');
                     $cells->setFontWeight('bold');
                 });
@@ -612,15 +615,19 @@ class ReportController extends Controller
                     $cells->setFontColor('#ED8515');
                     $cells->setFontWeight('bold');
                 });
-                $sheet->cells('B3', function ($cells) {
+                $sheet->cells('I2', function ($cells) {
                     $cells->setFontColor('#ED8515');
                     $cells->setFontWeight('bold');
                 });
-                $sheet->cells('D3', function ($cells) {
+                $sheet->cells('C3', function ($cells) {
                     $cells->setFontColor('#ED8515');
                     $cells->setFontWeight('bold');
                 });
                 $sheet->cells('F3', function ($cells) {
+                    $cells->setFontColor('#ED8515');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('I3', function ($cells) {
                     $cells->setFontColor('#ED8515');
                     $cells->setFontWeight('bold');
                 });
@@ -703,7 +710,6 @@ class ReportController extends Controller
                 $sheet->cells('B25:B28', function ($cells) {
                     $cells->setAlignment('center');
                 });
-
             });
         })->export('xls');
     }
