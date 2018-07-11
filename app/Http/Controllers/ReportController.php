@@ -310,8 +310,14 @@ class ReportController extends Controller
 
     private function prepareMonthly() {
         $month       = request('month');
+
+        if(strlen((string)$month) != 2) {
+            $month = '0'.$month;
+        }
+
         $startRange  = request('startRange');
         $endRange    = request('endRange');
+
         $startDate   = date('Y-' . $month .'-01');
         $year        = date('Y'); /* nam hien tai*/
         $days        = cal_days_in_month(CAL_GREGORIAN, $month, $year);
@@ -515,8 +521,8 @@ class ReportController extends Controller
                 $data['weeks'] = array('','Weeks');
                 $data['days'] = array('','N.o Days');
                 $data['budget'] = array('BUDGET');
-                $data['me_re'] = array('Actual', 'ME/RE'); $data['spent'] = array('','ME');
-                $data['revenue'] = array('','RE'); $data['c3b_cost'] = array('','C3B');
+                $data['me_re'] = array('Actual', 'ME/RE (%)'); $data['spent'] = array('','ME (USD)');
+                $data['revenue'] = array('','RE (THB)'); $data['c3b_cost'] = array('','C3B');
                 $data['c3bg_cost'] = array('','C3BG'); $data['l1_cost'] = array('','L1');
                 $data['l3_cost'] = array('','L3'); $data['l6_cost'] = array('','L6'); $data['l8_cost'] = array('','L8');
 
@@ -525,51 +531,177 @@ class ReportController extends Controller
                 $data['l3'] = array('','L3'); $data['l6'] = array('','L6'); $data['l8'] = array('','L8');
 
                 $data['quality'] = array('QUALITY');
-                $data['l3_c3b'] = array('Actual','L3/C3B'); $data['l3_c3bg'] = array('','L3/C3BG');
-                $data['l3_l1'] = array('','L3/L1'); $data['l1_c3bg'] = array('','L1/C3BG');
-                $data['c3bg_c3b'] = array('','C3BG/C3B'); $data['return_ratio'] = array('','Return Ratio');
+                $data['l3_c3b'] = array('Actual','L3/C3B %'); $data['l3_c3bg'] = array('','L3/C3BG %');
+                $data['l3_l1'] = array('','L3/L1 %'); $data['l1_c3bg'] = array('','L1/C3BG %');
+                $data['c3bg_c3b'] = array('','C3BG/C3B %'); $data['return_ratio'] = array('','Return Ratio');
                 $data['duplicate_ratio'] = array('','Duplicate Ratio');
-                $data['l6_l3'] = array('','L6/L3'); $data['l8_l6'] = array('','L8/L6');
+                $data['l6_l3'] = array('','L6/L3 %'); $data['l8_l6'] = array('','L8/L6 %');
 
+                unset($report['config']);
                 foreach ($report as $key => $item) {
-                    if ($key == 'config') continue;
-                    array_push($data['weeks'], $key);
-                    array_push($data['days'], $item->range);
-                    array_push($data['me_re'], ($item->revenue != 0) ? round($item->spent * $usd_thb / $item->revenue,4)*100 : 0);
-                    array_push($data['spent'], $item->spent); array_push($data['revenue'], $item->revenue);
-                    array_push($data['c3b_cost'], ($item->c3b != 0) ? round($item->spent * $usd_vnd / $item->c3b) : 0);
-                    array_push($data['c3bg_cost'], ($item->c3bg != 0) ? round($item->spent * $usd_vnd / $item->c3bg) : 0);
-                    array_push($data['l1_cost'], ($item->l1 != 0) ? round($item->spent * $usd_vnd / $item->l1) : 0);
-                    array_push($data['l3_cost'], ($item->l3 != 0) ? round($item->spent * $usd_vnd / $item->l3) : 0);
-                    array_push($data['l6_cost'], ($item->l6 != 0) ? round($item->spent * $usd_vnd / $item->l6) : 0);
-                    array_push($data['l8_cost'], ($item->l8 != 0) ? round($item->spent * $usd_vnd / $item->l8) : 0);
-                    array_push($data['c3b'], $item->c3b); array_push($data['c3bg'], $item->c3bg);
-                    array_push($data['l1'], $item->l1); array_push($data['l3'], $item->l3);
-                    array_push($data['l6'], $item->l6); array_push($data['l8'], $item->l8);
-                    array_push($data['l3_c3b'], ($item->c3b != 0) ? round($item->l3 / $item->c3b,4)*100 : 0);
-                    array_push($data['l3_c3bg'], ($item->c3bg != 0) ? round($item->l3 / $item->c3bg,4)*100 : 0);
-                    array_push($data['l3_l1'], ($item->l1 != 0) ? round($item->l3 / $item->l1,4)*100 : 0);
-                    array_push($data['l1_c3bg'], ($item->c3bg != 0) ? round($item->l1 / $item->c3bg,4)*100 : 0);
-                    array_push($data['c3bg_c3b'], ($item->c3b != 0) ? round($item->c3bg / $item->c3b,4)*100 : 0);
-                    array_push($data['return_ratio'], 0); array_push($data['duplicate_ratio'], 0);
-                    array_push($data['l6_l3'], ($item->l3 != 0) ? round($item->l6 / $item->l3,4)*100 : 0);
-                    array_push($data['l8_l6'], ($item->l6 != 0) ? round($item->l8 / $item->l6,4)*100 : 0);
+                    if($item->range != NULL) {
+                        array_push($data['weeks'], $key);
+                        array_push($data['days'], $item->range);
+                        array_push($data['me_re'], ($item->revenue != 0) ? round($item->spent * $usd_thb / $item->revenue,4)*100 : '0');
+                        array_push($data['spent'], ($item->spent != 0) ? $item->spent : '0');
+                        array_push($data['revenue'], ($item->revenue != 0) ? $item->revenue : '0');
+                        array_push($data['c3b_cost'], ($item->c3b != 0) ? round($item->spent * $usd_vnd / $item->c3b) : '0');
+                        array_push($data['c3bg_cost'], ($item->c3bg != 0) ? round($item->spent * $usd_vnd / $item->c3bg) : '0');
+                        array_push($data['l1_cost'], ($item->l1 != 0) ? round($item->spent * $usd_vnd / $item->l1) : '0');
+                        array_push($data['l3_cost'], ($item->l3 != 0) ? round($item->spent * $usd_vnd / $item->l3) : '0');
+                        array_push($data['l6_cost'], ($item->l6 != 0) ? round($item->spent * $usd_vnd / $item->l6) : '0');
+                        array_push($data['l8_cost'], ($item->l8 != 0) ? round($item->spent * $usd_vnd / $item->l8) : '0');
+                        array_push($data['c3b'], $item->c3b != 0 ? $item->c3b : '0');
+                        array_push($data['c3bg'], $item->c3bg != 0 ? $item->c3bg : '0');
+                        array_push($data['l1'], $item->l1 != 0 ? $item->l1 : '0');
+                        array_push($data['l3'], $item->l3 != 0 ? $item->l3 : '0');
+                        array_push($data['l6'], $item->l6 != 0 ? $item->l6 : '0');
+                        array_push($data['l8'], $item->l8 != 0 ? $item->l8 : '0');
+                        array_push($data['l3_c3b'], ($item->c3b != 0) ? round($item->l3 / $item->c3b,4)*100 : '0');
+                        array_push($data['l3_c3bg'], ($item->c3bg != 0) ? round($item->l3 / $item->c3bg,4)*100 : '0');
+                        array_push($data['l3_l1'], ($item->l1 != 0) ? round($item->l3 / $item->l1,4)*100 : '0');
+                        array_push($data['l1_c3bg'], ($item->c3bg != 0) ? round($item->l1 / $item->c3bg,4)*100 : '0');
+                        array_push($data['c3bg_c3b'], ($item->c3b != 0) ? round($item->c3bg / $item->c3b,4)*100 : '0');
+                        array_push($data['return_ratio'], '0');
+                        array_push($data['duplicate_ratio'], '0');
+                        array_push($data['l6_l3'], ($item->l3 != 0) ? round($item->l6 / $item->l3,4)*100 : '0');
+                        array_push($data['l8_l6'], ($item->l6 != 0) ? round($item->l8 / $item->l6,4)*100 : '0');
+                    }
                 }
                 $sheet->fromArray($data, NULL, 'A1', FALSE, FALSE);
 
                 $headings1 = array('MONTHLY MARKETING REPORT');
                 $headings2 = array('Budget :', '', 'Target L1 :', '', 'L3/C3B :', '');
                 $headings3 = array('Spent :', $report['total']->spent, 'Produced :', $report['total']->l1,
-                    'Actual :', ($report['total']->c3bg != 0) ? round($report['total']->l3 / $report['total']->c3bg,4)*100 : 0);
+                    'Actual :', ($report['total']->c3bg != 0) ? round($report['total']->l3 / $report['total']->c3bg,4)*100 : '0');
                 $sheet->prependRow(1, $headings1);
                 $sheet->prependRow(2, $headings2);
                 $sheet->prependRow(3, $headings3);
 
-                $sheet->mergeCells('A1:J1', function ($cells) {
+                $sheet->cells('A1:J32', function ($cells) {
+                    $cells->setFontSize(12);
+                    $cells->setBorder('solid');
+                });
+                $sheet->mergeCells('A1:J1');
+                $sheet->cells('A1', function ($cells) {
                     $cells->setBackground('#fafafa');
                     $cells->setFontColor('#ED8515');
-                    $cells->setFontSize('xx-large');
                     $cells->setFontWeight('bold');
+                    $cells->setAlignment('center');
+                    $cells->setFontSize(30);
+                });
+                $sheet->cells('A2:F2', function ($cells) {
+                    $cells->setFontColor('#157DEC');
+                    $cells->setFontWeight('bold');
+                    $cells->setFontSize(20);
+                });
+                $sheet->cells('A3:F3', function ($cells) {
+                    $cells->setFontColor('#157DEC');
+                    $cells->setFontWeight('bold');
+                    $cells->setFontSize(20);
+                });
+                $sheet->cells('B2', function ($cells) {
+                    $cells->setFontColor('#ED8515');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('D2', function ($cells) {
+                    $cells->setFontColor('#ED8515');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('F2', function ($cells) {
+                    $cells->setFontColor('#ED8515');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('B3', function ($cells) {
+                    $cells->setFontColor('#ED8515');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('D3', function ($cells) {
+                    $cells->setFontColor('#ED8515');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('F3', function ($cells) {
+                    $cells->setFontColor('#ED8515');
+                    $cells->setFontWeight('bold');
+                });
+
+                $sheet->cells('A4:J4', function ($cells) {
+                    $cells->setBackground('#fafafa');
+                    $cells->setFontColor('#ED8515');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('B4', function ($cells) {
+                    $cells->setFontColor('#505050');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('A5:J5', function ($cells) {
+                    $cells->setBackground('#fafafa');
+                    $cells->setFontColor('#ED8515');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('B5', function ($cells) {
+                    $cells->setFontColor('#505050');
+                    $cells->setFontWeight('bold');
+                });
+
+                $sheet->cells('A6', function ($cells) {
+                    $cells->setBackground('#157DEC');
+                    $cells->setFontColor('#ffffff');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('A7', function ($cells) {
+                    $cells->setFontColor('#ED8515');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('B7:J7', function ($cells) {
+                    $cells->setFontColor('#157DEC');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('B8:J15', function ($cells) {
+                    $cells->setFontColor('#505050');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('B10:B15', function ($cells) {
+                    $cells->setAlignment('center');
+                });
+
+                $sheet->cells('A16', function ($cells) {
+                    $cells->setBackground('#157DEC');
+                    $cells->setFontColor('#ffffff');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('A17', function ($cells) {
+                    $cells->setFontColor('#ED8515');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('B17:J17', function ($cells) {
+                    $cells->setFontColor('#157DEC');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('B18:J22', function ($cells) {
+                    $cells->setFontColor('#505050');
+                    $cells->setFontWeight('bold');
+                });
+
+                $sheet->cells('A23', function ($cells) {
+                    $cells->setBackground('#157DEC');
+                    $cells->setFontColor('#ffffff');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('A24', function ($cells) {
+                    $cells->setFontColor('#ED8515');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('B24:J24', function ($cells) {
+                    $cells->setFontColor('#157DEC');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('B25:J32', function ($cells) {
+                    $cells->setFontColor('#505050');
+                    $cells->setFontWeight('bold');
+                });
+                $sheet->cells('B25:B28', function ($cells) {
+                    $cells->setAlignment('center');
                 });
 
             });

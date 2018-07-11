@@ -299,15 +299,6 @@
 
     function get_report_monthly(month, startRange, endRange) {
 
-        month = "" + month;
-        // console.log("month = " + month);
-
-        if (month < 10 && month.length == 1) {
-            month = "0" + month.toString();
-        } else {
-            month = month.toString();
-        }
-
        $.get("{{ route('report.get-report-monthly') }}", {month: month, startRange: startRange, endRange: endRange}, function (data) {
             document.getElementById("monthly_report").innerHTML = data;
         }).fail( function () {
