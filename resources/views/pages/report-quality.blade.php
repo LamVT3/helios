@@ -13,13 +13,13 @@
 
         <div class="tab-v1">
             <ul id="tabs" class="nav nav-tabs">
-                <li class="active"><a href="#report" data-toggle="tab"><strong>Report</strong></a></li>
-                <li {{--class="active"--}}><a href="#monthly" data-toggle="tab"><strong>Monthly Report</strong></a></li>
+                <li {{--class="active"--}}><a href="#report" data-toggle="tab"><strong>Report</strong></a></li>
+                <li class="active"><a href="#monthly" data-toggle="tab"><strong>Monthly Report</strong></a></li>
                 <li {{--class="active"--}}><a href="#year" data-toggle="tab"><strong>Latest Months Report</strong></a></li>
                 <li {{--class="active"--}}><a href="#statistic" data-toggle="tab"><strong>Statistic Report</strong></a></li>
             </ul>
             <div class="tab-content mb30">
-                <div id="report" class="tab-pane active">
+                <div id="report" class="tab-pane {{--active--}}">
                     <!-- widget grid -->
                     <section id="widget-grid" class="">
                         <!-- row -->
@@ -205,7 +205,7 @@
                     <!-- end widget grid -->
                 </div>
 
-                <div class="tab-pane" id="monthly">
+                <div class="tab-pane active" id="monthly">
                     <section id="widget-grid">
                         <div class="row">
                             <article class="col-sm-12 col-md-12">
@@ -264,6 +264,14 @@
 
     </div>
     <!-- END MAIN CONTENT -->
+
+    <div style="position: relative">
+        <form id="export-report" action="{{ route('report.export-monthly')}}" enctype="multipart/form-data">
+            <input type="hidden" name="month" id="month">
+            <input type="hidden" name="startRange" id="startRange">
+            <input type="hidden" name="endRange" id="endRange">
+        </form>
+    </div>
 
 </div>
 <input type="hidden" name="page_size" value="{{$page_size}}">
@@ -382,11 +390,13 @@
         var rangeDate = $("#rangedate").find("span").text();
         let dateArr = rangeDate.split("-");
         month = monthArr.indexOf(month) + 1;
-        $.get("{{ route('report.export-monthly') }}", {month: month, startRange: dateArr[0], endRange: dateArr[1]})
-            .fail(function (e) {
-                console.log(e);
-                alert('Cannot connect to server. Please try again later.');
-            });
+
+        $('input#month').val(month);
+        $('input#startRange').val(new Date(2018, month, dateArr[0]));
+        $('input#endRange').val(new Date(2018, month, dateArr[1]));
+
+        $('#export-report').submit();
+
     });
 
 </script>

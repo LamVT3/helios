@@ -14,6 +14,7 @@ use App\Subcampaign;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -133,11 +134,6 @@ class ReportController extends Controller
         $data = $data_where;
         $data['report'] = $report;
         return $data;
-    }
-
-    public function exportReport()
-    {
-
     }
 
     private function prepare_report($results)
@@ -411,22 +407,24 @@ class ReportController extends Controller
             ]);
         });
 
-        $rangeArr = array('total' => $rangeTotal,
+        $rangeArr = array(
             'week1' => $rangeW1,
             'week2' => $rangeW2,
             'week3' => $rangeW3,
             'week4' => $rangeW4,
             'week5' => $rangeW5,
             'week6' => $rangeW6,
+            'total' => $rangeTotal,
             'rangeDate' => $rangeDate);
 
-        $resultsArr = array('total' => $results,
+        $resultsArr = array(
             'week1' => $resultW1,
             'week2' => $resultW2,
             'week3' => $resultW3,
             'week4' => $resultW4,
             'week5' => $resultW5,
             'week6' => $resultW6,
+            'total' => $results,
             'rangeDate' => $resultRange);
 
         $data['report'] = $this->prepareReport($resultsArr, $rangeArr);
@@ -505,45 +503,77 @@ class ReportController extends Controller
     }
 
     public function exportMonthly() {
-//        $month = request('month');
-//        var_dump($month);
-//        $file_name = 'Report_Month_' . $month;
-//        Excel::create($file_name, function ($excel, $month) {
-//            $excel->sheet('Monthly_Report_' . $month, function ($sheet) {
-//                $data = $this->prepareMonthly();
-//                $count = 1;
-//                $report = $data['report'];
-//                $data = array();
-//                foreach ($report as $item) {
-//                    $data[] = array(
-//                        $count++,
-//                        $item->name,
-//                        $item->email,
-//                        $item->phone,
-//                        $item->age,
-//                        Date('Y-m-d H:i:s', $item->submit_time/1000),
-//                        $item->current_level,
-//                        $item->marketer_name,
-//                        $item->campaign_name,
-//                        $item->subcampaign_name,
-//                        $item->ad_name,
-//                        $item->landing_page,
-//                        $item->contact_id,
-//                        $item->ads_link
-//                    );
-//                }
-//                $sheet->fromArray($data, NULL, 'A1', FALSE, FALSE);
-//                $headings = array('STT', 'Name', 'Email', 'Phone', 'Age', 'Time', 'Current level', 'Marketer', 'Campaign', 'Subcampaign', 'Ads', 'Landing page', 'ContactID', 'Link Tracking');
-//                $sheet->prependRow(1, $headings);
-//                $sheet->cells('A1:N1', function ($cells) {
-//                    $cells->setBackground('#191919');
-//                    $cells->setFontColor('#DBAC69');
-//                    $cells->setFontSize(12);
-//                    $cells->setFontWeight('bold');
-//                });
-//            });
-//
-//        })->export('xls');
+        $month     = request('month');
+        $file_name = 'Report_Month_' . $month;
+        Excel::create($file_name, function ($excel) {
+            $excel->sheet('monthly_report', function ($sheet) {
+                $data = $this->prepareMonthly();
+                $report = $data['report'];
+                $usd_vnd = $report['config']['USD_VND'];
+                $usd_thb = $report['config']['USD_THB'];
+                $data = array();
+                $data['weeks'] = array('','Weeks');
+                $data['days'] = array('','N.o Days');
+                $data['budget'] = array('BUDGET');
+                $data['me_re'] = array('Actual', 'ME/RE'); $data['spent'] = array('','ME');
+                $data['revenue'] = array('','RE'); $data['c3b_cost'] = array('','C3B');
+                $data['c3bg_cost'] = array('','C3BG'); $data['l1_cost'] = array('','L1');
+                $data['l3_cost'] = array('','L3'); $data['l6_cost'] = array('','L6'); $data['l8_cost'] = array('','L8');
+
+                $data['quantity'] = array('QUANTITY');
+                $data['c3b'] = array('Actual','C3B'); $data['c3bg'] = array('','C3BG'); $data['l1'] = array('','L1');
+                $data['l3'] = array('','L3'); $data['l6'] = array('','L6'); $data['l8'] = array('','L8');
+
+                $data['quality'] = array('QUALITY');
+                $data['l3_c3b'] = array('Actual','L3/C3B'); $data['l3_c3bg'] = array('','L3/C3BG');
+                $data['l3_l1'] = array('','L3/L1'); $data['l1_c3bg'] = array('','L1/C3BG');
+                $data['c3bg_c3b'] = array('','C3BG/C3B'); $data['return_ratio'] = array('','Return Ratio');
+                $data['duplicate_ratio'] = array('','Duplicate Ratio');
+                $data['l6_l3'] = array('','L6/L3'); $data['l8_l6'] = array('','L8/L6');
+
+                foreach ($report as $key => $item) {
+                    if ($key == 'config') continue;
+                    array_push($data['weeks'], $key);
+                    array_push($data['days'], $item->range);
+                    array_push($data['me_re'], ($item->revenue != 0) ? round($item->spent * $usd_thb / $item->revenue,4)*100 : 0);
+                    array_push($data['spent'], $item->spent); array_push($data['revenue'], $item->revenue);
+                    array_push($data['c3b_cost'], ($item->c3b != 0) ? round($item->spent * $usd_vnd / $item->c3b) : 0);
+                    array_push($data['c3bg_cost'], ($item->c3bg != 0) ? round($item->spent * $usd_vnd / $item->c3bg) : 0);
+                    array_push($data['l1_cost'], ($item->l1 != 0) ? round($item->spent * $usd_vnd / $item->l1) : 0);
+                    array_push($data['l3_cost'], ($item->l3 != 0) ? round($item->spent * $usd_vnd / $item->l3) : 0);
+                    array_push($data['l6_cost'], ($item->l6 != 0) ? round($item->spent * $usd_vnd / $item->l6) : 0);
+                    array_push($data['l8_cost'], ($item->l8 != 0) ? round($item->spent * $usd_vnd / $item->l8) : 0);
+                    array_push($data['c3b'], $item->c3b); array_push($data['c3bg'], $item->c3bg);
+                    array_push($data['l1'], $item->l1); array_push($data['l3'], $item->l3);
+                    array_push($data['l6'], $item->l6); array_push($data['l8'], $item->l8);
+                    array_push($data['l3_c3b'], ($item->c3b != 0) ? round($item->l3 / $item->c3b,4)*100 : 0);
+                    array_push($data['l3_c3bg'], ($item->c3bg != 0) ? round($item->l3 / $item->c3bg,4)*100 : 0);
+                    array_push($data['l3_l1'], ($item->l1 != 0) ? round($item->l3 / $item->l1,4)*100 : 0);
+                    array_push($data['l1_c3bg'], ($item->c3bg != 0) ? round($item->l1 / $item->c3bg,4)*100 : 0);
+                    array_push($data['c3bg_c3b'], ($item->c3b != 0) ? round($item->c3bg / $item->c3b,4)*100 : 0);
+                    array_push($data['return_ratio'], 0); array_push($data['duplicate_ratio'], 0);
+                    array_push($data['l6_l3'], ($item->l3 != 0) ? round($item->l6 / $item->l3,4)*100 : 0);
+                    array_push($data['l8_l6'], ($item->l6 != 0) ? round($item->l8 / $item->l6,4)*100 : 0);
+                }
+                $sheet->fromArray($data, NULL, 'A1', FALSE, FALSE);
+
+                $headings1 = array('MONTHLY MARKETING REPORT');
+                $headings2 = array('Budget :', '', 'Target L1 :', '', 'L3/C3B :', '');
+                $headings3 = array('Spent :', $report['total']->spent, 'Produced :', $report['total']->l1,
+                    'Actual :', ($report['total']->c3bg != 0) ? round($report['total']->l3 / $report['total']->c3bg,4)*100 : 0);
+                $sheet->prependRow(1, $headings1);
+                $sheet->prependRow(2, $headings2);
+                $sheet->prependRow(3, $headings3);
+
+                $sheet->mergeCells('A1:J1', function ($cells) {
+                    $cells->setBackground('#fafafa');
+                    $cells->setFontColor('#ED8515');
+                    $cells->setFontSize('xx-large');
+                    $cells->setFontWeight('bold');
+                });
+
+            });
+        })->export('xls');
     }
 
 }

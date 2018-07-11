@@ -401,7 +401,7 @@
                 </tr>
                 <tr class="italic">
                     <td></td>
-                    <td class="cente">C3BG/C3B %</td>
+                    <td class="center">C3BG/C3B %</td>
                     <td class="center">{{ ($report['week1']->c3b != 0) ? round($report['week1']->c3bg / $report['week1']->c3b,4)*100 : 0 }}%</td>
                     <td class="center">{{ ($report['week2']->c3b != 0) ? round($report['week2']->c3bg / $report['week2']->c3b,4)*100 : 0 }}%</td>
                     <td class="center">{{ ($report['week3']->c3b != 0) ? round($report['week3']->c3bg / $report['week3']->c3b,4)*100 : 0 }}%</td>
