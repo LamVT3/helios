@@ -115,10 +115,6 @@ class SubReportController extends Controller
             $array_month[$i] = $timestamp;
         }
 
-        $config     = Config::getByKeys(['USD_VND', 'USD_THB']);
-        $usd_vnd    = $config['USD_VND'];
-        $usd_thb    = $config['USD_VND'];
-
         $me_array   = array();
         $re_array   = array();
         $c3b_array  = array();
@@ -146,21 +142,20 @@ class SubReportController extends Controller
             }
             else{
 
-                $me         = $item_result['me'] * $usd_vnd;
-                $re         = $item_result['re'] / $usd_thb * $usd_vnd;
+                $me         = $item_result['me'] ? $this->convert_spent($item_result['me'])     : 0;
+                $re         = $item_result['re'] ? $this->convert_revenue($item_result['re'])   : 0;
 
                 $total_me   += $me;
                 $total_re   += $re;
 
                 $me_array[(int)($day[2])]   = $me;
                 $re_array[(int)($day[2])]   = $re;
-                $c3b_array[(int)($day[2])]  = $item_result['c3b']   ? $me / $item_result['c3b']     : 0 ;
-                $c3bg_array[(int)($day[2])] = $item_result['c3bg']  ? $me / $item_result['c3bg']    : 0 ;
-                $l1_array[(int)($day[2])]   = $item_result['l1']    ? $me / $item_result['l1']      : 0 ;
-                $l3_array[(int)($day[2])]   = $item_result['l3']    ? $me / $item_result['l3']      : 0 ;
-                $l6_array[(int)($day[2])]   = $item_result['l6']    ? $me / $item_result['l6']      : 0 ;
-                $l8_array[(int)($day[2])]   = $item_result['l8']    ? $me / $item_result['l8']      : 0 ;
-
+                $c3b_array[(int)($day[2])]  = $item_result['c3b']   ? round ($me / $item_result['c3b'], 2)     : 0 ;
+                $c3bg_array[(int)($day[2])] = $item_result['c3bg']  ? round ($me / $item_result['c3bg'], 2)    : 0 ;
+                $l1_array[(int)($day[2])]   = $item_result['l1']    ? round ($me / $item_result['l1'], 2)      : 0 ;
+                $l3_array[(int)($day[2])]   = $item_result['l3']    ? round ($me / $item_result['l3'], 2)      : 0 ;
+                $l6_array[(int)($day[2])]   = $item_result['l6']    ? round ($me / $item_result['l6'], 2)      : 0 ;
+                $l8_array[(int)($day[2])]   = $item_result['l8']    ? round ($me / $item_result['l8'], 2)      : 0 ;
             }
         }
 
@@ -174,7 +169,7 @@ class SubReportController extends Controller
         $l8_result   = array();
 
         foreach ($array_month as $key => $timestamp) {
-            $me_result[]     = [$timestamp, isset($me_array[$key])  ? $me_array[$key]   : 0];
+            $me_result[]    = [$timestamp, isset($me_array[$key])   ? $me_array[$key]   : 0];
             $re_result[]    = [$timestamp, isset($re_array[$key])   ? $re_array[$key]   : 0];
             $c3b_result[]   = [$timestamp, isset($c3b_array[$key])  ? $c3b_array[$key]  : 0];
             $c3bg_result[]  = [$timestamp, isset($c3bg_array[$key]) ? $c3bg_array[$key] : 0];
@@ -1437,10 +1432,6 @@ class SubReportController extends Controller
 
     private function getBudgetByWeeks($query_chart, $w){
 
-        $config     = Config::getByKeys(['USD_VND', 'USD_THB']);
-        $usd_vnd    = $config['USD_VND'];
-        $usd_thb    = $config['USD_VND'];
-
         $me_array   = array();
         $re_array   = array();
         $c3b_array  = array();
@@ -1456,20 +1447,20 @@ class SubReportController extends Controller
         foreach ($query_chart as $item_result) {
             $week = $this->getWeek($item_result['_id']);
 
-            $me         = $item_result['me'] * $usd_vnd;
-            $re         = $item_result['re'] / $usd_thb * $usd_vnd;
+            $me         = $item_result['me'] ? $this->convert_spent($item_result['me'])     : 0;
+            $re         = $item_result['re'] ? $this->convert_revenue($item_result['re'])   : 0;
 
             $total_me   += $me;
             $total_re   += $re;
 
             @$me_array[$week]   += $me;
             @$re_array[$week]   += $re;
-            @$c3b_array[$week]  += $item_result['c3b']   ? $me / $item_result['c3b']     : 0 ;
-            @$c3bg_array[$week] += $item_result['c3bg']  ? $me / $item_result['c3bg']    : 0 ;
-            @$l1_array[$week]   += $item_result['l1']    ? $me / $item_result['l1']      : 0 ;
-            @$l3_array[$week]   += $item_result['l3']    ? $me / $item_result['l3']      : 0 ;
-            @$l6_array[$week]   += $item_result['l6']    ? $me / $item_result['l6']      : 0 ;
-            @$l8_array[$week]   += $item_result['l8']    ? $me / $item_result['l8']      : 0 ;
+            @$c3b_array[$week]  += $item_result['c3b']   ? round($me / $item_result['c3b'], 2)     : 0 ;
+            @$c3bg_array[$week] += $item_result['c3bg']  ? round($me / $item_result['c3bg'], 2)    : 0 ;
+            @$l1_array[$week]   += $item_result['l1']    ? round($me / $item_result['l1'], 2)      : 0 ;
+            @$l3_array[$week]   += $item_result['l3']    ? round($me / $item_result['l3'], 2)      : 0 ;
+            @$l6_array[$week]   += $item_result['l6']    ? round($me / $item_result['l6'], 2)      : 0 ;
+            @$l8_array[$week]   += $item_result['l8']    ? round($me / $item_result['l8'], 2)      : 0 ;
 
         }
 
@@ -1787,10 +1778,6 @@ class SubReportController extends Controller
 
     private function getBudgetByMonths($query_chart){
 
-        $config     = Config::getByKeys(['USD_VND', 'USD_THB']);
-        $usd_vnd    = $config['USD_VND'];
-        $usd_thb    = $config['USD_VND'];
-
         $me_array   = array();
         $re_array   = array();
         $c3b_array  = array();
@@ -1806,20 +1793,20 @@ class SubReportController extends Controller
         foreach ($query_chart as $item_result) {
             $month = $this->getMonths($item_result['_id']);
 
-            $me         = $item_result['me'] * $usd_vnd;
-            $re         = $item_result['re'] / $usd_thb * $usd_vnd;
+            $me         = $item_result['me'] ? $this->convert_spent($item_result['me'])     : 0;
+            $re         = $item_result['re'] ? $this->convert_revenue($item_result['re'])   : 0;
 
             $total_me   += $me;
             $total_re   += $re;
 
             @$me_array[$month]   += $me;
             @$re_array[$month]   += $re;
-            @$c3b_array[$month]  += $item_result['c3b']   ? $me / $item_result['c3b']     : 0 ;
-            @$c3bg_array[$month] += $item_result['c3bg']  ? $me / $item_result['c3bg']    : 0 ;
-            @$l1_array[$month]   += $item_result['l1']    ? $me / $item_result['l1']      : 0 ;
-            @$l3_array[$month]   += $item_result['l3']    ? $me / $item_result['l3']      : 0 ;
-            @$l6_array[$month]   += $item_result['l6']    ? $me / $item_result['l6']      : 0 ;
-            @$l8_array[$month]   += $item_result['l8']    ? $me / $item_result['l8']      : 0 ;
+            @$c3b_array[$month]  += $item_result['c3b']   ? round($me / $item_result['c3b'], 2)     : 0 ;
+            @$c3bg_array[$month] += $item_result['c3bg']  ? round($me / $item_result['c3bg'], 2)    : 0 ;
+            @$l1_array[$month]   += $item_result['l1']    ? round($me / $item_result['l1'], 2)      : 0 ;
+            @$l3_array[$month]   += $item_result['l3']    ? round($me / $item_result['l3'], 2)      : 0 ;
+            @$l6_array[$month]   += $item_result['l6']    ? round($me / $item_result['l6'], 2)      : 0 ;
+            @$l8_array[$month]   += $item_result['l8']    ? round($me / $item_result['l8'], 2)      : 0 ;
 
         }
 
@@ -2014,5 +2001,38 @@ class SubReportController extends Controller
         $result['l8_l6']    = json_encode($l8_l6_result);
 
         return $result;
+    }
+
+    private function convert_revenue($revenue){
+        $request    = request();
+
+        $config     = Config::getByKeys(['USD_VND', 'USD_THB', 'THB_VND']);
+        $usd_vnd    = $config['USD_VND'];
+        $usd_tbh    = $config['USD_THB'];
+        $thb_vnd    = $config['THB_VND'];
+
+        if($request->unit == config('constants.UNIT_USD')){
+            $revenue    = $usd_tbh ? $revenue / $usd_tbh : 0;
+        }elseif ($request->unit == config('constants.UNIT_VND')){
+            $revenue    = $revenue * $thb_vnd;
+        }
+
+        return round($revenue,2);
+    }
+
+    private function convert_spent($spent){
+        $request    = request();
+
+        $config     = Config::getByKeys(['USD_VND', 'USD_THB', 'THB_VND']);
+        $usd_vnd    = $config['USD_VND'];
+        $usd_tbh    = $config['USD_THB'];
+
+        if($request->unit == config('constants.UNIT_VND')){
+            $spent    = $spent * $usd_vnd;
+        }elseif ($request->unit == config('constants.UNIT_BAHT')){
+            $spent    = $spent * $usd_tbh;
+        }
+
+        return round($spent, 2);
     }
 }

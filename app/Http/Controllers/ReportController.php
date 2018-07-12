@@ -55,6 +55,7 @@ class ReportController extends Controller
         $page_size      = Config::getByKey('PAGE_SIZE');
         $subcampaigns   = Subcampaign::where('is_active', 1)->get();
         $landing_page   = LandingPage::where('is_active', 1)->get();
+        $unit = config('constants.UNIT_USD');
 
         return view('pages.report-quality', compact(
             'page_title',
@@ -69,12 +70,14 @@ class ReportController extends Controller
             'campaigns',
             'page_size',
             'subcampaigns',
-            'landing_page'
+            'landing_page',
+            'unit'
         ));
     }
 
     public function getReport()
     {
+        $request = request();
         $data = $this->getReportData();
 
         $data['sources'] = Source::all();
@@ -85,6 +88,11 @@ class ReportController extends Controller
         $data['team'] = \request('team', 'All');
         $data['marketer'] = \request('marketer', 'All');
         $data['campaign'] = \request('campaign', 'All');
+        $data['unit'] = config('constants.UNIT_USD');
+        if($request->unit){
+            $data['unit'] = $request->unit;
+        }
+
         return view('pages.table_report-quality', $data);
     }
 
@@ -148,13 +156,6 @@ class ReportController extends Controller
 
     private function prepare_report($results)
     {
-        // Conversion rate from 1 USD to VND
-        // 2018-04-18 LamVT [HEL_9] Add more setting for VND/USD conversion
-        $config     = Config::getByKeys(['USD_VND', 'USD_THB']);
-        $rate       = $config['USD_VND'];
-        $usd_thb    = $config['USD_THB'];
-        // end 2018-04-18 LamVT [HEL_9] Add more setting for VND/USD conversion
-
         $request = request();
         $source_name = $team_name = $campaign_name = $marketer_name = 'All';
         if($request->source_id){
@@ -201,16 +202,19 @@ class ReportController extends Controller
                 continue;
             }
 
+            $spent      = isset($item->spent)      ? $this->convert_spent($item->spent)        : 0;
+            $revenue    = isset($item->revenue)    ? $this->convert_revenue($item->revenue)    : 0;
+
             $report['total']->c1        += $item->c1        ? $item->c1        : 0;
             $report['total']->c2        += $item->c2        ? $item->c2        : 0;
             $report['total']->c3        += $item->c3a + $item->c3b + $item->c3bg;
             $report['total']->c3b       += $item->c3b + $item->c3bg;
             $report['total']->c3bg      += $item->c3bg      ? $item->c3bg      : 0;
-            $report['total']->spent     += $item->spent     ? $item->spent     : 0;
+            $report['total']->spent     += $spent;
             $report['total']->l1        += $item->l1        ? $item->l1        : 0;
             $report['total']->l3        += $item->l3        ? $item->l3        : 0;
             $report['total']->l8        += $item->l8        ? $item->l8        : 0;
-            $report['total']->revenue   += $item->revenue   ? $item->revenue   : 0;
+            $report['total']->revenue   += $revenue;
 
             if (!isset($report[$item->ad_id])) {
                 $ad = Ad::find($item->ad_id);
@@ -245,11 +249,11 @@ class ReportController extends Controller
                     'c3'        => $item->c3a + $item->c3b + $item->c3bg,
                     'c3b'       => $item->c3b + $item->c3bg,
                     'c3bg'      => $item->c3bg     ? $item->c3bg       : 0,
-                    'spent'     => $item->spent    ? $item->spent      : 0,
+                    'spent'     => $spent,
                     'l1'        => $item->l1       ? $item->l1         : 0,
                     'l3'        => $item->l3       ? $item->l3         : 0,
                     'l8'        => $item->l8       ? $item->l8         : 0,
-                    'revenue'   => $item->revenue  ? $item->revenue    : 0,
+                    'revenue'   => $revenue,
                 ];
             } else {
                 $report[$item->ad_id]->c1       += isset($item->c1)        ? $item->c1         : 0;
@@ -257,28 +261,63 @@ class ReportController extends Controller
                 $report[$item->ad_id]->c3       += $item->c3a + $item->c3b + $item->c3bg;
                 $report[$item->ad_id]->c3b      += $item->c3b + $item->c3bg;
                 $report[$item->ad_id]->c3bg     += isset($item->c3bg)      ? $item->c3bg       : 0;
-                $report[$item->ad_id]->spent    += isset($item->spent)     ? $item->spent      : 0;
+                $report[$item->ad_id]->spent    += $spent;
                 $report[$item->ad_id]->l1       += isset($item->l1)        ? $item->l1         : 0;
                 $report[$item->ad_id]->l3       += isset($item->l3)        ? $item->l3         : 0;
                 $report[$item->ad_id]->l8       += isset($item->l8)        ? $item->l8         : 0;
-                $report[$item->ad_id]->revenue  += isset($item->revenue)   ? $item->revenue    : 0;
+                $report[$item->ad_id]->revenue  += $revenue;
             }
         }
         foreach ($report as $key => $item) {
-            $item->c1_cost  = $item->c1     ? round($item->spent * $rate / $item->c1, 2)    : '0';
-            $item->c2_cost  = $item->c2     ? round($item->spent * $rate / $item->c2, 2)    : '0';
+            $item->c1_cost  = $item->c1     ? round($item->spent / $item->c1, 2)    : '0';
+            $item->c2_cost  = $item->c2     ? round($item->spent / $item->c2, 2)    : '0';
             $item->c2_c1    = $item->c1     ? round($item->c2 / $item->c1, 4) * 100         : '0';
-            $item->c3_cost  = $item->c3     ? round($item->spent * $rate / $item->c3, 2)    : '0';
-            $item->c3b_cost = $item->c3b    ? round($item->spent * $rate / $item->c3b, 2)   : '0';
-            $item->c3bg_cost = $item->c3bg  ? round($item->spent * $rate / $item->c3bg, 2)   : '0';
+            $item->c3_cost  = $item->c3     ? round($item->spent / $item->c3, 2)    : '0';
+            $item->c3b_cost = $item->c3b    ? round($item->spent / $item->c3b, 2)   : '0';
+            $item->c3bg_cost = $item->c3bg  ? round($item->spent / $item->c3bg, 2)   : '0';
             $item->c3_c2    = $item->c2     ? round($item->c3 / $item->c2, 4) * 100         : '0';
             $item->l3_l1    = $item->l1     ? round($item->l3 / $item->l1, 4) * 100         : '0';
             $item->l8_l1    = $item->l1     ? round($item->l8 / $item->l1, 4) * 100         : '0';
-            $item->me_re    = $item->revenue ? round($item->spent * $usd_thb / $item->revenue, 4) * 100 : '0';
+            $item->me_re    = $item->revenue ? round($item->spent / $item->revenue, 4) * 100 : '0';
             $report[$key]   = $item;
         }
 
         return $report;
+    }
+
+    private function convert_revenue($revenue){
+        $request    = request();
+
+        $config     = Config::getByKeys(['USD_VND', 'USD_THB', 'THB_VND']);
+        $usd_vnd    = $config['USD_VND'];
+        $usd_tbh    = $config['USD_THB'];
+        $thb_vnd    = $config['THB_VND'];
+
+        if($request->unit == config('constants.UNIT_USD')){
+            $revenue    = $usd_tbh ? $revenue / $usd_tbh : 0;
+        }elseif ($request->unit == config('constants.UNIT_VND')){
+            $revenue    = $revenue * $thb_vnd;
+        }
+
+        return round($revenue, 2);
+
+    }
+
+    private function convert_spent($spent){
+        $request    = request();
+
+        $config     = Config::getByKeys(['USD_VND', 'USD_THB', 'THB_VND']);
+        $usd_vnd    = $config['USD_VND'];
+        $usd_tbh    = $config['USD_THB'];
+
+        if($request->unit == config('constants.UNIT_VND')){
+            $spent    = $spent * $usd_vnd;
+        }elseif ($request->unit == config('constants.UNIT_BAHT')){
+            $spent    = $spent * $usd_tbh;
+        }
+
+        return round($spent, 2);
+
     }
 
 }

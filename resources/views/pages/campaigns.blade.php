@@ -46,9 +46,9 @@
                                     <tr>
                                         <th>Source</th>
                                         <th>Team</th>
-                                        <th>Name</th>
+                                        <th style="max-width: 40%">Name</th>
                                         <th>Creator</th>
-                                        <th>Created at</th>
+                                        <th style="min-width: 150px">Created at</th>
                                         {{--<th>Active?</th>--}}
                                         {{--<th>Action</th>--}}
                                     </tr>

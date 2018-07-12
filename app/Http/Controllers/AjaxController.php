@@ -377,9 +377,6 @@ class AjaxController extends Controller
 
     public function dashboard()
     {
-        $config     = Config::getByKeys(['USD_VND', 'USD_THB']);
-        $rate       = $config['USD_VND'];
-
         $request = request();
         /* phan dashboard*/
         $startDate = $request->startDate ? date('Y-m-d', strtotime($request->startDate)) : Date('Y-m-d');
@@ -388,14 +385,19 @@ class AjaxController extends Controller
         $query_dashboard = AdResult::where('date', '>=', $startDate)
             ->where('date', '<=', $endDate);
 
-        $dashboard['c3'] = $query_dashboard->sum('c3');
-        $dashboard['spent'] = $query_dashboard->sum('spent');
-        $dashboard['revenue'] = $query_dashboard->sum('revenue');
-        $dashboard['c3_cost'] = $dashboard['c3'] ? round($dashboard['spent'] * $rate / $dashboard['c3'], 2) : '0';
+        $c3         = $query_dashboard->sum('c3');
+        $spent      = $query_dashboard->sum('spent');  // USD
+        $revenue    = $query_dashboard->sum('revenue'); // Bath
 
-        $dashboard['c3_cost'] = number_format($dashboard['c3_cost']);
-        $dashboard['c3'] = number_format((int)$query_dashboard->sum('c3'));
-        $dashboard['revenue'] = number_format($query_dashboard->sum('revenue'));
+        $dashboard['c3']        = $c3;
+        $dashboard['spent']     = $this->convert_spent($spent);
+        $dashboard['revenue']   = $this->convert_revenue($revenue);
+        $dashboard['c3_cost']   = $dashboard['c3'] ? round( $dashboard['spent'] / $dashboard['c3'], 2) : '0';
+
+        $dashboard['c3']        = number_format($dashboard['c3']);
+        $dashboard['c3_cost']   = number_format($dashboard['c3_cost']);
+        $dashboard['spent']     = number_format($dashboard['spent']);
+        $dashboard['revenue']   = number_format($dashboard['revenue']);
         /* end Dashboard */
 
         return response()->json(['type' => 'success', 'dashboard' => $dashboard]);
@@ -462,7 +464,7 @@ class AjaxController extends Controller
                                 <th>{$no}</th>
                                 <th class='text-center'>{$user['username']}</th>
                                 <td class='text-center'>{$user['rank']}</td>
-                                <td class='text-center'>{$item->c3b}</td>
+                                <td class='text-center'>{number_format($item->c3b)}</td>
                             </tr>";
         }
 
@@ -510,7 +512,7 @@ class AjaxController extends Controller
                                     <th>#</th>
                                     <th class="text-center">Name</th>
                                     <th class="text-center">Rank</th>
-                                    <th class="text-center">Revenue (baht)</th>
+                                    <th class="text-center">Revenue ('. $request->unit .')</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -531,18 +533,55 @@ class AjaxController extends Controller
                 }
             }
 
+            $revenue = $this->convert_revenue($item->revenue);
+
             $no = $i+1;
             $table .= "<tr>
                                 <th>{$no}</th>
                                 <th class='text-center'>{$user['username']}</th>
                                 <td class='text-center'>{$user['rank']}</td>
-                                <td class='text-center'>{$item->revenue}</td>
+                                <td class='text-center'>{$revenue}</td>
                             </tr>";
         }
 
         $table .= '</tbody> </table>';
 
         return $table;
+    }
+
+    private function convert_revenue($revenue){
+        $request    = request();
+
+        $config     = Config::getByKeys(['USD_VND', 'USD_THB', 'THB_VND']);
+        $usd_vnd    = $config['USD_VND'];
+        $usd_tbh    = $config['USD_THB'];
+        $thb_vnd    = $config['THB_VND'];
+
+        if($request->unit == config('constants.UNIT_USD')){
+            $revenue    = $usd_tbh ? $revenue / $usd_tbh : 0;
+        }elseif ($request->unit == config('constants.UNIT_VND')){
+            $revenue    = $revenue * $thb_vnd;
+        }
+
+        return number_format($revenue);
+
+    }
+
+    private function convert_spent($spent){
+        $request    = request();
+
+        $config     = Config::getByKeys(['USD_VND', 'USD_THB', 'THB_VND']);
+        $usd_vnd    = $config['USD_VND'];
+        $usd_tbh    = $config['USD_THB'];
+
+        if($request->unit == config('constants.UNIT_VND')){
+            $spent    = $spent * $usd_vnd;
+        }elseif ($request->unit == config('constants.UNIT_BAHT')){
+            $spent    = $spent * $usd_tbh;
+        }
+
+        return number_format($spent);
+
     }
 
     public function spent_leaderboard()
@@ -584,7 +623,7 @@ class AjaxController extends Controller
                                     <th>#</th>
                                     <th class="text-center">Name</th>
                                     <th class="text-center">Rank</th>
-                                    <th class="text-center">Spent (USD)</th>
+                                    <th class="text-center">Spent ('. $request->unit .')</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -594,19 +633,20 @@ class AjaxController extends Controller
 //            if(!$item->spent) continue;
 
             $user = User::find($item->_id);
-            // 2018-04-18 LamVT update leaderboard
             if(!$user){ // if not found user
                 $unknown            = config('constants.UNKNOWN');
                 $user['username']   = $unknown;
                 $user['rank']       = $unknown;
             }
-            // end 2018-04-18 LamVT update leaderboard
+
+            $spent = $this->convert_spent($item->spent);
+
             $no = $i+1;
             $table .= "<tr>
                                 <th>{$no}</th>
                                 <th class='text-center'>{$user['username']}</th>
                                 <td class='text-center'>{$user['rank']}</td>
-                                <td class='text-center'>{$item->spent}</td>
+                                <td class='text-center'>{$spent}</td>
                             </tr>";
         }
 

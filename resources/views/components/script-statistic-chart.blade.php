@@ -146,7 +146,7 @@
                     } else if (item.series.label == 'Price of C3B produced') {
                         tooltip = "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + numberWithCommas(y) + "</strong> (VND)"
                     } else {
-                        tooltip = "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + y + "</strong> (%)";
+                        tooltip = "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + numberWithCommas(y) + "</strong> (%)";
                     }
 
                     showTooltip(item.pageX, item.pageY, color, tooltip);

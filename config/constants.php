@@ -25,7 +25,10 @@ return [
     'ROLE_MANAGER'          => 'Manager',
     'ROLE_MARKETER'         => 'Marketer',
     'CURRENT_LEVEL'         => ['l1', 'l2', 'l3', 'l4', 'l5', 'l6', 'l7', 'l8'],
-    'SALE_CRM'              => 'SALE CRM'
+    'SALE_CRM'              => 'SALE CRM',
+    'UNIT_USD'              => 'USD',
+    'UNIT_VND'              => 'VND',
+    'UNIT_BAHT'             => 'Baht',
 ];
 
 
