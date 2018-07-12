@@ -392,7 +392,7 @@ class AjaxController extends Controller
         $dashboard['c3']        = $c3;
         $dashboard['spent']     = $this->convert_spent($spent);
         $dashboard['revenue']   = $this->convert_revenue($revenue);
-        $dashboard['c3_cost']   = $dashboard['c3'] ? round( $dashboard['spent'] / $dashboard['c3'], 2) : '0';
+        $dashboard['c3_cost']   = $dashboard['c3'] ? round( $dashboard['spent'] / $dashboard['c3'], 2) : 0;
 
         $dashboard['c3']        = number_format($dashboard['c3']);
         $dashboard['c3_cost']   = number_format($dashboard['c3_cost']);
@@ -563,7 +563,7 @@ class AjaxController extends Controller
             $revenue    = $revenue * $thb_vnd;
         }
 
-        return number_format($revenue);
+        return $revenue;
 
     }
 
@@ -579,9 +579,7 @@ class AjaxController extends Controller
         }elseif ($request->unit == config('constants.UNIT_BAHT')){
             $spent    = $spent * $usd_tbh;
         }
-
-        return number_format($spent);
-
+        return $spent;
     }
 
     public function spent_leaderboard()
