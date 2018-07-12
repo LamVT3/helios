@@ -41,8 +41,8 @@
                                        width="100%">
                                     <thead>
                                     <tr>
-                                        <th>Team Name</th>
-                                        <th>Team Description</th>
+                                        <th>Name</th>
+                                        <th>Description</th>
                                         <th>Team Members</th>
                                         <th>Sources</th>
                                         <th>Creator</th>
