@@ -464,7 +464,7 @@ class AjaxController extends Controller
                                 <th>{$no}</th>
                                 <th class='text-center'>{$user['username']}</th>
                                 <td class='text-center'>{$user['rank']}</td>
-                                <td class='text-center'>{number_format($item->c3b)}</td>
+                                <td class='text-center'>{$item->c3b}</td>
                             </tr>";
         }
 
