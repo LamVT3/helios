@@ -496,6 +496,10 @@
 
         function dashboard(startDate, endDate, unit) {
 
+            $('.widget-c3-cost .widget-unit').html(unit);
+            $('.widget-budget .widget-unit').html(unit);
+            $('.widget-revenue .widget-unit').html(unit);
+
             $('.widget-c3 .widget-actual').html('...');
             $('.widget-c3-cost .widget-actual').html('...');
             $('.widget-budget .widget-actual').html('...');
@@ -512,9 +516,6 @@
                 $('.widget-budget .widget-actual').html(dashboard.spent);
                 $('.widget-revenue .widget-actual').html(dashboard.revenue);
 
-                $('.widget-c3-cost .widget-unit').html(unit);
-                $('.widget-budget .widget-unit').html(unit);
-                $('.widget-revenue .widget-unit').html(unit);
             }).fail(
                 function (err) {
                     alert('Cannot connect to server. Please try again later.');

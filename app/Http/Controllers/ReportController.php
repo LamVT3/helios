@@ -299,7 +299,7 @@ class ReportController extends Controller
             $revenue    = $revenue * $thb_vnd;
         }
 
-        return $revenue;
+        return round($revenue, 2);
 
     }
 
@@ -316,7 +316,7 @@ class ReportController extends Controller
             $spent    = $spent * $usd_tbh;
         }
 
-        return $spent;
+        return round($spent, 2);
 
     }
 

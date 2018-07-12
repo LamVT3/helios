@@ -8,7 +8,8 @@
         <div id="content">
 
         @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
-
+            @component('components.currency')
+            @endcomponent
         @endcomponent
 
         <!-- widget grid -->
@@ -282,6 +283,7 @@
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 
     <script src="{{ asset('js/reports/sub-report.js') }}"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ URL::to('css/custom-radio.css') }}">
 
     <script type="text/javascript">
 
@@ -291,7 +293,6 @@
             initBudgetByDays();
             initQuantityByDays();
             initQualityByDays();
-
         });
 
         function initBudgetByDays() {
