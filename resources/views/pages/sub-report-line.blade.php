@@ -338,6 +338,7 @@
                 {data: {{ $quality["c3bg_c3b"] }}, label: "C3BG/C3B"},
                 {data: {{ $quality["l6_l3"] }}, label: "L6/L3"},
                 {data: {{ $quality["l8_l6"] }}, label: "L8/L6"},
+                {data: {{ $quality["c3a_c3"] }}, label: "C3A/C3"},
             ];
 
             initChart(item, data, arr_color, 'by_days');

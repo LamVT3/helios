@@ -597,13 +597,14 @@ function set_quality_chart(data) {
     var dataSet = [];
     var arr_color = [];
 
-    var data_l3_c3b = {data: jQuery.parseJSON(data.l3_c3b), label: "L3/C3B"};
-    var data_l3_c3bg = {data: jQuery.parseJSON(data.l3_c3bg), label: "L3/C3BG"};
-    var data_l3_l1 = {data: jQuery.parseJSON(data.l3_l1), label: "L3/L1"};
-    var data_l1_c3bg = {data: jQuery.parseJSON(data.l1_c3bg), label: "L1/C3BG"};
-    var data_c3bg_c3b = {data: jQuery.parseJSON(data.c3bg_c3b), label: "C3BG/C3B"};
-    var data_l6_l3 = {data: jQuery.parseJSON(data.l6_l3), label: "L6/L3"};
-    var data_l8_l6 = {data: jQuery.parseJSON(data.l8_l6), label: "L8/L6"};
+    var data_l3_c3b     = {data: jQuery.parseJSON(data.l3_c3b), label: "L3/C3B"};
+    var data_l3_c3bg    = {data: jQuery.parseJSON(data.l3_c3bg), label: "L3/C3BG"};
+    var data_l3_l1      = {data: jQuery.parseJSON(data.l3_l1), label: "L3/L1"};
+    var data_l1_c3bg    = {data: jQuery.parseJSON(data.l1_c3bg), label: "L1/C3BG"};
+    var data_c3bg_c3b   = {data: jQuery.parseJSON(data.c3bg_c3b), label: "C3BG/C3B"};
+    var data_l6_l3      = {data: jQuery.parseJSON(data.l6_l3), label: "L6/L3"};
+    var data_l8_l6      = {data: jQuery.parseJSON(data.l8_l6), label: "L8/L6"};
+    var data_c3a_c3     = {data: jQuery.parseJSON(data.c3a_c3), label: "C3A/C3"};
 
     var lst_checkbox = $('#quality_chk').find('input[type=checkbox]:checked');
     jQuery.each(lst_checkbox, function (index, checkbox) {
@@ -636,8 +637,11 @@ function set_quality_chart(data) {
             dataSet.push(data_l8_l6);
             arr_color.push('#000')
         }
+        if ($label == 'C3A/C3') {
+            dataSet.push(data_c3a_c3);
+            arr_color.push('#CC0099')
+        }
     });
-
 
     initChart(item, dataSet, arr_color, 'by_days');
     $("#quality_chart").UseTooltip('quality');
@@ -1000,13 +1004,14 @@ function set_quality_chart_by_weeks(data) {
     var dataSet = [];
     var arr_color = [];
 
-    var data_l3_c3b = {data: jQuery.parseJSON(data.l3_c3b), label: "L3/C3B"};
-    var data_l3_c3bg = {data: jQuery.parseJSON(data.l3_c3bg), label: "L3/C3BG"};
-    var data_l3_l1 = {data: jQuery.parseJSON(data.l3_l1), label: "L3/L1"};
-    var data_l1_c3bg = {data: jQuery.parseJSON(data.l1_c3bg), label: "L1/C3BG"};
-    var data_c3bg_c3b = {data: jQuery.parseJSON(data.c3bg_c3b), label: "C3BG/C3B"};
-    var data_l6_l3 = {data: jQuery.parseJSON(data.l6_l3), label: "L6/L3"};
-    var data_l8_l6 = {data: jQuery.parseJSON(data.l8_l6), label: "L8/L6"};
+    var data_l3_c3b     = {data: jQuery.parseJSON(data.l3_c3b), label: "L3/C3B"};
+    var data_l3_c3bg    = {data: jQuery.parseJSON(data.l3_c3bg), label: "L3/C3BG"};
+    var data_l3_l1      = {data: jQuery.parseJSON(data.l3_l1), label: "L3/L1"};
+    var data_l1_c3bg    = {data: jQuery.parseJSON(data.l1_c3bg), label: "L1/C3BG"};
+    var data_c3bg_c3b   = {data: jQuery.parseJSON(data.c3bg_c3b), label: "C3BG/C3B"};
+    var data_l6_l3      = {data: jQuery.parseJSON(data.l6_l3), label: "L6/L3"};
+    var data_l8_l6      = {data: jQuery.parseJSON(data.l8_l6), label: "L8/L6"};
+    var data_c3a_c3     = {data: jQuery.parseJSON(data.c3a_c3), label: "C3A/C3"};
 
     var lst_checkbox = $('#quality_by_weeks_chk').find('input[type=checkbox]:checked');
     jQuery.each(lst_checkbox, function (index, checkbox) {
@@ -1038,6 +1043,10 @@ function set_quality_chart_by_weeks(data) {
         if ($label == 'L8/L6') {
             dataSet.push(data_l8_l6);
             arr_color.push('#000')
+        }
+        if ($label == 'C3A/C3') {
+            dataSet.push(data_c3a_c3);
+            arr_color.push('#CC0099')
         }
     });
 
@@ -1170,13 +1179,14 @@ function set_quality_chart_by_months(data) {
     var dataSet = [];
     var arr_color = [];
 
-    var data_l3_c3b = {data: jQuery.parseJSON(data.l3_c3b), label: "L3/C3B"};
-    var data_l3_c3bg = {data: jQuery.parseJSON(data.l3_c3bg), label: "L3/C3BG"};
-    var data_l3_l1 = {data: jQuery.parseJSON(data.l3_l1), label: "L3/L1"};
-    var data_l1_c3bg = {data: jQuery.parseJSON(data.l1_c3bg), label: "L1/C3BG"};
-    var data_c3bg_c3b = {data: jQuery.parseJSON(data.c3bg_c3b), label: "C3BG/C3B"};
-    var data_l6_l3 = {data: jQuery.parseJSON(data.l6_l3), label: "L6/L3"};
-    var data_l8_l6 = {data: jQuery.parseJSON(data.l8_l6), label: "L8/L6"};
+    var data_l3_c3b     = {data: jQuery.parseJSON(data.l3_c3b), label: "L3/C3B"};
+    var data_l3_c3bg    = {data: jQuery.parseJSON(data.l3_c3bg), label: "L3/C3BG"};
+    var data_l3_l1      = {data: jQuery.parseJSON(data.l3_l1), label: "L3/L1"};
+    var data_l1_c3bg    = {data: jQuery.parseJSON(data.l1_c3bg), label: "L1/C3BG"};
+    var data_c3bg_c3b   = {data: jQuery.parseJSON(data.c3bg_c3b), label: "C3BG/C3B"};
+    var data_l6_l3      = {data: jQuery.parseJSON(data.l6_l3), label: "L6/L3"};
+    var data_l8_l6      = {data: jQuery.parseJSON(data.l8_l6), label: "L8/L6"};
+    var data_c3a_c3     = {data: jQuery.parseJSON(data.c3a_c3), label: "C3A/C3"};
 
     var lst_checkbox = $('#quality_by_months_chk').find('input[type=checkbox]:checked');
     jQuery.each(lst_checkbox, function (index, checkbox) {
@@ -1208,6 +1218,10 @@ function set_quality_chart_by_months(data) {
         if ($label == 'L8/L6') {
             dataSet.push(data_l8_l6);
             arr_color.push('#000')
+        }
+        if ($label == 'C3A/C3') {
+            dataSet.push(data_c3a_c3);
+            arr_color.push('#CC0099')
         }
     });
 
