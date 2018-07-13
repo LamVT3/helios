@@ -1135,13 +1135,13 @@ class AjaxController extends Controller
         } else {
             $query->orderBy('submit_time', 'desc');
         }
-        $total    = $query->get();
+        $total    = $query->count();
         $limit    = intval($request->length);
         $offset   = intval($request->start);
         $contacts = $query->skip($offset)->take($limit)->get();
 
         $data['contacts']   = $this->formatRecord($contacts);
-        $data['total']      = count($total);
+        $data['total']      = $total;
 
         return $data;
     }
@@ -1253,6 +1253,7 @@ class AjaxController extends Controller
             $contact['subcampaign_name']    = $contact['subcampaign_name'] ? $contact['subcampaign_name'] : "-";
             $contact['ad_name']             = $contact['ad_name'] ? $contact['ad_name'] : "-";
             $contact['landing_page']        = $contact['landing_page'] ? $contact['landing_page'] : "-";
+            $contact['channel_name']        = $contact['channel_name'] ? $contact['channel_name'] : "-";
         }
 
         return $contacts;

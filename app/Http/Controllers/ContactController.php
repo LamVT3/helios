@@ -147,8 +147,8 @@ class ContactController extends Controller
         } else {
             $query->orderBy('submit_time', 'desc');
         }
-
         $contacts = $query->get();
+
         // DB::connection('mongodb')->getQueryLog();
         $data = $data_where;
         $data['contacts'] = $contacts;
@@ -204,7 +204,6 @@ class ContactController extends Controller
 
     public function export()
     {
-//        $data = $this->getC3Data();
 //        $contacts = $data['contacts'];
 //        if (count($contacts) >= 1) {
         $date = \request('registered_date');
