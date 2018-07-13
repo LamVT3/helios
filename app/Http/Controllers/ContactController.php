@@ -202,7 +202,7 @@ class ContactController extends Controller
         return $count;
     }
 
-    public function export()
+    public function export_old()
     {
 //        $contacts = $data['contacts'];
 //        if (count($contacts) >= 1) {
@@ -271,6 +271,137 @@ class ContactController extends Controller
 //            return back();
 //        }
     }
+
+    public function export()
+    {
+
+        set_time_limit ( 5000 );
+        ini_set('memory_limit', '3500M');
+//        $contacts = $data['contacts'];
+//        if (count($contacts) >= 1) {
+        $date = \request('registered_date');
+        $date = str_replace('/','',$date);
+        $file_name = 'Contact_C3_' . $date;
+
+        Excel::create($file_name, function ($excel) {
+            header('Content-Encoding: UTF-8');
+            header('Content-type: text/csv; charset=UTF-8');
+            $excel->sheet('contacts_c3', function ($sheet) {
+
+                $request = request();
+                $columns     = $this->setColumns();
+                $data_where  = $this->getWhereData();
+                $data_search = $this->getSeachData();
+                $order       = $this->getOrderData();
+
+                // DB::connection( 'mongodb' )->enableQueryLog();
+
+                $startDate = strtotime("midnight")*1000;
+                $endDate = strtotime("tomorrow")*1000;
+                if($request->registered_date){
+                    $date_place = str_replace('-', ' ', $request->registered_date);
+                    $date_arr = explode(' ', str_replace('/', '-', $date_place));
+                    $startDate = strtotime($date_arr[0])*1000;
+                    // $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
+                    $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+                }
+                $query = Contact::where('submit_time', '>=', $startDate);
+                $query->where('submit_time', '<', $endDate);
+
+                if(count($data_where) > 0){
+                    if(@$data_where['clevel'] == 'c3b'){
+                        $query->where('clevel', 'like', '%c3b%');
+                        unset($data_where['clevel']);
+                    }
+                    if(@$data_where['current_level'] == 'l0'){
+                        $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+                        unset($data_where['current_level']);
+                    }
+                    $query->where($data_where);
+                }
+                if($data_search != ''){
+                    foreach ($columns as $key => $value){
+                        $query->orWhere($value, 'like', "%{$data_search}%");
+                    }
+                }
+                if($order){
+                    $query->orderBy($columns[$order['column']], $order['type']);
+                } else {
+                    $query->orderBy('submit_time', 'desc');
+                }
+
+                $count = 0;
+                $limit = 0;
+                $updateCnt = 0;
+                if(\request('limit')){
+                    $limit = \request('limit');
+                }
+                $query->chunk( 1000, function ( $contacts ) use ( &$updateCnt, &$limit, &$count, &$sheet ) {
+                    foreach ( $contacts as $item ) {
+                        if($item->is_export){
+                            continue;
+                        }
+                        $updateCnt++;
+                        $count++;
+                        $row = array(
+                            $count,
+//                        $this->checkSpecialSymbols($item->name),
+                            $item->name,
+                            $item->email,
+                            $item->phone,
+                            Date('Y-m-d H:i:s', (int)$item->submit_time/1000),
+                            $item->landing_page,
+                            $item->channel_name,
+                            $item->contact_id,
+                            $item->age,
+                            $item->current_level,
+                            $item->marketer_name,
+                            $item->campaign_name,
+                            $item->subcampaign_name,
+                            $item->ad_name,
+                            $item->ads_link,
+                            $item->clevel
+                        );
+                        if($limit > 0 && $count > $limit){
+                            break;
+                        }
+                        $sheet->appendRow($row);
+                    }
+//                    $sheet->fromArray($datas, NULL, 'A1', FALSE, FALSE);
+                });
+
+                $headings = \config('constants.TEMPLATE_EXPORT');
+                $sheet->prependRow(1, $headings);
+                $sheet->cells('A1:P1', function ($cells) {
+                    $cells->setBackground('#191919');
+                    $cells->setFontColor('#DBAC69');
+                    $cells->setFontSize(12);
+                    $cells->setFontWeight('bold');
+                });
+
+                $is_update = \request('mark_exported');
+                if($is_update){
+                    $this->updateStatusExport($updateCnt);
+                }
+            });
+
+        })->export('xlsx');
+
+//        } else {
+//            return back();
+//        }
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     private function getWhereData(){
         $request    = request();
