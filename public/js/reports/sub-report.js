@@ -63,11 +63,11 @@ $(document).ready(function () {
             title.html('Quantity in ' + dropdown.html());
             $('input[name="quantity_month"]').val(month);
             get_quantity(month);
-        } else if (title_id == 'C3A-C3B') {
-            title.html('C3A-C3B Report in ' + dropdown.html());
-            $('input[name="C3AC3B_month"]').val(month);
-            get_C3AC3B(month);
-        }else {
+        // } else if (title_id == 'C3A-C3B') {
+        //     title.html('C3A-C3B Report in ' + dropdown.html());
+        //     $('input[name="C3AC3B_month"]').val(month);
+        //     get_C3AC3B(month);
+        } else {
             title.html('Quality in ' + dropdown.html());
             $('input[name="quality_month"]').val(month);
             get_quality(month);
@@ -877,13 +877,14 @@ function loadDataByWeeks(type) {
         else if (type == 'quality') {
             set_quality_chart_by_weeks(response.quality);
         }
-        else if (type == 'C3A-C3B') {
-            set_C3AC3B(response.C3AC3B, $("#C3A-C3B_by_weeks_chart"), $('#C3A-C3B_by_weeks_chk'), 'by_weeks');
-        } else {
+        // else if (type == 'C3A-C3B') {
+        //     set_C3AC3B(response.C3AC3B, $("#C3A-C3B_by_weeks_chart"), $('#C3A-C3B_by_weeks_chk'), 'by_weeks');
+        // }
+        else {
             set_budget_chart_by_weeks(response.budget);
             set_quantity_chart_by_weeks(response.quantity);
             set_quality_chart_by_weeks(response.quality);
-            set_C3AC3B(response.C3AC3B, $("#C3A-C3B_by_weeks_chart"), $('#C3A-C3B_by_weeks_chk'), 'by_weeks');
+            // set_C3AC3B(response.C3AC3B, $("#C3A-C3B_by_weeks_chart"), $('#C3A-C3B_by_weeks_chk'), 'by_weeks');
         }
     });
 
@@ -901,11 +902,8 @@ function loadDataByDays() {
     var budget_month = $('input[name="budget_month"]').val();
     var quantity_month = $('input[name="quantity_month"]').val();
     var quality_month = $('input[name="quality_month"]').val();
-<<<<<<< Updated upstream
     var unit = $('#currency_unit').val();
-=======
-    var C3AC3B_month = $('input[name="C3AC3B_month"]').val();
->>>>>>> Stashed changes
+    // var C3AC3B_month = $('input[name="C3AC3B_month"]').val();
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -930,17 +928,14 @@ function loadDataByDays() {
             budget_month: budget_month,
             quantity_month: quantity_month,
             quality_month: quality_month,
-<<<<<<< Updated upstream
-            unit: unit
-=======
-            C3AC3B_month: C3AC3B_month
->>>>>>> Stashed changes
+            unit: unit,
+            // C3AC3B_month: C3AC3B_month
         }
     }).done(function (response) {
         set_budget_chart(response.budget);
         set_quantity_chart(response.quantity);
         set_quality_chart(response.quality);
-        set_C3AC3B(response.C3AC3B, $("#C3A-C3B_by_months_chart"), $('#C3A-C3B_by_months_chk'), 'by_months');
+        // set_C3AC3B(response.C3AC3B, $("#C3A-C3B_by_months_chart"), $('#C3A-C3B_by_months_chk'), 'by_months');
     });
 
     $('.loading').hide();
@@ -990,14 +985,15 @@ function loadDataByMonths(type) {
         else if (type == 'quality') {
             set_quality_chart_by_months(response.quality);
         }
-        else if (type == 'C3A-C3B') {
-            console.log(response.C3AC3B);
-            set_C3AC3B(response.C3AC3B, $("#C3A-C3B_by_months_chart"), $('#C3A-C3B_by_months_chk'), 'by_months');
-        } else {
+        // else if (type == 'C3A-C3B') {
+            // console.log(response.C3AC3B);
+            // set_C3AC3B(response.C3AC3B, $("#C3A-C3B_by_months_chart"), $('#C3A-C3B_by_months_chk'), 'by_months');
+        // }
+        else {
             set_budget_chart_by_months(response.budget);
             set_quantity_chart_by_months(response.quantity);
             set_quality_chart_by_months(response.quality);
-            set_C3AC3B(response.C3AC3B, $("#C3A-C3B_by_months_chart"), $('#C3A-C3B_by_months_chk'), 'by_months');
+            // set_C3AC3B(response.C3AC3B, $("#C3A-C3B_by_months_chart"), $('#C3A-C3B_by_months_chk'), 'by_months');
         }
     });
 
