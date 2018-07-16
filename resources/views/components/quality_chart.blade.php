@@ -56,6 +56,14 @@
                 </label>
             </div>
         </div>
+        <div class="col col-md">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" value="C3A/C3" checked>
+                    <div class="rectangle border-top-20">C3A/C3</div>
+                </label>
+            </div>
+        </div>
     </div>
 </div>
 <div id="{{$id}}" class="chart has-legend"></div>

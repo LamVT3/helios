@@ -377,9 +377,6 @@ class AjaxController extends Controller
 
     public function dashboard()
     {
-        $config     = Config::getByKeys(['USD_VND', 'USD_THB']);
-        $rate       = $config['USD_VND'];
-
         $request = request();
         /* phan dashboard*/
         $startDate = $request->startDate ? date('Y-m-d', strtotime($request->startDate)) : Date('Y-m-d');
@@ -388,14 +385,19 @@ class AjaxController extends Controller
         $query_dashboard = AdResult::where('date', '>=', $startDate)
             ->where('date', '<=', $endDate);
 
-        $dashboard['c3'] = $query_dashboard->sum('c3');
-        $dashboard['spent'] = $query_dashboard->sum('spent');
-        $dashboard['revenue'] = $query_dashboard->sum('revenue');
-        $dashboard['c3_cost'] = $dashboard['c3'] ? round($dashboard['spent'] * $rate / $dashboard['c3'], 2) : '0';
+        $c3         = $query_dashboard->sum('c3');
+        $spent      = $query_dashboard->sum('spent');  // USD
+        $revenue    = $query_dashboard->sum('revenue'); // Bath
 
-        $dashboard['c3_cost'] = number_format($dashboard['c3_cost']);
-        $dashboard['c3'] = number_format((int)$query_dashboard->sum('c3'));
-        $dashboard['revenue'] = number_format($query_dashboard->sum('revenue'));
+        $dashboard['c3']        = $c3;
+        $dashboard['spent']     = $this->convert_spent($spent);
+        $dashboard['revenue']   = $this->convert_revenue($revenue);
+        $dashboard['c3_cost']   = $dashboard['c3'] ? round( $dashboard['spent'] / $dashboard['c3'], 2) : 0;
+
+        $dashboard['c3']        = number_format($dashboard['c3']);
+        $dashboard['c3_cost']   = number_format($dashboard['c3_cost']);
+        $dashboard['spent']     = number_format($dashboard['spent']);
+        $dashboard['revenue']   = number_format($dashboard['revenue']);
         /* end Dashboard */
 
         return response()->json(['type' => 'success', 'dashboard' => $dashboard]);
@@ -403,22 +405,20 @@ class AjaxController extends Controller
 
     public function c3_leaderboard()
     {
-        $request = request();
-        $period = $request->period ? $request->period : 'today';
+        $request    = request();
+        $period     = $request->period ? $request->period : 'today';
 
-        $startDate = date('Y-m-d');
-        $endDate = date('Y-m-d');
+        $startDate  = date('Y-m-d');
+        $endDate    = date('Y-m-d');
 
         if ($period === 'thisweek') {
-            $startDate = date('Y-m-d', strtotime('Last Monday', time()));
-            // 2018-04-13 LamVT [HEL-13] update "Leaderboard" in Dashboard
-            $endDate = date('Y-m-d', strtotime('Next Sunday', time()));
-            // end 2018-04-13 LamVT [HEL-13] update "Leaderboard" in Dashboard
+            $startDate  = date('Y-m-d', strtotime('Last Monday', time()));
+            $endDate    = date('Y-m-d', strtotime('Next Sunday', time()));
         }
 
         if ($period === 'thismonth') {
-            $startDate = date('Y-m-01');
-            $endDate = date('Y-m-t');
+            $startDate  = date('Y-m-01');
+            $endDate    = date('Y-m-t');
         }
 
         $query = AdResult::raw(function ($collection) use ($startDate, $endDate) {
@@ -445,25 +445,36 @@ class AjaxController extends Controller
                             </thead>
                             <tbody>';
 
+        $data = array();
         foreach ($query as $i => $item) {
 //            if($i > 4) break;
 //            if(!$item->c3) continue;  // not show if c3 = 0
 
             $user = User::find($item->_id);
-            // 2018-04-18 LamVT update leaderboard
             if(!$user){ // if not found user
                 $unknown            = config('constants.UNKNOWN');
                 $user['username']   = $unknown;
                 $user['rank']       = $unknown;
             }
-            // end 2018-04-18 LamVT update leaderboard
-            $no = $i+1;
+
+            if(isset($data[$user['username']])){
+                $data[$user['username']]['c3b'] += $item->c3b;
+            }else{
+                $data[$user['username']]['username']    = $user['username'];
+                $data[$user['username']]['rank']        = $user['rank'];
+                $data[$user['username']]['c3b']         = $item->c3b;
+            }
+        }
+
+        $no = 0;
+        foreach ($data as $item){
+            $no++;
             $table .= "<tr>
-                                <th>{$no}</th>
-                                <th class='text-center'>{$user['username']}</th>
-                                <td class='text-center'>{$user['rank']}</td>
-                                <td class='text-center'>{$item->c3b}</td>
-                            </tr>";
+                            <th>{$no}</th>
+                            <th class='text-center'>{$item['username']}</th>
+                            <td class='text-center'>{$item['rank']}</td>
+                            <td class='text-center'>{$item['c3b']}</td>
+                        </tr>";
         }
 
         $table .= '</tbody> </table>';
@@ -473,20 +484,20 @@ class AjaxController extends Controller
 
     public function revenue_leaderboard()
     {
-        $request = request();
-        $period = $request->period ? $request->period : 'today';
+        $request    = request();
+        $period     = $request->period ? $request->period : 'today';
 
-        $startDate = date('Y-m-d');
-        $endDate = date('Y-m-d');
+        $startDate  = date('Y-m-d');
+        $endDate    = date('Y-m-d');
 
         if ($period === 'thisweek') {
-            $startDate = date('Y-m-d', strtotime('Last Monday', time()));
-            $endDate = date('Y-m-d', strtotime('Next Sunday', time()));
+            $startDate  = date('Y-m-d', strtotime('Last Monday', time()));
+            $endDate    = date('Y-m-d', strtotime('Next Sunday', time()));
         }
 
         if ($period === 'thismonth') {
-            $startDate = date('Y-m-01');
-            $endDate = date('Y-m-t');
+            $startDate  = date('Y-m-01');
+            $endDate    = date('Y-m-t');
         }
 
         $query = AdResult::raw(function ($collection) use ($startDate, $endDate) {
@@ -494,9 +505,9 @@ class AjaxController extends Controller
                 ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]],
                 [
                     '$group' => [
-                        '_id' => '$creator_id',
-                        'revenue' => [
-                            '$sum' => '$revenue'
+                        '_id'       => '$creator_id',
+                        'revenue'   => [
+                            '$sum'  => '$revenue'
                         ]
                     ]
                 ],
@@ -510,11 +521,12 @@ class AjaxController extends Controller
                                     <th>#</th>
                                     <th class="text-center">Name</th>
                                     <th class="text-center">Rank</th>
-                                    <th class="text-center">Revenue (baht)</th>
+                                    <th class="text-center">Revenue ('. $request->unit .')</th>
                                 </tr>
                             </thead>
                             <tbody>';
 
+        $data = array();
         foreach ($query as $i => $item) {
 //            if($i > 4) break;
 //            if(!$item->revenue) continue;
@@ -531,13 +543,27 @@ class AjaxController extends Controller
                 }
             }
 
-            $no = $i+1;
+            $revenue = $this->convert_revenue($item->revenue);
+
+            if(isset($data[$user['username']])){
+                $data[$user['username']]['revenue'] += $revenue;
+            }else{
+                $data[$user['username']]['username']    = $user['username'];
+                $data[$user['username']]['rank']        = $user['rank'];
+                $data[$user['username']]['revenue']     = $revenue;
+            }
+        }
+
+        $no = 0;
+        foreach ($data as $item){
+            $revenue = number_format($item['revenue'], 2);
+            $no++;
             $table .= "<tr>
-                                <th>{$no}</th>
-                                <th class='text-center'>{$user['username']}</th>
-                                <td class='text-center'>{$user['rank']}</td>
-                                <td class='text-center'>{$item->revenue}</td>
-                            </tr>";
+                            <th>{$no}</th>
+                            <th class='text-center'>{$item['username']}</th>
+                            <td class='text-center'>{$item['rank']}</td>
+                            <td class='text-center'>{$revenue}</td>
+                        </tr>";
         }
 
         $table .= '</tbody> </table>';
@@ -545,22 +571,55 @@ class AjaxController extends Controller
         return $table;
     }
 
+    private function convert_revenue($revenue){
+        $request    = request();
+
+        $config     = Config::getByKeys(['USD_VND', 'USD_THB', 'THB_VND']);
+        $usd_vnd    = $config['USD_VND'];
+        $usd_tbh    = $config['USD_THB'];
+        $thb_vnd    = $config['THB_VND'];
+
+        if($request->unit == config('constants.UNIT_USD')){
+            $revenue    = $usd_tbh ? $revenue / $usd_tbh : 0;
+        }elseif ($request->unit == config('constants.UNIT_VND')){
+            $revenue    = $revenue * $thb_vnd;
+        }
+
+        return $revenue;
+
+    }
+
+    private function convert_spent($spent){
+        $request    = request();
+
+        $config     = Config::getByKeys(['USD_VND', 'USD_THB', 'THB_VND']);
+        $usd_vnd    = $config['USD_VND'];
+        $usd_tbh    = $config['USD_THB'];
+
+        if($request->unit == config('constants.UNIT_VND')){
+            $spent    = $spent * $usd_vnd;
+        }elseif ($request->unit == config('constants.UNIT_BAHT')){
+            $spent    = $spent * $usd_tbh;
+        }
+        return $spent;
+    }
+
     public function spent_leaderboard()
     {
-        $request = request();
-        $period = $request->period ? $request->period : 'today';
+        $request    = request();
+        $period     = $request->period ? $request->period : 'today';
 
-        $startDate = date('Y-m-d');
-        $endDate = date('Y-m-d');
+        $startDate  = date('Y-m-d');
+        $endDate    = date('Y-m-d');
 
         if ($period === 'thisweek') {
-            $startDate = date('Y-m-d', strtotime('Last Monday', time()));
-            $endDate = date('Y-m-d', strtotime('Next Sunday', time()));
+            $startDate  = date('Y-m-d', strtotime('Last Monday', time()));
+            $endDate    = date('Y-m-d', strtotime('Next Sunday', time()));
         }
 
         if ($period === 'thismonth') {
-            $startDate = date('Y-m-01');
-            $endDate = date('Y-m-t');
+            $startDate  = date('Y-m-01');
+            $endDate    = date('Y-m-t');
         }
 
         $query = AdResult::raw(function ($collection) use ($startDate, $endDate) {
@@ -568,7 +627,7 @@ class AjaxController extends Controller
                 ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]],
                 [
                     '$group' => [
-                        '_id' => '$creator_id',
+                        '_id'   => '$creator_id',
                         'spent' => [
                             '$sum' => '$spent'
                         ]
@@ -584,30 +643,44 @@ class AjaxController extends Controller
                                     <th>#</th>
                                     <th class="text-center">Name</th>
                                     <th class="text-center">Rank</th>
-                                    <th class="text-center">Spent (USD)</th>
+                                    <th class="text-center">Spent ('. $request->unit .')</th>
                                 </tr>
                             </thead>
                             <tbody>';
 
+        $data = array();
         foreach ($query as $i => $item) {
 //            if($i > 4) break;
 //            if(!$item->spent) continue;
 
             $user = User::find($item->_id);
-            // 2018-04-18 LamVT update leaderboard
             if(!$user){ // if not found user
                 $unknown            = config('constants.UNKNOWN');
                 $user['username']   = $unknown;
                 $user['rank']       = $unknown;
             }
-            // end 2018-04-18 LamVT update leaderboard
-            $no = $i+1;
+
+            $spent = $this->convert_spent($item->spent);
+
+            if(isset($data[$user['username']])){
+                $data[$user['username']]['spent'] += $spent;
+            }else{
+                $data[$user['username']]['username']    = $user['username'];
+                $data[$user['username']]['rank']        = $user['rank'];
+                $data[$user['username']]['spent']       = $spent;
+            }
+        }
+
+        $no = 0;
+        foreach ($data as $item){
+            $spent = number_format($item['spent'], 2);
+            $no++;
             $table .= "<tr>
-                                <th>{$no}</th>
-                                <th class='text-center'>{$user['username']}</th>
-                                <td class='text-center'>{$user['rank']}</td>
-                                <td class='text-center'>{$item->spent}</td>
-                            </tr>";
+                            <th>{$no}</th>
+                            <th class='text-center'>{$item['username']}</th>
+                            <td class='text-center'>{$item['rank']}</td>
+                            <td class='text-center'>{$spent}</td>
+                        </tr>";
         }
 
         $table .= '</tbody> </table>';
@@ -1062,13 +1135,13 @@ class AjaxController extends Controller
         } else {
             $query->orderBy('submit_time', 'desc');
         }
-        $total    = $query->get();
+        $total    = $query->count();
         $limit    = intval($request->length);
         $offset   = intval($request->start);
         $contacts = $query->skip($offset)->take($limit)->get();
 
         $data['contacts']   = $this->formatRecord($contacts);
-        $data['total']      = count($total);
+        $data['total']      = $total;
 
         return $data;
     }
@@ -1180,6 +1253,7 @@ class AjaxController extends Controller
             $contact['subcampaign_name']    = $contact['subcampaign_name'] ? $contact['subcampaign_name'] : "-";
             $contact['ad_name']             = $contact['ad_name'] ? $contact['ad_name'] : "-";
             $contact['landing_page']        = $contact['landing_page'] ? $contact['landing_page'] : "-";
+            $contact['channel_name']        = $contact['channel_name'] ? $contact['channel_name'] : "-";
         }
 
         return $contacts;

@@ -171,81 +171,96 @@ $(document).ready(function () {
             $("#landing_page").select2();
         });
     })
+
+    $('input#currency').click(function (e) {
+        var unit = $(this).val();
+        $('#currency_unit').val(unit);
+
+        filterReport();
+    })
+
+
 });
 
 $(document).ready(function () {
     $('#search-form-report').submit(function (e) {
         e.preventDefault();
-        var url = $('#search-form-report').attr('url');
-        var source_id = $('select[name="source_id"]').val();
-        var team_id = $('select[name="team_id"]').val();
-        var marketer_id = $('select[name="marketer_id"]').val();
-        var campaign_id = $('select[name="campaign_id"]').val();
-        var subcampaign_id = $('select[name="subcampaign_id"]').val();
-        var registered_date = $('.registered_date').text();
-        var landing_page    = $('select[name="landing_page"]').val();
-
-        $('input[name="source_id"]').val(source_id);
-        $('input[name="team_id"]').val(team_id);
-        $('input[name="marketer_id"]').val(marketer_id);
-        $('input[name="campaign_id"]').val(campaign_id);
-        $('input[name="subcampaign_id"]').val(subcampaign_id);
-        $('input[name="registered_date"]').val(registered_date);
-
-        // var url = "{!! route('contacts.filter') !!}";
-        $('.loading').show();
-        $.ajax({
-            url: url,
-            type: 'GET',
-            data: {
-                source_id       : source_id,
-                team_id         : team_id,
-                marketer_id     : marketer_id,
-                campaign_id     : campaign_id,
-                subcampaign_id  : subcampaign_id,
-                registered_date : registered_date,
-                landing_page    : landing_page
-            }
-        }).done(function (response) {
-            $('.loading').hide();
-            $('.wrapper_report').html(response);
-
-            var responsiveHelper_table_report = undefined;
-            var page_size   = $('input[name="page_size"]').val();
-
-            var breakpointDefinition = {
-                tablet: 1024,
-                phone: 480
-            };
-            $('#table_report').dataTable({
-                "sDom":
-                "<'tb-only't>" +
-                "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 'i><'col-sm-6 col-xs-12'p>>",
-                "autoWidth": true,
-                "preDrawCallback": function () {
-                    // Initialize the responsive datatables helper once.
-                    if (!responsiveHelper_table_report) {
-                        responsiveHelper_table_report = new ResponsiveDatatablesHelper($('#table_report'), breakpointDefinition);
-                    }
-                },
-                "rowCallback": function (nRow) {
-                    responsiveHelper_table_report.createExpandIcon(nRow);
-                },
-                "drawCallback": function (oSettings) {
-                    responsiveHelper_table_report.respond();
-
-                    fixedTotalRow();
-                },
-                'order': [],
-                "iDisplayLength": parseInt(page_size),
-                'scrollY'       : '55vh',
-                "scrollX"       : true,
-                'scrollCollapse': true,
-            });
-        });
-        $('.loading').hide();
+        filterReport();
     });
 });
+
+function filterReport(){
+    var url = $('#search-form-report').attr('url');
+    var source_id = $('select[name="source_id"]').val();
+    var team_id = $('select[name="team_id"]').val();
+    var marketer_id = $('select[name="marketer_id"]').val();
+    var campaign_id = $('select[name="campaign_id"]').val();
+    var subcampaign_id = $('select[name="subcampaign_id"]').val();
+    var registered_date = $('.registered_date').text();
+    var landing_page    = $('select[name="landing_page"]').val();
+    var unit = $('#currency_unit').val();
+
+    $('input[name="source_id"]').val(source_id);
+    $('input[name="team_id"]').val(team_id);
+    $('input[name="marketer_id"]').val(marketer_id);
+    $('input[name="campaign_id"]').val(campaign_id);
+    $('input[name="subcampaign_id"]').val(subcampaign_id);
+    $('input[name="registered_date"]').val(registered_date);
+
+    // var url = "{!! route('contacts.filter') !!}";
+    $('.loading').show();
+    $.ajax({
+        url: url,
+        type: 'GET',
+        data: {
+            source_id       : source_id,
+            team_id         : team_id,
+            marketer_id     : marketer_id,
+            campaign_id     : campaign_id,
+            subcampaign_id  : subcampaign_id,
+            registered_date : registered_date,
+            landing_page    : landing_page,
+            unit            : unit
+        }
+    }).done(function (response) {
+        $('.loading').hide();
+        $('.wrapper_report').html(response);
+
+        var responsiveHelper_table_report = undefined;
+        var page_size   = $('input[name="page_size"]').val();
+
+        var breakpointDefinition = {
+            tablet: 1024,
+            phone: 480
+        };
+        $('#table_report').dataTable({
+            "sDom":
+            "<'tb-only't>" +
+            "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 'i><'col-sm-6 col-xs-12'p>>",
+            "autoWidth": true,
+            "preDrawCallback": function () {
+                // Initialize the responsive datatables helper once.
+                if (!responsiveHelper_table_report) {
+                    responsiveHelper_table_report = new ResponsiveDatatablesHelper($('#table_report'), breakpointDefinition);
+                }
+            },
+            "rowCallback": function (nRow) {
+                responsiveHelper_table_report.createExpandIcon(nRow);
+            },
+            "drawCallback": function (oSettings) {
+                responsiveHelper_table_report.respond();
+
+                fixedTotalRow();
+            },
+            'order': [],
+            "iDisplayLength": parseInt(page_size),
+            'scrollY'       : '55vh',
+            "scrollX"       : true,
+            'scrollCollapse': true,
+        });
+    });
+    $('.loading').hide();
+}
 
 function fixedTotalRow () {
 

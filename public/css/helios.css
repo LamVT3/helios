@@ -189,7 +189,7 @@ fieldset:first-of-type {
 }
 
 #table_ads th.long, #table_report th, #table_contacts th.long{
-    min-width: 100px;
+    min-width: 110px;
 }
 
 #table_ads tr#ad-total, #table_report tr#ad-total{
@@ -482,6 +482,11 @@ div#wrapper_kpi, div#wrapper_kpi_by_team{
     width: 100%;
     padding-top: 20px;
 }
+
+
+
+
+
 
 
 

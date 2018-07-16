@@ -35,11 +35,43 @@
                                 <!-- Tab panes -->
                                 <div class="tab-content">
                                     <div class="tab-pane container fade in active" id="maketer">
+                                        <div class="smart-form">
+                                            <section>
+                                                <label class="input">
+                                                    <input type="text" value="" name="maketer_name" placeholder="Select maketer">
+                                                </label>
+
+                                            </section>
+                                        </div>
+
+                                        <div class="text-right" style="margin-bottom: 20px">
+                                            <button id="filter_maketer" class="btn btn-primary btn-sm" type="submit" style="margin-right: 15px">
+                                                <i class="fa fa-filter"></i>
+                                                Filter
+                                            </button>
+                                        </div>
+
                                         <div id="wrapper_kpi">
                                             @include('pages.table_report_kpi')
                                         </div>
                                     </div>
                                     <div class="tab-pane container fade" id="team">
+                                        <div class="smart-form">
+                                            <section>
+                                                <label class="input">
+                                                    <input type="text" value="" name="team" placeholder="Select team">
+                                                </label>
+
+                                            </section>
+                                        </div>
+
+                                        <div class="text-right" style="margin-bottom: 20px">
+                                            <button id="filter_team" class="btn btn-primary btn-sm" type="submit" style="margin-right: 15px">
+                                                <i class="fa fa-filter"></i>
+                                                Filter
+                                            </button>
+                                        </div>
+
                                         <div id="wrapper_kpi_by_team">
                                             @include('pages.table_report_kpi_by_team')
                                         </div>
@@ -68,7 +100,6 @@
     <input type="hidden" id="kpi_by_maketer_url" value="{{route('kpi-by-maketer')}}">
     <input type="hidden" id="selected_month" value="">
 
-
 @endsection
 
 
@@ -81,6 +112,8 @@
 <script src="{{ asset('js/plugin/datatables/dataTables.bootstrap.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatable-responsive/datatables.responsive.min.js') }}"></script>
 <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+<script src="{{ asset('js/plugin/selectize/js/standalone/selectize.min.js')}}"></script>
 <script src="{{ asset('js/fixedTable/tableHeadFixer.js') }}"></script>
 
 
@@ -155,7 +188,7 @@
             var month   = $('#selected_month').val();
 
             initFormKPI(user, month);
-        })
+        });
 
         $('li#month').click(function() {
             var month_name = ["January", "February", "March", "April", "May", "June",
@@ -179,6 +212,34 @@
         $('a.edit_kpi').click(function() {
             var user = $(this).attr('data-user-id');
             $('#addModal').attr('data-user-id', user);
+        });
+
+        $('input[name=maketer_name]').selectize({
+            delimiter: ',',
+            persist: false,
+            valueField: '_id',
+            labelField: 'username',
+            searchField: ['username'],
+            options: {!! $users !!}
+        });
+
+        $('input[name=team]').selectize({
+            delimiter: ',',
+            persist: false,
+            valueField: 'name',
+            labelField: 'name',
+            searchField: ['name'],
+            options: {!! $teams !!}
+        });
+
+        $('#filter_maketer').click(function() {
+            var month =  $('#selected_month').val();
+            initDataKPI(month);
+        });
+
+        $('#filter_team').click(function() {
+            var month =  $('#selected_month').val();
+            initDataKPIByteam(month);
         });
 
         /* END BASIC */
@@ -243,13 +304,15 @@
     
     function initDataKPI(month) {
         var url = $('#kpi_by_maketer_url').val();
+        var maketer = $('input[name=maketer_name]').val();
 
         $('.loading').show();
         $.ajax({
             url: url,
             type: 'GET',
             data: {
-                month : month
+                month   : month,
+                maketer : maketer
             }
         }).done(function (response) {
             $('#wrapper_kpi').html(response);
@@ -264,13 +327,15 @@
 
     function initDataKPIByteam(month) {
         var url = $('#kpi_by_team_url').val();
+        var team = $('input[name=team]').val();
 
         $('.loading').show();
         $.ajax({
             url: url,
             type: 'GET',
             data: {
-                month : month
+                month   : month,
+                team    : team
             }
         }).done(function (response) {
             $('#wrapper_kpi_by_team').html(response);

@@ -378,7 +378,7 @@ function initDataTable() {
                 d.c3bg_checkbox     = c3bg_checkbox,
                 d.limit             = limit,
                 d.landing_page      = landing_page,
-                d.channel           = channel
+                d.channel           = channel,
                 d.search_text       = search
             }
         },

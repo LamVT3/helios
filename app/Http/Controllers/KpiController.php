@@ -34,12 +34,13 @@ class KpiController extends Controller
 
     public function assign_kpi(){
         $page_title     = "Assign KPI | Helios";
-        $page_css       = array();
+        $page_css       = array('selectize.default.css');
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active         = 'assign_kpi';
         $breadcrumbs    = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Assign KPI </span>";
 
         $users  = User::all();
+        $teams  = Team::all();
         $days   = $this->get_days_in_month();
         $month  = date('M');
         $year   = date('Y');
@@ -59,7 +60,8 @@ class KpiController extends Controller
             'data_team',
             'days',
             'month',
-            'year'
+            'year',
+            'teams'
         ));
     }
 
@@ -123,7 +125,7 @@ class KpiController extends Controller
             $data[$user->username]['user_id']   = $user->id;
 
             $team_name = $this->get_team($user->id);
-            $data[$user->username]['team']      = $team_name;
+            $data[$user->username]['team']   = $team_name;
         }
 
         return $data;
@@ -183,8 +185,7 @@ class KpiController extends Controller
     public function kpi_by_maketer(){
         $request = request();
 
-        $users  = User::all();
-        $result   = $this->get_data();
+        $result = $this->get_data();
         $data_maketer   = $this->get_data_by_maketer($result);
         $days   = $this->get_days_in_month();
         $month  = date('M');
@@ -194,8 +195,16 @@ class KpiController extends Controller
             $month  = date('M', strtotime($year.'-'.$request->month));
         }
 
+        if($request->maketer){
+            $arr_maketer = explode(',',$request->maketer);
+            foreach ($data_maketer as $key => $item ){
+                if(!in_array($item['user_id'], $arr_maketer)){
+                    unset($data_maketer[$key]);
+                }
+            }
+        }
+
         return view('pages.table_report_kpi', compact(
-            'users',
             'data_maketer',
             'days',
             'month',
@@ -205,20 +214,28 @@ class KpiController extends Controller
 
     public function kpi_by_team(){
         $request    = request();
-        $users      = User::all();
 
         $month  = date('M');
         $year   = date('Y');
+
         if($request->month){
             $month  = date('M', strtotime($year.'-'.$request->month));
         }
 
-        $days   = $this->get_days_in_month();
-        $result         = $this->get_data();
-        $data_team      = $this->get_data_by_team($result, $days);
+        $days       = $this->get_days_in_month();
+        $result     = $this->get_data();
+        $data_team  = $this->get_data_by_team($result, $days);
+
+        if($request->team){
+            $arr_team = explode(',',$request->team);
+            foreach ($data_team as $key => $item){
+                if(!in_array($key, $arr_team)){
+                    unset($data_team[$key]);
+                }
+            }
+        }
 
         return view('pages.table_report_kpi_by_team', compact(
-            'users',
             'data_team',
             'days',
             'month',
@@ -228,6 +245,7 @@ class KpiController extends Controller
 
     public function get_data_by_team($data, $day){
         $res = [];
+        $all_team = Team::all();
         foreach ($data as $item){
             $team = $item['team'];
             if(!$team){
@@ -246,9 +264,21 @@ class KpiController extends Controller
                     @$res[$team]['kpi'][$i] += @$item['kpi'][$i];
                     @$res[$team]['c3b'][$i] += @$item['c3b'][$i];
                 }
-                @$res[$team]['kpi']        += @$item['kpi'];
                 @$res[$team]['total_kpi']  += @$item['total_kpi'];
                 @$res[$team]['total_c3b']  += @$item['total_c3b'];
+            }
+        }
+
+        foreach ($all_team as $item){
+            $team = $item['name'];
+            if(!isset($res[$team])){
+                $cnt = $day;
+                for($i = 1; $i <= $cnt; $i++){
+                    @$res[$team]['kpi'][$i] += 0;
+                    @$res[$team]['c3b'][$i] += 0;
+                }
+                @$res[$team]['total_kpi']  = 0;
+                @$res[$team]['total_c3b']  = 0;
             }
         }
 
@@ -268,20 +298,18 @@ class KpiController extends Controller
                 ]],
                 [
                     '$group' => [
-                        '_id' => '$name',
+                        '_id'  => '$name',
                     ]
                 ]
             ]);
         });
-
         $team_name = '';
         if(count($query) == 1){
             foreach ($query as $item){
-                $team_name = $item->_id;
+                $team_name  = $item->_id;
             }
         }
-
-        return $team_name;
+        return$team_name;
     }
 
 }

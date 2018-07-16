@@ -115,10 +115,6 @@ class SubReportController extends Controller
             $array_month[$i] = $timestamp;
         }
 
-        $config     = Config::getByKeys(['USD_VND', 'USD_THB']);
-        $usd_vnd    = $config['USD_VND'];
-        $usd_thb    = $config['USD_VND'];
-
         $me_array   = array();
         $re_array   = array();
         $c3b_array  = array();
@@ -146,21 +142,20 @@ class SubReportController extends Controller
             }
             else{
 
-                $me         = $item_result['me'] * $usd_vnd;
-                $re         = $item_result['re'] / $usd_thb * $usd_vnd;
+                $me         = $item_result['me'] ? $this->convert_spent($item_result['me'])     : 0;
+                $re         = $item_result['re'] ? $this->convert_revenue($item_result['re'])   : 0;
 
                 $total_me   += $me;
                 $total_re   += $re;
 
                 $me_array[(int)($day[2])]   = $me;
                 $re_array[(int)($day[2])]   = $re;
-                $c3b_array[(int)($day[2])]  = $item_result['c3b']   ? $me / $item_result['c3b']     : 0 ;
-                $c3bg_array[(int)($day[2])] = $item_result['c3bg']  ? $me / $item_result['c3bg']    : 0 ;
-                $l1_array[(int)($day[2])]   = $item_result['l1']    ? $me / $item_result['l1']      : 0 ;
-                $l3_array[(int)($day[2])]   = $item_result['l3']    ? $me / $item_result['l3']      : 0 ;
-                $l6_array[(int)($day[2])]   = $item_result['l6']    ? $me / $item_result['l6']      : 0 ;
-                $l8_array[(int)($day[2])]   = $item_result['l8']    ? $me / $item_result['l8']      : 0 ;
-
+                $c3b_array[(int)($day[2])]  = $item_result['c3b']   ? round ($me / $item_result['c3b'], 2)     : 0 ;
+                $c3bg_array[(int)($day[2])] = $item_result['c3bg']  ? round ($me / $item_result['c3bg'], 2)    : 0 ;
+                $l1_array[(int)($day[2])]   = $item_result['l1']    ? round ($me / $item_result['l1'], 2)      : 0 ;
+                $l3_array[(int)($day[2])]   = $item_result['l3']    ? round ($me / $item_result['l3'], 2)      : 0 ;
+                $l6_array[(int)($day[2])]   = $item_result['l6']    ? round ($me / $item_result['l6'], 2)      : 0 ;
+                $l8_array[(int)($day[2])]   = $item_result['l8']    ? round ($me / $item_result['l8'], 2)      : 0 ;
             }
         }
 
@@ -174,7 +169,7 @@ class SubReportController extends Controller
         $l8_result   = array();
 
         foreach ($array_month as $key => $timestamp) {
-            $me_result[]     = [$timestamp, isset($me_array[$key])  ? $me_array[$key]   : 0];
+            $me_result[]    = [$timestamp, isset($me_array[$key])   ? $me_array[$key]   : 0];
             $re_result[]    = [$timestamp, isset($re_array[$key])   ? $re_array[$key]   : 0];
             $c3b_result[]   = [$timestamp, isset($c3b_array[$key])  ? $c3b_array[$key]  : 0];
             $c3bg_result[]  = [$timestamp, isset($c3bg_array[$key]) ? $c3bg_array[$key] : 0];
@@ -311,6 +306,8 @@ class SubReportController extends Controller
                 [
                     '$group' => [
                         '_id'   => '$date',
+                        'c3'    => ['$sum' => ['$sum' => ['$c3a', '$c3b', '$c3bg']]],
+                        'c3a'   => ['$sum' => '$c3a'],
                         'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
                         'l1'    => ['$sum' => '$l1'],
@@ -326,6 +323,8 @@ class SubReportController extends Controller
                 [
                     '$group' => [
                         '_id'   => '$date',
+                        'c3'    => ['$sum' => ['$sum' => ['$c3a', '$c3b', '$c3bg']]],
+                        'c3a'   => ['$sum' => '$c3a'],
                         'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
                         'l1'    => ['$sum' => '$l1'],
@@ -356,6 +355,7 @@ class SubReportController extends Controller
         $c3bg_c3b_array = array();
         $l6_l3_array    = array();
         $l8_l6_array    = array();
+        $c3a_c3_array   = array();
 
         foreach ($query_chart as $item_result) {
             $day = explode('-', $item_result['_id']);
@@ -374,6 +374,8 @@ class SubReportController extends Controller
                 round($item_result['l6'] / $item_result['l3'],2) * 100 : 0;
             $l8_l6_array[(int)($day[2])]  = $item_result['l6'] ?
                 round($item_result['l8'] / $item_result['l6'],2) * 100 : 0;
+            $c3a_c3_array[(int)($day[2])]  = $item_result['c3'] ?
+                round($item_result['c3a'] / $item_result['c3'],2) * 100 : 0;
         }
 
         $l3_c3b_result   = array();
@@ -383,6 +385,7 @@ class SubReportController extends Controller
         $c3bg_c3b_result = array();
         $l6_l3_result    = array();
         $l8_l6_result    = array();
+        $c3a_c3_result   = array();
 
         foreach ($array_month as $key => $timestamp) {
             $l3_c3b_result[]    = [$timestamp, isset($l3_c3b_array[$key])   ? $l3_c3b_array[$key]   : 0];
@@ -392,6 +395,7 @@ class SubReportController extends Controller
             $c3bg_c3b_result[]  = [$timestamp, isset($c3bg_c3b_array[$key]) ? $c3bg_c3b_array[$key] : 0];
             $l6_l3_result[]     = [$timestamp, isset($l6_l3_array[$key])    ? $l6_l3_array[$key]    : 0];
             $l8_l6_result[]     = [$timestamp, isset($l8_l6_array[$key])    ? $l8_l6_array[$key]    : 0];
+            $c3a_c3_result[]    = [$timestamp, isset($c3a_c3_array[$key])   ? $c3a_c3_array[$key]   : 0];
         }
 
         $result = array();
@@ -402,6 +406,7 @@ class SubReportController extends Controller
         $result['c3bg_c3b'] = json_encode($c3bg_c3b_result);
         $result['l6_l3']    = json_encode($l6_l3_result);
         $result['l8_l6']    = json_encode($l8_l6_result);
+        $result['c3a_c3']   = json_encode($c3a_c3_result);
 
         return $result;
     }
@@ -1381,6 +1386,8 @@ class SubReportController extends Controller
                 [
                     '$group' => [
                         '_id'   => '$date',
+                        'c3'    => ['$sum' => ['$sum' => ['$c3a', '$c3b', '$c3bg']]],
+                        'c3a'   => ['$sum' => '$c3a'],
                         'me'    => ['$sum' => '$spent'],
                         're'    => ['$sum' => '$revenue'],
                         'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
@@ -1398,6 +1405,8 @@ class SubReportController extends Controller
                 [
                     '$group' => [
                         '_id'   => '$date',
+                        'c3'    => ['$sum' => ['$sum' => ['$c3a', '$c3b', '$c3bg']]],
+                        'c3a'   => ['$sum' => '$c3a'],
                         'me'    => ['$sum' => '$spent'],
                         're'    => ['$sum' => '$revenue'],
                         'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
@@ -1437,10 +1446,6 @@ class SubReportController extends Controller
 
     private function getBudgetByWeeks($query_chart, $w){
 
-        $config     = Config::getByKeys(['USD_VND', 'USD_THB']);
-        $usd_vnd    = $config['USD_VND'];
-        $usd_thb    = $config['USD_VND'];
-
         $me_array   = array();
         $re_array   = array();
         $c3b_array  = array();
@@ -1456,20 +1461,20 @@ class SubReportController extends Controller
         foreach ($query_chart as $item_result) {
             $week = $this->getWeek($item_result['_id']);
 
-            $me         = $item_result['me'] * $usd_vnd;
-            $re         = $item_result['re'] / $usd_thb * $usd_vnd;
+            $me         = $item_result['me'] ? $this->convert_spent($item_result['me'])     : 0;
+            $re         = $item_result['re'] ? $this->convert_revenue($item_result['re'])   : 0;
 
             $total_me   += $me;
             $total_re   += $re;
 
             @$me_array[$week]   += $me;
             @$re_array[$week]   += $re;
-            @$c3b_array[$week]  += $item_result['c3b']   ? $me / $item_result['c3b']     : 0 ;
-            @$c3bg_array[$week] += $item_result['c3bg']  ? $me / $item_result['c3bg']    : 0 ;
-            @$l1_array[$week]   += $item_result['l1']    ? $me / $item_result['l1']      : 0 ;
-            @$l3_array[$week]   += $item_result['l3']    ? $me / $item_result['l3']      : 0 ;
-            @$l6_array[$week]   += $item_result['l6']    ? $me / $item_result['l6']      : 0 ;
-            @$l8_array[$week]   += $item_result['l8']    ? $me / $item_result['l8']      : 0 ;
+            @$c3b_array[$week]  += $item_result['c3b']   ? round($me / $item_result['c3b'], 2)     : 0 ;
+            @$c3bg_array[$week] += $item_result['c3bg']  ? round($me / $item_result['c3bg'], 2)    : 0 ;
+            @$l1_array[$week]   += $item_result['l1']    ? round($me / $item_result['l1'], 2)      : 0 ;
+            @$l3_array[$week]   += $item_result['l3']    ? round($me / $item_result['l3'], 2)      : 0 ;
+            @$l6_array[$week]   += $item_result['l6']    ? round($me / $item_result['l6'], 2)      : 0 ;
+            @$l8_array[$week]   += $item_result['l8']    ? round($me / $item_result['l8'], 2)      : 0 ;
 
         }
 
@@ -1565,6 +1570,8 @@ class SubReportController extends Controller
         $l3_array   = array();
         $l6_array   = array();
         $l8_array   = array();
+        $c3_array   = array();
+        $c3a_array  = array();
 
         foreach ($query_chart as $item_result) {
             $week = $this->getWeek($item_result['_id']);
@@ -1575,6 +1582,8 @@ class SubReportController extends Controller
             @$l3_array[$week]   += $item_result['l3']    ? $item_result['l3']      : 0 ;
             @$l6_array[$week]   += $item_result['l6']    ? $item_result['l6']      : 0 ;
             @$l8_array[$week]   += $item_result['l8']    ? $item_result['l8']      : 0 ;
+            @$c3_array[$week]   += $item_result['c3']    ? $item_result['c3']      : 0 ;
+            @$c3a_array[$week]  += $item_result['c3a']   ? $item_result['c3a']      : 0 ;
 
         }
 
@@ -1584,6 +1593,8 @@ class SubReportController extends Controller
         $l3_result   = array();
         $l6_result   = array();
         $l8_result   = array();
+        $c3_result   = array();
+        $c3a_result  = array();
 
         for ($i = 1; $i <= $w; $i++) {
             $c3b_result[]   = [$i, isset($c3b_array[$i])  ? $c3b_array[$i]  : 0];
@@ -1592,6 +1603,8 @@ class SubReportController extends Controller
             $l3_result[]    = [$i, isset($l3_array[$i])   ? $l3_array[$i]   : 0];
             $l6_result[]    = [$i, isset($l6_array[$i])   ? $l6_array[$i]   : 0];
             $l8_result[]    = [$i, isset($l8_array[$i])   ? $l8_array[$i]   : 0];
+            $c3_result[]    = [$i, isset($c3_array[$i])   ? $c3_array[$i]   : 0];
+            $c3a_result[]   = [$i, isset($c3a_array[$i])  ? $c3a_array[$i]  : 0];
         }
 
         $result = array();
@@ -1601,6 +1614,8 @@ class SubReportController extends Controller
         $result['l3']       = $l3_result;
         $result['l6']       = $l6_result;
         $result['l8']       = $l8_result;
+        $result['c3']       = $c3_result;
+        $result['c3a']      = $c3a_result;
 
         return $result;
     }
@@ -1616,6 +1631,7 @@ class SubReportController extends Controller
         $c3bg_c3b_array = array();
         $l6_l3_array    = array();
         $l8_l6_array    = array();
+        $c3a_c3_array   = array();
 
         for ($i = 0; $i < $w; $i++) {
             $cnt = $i + 1;
@@ -1634,6 +1650,8 @@ class SubReportController extends Controller
                 round($total['l6'][$i][1] / $total['l3'][$i][1],2) * 100 : 0;
             $l8_l6_array[$cnt]      = $total['l6'][$i][1] ?
                 round($total['l8'][$i][1] / $total['l6'][$i][1],2) * 100 : 0;
+            $c3a_c3_array[$cnt]      = $total['c3'][$i][1] ?
+                round($total['c3a'][$i][1] / $total['c3'][$i][1],2) * 100 : 0;
         }
 
         $l3_c3b_result   = array();
@@ -1643,6 +1661,7 @@ class SubReportController extends Controller
         $c3bg_c3b_result = array();
         $l6_l3_result    = array();
         $l8_l6_result    = array();
+        $c3a_c3_result   = array();
 
         for ($i = 1; $i <= $w; $i++) {
             $l3_c3b_result[]    = [$i, isset($l3_c3b_array[$i])   ? $l3_c3b_array[$i]   : 0];
@@ -1652,6 +1671,7 @@ class SubReportController extends Controller
             $c3bg_c3b_result[]  = [$i, isset($c3bg_c3b_array[$i]) ? $c3bg_c3b_array[$i] : 0];
             $l6_l3_result[]     = [$i, isset($l6_l3_array[$i])    ? $l6_l3_array[$i]    : 0];
             $l8_l6_result[]     = [$i, isset($l8_l6_array[$i])    ? $l8_l6_array[$i]    : 0];
+            $c3a_c3_result[]    = [$i, isset($c3a_c3_array[$i])   ? $c3a_c3_array[$i]   : 0];
         }
 
         $result = array();
@@ -1662,6 +1682,7 @@ class SubReportController extends Controller
         $result['c3bg_c3b'] = json_encode($c3bg_c3b_result);
         $result['l6_l3']    = json_encode($l6_l3_result);
         $result['l8_l6']    = json_encode($l8_l6_result);
+        $result['c3a_c3']   = json_encode($c3a_c3_result);
 
         return $result;
     }
@@ -1731,6 +1752,8 @@ class SubReportController extends Controller
                 [
                     '$group' => [
                         '_id'   => '$date',
+                        'c3'    => ['$sum' => ['$sum' => ['$c3a', '$c3b', '$c3bg']]],
+                        'c3a'   => ['$sum' => '$c3a'],
                         'me'    => ['$sum' => '$spent'],
                         're'    => ['$sum' => '$revenue'],
                         'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
@@ -1748,6 +1771,8 @@ class SubReportController extends Controller
                 [
                     '$group' => [
                         '_id'   => '$date',
+                        'c3'    => ['$sum' => ['$sum' => ['$c3a', '$c3b', '$c3bg']]],
+                        'c3a'   => ['$sum' => '$c3a'],
                         'me'    => ['$sum' => '$spent'],
                         're'    => ['$sum' => '$revenue'],
                         'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
@@ -1787,10 +1812,6 @@ class SubReportController extends Controller
 
     private function getBudgetByMonths($query_chart){
 
-        $config     = Config::getByKeys(['USD_VND', 'USD_THB']);
-        $usd_vnd    = $config['USD_VND'];
-        $usd_thb    = $config['USD_VND'];
-
         $me_array   = array();
         $re_array   = array();
         $c3b_array  = array();
@@ -1806,20 +1827,20 @@ class SubReportController extends Controller
         foreach ($query_chart as $item_result) {
             $month = $this->getMonths($item_result['_id']);
 
-            $me         = $item_result['me'] * $usd_vnd;
-            $re         = $item_result['re'] / $usd_thb * $usd_vnd;
+            $me         = $item_result['me'] ? $this->convert_spent($item_result['me'])     : 0;
+            $re         = $item_result['re'] ? $this->convert_revenue($item_result['re'])   : 0;
 
             $total_me   += $me;
             $total_re   += $re;
 
             @$me_array[$month]   += $me;
             @$re_array[$month]   += $re;
-            @$c3b_array[$month]  += $item_result['c3b']   ? $me / $item_result['c3b']     : 0 ;
-            @$c3bg_array[$month] += $item_result['c3bg']  ? $me / $item_result['c3bg']    : 0 ;
-            @$l1_array[$month]   += $item_result['l1']    ? $me / $item_result['l1']      : 0 ;
-            @$l3_array[$month]   += $item_result['l3']    ? $me / $item_result['l3']      : 0 ;
-            @$l6_array[$month]   += $item_result['l6']    ? $me / $item_result['l6']      : 0 ;
-            @$l8_array[$month]   += $item_result['l8']    ? $me / $item_result['l8']      : 0 ;
+            @$c3b_array[$month]  += $item_result['c3b']   ? round($me / $item_result['c3b'], 2)     : 0 ;
+            @$c3bg_array[$month] += $item_result['c3bg']  ? round($me / $item_result['c3bg'], 2)    : 0 ;
+            @$l1_array[$month]   += $item_result['l1']    ? round($me / $item_result['l1'], 2)      : 0 ;
+            @$l3_array[$month]   += $item_result['l3']    ? round($me / $item_result['l3'], 2)      : 0 ;
+            @$l6_array[$month]   += $item_result['l6']    ? round($me / $item_result['l6'], 2)      : 0 ;
+            @$l8_array[$month]   += $item_result['l8']    ? round($me / $item_result['l8'], 2)      : 0 ;
 
         }
 
@@ -1915,6 +1936,8 @@ class SubReportController extends Controller
         $l3_array   = array();
         $l6_array   = array();
         $l8_array   = array();
+        $c3a_array  = array();
+        $c3_array   = array();
 
         foreach ($query_chart as $item_result) {
             $month = $this->getMonths($item_result['_id']);
@@ -1925,7 +1948,8 @@ class SubReportController extends Controller
             @$l3_array[$month]   += $item_result['l3']    ? $item_result['l3']      : 0 ;
             @$l6_array[$month]   += $item_result['l6']    ? $item_result['l6']      : 0 ;
             @$l8_array[$month]   += $item_result['l8']    ? $item_result['l8']      : 0 ;
-
+            @$c3a_array[$month]  += $item_result['c3a']   ? $item_result['c3a']     : 0 ;
+            @$c3_array[$month]   += $item_result['c3']    ? $item_result['c3']      : 0 ;
         }
 
         $c3b_result  = array();
@@ -1934,6 +1958,8 @@ class SubReportController extends Controller
         $l3_result   = array();
         $l6_result   = array();
         $l8_result   = array();
+        $c3a_result  = array();
+        $c3_result   = array();
 
         for ($i = 1; $i <= 12; $i++) {
             $c3b_result[]   = [$i, isset($c3b_array[$i])  ? $c3b_array[$i]  : 0];
@@ -1942,6 +1968,8 @@ class SubReportController extends Controller
             $l3_result[]    = [$i, isset($l3_array[$i])   ? $l3_array[$i]   : 0];
             $l6_result[]    = [$i, isset($l6_array[$i])   ? $l6_array[$i]   : 0];
             $l8_result[]    = [$i, isset($l8_array[$i])   ? $l8_array[$i]   : 0];
+            $c3a_result[]   = [$i, isset($c3a_array[$i])  ? $c3a_array[$i]  : 0];
+            $c3_result[]    = [$i, isset($c3_array[$i])   ? $c3_array[$i]   : 0];
         }
 
         $result = array();
@@ -1951,6 +1979,8 @@ class SubReportController extends Controller
         $result['l3']       = $l3_result;
         $result['l6']       = $l6_result;
         $result['l8']       = $l8_result;
+        $result['c3a']      = $c3a_result;
+        $result['c3']       = $c3_result;
 
         return $result;
     }
@@ -1966,6 +1996,7 @@ class SubReportController extends Controller
         $c3bg_c3b_array = array();
         $l6_l3_array    = array();
         $l8_l6_array    = array();
+        $c3a_c3_array   = array();
 
         for ($i = 0; $i < 12; $i++) {
             $cnt = $i + 1;
@@ -1984,6 +2015,8 @@ class SubReportController extends Controller
                 round($total['l6'][$i][1] / $total['l3'][$i][1],2) * 100 : 0;
             $l8_l6_array[$cnt]      = $total['l6'][$i][1] ?
                 round($total['l8'][$i][1] / $total['l6'][$i][1],2) * 100 : 0;
+            $c3a_c3_array[$cnt]     = $total['c3'][$i][1] ?
+                round($total['c3a'][$i][1] / $total['c3'][$i][1],2) * 100 : 0;
         }
 
         $l3_c3b_result   = array();
@@ -1993,6 +2026,7 @@ class SubReportController extends Controller
         $c3bg_c3b_result = array();
         $l6_l3_result    = array();
         $l8_l6_result    = array();
+        $c3a_c3_result   = array();
 
         for ($i = 1; $i <= 12; $i++) {
             $l3_c3b_result[]    = [$i, isset($l3_c3b_array[$i])   ? $l3_c3b_array[$i]   : 0];
@@ -2002,6 +2036,7 @@ class SubReportController extends Controller
             $c3bg_c3b_result[]  = [$i, isset($c3bg_c3b_array[$i]) ? $c3bg_c3b_array[$i] : 0];
             $l6_l3_result[]     = [$i, isset($l6_l3_array[$i])    ? $l6_l3_array[$i]    : 0];
             $l8_l6_result[]     = [$i, isset($l8_l6_array[$i])    ? $l8_l6_array[$i]    : 0];
+            $c3a_c3_result[]    = [$i, isset($c3a_c3_array[$i])   ? $c3a_c3_array[$i]   : 0];
         }
 
         $result = array();
@@ -2012,7 +2047,41 @@ class SubReportController extends Controller
         $result['c3bg_c3b'] = json_encode($c3bg_c3b_result);
         $result['l6_l3']    = json_encode($l6_l3_result);
         $result['l8_l6']    = json_encode($l8_l6_result);
+        $result['c3a_c3']   = json_encode($c3a_c3_result);
 
         return $result;
+    }
+
+    private function convert_revenue($revenue){
+        $request    = request();
+
+        $config     = Config::getByKeys(['USD_VND', 'USD_THB', 'THB_VND']);
+        $usd_vnd    = $config['USD_VND'];
+        $usd_tbh    = $config['USD_THB'];
+        $thb_vnd    = $config['THB_VND'];
+
+        if($request->unit == config('constants.UNIT_USD')){
+            $revenue    = $usd_tbh ? $revenue / $usd_tbh : 0;
+        }elseif ($request->unit == config('constants.UNIT_VND')){
+            $revenue    = $revenue * $thb_vnd;
+        }
+
+        return round($revenue,2);
+    }
+
+    private function convert_spent($spent){
+        $request    = request();
+
+        $config     = Config::getByKeys(['USD_VND', 'USD_THB', 'THB_VND']);
+        $usd_vnd    = $config['USD_VND'];
+        $usd_tbh    = $config['USD_THB'];
+
+        if($request->unit == config('constants.UNIT_VND')){
+            $spent    = $spent * $usd_vnd;
+        }elseif ($request->unit == config('constants.UNIT_BAHT')){
+            $spent    = $spent * $usd_tbh;
+        }
+
+        return round($spent, 2);
     }
 }

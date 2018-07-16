@@ -68,6 +68,13 @@ $(document).ready(function () {
             get_quality(month);
         }
     });
+
+    $('input#currency').click(function (e) {
+        var unit = $(this).val();
+        $('#currency_unit').val(unit);
+        filterSubReport();
+    })
+
 });
 
 function set_title() {
@@ -107,14 +114,15 @@ $.fn.UseTooltip = function (mode) {
 
                 var color = item.series.color;
                 var month = new Date(x).getMonth();
+                var unit = $('#currency_unit').val();
 
                 var tooltip = ''
                 if (mode == 'budget') {
-                    tooltip = "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + numberWithDots(y) + "</strong> (VND)";
+                    tooltip = "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + numberWithCommas(y) + "</strong> ("+ unit +")";
                 } else if (mode == 'quantity') {
                     tooltip = "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + numberWithCommas(y) + "</strong>"
                 } else {
-                    tooltip = "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + y + "</strong> (%)";
+                    tooltip = "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + numberWithCommas(y) + "</strong> (%)";
                 }
 
                 showTooltip(item.pageX, item.pageY, color, tooltip);
@@ -139,14 +147,15 @@ $.fn.UseTooltipByWeeks = function (mode) {
 
                 var color = item.series.color;
                 var month = new Date(x).getMonth();
+                var unit = $('#currency_unit').val();
 
                 var tooltip = ''
                 if (mode == 'budget') {
-                    tooltip = "<strong>" + item.series.label + "</strong><br>" + getDateRange(x) + " : <strong>" + numberWithDots(y) + "</strong> (VND)";
+                    tooltip = "<strong>" + item.series.label + "</strong><br>" + getDateRange(x) + " : <strong>" + numberWithCommas(y) + "</strong> ("+ unit +")";
                 } else if (mode == 'quantity') {
                     tooltip = "<strong>" + item.series.label + "</strong><br>" + getDateRange(x) + " : <strong>" + numberWithCommas(y) + "</strong>"
                 } else {
-                    tooltip = "<strong>" + item.series.label + "</strong><br>" + getDateRange(x) + " : <strong>" + y + "</strong> (%)";
+                    tooltip = "<strong>" + item.series.label + "</strong><br>" + getDateRange(x) + " : <strong>" + numberWithCommas(y) + "</strong> (%)";
                 }
 
                 showTooltip(item.pageX - 40, item.pageY, color, tooltip);
@@ -171,14 +180,15 @@ $.fn.UseTooltipByMonths = function (mode) {
 
                 var color = item.series.color;
                 var month = new Date(x).getMonth();
+                var unit = $('#currency_unit').val();
 
                 var tooltip = ''
                 if (mode == 'budget') {
-                    tooltip = "<strong>" + item.series.label + "</strong><br>" + monthNames[x - 1] + " : <strong>" + numberWithDots(y) + "</strong> (VND)";
+                    tooltip = "<strong>" + item.series.label + "</strong><br>" + monthNames[x - 1] + " : <strong>" + numberWithCommas(y) + "</strong> ("+ unit +")";
                 } else if (mode == 'quantity') {
                     tooltip = "<strong>" + item.series.label + "</strong><br>" + monthNames[x - 1] + " : <strong>" + numberWithCommas(y) + "</strong>"
                 } else {
-                    tooltip = "<strong>" + item.series.label + "</strong><br>" + monthNames[x - 1] + " : <strong>" + y + "</strong> (%)";
+                    tooltip = "<strong>" + item.series.label + "</strong><br>" + monthNames[x - 1] + " : <strong>" + numberWithCommas(y) + "</strong> (%)";
                 }
 
                 showTooltip(item.pageX, item.pageY, color, tooltip);
@@ -313,15 +323,7 @@ $(document).ready(function () {
 
     $('#search-form-sub-report').submit(function (e) {
         e.preventDefault();
-        var tab_active = $('.nav-tabs').find('li.active a');
-        var href = $(tab_active).attr("href");
-        if (href == '#by_days'){
-            loadDataByDays();
-        }else if (href == '#by_weeks'){
-            loadDataByWeeks();
-        }else if (href == '#by_months'){
-            loadDataByMonths();
-        }
+        filterSubReport();
     })
 
     $('.nav-tabs a[href="#by_days"]').on('show.bs.tab', function () {
@@ -376,6 +378,18 @@ $(document).ready(function () {
     })
 
 });
+
+function filterSubReport(){
+    var tab_active = $('.nav-tabs').find('li.active a');
+    var href = $(tab_active).attr("href");
+    if (href == '#by_days'){
+        loadDataByDays();
+    }else if (href == '#by_weeks'){
+        loadDataByWeeks();
+    }else if (href == '#by_months'){
+        loadDataByMonths();
+    }
+}
 
 function get_budget(month) {
     var url = $('input[name="budget_url"]').val();
@@ -583,13 +597,14 @@ function set_quality_chart(data) {
     var dataSet = [];
     var arr_color = [];
 
-    var data_l3_c3b = {data: jQuery.parseJSON(data.l3_c3b), label: "L3/C3B"};
-    var data_l3_c3bg = {data: jQuery.parseJSON(data.l3_c3bg), label: "L3/C3BG"};
-    var data_l3_l1 = {data: jQuery.parseJSON(data.l3_l1), label: "L3/L1"};
-    var data_l1_c3bg = {data: jQuery.parseJSON(data.l1_c3bg), label: "L1/C3BG"};
-    var data_c3bg_c3b = {data: jQuery.parseJSON(data.c3bg_c3b), label: "C3BG/C3B"};
-    var data_l6_l3 = {data: jQuery.parseJSON(data.l6_l3), label: "L6/L3"};
-    var data_l8_l6 = {data: jQuery.parseJSON(data.l8_l6), label: "L8/L6"};
+    var data_l3_c3b     = {data: jQuery.parseJSON(data.l3_c3b), label: "L3/C3B"};
+    var data_l3_c3bg    = {data: jQuery.parseJSON(data.l3_c3bg), label: "L3/C3BG"};
+    var data_l3_l1      = {data: jQuery.parseJSON(data.l3_l1), label: "L3/L1"};
+    var data_l1_c3bg    = {data: jQuery.parseJSON(data.l1_c3bg), label: "L1/C3BG"};
+    var data_c3bg_c3b   = {data: jQuery.parseJSON(data.c3bg_c3b), label: "C3BG/C3B"};
+    var data_l6_l3      = {data: jQuery.parseJSON(data.l6_l3), label: "L6/L3"};
+    var data_l8_l6      = {data: jQuery.parseJSON(data.l8_l6), label: "L8/L6"};
+    var data_c3a_c3     = {data: jQuery.parseJSON(data.c3a_c3), label: "C3A/C3"};
 
     var lst_checkbox = $('#quality_chk').find('input[type=checkbox]:checked');
     jQuery.each(lst_checkbox, function (index, checkbox) {
@@ -622,8 +637,11 @@ function set_quality_chart(data) {
             dataSet.push(data_l8_l6);
             arr_color.push('#000')
         }
+        if ($label == 'C3A/C3') {
+            dataSet.push(data_c3a_c3);
+            arr_color.push('#CC0099')
+        }
     });
-
 
     initChart(item, dataSet, arr_color, 'by_days');
     $("#quality_chart").UseTooltip('quality');
@@ -740,6 +758,7 @@ function loadDataByWeeks(type) {
     $('input[name="campaign_id"]').val(campaign_id);
     $('input[name="subcampaign_id"]').val(subcampaign_id);
     $('input[name="registered_date"]').val(registered_date);
+    var unit = $('#currency_unit').val();
 
     $('.loading').show();
 
@@ -755,6 +774,7 @@ function loadDataByWeeks(type) {
             campaign_id: campaign_id,
             subcampaign_id: subcampaign_id,
             type:type,
+            unit: unit
         }
     }).done(function (response) {
         if (type == 'budget') {
@@ -786,6 +806,7 @@ function loadDataByDays() {
     var budget_month = $('input[name="budget_month"]').val();
     var quantity_month = $('input[name="quantity_month"]').val();
     var quality_month = $('input[name="quality_month"]').val();
+    var unit = $('#currency_unit').val();
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -810,6 +831,7 @@ function loadDataByDays() {
             budget_month: budget_month,
             quantity_month: quantity_month,
             quality_month: quality_month,
+            unit: unit
         }
     }).done(function (response) {
         set_budget_chart(response.budget);
@@ -828,6 +850,7 @@ function loadDataByMonths(type) {
     var campaign_id = $('select[name="campaign_id"]').val();
     var subcampaign_id = $('select[name="subcampaign_id"]').val();
     var registered_date = $('.registered_date').text();
+    var unit = $('#currency_unit').val();
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -850,6 +873,7 @@ function loadDataByMonths(type) {
             campaign_id: campaign_id,
             subcampaign_id: subcampaign_id,
             type:type,
+            unit: unit
         }
     }).done(function (response) {
         if (type == 'budget') {
@@ -980,13 +1004,14 @@ function set_quality_chart_by_weeks(data) {
     var dataSet = [];
     var arr_color = [];
 
-    var data_l3_c3b = {data: jQuery.parseJSON(data.l3_c3b), label: "L3/C3B"};
-    var data_l3_c3bg = {data: jQuery.parseJSON(data.l3_c3bg), label: "L3/C3BG"};
-    var data_l3_l1 = {data: jQuery.parseJSON(data.l3_l1), label: "L3/L1"};
-    var data_l1_c3bg = {data: jQuery.parseJSON(data.l1_c3bg), label: "L1/C3BG"};
-    var data_c3bg_c3b = {data: jQuery.parseJSON(data.c3bg_c3b), label: "C3BG/C3B"};
-    var data_l6_l3 = {data: jQuery.parseJSON(data.l6_l3), label: "L6/L3"};
-    var data_l8_l6 = {data: jQuery.parseJSON(data.l8_l6), label: "L8/L6"};
+    var data_l3_c3b     = {data: jQuery.parseJSON(data.l3_c3b), label: "L3/C3B"};
+    var data_l3_c3bg    = {data: jQuery.parseJSON(data.l3_c3bg), label: "L3/C3BG"};
+    var data_l3_l1      = {data: jQuery.parseJSON(data.l3_l1), label: "L3/L1"};
+    var data_l1_c3bg    = {data: jQuery.parseJSON(data.l1_c3bg), label: "L1/C3BG"};
+    var data_c3bg_c3b   = {data: jQuery.parseJSON(data.c3bg_c3b), label: "C3BG/C3B"};
+    var data_l6_l3      = {data: jQuery.parseJSON(data.l6_l3), label: "L6/L3"};
+    var data_l8_l6      = {data: jQuery.parseJSON(data.l8_l6), label: "L8/L6"};
+    var data_c3a_c3     = {data: jQuery.parseJSON(data.c3a_c3), label: "C3A/C3"};
 
     var lst_checkbox = $('#quality_by_weeks_chk').find('input[type=checkbox]:checked');
     jQuery.each(lst_checkbox, function (index, checkbox) {
@@ -1018,6 +1043,10 @@ function set_quality_chart_by_weeks(data) {
         if ($label == 'L8/L6') {
             dataSet.push(data_l8_l6);
             arr_color.push('#000')
+        }
+        if ($label == 'C3A/C3') {
+            dataSet.push(data_c3a_c3);
+            arr_color.push('#CC0099')
         }
     });
 
@@ -1150,13 +1179,14 @@ function set_quality_chart_by_months(data) {
     var dataSet = [];
     var arr_color = [];
 
-    var data_l3_c3b = {data: jQuery.parseJSON(data.l3_c3b), label: "L3/C3B"};
-    var data_l3_c3bg = {data: jQuery.parseJSON(data.l3_c3bg), label: "L3/C3BG"};
-    var data_l3_l1 = {data: jQuery.parseJSON(data.l3_l1), label: "L3/L1"};
-    var data_l1_c3bg = {data: jQuery.parseJSON(data.l1_c3bg), label: "L1/C3BG"};
-    var data_c3bg_c3b = {data: jQuery.parseJSON(data.c3bg_c3b), label: "C3BG/C3B"};
-    var data_l6_l3 = {data: jQuery.parseJSON(data.l6_l3), label: "L6/L3"};
-    var data_l8_l6 = {data: jQuery.parseJSON(data.l8_l6), label: "L8/L6"};
+    var data_l3_c3b     = {data: jQuery.parseJSON(data.l3_c3b), label: "L3/C3B"};
+    var data_l3_c3bg    = {data: jQuery.parseJSON(data.l3_c3bg), label: "L3/C3BG"};
+    var data_l3_l1      = {data: jQuery.parseJSON(data.l3_l1), label: "L3/L1"};
+    var data_l1_c3bg    = {data: jQuery.parseJSON(data.l1_c3bg), label: "L1/C3BG"};
+    var data_c3bg_c3b   = {data: jQuery.parseJSON(data.c3bg_c3b), label: "C3BG/C3B"};
+    var data_l6_l3      = {data: jQuery.parseJSON(data.l6_l3), label: "L6/L3"};
+    var data_l8_l6      = {data: jQuery.parseJSON(data.l8_l6), label: "L8/L6"};
+    var data_c3a_c3     = {data: jQuery.parseJSON(data.c3a_c3), label: "C3A/C3"};
 
     var lst_checkbox = $('#quality_by_months_chk').find('input[type=checkbox]:checked');
     jQuery.each(lst_checkbox, function (index, checkbox) {
@@ -1188,6 +1218,10 @@ function set_quality_chart_by_months(data) {
         if ($label == 'L8/L6') {
             dataSet.push(data_l8_l6);
             arr_color.push('#000')
+        }
+        if ($label == 'C3A/C3') {
+            dataSet.push(data_c3a_c3);
+            arr_color.push('#CC0099')
         }
     });
 
