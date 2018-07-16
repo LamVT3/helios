@@ -5,18 +5,24 @@
         <div style="font-size: x-large; border-bottom: 1px #ddd solid !important; padding: 15px 0; float: left; width: 100%" class="bold italic blue">
             <div class="inlineBlock col-md-2">Budget :</div><!--
         --><div class="orange inlineBlock col-md-2"></div><!--
-        --><div class="inlineBlock col-md-3">Target L1 :</div><!--
-        --><div class="orange inlineBlock col-md-1"></div><!--
-        --><div class="inlineBlock col-md-3">L3/C3B :</div><!--
-        --><div class="orange inlineBlock col-md-1"></div>
+        --><div class="inlineBlock col-md-2">Target L1 :</div><!--
+        --><div class="orange inlineBlock col-md-2"></div><!--
+        --><div class="inlineBlock col-md-2">L3/C3B :</div><!--
+        --><div class="orange inlineBlock col-md-2"></div>
         </div>
         <div style="font-size: x-large; padding: 15px 0; float: left; width: 100%;" class="bold blue">
             <div class="inlineBlock col-md-2">Spent :</div><!--
         --><div class="orange inlineBlock col-md-2">{{ $report['total']->spent }} USD</div><!--
-        --><div class="inlineBlock col-md-3">Produced (L1) :</div><!--
-        --><div class="orange inlineBlock col-md-1">{{ $report['total']->l1 }} </div><!--
-        --><div class="inlineBlock col-md-3">Actual (L3/C3BG) : </div><!--
-        --><div class="orange inlineBlock col-md-1">{{ ($report['total']->c3bg != 0) ? round($report['total']->l3 / $report['total']->c3bg,4)*100 : 0 }}%</div>
+        --><div class="inlineBlock col-md-2">Produced :</div><!--
+        --><div class="orange inlineBlock col-md-2">{{ $report['total']->l1 }} </div><!--
+        --><div class="inlineBlock col-md-2">Actual : </div><!--
+        --><div class="orange inlineBlock col-md-2">{{ ($report['total']->c3bg != 0) ? round($report['total']->l3 / $report['total']->c3bg,4)*100 : 0 }}%</div>
+        </div>
+
+        <div class="sticky" style="float: right; top: 20px; z-index: 0">
+            <button id="export" class="btn btn-success btn-sm" type="button" style="margin: 15px;" data-toggle="modal" data-target="#myExportModal">
+                <i class="fa fa-download"></i> Export
+            </button>
         </div>
     <div class="wrapper_report_monthly gray">
         <table id="table_report_monthly" class="table" width="100%">
@@ -395,7 +401,7 @@
                 </tr>
                 <tr class="italic">
                     <td></td>
-                    <td class="cente">C3BG/C3B %</td>
+                    <td class="center">C3BG/C3B %</td>
                     <td class="center">{{ ($report['week1']->c3b != 0) ? round($report['week1']->c3bg / $report['week1']->c3b,4)*100 : 0 }}%</td>
                     <td class="center">{{ ($report['week2']->c3b != 0) ? round($report['week2']->c3bg / $report['week2']->c3b,4)*100 : 0 }}%</td>
                     <td class="center">{{ ($report['week3']->c3b != 0) ? round($report['week3']->c3bg / $report['week3']->c3b,4)*100 : 0 }}%</td>
@@ -473,55 +479,26 @@
     </div>
 </div>
 
+<!-- Export Modal -->
+<div class="modal fade" id="myExportModal" role="dialog">
+    <div class="modal-dialog">
 
-<style>
-    tr:nth-child(even) {
-        background: #fafafa
-    }
-    tr:nth-child(odd) {
-        background: #ffffff
-    }
-    col:first-child {
-        background: #2ea8e5
-    }
-    #table_report_monthly th {
-        vertical-align:middle
-    }
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title">Confirm Export</h3>
+            </div>
+            <div class="modal-body">
+                <h4>{{config('constants.EXPORT_MONTHLY_REPORT')}}</h4>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm_export" type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            </div>
+        </div>
 
-    .italic {
-        font-style: italic;
-    }
-    .bold {
-        font-weight: bold;
-    }
-    .center {
-        text-align: center;
-    }
-    .orange {
-        color: #ED8515;
-    }
-    .blue {
-        color: #157DEC;
-    }
-    .white {
-        color: #ffffff;
-    }
-    .gray {
-        color: #505050;
-    }
-    .yellow {
-        color: #ffff33;
-    }
-    .bg-blue {
-        background: #157DEC;
-    }
-    .font-medium {
-        font-size: medium;
-    }
-    .inlineBlock {
-        display: inline-block;
-    }
-    div#monthly .table > tbody > tr > td {
-        border-bottom: 1px solid #ddd;
-    }
-</style>
+    </div>
+</div>
+
+<link href="{{ asset('css/report.css') }}" rel="stylesheet">

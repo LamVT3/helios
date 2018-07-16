@@ -22,7 +22,8 @@
         $.get(url, {year: year, month: month, noLastMonth: noLastMonth}, function (data) {
             // console.log(data);
             setStatisticChart(data, noLastMonth);
-        }).fail( function () {
+        }).fail( function (e) {
+            console.log(e);
             alert('Cannot connect to server. Please try again later.');
         });
     }

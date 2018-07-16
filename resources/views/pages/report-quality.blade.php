@@ -14,13 +14,13 @@
 
         <div class="tab-v1">
             <ul id="tabs" class="nav nav-tabs">
-                <li class="active"><a href="#report" data-toggle="tab"><strong>Report</strong></a></li>
-                <li {{--class="active"--}}><a href="#monthly" data-toggle="tab"><strong>Monthly Report</strong></a></li>
+                <li {{--class="active"--}}><a href="#report" data-toggle="tab"><strong>Report</strong></a></li>
+                <li class="active"><a href="#monthly" data-toggle="tab"><strong>Monthly Report</strong></a></li>
                 <li {{--class="active"--}}><a href="#year" data-toggle="tab"><strong>Latest Months Report</strong></a></li>
                 <li {{--class="active"--}}><a href="#statistic" data-toggle="tab"><strong>Statistic Report</strong></a></li>
             </ul>
-            <div class="tab-content mb30">
-                <div id="report" class="tab-pane active">
+            <div class="tab-content mb30" style="margin-top: 10px">
+                <div id="report" class="tab-pane {{--active--}}">
                     <!-- widget grid -->
                     <section id="widget-grid" class="">
                         <!-- row -->
@@ -156,7 +156,7 @@
                     <!-- end widget grid -->
                 </div>
 
-                <div class="tab-pane" id="monthly">
+                <div class="tab-pane active" id="monthly">
                     <section id="widget-grid">
                         <div class="row">
                             <article class="col-sm-12 col-md-12">
@@ -216,6 +216,14 @@
     </div>
     <!-- END MAIN CONTENT -->
 
+    <div style="position: relative">
+        <form id="export-report" action="{{ route('report.export-monthly')}}" enctype="multipart/form-data">
+            <input type="hidden" name="month" id="month">
+            <input type="hidden" name="startRange" id="startRange">
+            <input type="hidden" name="endRange" id="endRange">
+        </form>
+    </div>
+
 </div>
 <input type="hidden" name="page_size" value="{{$page_size}}">
 <!-- END MAIN PANEL -->
@@ -243,33 +251,27 @@
 
     get_report_monthly(m, new Date(), new Date());
 
-    function get_report_monthly(month, startDate, endDate) {
+    function get_report_monthly(month, startRange, endRange) {
 
-        month = "" + month;
-
-        if (month < 10 && month.length == 1) {
-            month = "0" + month.toString();
-        } else {
-            month = month.toString();
-        }
-
-       $.get("{{ route('ajax-getReportMonthly') }}", {month: month, startDate: startDate, endDate: endDate}, function (data) {
+       $.get("{{ route('report.get-report-monthly') }}", {month: month, startRange: startRange, endRange: endRange}, function (data) {
             document.getElementById("monthly_report").innerHTML = data;
-        }).fail( function () {
-            alert('Cannot connect to server. Please try again later.');
+        }).fail( function (e) {
+            console.log(e);
+            alert('Cannot connect to server. Please try again later11.');
         }).complete(function () {
-           var year = startDate.getFullYear();
-           rangedate_span(startDate, endDate);
+           var year = startRange.getFullYear();
+           // console.log("year script = " + year);
+           rangedate_span(startRange, endRange);
 
            $('#rangedate').daterangepicker({
-               startDate: startDate.getDate(),
-               endDate: endDate.getDate(),
+               startRange: startRange.getDate(),
+               endRange: endRange.getDate(),
                opens: 'right',
                minDate: new Date(year, month-1, 1),
                maxDate: new Date(year, month, 0),
-           }, function(startDate, endDate){
-               let start = new Date(startDate);
-               let end = new Date(endDate);
+           }, function(startRange, endRange){
+               let start = new Date(startRange);
+               let end = new Date(endRange);
                rangedate_span(start, end);
                get_report_monthly(month, start, end);
            });
@@ -278,32 +280,36 @@
         $( "#monthly" ).click();
     }
 
-    function rangedate_span(startDate, endDate) {
-        $('#rangedate span').html(startDate.getDate() + '-' + endDate.getDate());
+    function rangedate_span(startRange, endRange) {
+        /*console.log("start range = " + startRange);
+        console.log("end range = " + endRange);*/
+        $('#rangedate span').html(startRange.getDate() + '-' + endRange.getDate());
     }
 
     get_report_year(y, m, 12);
 
     function get_report_year(year, month, noLastMonth) {
-        $.get("{{ route('ajax-getReportYear') }}", {year: year, month: month, noLastMonth: noLastMonth}, function (data) {
+        $.get("{{ route('report.get-report-year') }}", {year: year, month: month, noLastMonth: noLastMonth}, function (data) {
             document.getElementById("year_report").innerHTML = data;
-        }).fail( function () {
-            alert('Cannot connect to server. Please try again later.');
+        }).fail( function (e) {
+            console.log(e);
+            alert('Cannot connect to server. Please try again later22.');
         });
     }
 
     get_report_statistic(y, m, 12);
 
     function get_report_statistic(year, month, noLastMonth) {
-        $.get("{{ route('ajax-getReportStatistic') }}", {year: year, month: month, noLastMonth: noLastMonth}, function (data) {
+        $.get("{{ route('report.get-report-statistic') }}", {year: year, month: month, noLastMonth: noLastMonth}, function (data) {
             document.getElementById("statistic_report").innerHTML = data;
             $('#statistic_chart_year').val(year);
             $('#statistic_chart_month').val(month);
             $('#statistic_chart_noMonth').val(noLastMonth);
 
             initStatisticChart();
-        }).fail( function () {
-            alert('Cannot connect to server. Please try again later.');
+        }).fail( function (e) {
+            console.log(e);
+            alert('Cannot connect to server. Please try again later33.');
         });
     }
 
@@ -326,6 +332,23 @@
             elementDropdownY.setAttribute("aria-expanded", "false");
             elementDropdownY.parentElement.classList.remove("open");
         };
+
+    });
+
+    $('#monthly_report').on('click', 'button#confirm_export', function (e) {
+        e.preventDefault();
+        var monthArr = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
+        var month = document.getElementById('dropdown').textContent;
+        var rangeDate = $("#rangedate").find("span").text();
+        let dateArr = rangeDate.split("-");
+        month = monthArr.indexOf(month) + 1;
+
+        $('input#month').val(month);
+        $('input#startRange').val(new Date(2018, month, dateArr[0]));
+        $('input#endRange').val(new Date(2018, month, dateArr[1]));
+
+        $('#export-report').submit();
 
     });
 

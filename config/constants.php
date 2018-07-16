@@ -29,6 +29,7 @@ return [
     'UNIT_USD'              => 'USD',
     'UNIT_VND'              => 'VND',
     'UNIT_BAHT'             => 'Baht',
+    'EXPORT_MONTHLY_REPORT' => 'Are you sure you want to export this report?',
 ];
 
 

@@ -689,6 +689,36 @@ class AjaxController extends Controller
     }
 
     // 2018-04-17 [HEL-9] LamVT add dropdown for C3/L8 chart
+
+    public function prepareStatisticChart(){
+        $report = new ReportController();
+        $data = $report->prepareYear();
+        $usd_vnd = $data['reportY']['config']['USD_VND'];
+
+        $c3b_array          = array();
+        $c3b_price_array    = array();
+        $l3_c3bg_array      = array();
+        foreach ($data['reportY'] as $key => $value){
+            if ($key == 'config'){
+                continue;
+            }
+            $c3b    = @$value->c3b ? $value->c3b : 0;
+            $spent  = @$value->spent ? $value->spent : 0;
+
+            $key = str_replace(" ","",$key);
+            $key = strtotime($key)*1000;
+            $c3b_array[]        = [$key, $c3b];
+            $c3b_price_array[]  = [$key, $c3b != 0 ? round($spent * $usd_vnd / $c3b) : 0];
+            $l3_c3bg_array[]    = [$key, @$value->c3bg ? round(@$value->l3 / $value->c3bg, 4) * 100 : 0];
+        }
+
+        $result = array();
+        $result['c3b']           = json_encode($c3b_array);
+        $result['c3b_price']    = json_encode($c3b_price_array);
+        $result['l3_c3bg']       = json_encode($l3_c3bg_array);
+        return $result;
+    }
+
     public function getC3Chart(){
 
         /*  phan date*/
@@ -795,265 +825,6 @@ class AjaxController extends Controller
         return $chart_l8;
     }
     // end 2018-04-17 [HEL-9] LamVT add dropdown for C3/L8 chart
-
-    public function getReportMonthly() {
-
-        $month       = request('month');
-        $startRange  = request('startDate');
-        $endRange    = request('endDate');
-        $startDate   = date('Y-' . $month .'-01');
-        $year        = date('Y'); /* nam hien tai*/
-        $days        = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-        $endDate    = date('Y-' . $month .'-'.$days);
-
-        $startDayRange = explode(" ", $startRange)[2];
-        $endDayRange = explode(" ", $endRange)[2];
-
-        /*Mon 1 = 8 - 1 = 7
-        Sun 7 = 8 - 7 = 1*/
-        $daysInFirstWeek = 8 - date('N',strtotime($startDate));
-        $rangeTotal = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
-        $results = AdResult::raw(function ($collection) use ($startDate, $endDate) {
-            return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
-            ]);
-        });
-
-        $endDate = date('Y-' . $month .'-0'.$daysInFirstWeek);
-        $rangeW1 = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
-        $resultW1 = AdResult::raw(function ($collection) use ($startDate, $endDate) {
-            return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
-            ]);
-        });
-
-        $startDate   = date('Y-m-d', strtotime($endDate. ' + 1 days'));
-        $endDate    = date('Y-m-d', strtotime($startDate. ' + 6 days'));
-        $rangeW2 = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
-        $resultW2 = AdResult::raw(function ($collection) use ($startDate, $endDate) {
-            return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
-            ]);
-        });
-
-        $startDate = date('Y-m-d', strtotime($endDate. ' + 1 days'));
-        $endDate  = date('Y-m-d', strtotime($startDate. ' + 6 days'));
-        $rangeW3   = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
-        $resultW3  = AdResult::raw(function ($collection) use ($startDate, $endDate) {
-            return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
-            ]);
-        });
-
-        $startDate   = date('Y-m-d', strtotime($endDate. ' + 1 days'));
-        $endDate    = date('Y-m-d', strtotime($startDate. ' + 6 days'));
-        $rangeW4 = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
-        $resultW4 = AdResult::raw(function ($collection) use ($startDate, $endDate) {
-            return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
-            ]);
-        });
-
-        $resultW5 = null;
-        $rangeW5 = null;
-        $remainDays = $days - date('d',strtotime($endDate));
-        if($remainDays > 0){
-            $startDate   = date('Y-m-d', strtotime($endDate. ' + 1 days'));
-            if ($remainDays > 7) {
-                $remainDays -= 7;
-                $endDate    = date('Y-m-d', strtotime($startDate. ' + 6 days'));
-            } else {
-                $endDate    = date('Y-m-d', strtotime($startDate. ' + '.($remainDays-1).' days'));
-                $remainDays = 0;
-            }
-            $rangeW5 = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
-            $resultW5 = AdResult::raw(function ($collection) use ($startDate, $endDate) {
-                return $collection->aggregate([
-                    ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
-                ]);
-            });
-        }
-
-        $resultW6 = null;
-        $rangeW6 = null;
-        if($remainDays > 0){
-            $startDate   = date('Y-m-d', strtotime($endDate. ' + 1 days'));
-            $endDate    = date('Y-m-d', strtotime($startDate. ' + '.($remainDays-1).' days'));
-            $rangeW6 = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
-            $resultW6 = AdResult::raw(function ($collection) use ($startDate, $endDate) {
-                return $collection->aggregate([
-                    ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
-                ]);
-            });
-        }
-
-        $startDate   = date('Y-' . $month .'-'. $startDayRange);
-        $endDate    = date('Y-' . $month .'-'. $endDayRange);
-        $rangeDate = "( ".date('d',strtotime($startDate))." - ".date('d',strtotime($endDate))." )";
-        $resultRange = AdResult::raw(function ($collection) use ($startDate, $endDate) {
-            return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
-            ]);
-        });
-
-        $rangeArr = array('total' => $rangeTotal,
-            'week1' => $rangeW1,
-            'week2' => $rangeW2,
-            'week3' => $rangeW3,
-            'week4' => $rangeW4,
-            'week5' => $rangeW5,
-            'week6' => $rangeW6,
-            'rangeDate' => $rangeDate);
-
-        $resultsArr = array('total' => $results,
-            'week1' => $resultW1,
-            'week2' => $resultW2,
-            'week3' => $resultW3,
-            'week4' => $resultW4,
-            'week5' => $resultW5,
-            'week6' => $resultW6,
-            'rangeDate' => $resultRange);
-
-        $data['report'] = $this->prepare_report($resultsArr, $rangeArr);
-        return view('pages.table_report_monthly', $data);
-    }
-
-    private function prepare_report($resultsArr, $rangeArr) {
-        $config = Config::getByKeys(['USD_VND', 'USD_THB']);
-        $report = array('config' => $config);
-
-        foreach ($resultsArr as $key => $value) {
-            $report[$key] = (object)[
-                'c1' => 0,
-                'c2' => 0,
-                'c3' => 0,
-                'c3b' => 0,
-                'c3bg' => 0,
-                'spent' => 0,
-                'l1' => 0,
-                'l3' => 0,
-                'l6' => 0,
-                'l8' => 0,
-                'revenue' => 0,
-                'range' => "---",
-            ];
-
-            if ($rangeArr != null) {
-                $report[$key]->range = isset($rangeArr[$key]) ? $rangeArr[$key] : NULL;
-            }
-
-            if(isset($value) && $value != null) {
-                foreach ($value as $item) {
-                    $report[$key]->c1 += isset($item->c1) ? $item->c1 : 0;
-                    $report[$key]->c2 += isset($item->c2) ? $item->c2 : 0;
-                    $report[$key]->c3 += isset($item->c3) ? $item->c3 : 0;
-                    $report[$key]->c3b += isset($item->c3b) ? $item->c3b : 0;
-                    $report[$key]->c3bg += isset($item->c3bg) ? $item->c3bg : 0;
-                    $report[$key]->spent += isset($item->spent) ? $item->spent : 0;
-                    $report[$key]->l1 += isset($item->l1) ? $item->l1 : 0;
-                    $report[$key]->l3 += isset($item->l3) ? $item->l3 : 0;
-                    $report[$key]->l6 += isset($item->l6) ? $item->l6 : 0;
-                    $report[$key]->l8 += isset($item->l8) ? $item->l8 : 0;
-                    $report[$key]->revenue += isset($item->revenue) ? $item->revenue : 0;
-                }
-            }
-        }
-
-        return $report;
-    }
-
-    private function getReport() {
-        $month       = request('month');
-        $year        = request('year');
-        $noLastMonth = request('noLastMonth');
-
-        if($month < 10){
-            $month = '0'.$month;
-        }
-        $startDate = date($year.'-' . $month .'-01');
-        $days      = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-        $endDate   = date($year.'-' . $month .'-'.$days);
-
-        $resultsArr = array();
-        $i = 0;
-        do {
-            $result = AdResult::raw(function ($collection) use ($startDate, $endDate) {
-                /*if($month == "04") {
-                    var_dump($startDate);
-                    var_dump($endDate);
-                    var_dump($collection->aggregate([
-                        ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
-                    ]));
-                }*/
-                return $collection->aggregate([
-                    ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]]
-                ]);
-            });
-
-            $resultsArr[date('Y',strtotime($startDate)).' - '.date('m',strtotime($startDate))] = $result;
-            if ($month == "01") {
-                $month = 12;
-                $year -= 1;
-            } else {
-                $month -= 1;
-            }
-
-            if($month < 10){
-                $month = '0'.$month;
-            }
-            $startDate = date($year.'-' . $month .'-01');
-            $days      = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-            $endDate   = date($year.'-' . $month .'-'.$days);
-
-            $i++;
-        } while ($i < $noLastMonth);
-
-        /*var_dump($resultsArr['2018 - 04']);
-        die;*/
-
-        $resultsArr = array_reverse($this->prepare_report($resultsArr, null), true);
-
-        $data['reportY'] = $resultsArr;
-        return $data;
-    }
-
-    public function getReportYear() {
-        $data = $this->getReport();
-        return view('pages.table_report_year', $data);
-    }
-
-    public function getReportStatistic() {
-        $data = $this->getReport();
-        return view('pages.table_report_statistic', $data);
-    }
-
-    public function prepareStatisticChart(){
-        $data = $this->getReport();
-        $usd_vnd = $data['reportY']['config']['USD_VND'];
-
-        $c3b_array           = array();
-        $c3b_price_array    = array();
-        $l3_c3bg_array       = array();
-        foreach ($data['reportY'] as $key => $value){
-            if ($key == 'config'){
-                continue;
-            }
-            $c3b    = @$value->c3b ? $value->c3b : 0;
-            $spent  = @$value->spent ? $value->spent : 0;
-
-            $key = str_replace(" ","",$key);
-            $key = strtotime($key)*1000;
-            $c3b_array[]        = [$key, $c3b];
-            $c3b_price_array[]  = [$key, $c3b != 0 ? round($spent * $usd_vnd / $c3b) : 0];
-            $l3_c3bg_array[]    = [$key, @$value->c3bg ? round(@$value->l3 / $value->c3bg, 4) * 100 : 0];
-        }
-
-        $result = array();
-        $result['c3b']           = json_encode($c3b_array);
-        $result['c3b_price']    = json_encode($c3b_price_array);
-        $result['l3_c3bg']       = json_encode($l3_c3bg_array);
-        return $result;
-    }
 
     public function getContactPaginate(){
         $params = \request();
