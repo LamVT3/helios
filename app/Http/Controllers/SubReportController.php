@@ -1244,7 +1244,7 @@ class SubReportController extends Controller
 				['$match' => ['ad_id' => ['$in' => $ad_id]]],
 				[
 					'$group' => [
-						'_id'   => '$date',
+						'_id'   => '$ad_id',
 						'c3'    => ['$sum' => '$c3'],
 						'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
 						'c3bg'  => ['$sum' => '$c3bg'],
@@ -1260,7 +1260,7 @@ class SubReportController extends Controller
 				['$match' => ['ad_id' => ['$in' => $ad_id]]],
 				[
 					'$group' => [
-						'_id'   => '$date',
+						'_id'   => '$ad_id',
 						'c3'    => ['$sum' => '$c3'],
 						'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
 						'c3bg'  => ['$sum' => '$c3bg'],
