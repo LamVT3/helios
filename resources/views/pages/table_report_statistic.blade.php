@@ -108,7 +108,7 @@
                             $y = substr($key, 0, 4);
                             $m = substr($key, -2);
                             echo '<th style="border-bottom: 2px solid #fff;'.(($m == '12' || ($m == date('m') && $y == date('Y'))) ? "border-right: 2px solid #fff;" : "").
-                                '" class="center '.(($m == '01') ? 'white bg-blue' : 'blue').'">'.$m.'</th>';
+                                '" class="center '.(($m == date('m') && $y == date('Y')) ? 'white bg-blue' : '').'">'.$m.'</th>';
                         }
                     }
                     ?>
@@ -123,7 +123,7 @@
                             $m = substr($key, -2);
                             $days = cal_days_in_month(CAL_GREGORIAN, $m, $y);
                             echo '<th style="'.(($m == '12' || ($m == date('m') && $y == date('Y'))) ? "border-right: 2px solid #fff;" : "").
-                                '" class="center '.(($m == '01') ? 'orange' : 'blue').'">'.$days.' days</th>';
+                                '" class="center '.(($m == date('m') && $y == date('Y')) ? 'white bg-blue' : '').'">'.$days.' days</th>';
                         }
                     }
                     ?>
@@ -222,61 +222,4 @@
 
 </div>
 
-<style>
-    tr:nth-child(even) {
-        background: #fafafa;
-    }
-    tr:nth-child(odd) {
-        background: #ffffff;
-    }
-    col:first-child {
-        background: #2ea8e5;
-    }
-    .italic {
-        font-style: italic;
-    }
-    .bold {
-        font-weight: bold;
-    }
-    .center {
-        text-align: center;
-    }
-    .orange {
-        color: #ED8515;
-    }
-    .blue {
-        color: #157DEC;
-    }
-    .white {
-        color: #ffffff;
-    }
-    .gray {
-        color: #505050;
-    }
-    .yellow {
-        color: #ffff33;
-    }
-    .bg-blue {
-        background: #157DEC;
-    }
-    .font-medium {
-        font-size: medium;
-    }
-    .inlineBlock {
-        display: inline-block;
-    }
-    div#statistic .table > tbody > tr > td {
-        min-width: 30px;
-        height: 40px;
-        border-bottom: 1px solid #ddd;
-    }
-    .content {
-        border: none 0px;
-        overflow-x: scroll;
-    }
-    .sticky {
-        position: sticky;
-        top: 0;
-        z-index: 1;
-    }
-</style>
+<link href="{{ asset('css/report.css') }}" rel="stylesheet">
