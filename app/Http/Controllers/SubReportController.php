@@ -1467,7 +1467,7 @@ class SubReportController extends Controller
             $result['budget']   = $this->getBudgetByWeeks($query_chart, $w);
             $result['quantity'] = $this->getQuantityByWeeks($query_chart, $w);
             $result['quality']  = $this->getQualityByWeeks($query_chart, $w);
-	        $result['C3AC3B']   = $this->getC3AC3BByWeeks($start_date, $end_date, $w);
+//	        $result['C3AC3B']   = $this->getC3AC3BByWeeks($start_date, $end_date, $w);
         }
 
         return $result;
