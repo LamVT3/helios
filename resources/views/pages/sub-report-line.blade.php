@@ -155,23 +155,23 @@
                                                 @endcomponent
                                             </article>
 
-                                            <article class="col-sm-12 col-md-12">
-                                                <div class="loading" style="display: none">
-                                                    <div class="col-md-12 text-center">
-                                                        <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""
-                                                             style="width: 2%;"/>
-                                                    </div>
-                                                </div>
-                                                <br>
-                                            @component('components.jarviswidget',
-                                            ['id' => 'C3A-C3B', 'icon' => 'fa-line-chart', 'title' => "C3A-C3B Report in ", 'dropdown' => 'true'])
-                                                <!-- widget content -->
-                                                    <div class="widget-body no-padding">
-                                                        @component('components.C3A-C3B_chart', ['id' => 'C3A-C3B_chart', 'chk' => 'C3A-C3B_chk'])
-                                                        @endcomponent
-                                                    </div>
-                                                @endcomponent
-                                            </article>
+                                            {{--<article class="col-sm-12 col-md-12">--}}
+                                                {{--<div class="loading" style="display: none">--}}
+                                                    {{--<div class="col-md-12 text-center">--}}
+                                                        {{--<img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""--}}
+                                                             {{--style="width: 2%;"/>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                                {{--<br>--}}
+                                            {{--@component('components.jarviswidget',--}}
+                                            {{--['id' => 'C3A-C3B', 'icon' => 'fa-line-chart', 'title' => "C3A-C3B Report in ", 'dropdown' => 'true'])--}}
+                                                {{--<!-- widget content -->--}}
+                                                    {{--<div class="widget-body no-padding">--}}
+                                                        {{--@component('components.C3A-C3B_chart', ['id' => 'C3A-C3B_chart', 'chk' => 'C3A-C3B_chk'])--}}
+                                                        {{--@endcomponent--}}
+                                                    {{--</div>--}}
+                                                {{--@endcomponent--}}
+                                            {{--</article>--}}
                                         </div>
                                     </div>
                                     <div id="by_weeks" class="tab-pane fade">
@@ -213,23 +213,23 @@
                                                 @endcomponent
                                             </article>
 
-                                            <article class="col-sm-12 col-md-12">
-                                                <div class="loading" style="display: none">
-                                                    <div class="col-md-12 text-center">
-                                                        <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""
-                                                             style="width: 2%;"/>
-                                                    </div>
-                                                </div>
-                                                <br>
-                                            @component('components.jarviswidget',
-                                            ['id' => 'C3A-C3B_by_weeks', 'icon' => 'fa-line-chart', 'title' => "C3A-C3B Report in ", 'dropdown' => 'true'])
-                                                <!-- widget content -->
-                                                    <div class="widget-body no-padding">
-                                                        @component('components.C3A-C3B_chart', ['id' => 'C3A-C3B_by_weeks_chart', 'chk' => 'C3A-C3B_by_weeks_chk'])
-                                                        @endcomponent
-                                                    </div>
-                                                @endcomponent
-                                            </article>
+                                            {{--<article class="col-sm-12 col-md-12">--}}
+                                                {{--<div class="loading" style="display: none">--}}
+                                                    {{--<div class="col-md-12 text-center">--}}
+                                                        {{--<img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""--}}
+                                                             {{--style="width: 2%;"/>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                                {{--<br>--}}
+                                            {{--@component('components.jarviswidget',--}}
+                                            {{--['id' => 'C3A-C3B_by_weeks', 'icon' => 'fa-line-chart', 'title' => "C3A-C3B Report in ", 'dropdown' => 'true'])--}}
+                                                {{--<!-- widget content -->--}}
+                                                    {{--<div class="widget-body no-padding">--}}
+                                                        {{--@component('components.C3A-C3B_chart', ['id' => 'C3A-C3B_by_weeks_chart', 'chk' => 'C3A-C3B_by_weeks_chk'])--}}
+                                                        {{--@endcomponent--}}
+                                                    {{--</div>--}}
+                                                {{--@endcomponent--}}
+                                            {{--</article>--}}
 
                                         </div>
                                     </div>
@@ -272,23 +272,23 @@
                                                 @endcomponent
                                             </article>
 
-                                            <article class="col-sm-12 col-md-12">
-                                                <div class="loading" style="display: none">
-                                                    <div class="col-md-12 text-center">
-                                                        <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""
-                                                             style="width: 2%;"/>
-                                                    </div>
-                                                </div>
-                                                <br>
-                                            @component('components.jarviswidget',
-                                            ['id' => 'C3A-C3B_by_months', 'icon' => 'fa-line-chart', 'title' => "C3A-C3B Report in ", 'dropdown' => 'true'])
-                                                <!-- widget content -->
-                                                    <div class="widget-body no-padding">
-                                                        @component('components.C3A-C3B_chart', ['id' => 'C3A-C3B_by_months_chart', 'chk' => 'C3A-C3B_by_months_chk'])
-                                                        @endcomponent
-                                                    </div>
-                                                @endcomponent
-                                            </article>
+                                            {{--<article class="col-sm-12 col-md-12">--}}
+                                                {{--<div class="loading" style="display: none">--}}
+                                                    {{--<div class="col-md-12 text-center">--}}
+                                                        {{--<img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""--}}
+                                                             {{--style="width: 2%;"/>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                                {{--<br>--}}
+                                            {{--@component('components.jarviswidget',--}}
+                                            {{--['id' => 'C3A-C3B_by_months', 'icon' => 'fa-line-chart', 'title' => "C3A-C3B Report in ", 'dropdown' => 'true'])--}}
+                                                {{--<!-- widget content -->--}}
+                                                    {{--<div class="widget-body no-padding">--}}
+                                                        {{--@component('components.C3A-C3B_chart', ['id' => 'C3A-C3B_by_months_chart', 'chk' => 'C3A-C3B_by_months_chk'])--}}
+                                                        {{--@endcomponent--}}
+                                                    {{--</div>--}}
+                                                {{--@endcomponent--}}
+                                            {{--</article>--}}
                                         </div>
                                     </div>
                                 </div>
@@ -349,11 +349,7 @@
             initBudgetByDays();
             initQuantityByDays();
             initQualityByDays();
-<<<<<<< Updated upstream
-=======
-            initC3AC3BByDays();
-
->>>>>>> Stashed changes
+            // initC3AC3BByDays();
         });
 
         function initBudgetByDays() {
