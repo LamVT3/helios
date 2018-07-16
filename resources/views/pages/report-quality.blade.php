@@ -14,13 +14,13 @@
 
         <div class="tab-v1">
             <ul id="tabs" class="nav nav-tabs">
-                <li {{--class="active"--}}><a href="#report" data-toggle="tab"><strong>Report</strong></a></li>
-                <li class="active"><a href="#monthly" data-toggle="tab"><strong>Monthly Report</strong></a></li>
+                <li class="active"><a href="#report" data-toggle="tab"><strong>Report</strong></a></li>
+                <li {{--class="active"--}}><a href="#monthly" data-toggle="tab"><strong>Monthly Report</strong></a></li>
                 <li {{--class="active"--}}><a href="#year" data-toggle="tab"><strong>Latest Months Report</strong></a></li>
                 <li {{--class="active"--}}><a href="#statistic" data-toggle="tab"><strong>Statistic Report</strong></a></li>
             </ul>
             <div class="tab-content mb30" style="margin-top: 10px">
-                <div id="report" class="tab-pane {{--active--}}">
+                <div id="report" class="tab-pane active">
                     <!-- widget grid -->
                     <section id="widget-grid" class="">
                         <!-- row -->
@@ -156,7 +156,7 @@
                     <!-- end widget grid -->
                 </div>
 
-                <div class="tab-pane active" id="monthly">
+                <div class="tab-pane {{--active--}}" id="monthly">
                     <section id="widget-grid">
                         <div class="row">
                             <article class="col-sm-12 col-md-12">
