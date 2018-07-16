@@ -40,6 +40,7 @@ class SubReportController extends Controller
         $budget     = $this->getBudget();
         $quantity   = $this->getQuantity();
         $quality    = $this->getQuality();
+	    $C3AC3B     = $this->getC3AC3B();
 
         return view('pages.sub-report-line', compact(
             'page_title',
@@ -55,7 +56,8 @@ class SubReportController extends Controller
             'subcampaigns',
             'budget',
             'quantity',
-            'quality'
+            'quality',
+            'C3AC3B'
         ));
     }
 
@@ -410,6 +412,144 @@ class SubReportController extends Controller
 
         return $result;
     }
+
+	public function getC3AC3B($quality_month = null){
+
+		// get start date and end date
+		list($year, $month, $d, $first_day_this_month, $last_day_this_month) = $this->getDate($quality_month);
+
+		// get Ad id
+		$ad_id  = $this->getAds();
+
+		$array_month = array();
+		for ($i = 1; $i <= $d; $i++) {
+			//$array_month[date($i)] = 0;
+			$timestamp = strtotime($year . "-" . $month . "-" . $i) * 1000;
+			$array_month[$i] = $timestamp;
+		}
+
+		$array_reason = [ 'C3A_Duplicated', 'C3B_Under18', 'C3B_Duplicated15Days', 'C3A_Test' ];
+		$rs = [];
+		$count = 0;
+
+		if(count($ad_id) > 0){
+			Contact::whereIn( 'ad_id', $ad_id )
+			       ->where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
+			       ->where( 'submit_time', '<', strtotime( $last_day_this_month ) * 1000 )
+			       ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
+					->chunk( 1000, function ( $contacts ) use ( &$rs, &$count ) {
+						foreach ( $contacts as $contact ) {
+							$reason = (string) $contact->invalid_reason;
+							$timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
+							if ( $reason == '' ) {
+								if ( $contact->clevel == 'c3a' ) {
+									if ( isset( $rs['C3A_Test'][ $timestamp ] ) ) {
+										$rs['C3A_Test'][ $timestamp ] += 1;
+									} else {
+										$rs['C3A_Test'][ $timestamp ] = 1;
+									}
+								}
+							} else if ( $reason == 'invalid age' ) {
+								if ( $contact->clevel == 'c3b' ) {
+									if ( isset( $rs['C3B_Under18'][ $timestamp ] ) ) {
+										$rs['C3B_Under18'][ $timestamp ] += 1;
+									} else {
+										$rs['C3B_Under18'][ $timestamp ] = 1;
+									}
+								}
+							} else if ( $reason == 'duplicated' ) {
+								if ( $contact->clevel == 'c3a' ) {
+									if ( isset( $rs['C3A_Duplicated'][ $timestamp ] ) ) {
+										$rs['C3A_Duplicated'][ $timestamp ] += 1;
+									} else {
+										$rs['C3A_Duplicated'][ $timestamp ] = 1;
+									}
+								} else if ( $contact->clevel == 'c3b' ) {
+									if ( isset( $rs['C3B_Duplicated15Days'][ $timestamp ] ) ) {
+										$rs['C3B_Duplicated15Days'][ $timestamp ] += 1;
+									} else {
+										$rs['C3B_Duplicated15Days'][ $timestamp ] = 1;
+									}
+								}
+							} else if ( $reason == 'C3A_Test' ) {
+								if ( $contact->clevel == 'c3a' ) {
+									if ( isset( $rs['C3A_Test'][ $timestamp ] ) ) {
+										$rs['C3A_Test'][ $timestamp ] += 1;
+									} else {
+										$rs['C3A_Test'][ $timestamp ] = 1;
+									}
+								}
+							}
+							$count+=1;
+						}
+					} );
+		}else{
+			Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
+                   ->where( 'submit_time', '<', strtotime( $last_day_this_month ) * 1000 )
+                   ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
+                   ->chunk( 1000, function ( $contacts ) use ( &$rs, &$count ) {
+	                   foreach ( $contacts as $contact ) {
+		                   $reason = (string) $contact->invalid_reason;
+		                   $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
+		                   if ( $reason == '' ) {
+			                   if ( $contact->clevel == 'c3a' ) {
+				                   if ( isset( $rs['C3A_Test'][ $timestamp ] ) ) {
+					                   $rs['C3A_Test'][ $timestamp ] += 1;
+				                   } else {
+					                   $rs['C3A_Test'][ $timestamp ] = 1;
+				                   }
+			                   }
+		                   } else if ( $reason == 'invalid age' ) {
+			                   if ( $contact->clevel == 'c3b' ) {
+				                   if ( isset( $rs['C3B_Under18'][ $timestamp ] ) ) {
+					                   $rs['C3B_Under18'][ $timestamp ] += 1;
+				                   } else {
+					                   $rs['C3B_Under18'][ $timestamp ] = 1;
+				                   }
+			                   }
+		                   } else if ( $reason == 'duplicated' ) {
+			                   if ( $contact->clevel == 'c3a' ) {
+				                   if ( isset( $rs['C3A_Duplicated'][ $timestamp ] ) ) {
+					                   $rs['C3A_Duplicated'][ $timestamp ] += 1;
+				                   } else {
+					                   $rs['C3A_Duplicated'][ $timestamp ] = 1;
+				                   }
+			                   } else if ( $contact->clevel == 'c3b' ) {
+				                   if ( isset( $rs['C3B_Duplicated15Days'][ $timestamp ] ) ) {
+					                   $rs['C3B_Duplicated15Days'][ $timestamp ] += 1;
+				                   } else {
+					                   $rs['C3B_Duplicated15Days'][ $timestamp ] = 1;
+				                   }
+			                   }
+		                   } else if ( $reason == 'C3A_Test' ) {
+			                   if ( $contact->clevel == 'c3a' ) {
+				                   if ( isset( $rs['C3A_Test'][ $timestamp ] ) ) {
+					                   $rs['C3A_Test'][ $timestamp ] += 1;
+				                   } else {
+					                   $rs['C3A_Test'][ $timestamp ] = 1;
+				                   }
+			                   }
+		                   }
+		                   $count+=1;
+	                   }
+                   } );
+		}
+
+		$chart = [];
+		$result = [];
+
+		foreach ( $array_reason as $reason ) {
+			foreach ( $array_month as $key => $timestamp ) {
+				$chart[ $reason ][] = [
+					$timestamp,
+					isset( $rs[ $reason ][ $timestamp ] ) ? $rs[ $reason ][ $timestamp ] : 0,
+				];
+			}
+			$result[$reason] = json_encode($chart[ $reason ]);
+		}
+
+		return $result;
+	}
 
     private function getWhereData(){
         $request    = request();
@@ -1041,142 +1181,13 @@ class SubReportController extends Controller
 		$page_size      = Config::getByKey('PAGE_SIZE');
 		$subcampaigns   = Subcampaign::where('is_active', 1)->get();
 
-		$channels      = Channel::all();
+		$date_time = $start_date = $end_date = date('Y-m-d');
 
-		$table['c3'] = [];
-		$table['c3a'] = [];
-		$table['c3b'] = [];
-		$table['c3bg'] = [];
-		$table['c3_week'] = [];
-		$table['c3a_week'] = [];
-		$table['c3b_week'] = [];
-		$table['c3bg_week'] = [];
+		$data = $this->getChannel($start_date, $start_date);
 
-		$date_time   = date('Y-m-d');
+		$table = $data['table'];
+		$array_channel = $data['array_channel'];
 
-		$array_channel = array();
-		foreach ($channels as $key => $channel) {
-			$array_channel[$key] = $channel->name;
-		}
-
-		$array_channel[] = 'Unknown';
-
-		foreach ($array_channel as $channel) {
-			$table['c3'][$channel] = 0;
-			$table['c3a'][$channel] = 0;
-			$table['c3b'][$channel] = 0;
-			$table['c3bg'][$channel] = 0;
-			$table['c3_week'][$channel] = 0;
-			$table['c3a_week'][$channel] = 0;
-			$table['c3b_week'][$channel] = 0;
-			$table['c3bg_week'][$channel] = 0;
-		}
-
-		Contact::where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 )
-               ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
-               ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
-               ->chunk( 1000, function ( $contacts ) use ( &$table ) {
-                   foreach ( $contacts as $contact ) {
-	                   if ($contact->clevel == 'c3a'){
-		                   $channel = $contact->channel_name;
-		                   if (isset($table['c3a'][$channel]))
-			                   $table['c3a'][$channel] += 1;
-		                   else{
-			                   $table['c3a'][$channel] = 1;
-		                   }
-	                   }
-	                   else if ($contact->clevel == 'c3b'){
-		                   $channel = $contact->channel_name;
-		                   if (isset($table['c3b'][$channel]))
-			                   $table['c3b'][$channel] += 1;
-		                   else{
-			                   $table['c3b'][$channel] = 1;
-		                   }
-	                   }
-	                   else if ($contact->clevel == 'c3bg'){
-		                   $channel = $contact->channel_name;
-		                   if (isset($table['c3bg'][$channel]))
-			                   $table['c3bg'][$channel] += 1;
-		                   else{
-			                   $table['c3bg'][$channel] = 1;
-		                   }
-	                   }
-                   }
-               } );
-
-		Contact::where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 - 7 * 86400000)
-                ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
-                ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
-				->chunk( 1000, function ( $contacts ) use ( &$table ) {
-					foreach ( $contacts as $contact ) {
-						if ($contact->clevel == 'c3a'){
-							$channel = $contact->channel_name;
-							if (isset($table['c3a_week'][$channel]))
-								$table['c3a_week'][$channel] += 1;
-							else{
-								$table['c3a_week'][$channel] = 1;
-							}
-						}
-						else if ($contact->clevel == 'c3b'){
-							$channel = $contact->channel_name;
-							if (isset($table['c3b_week'][$channel]))
-								$table['c3b_week'][$channel] += 1;
-							else{
-								$table['c3b_week'][$channel] = 1;
-							}
-						}
-						else if ($contact->clevel == 'c3bg'){
-							$channel = $contact->channel_name;
-							if (isset($table['c3bg_week'][$channel]))
-								$table['c3bg_week'][$channel] += 1;
-							else{
-								$table['c3bg_week'][$channel] = 1;
-							}
-						}
-					}
-				} );
-
-		foreach ($array_channel as $key=>$i){
-			$temp['c3a'] = isset($table['c3a'][$i]) ? $table['c3a'][$i] : 0;
-			$temp['c3b'] = isset($table['c3b'][$i]) ? $table['c3b'][$i] : 0;
-			$temp['c3bg'] = isset($table['c3bg'][$i]) ? $table['c3bg'][$i] : 0;
-
-			$table['c3'][$i] =  $temp['c3a'] + $temp['c3b'] + $temp['c3bg'];
-			$table['c3b'][$i] =  $temp['c3b'] + $temp['c3bg'];
-
-			$temp['c3a_week'] = isset($table['c3a_week'][$i]) ? $table['c3a_week'][$i] : 0;
-			$temp['c3b_week'] = isset($table['c3b_week'][$i]) ? $table['c3b_week'][$i] : 0;
-			$temp['c3bg_week'] = isset($table['c3bg_week'][$i]) ? $table['c3bg_week'][$i] : 0;
-
-			$table['c3a_week'][$i] = intval( round($temp['c3a_week'] / 7));
-			$table['c3b_week'][$i] = intval( round($temp['c3b_week'] / 7));
-			$table['c3bg_week'][$i] = intval( round($temp['c3bg_week'] / 7));
-
-			$table['c3_week'][$i] =  $table['c3a_week'][$i] + $table['c3b_week'][$i] + $table['c3bg_week'][$i];
-			$table['c3b_week'][$i] = $table['c3b_week'][$i] + $table['c3bg_week'][$i];
-
-			if ($table['c3'][$i]==0 && $table['c3b'][$i]==0 && $table['c3bg'][$i]==0 &&
-			    $table['c3_week'][$i]==0 && $table['c3b_week'][$i]==0 && $table['c3bg_week'][$i]==0){
-				unset($array_channel[$key]);
-			}
-		}
-
-		$array_channel = array_values($array_channel);
-
-		arsort($table['c3']);
-
-		foreach ($table['c3'] as $key=>$value) {
-			if ($value != 0){
-				$array_channel_new[] = $key;
-			}
-		}
-		foreach ($table['c3_week'] as $key=>$value) {
-			if ($value != 0 && !in_array($key,$array_channel_new)){
-				$array_channel_new[] = $key;
-			}
-		}
-
-		$array_channel = $array_channel_new;
 
 		return view('pages.channel-report', compact(
 			'page_title',
@@ -1197,146 +1208,153 @@ class SubReportController extends Controller
 		));
 	}
 
-	public function channelReportFilter(){
-		$page_title = "Channel Report | Helios";
-		$page_css = array();
-		$no_main_header = FALSE; //set true for lock.php and login.php
-		$active = 'channel-report';
-		$breadcrumbs = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Channel Report </span>";
-
-		$sources        = Source::all();
-		$teams          = Team::all();
-		$marketers      = User::all();
-		$campaigns      = Campaign::where('is_active', 1)->get();
-		$page_size      = Config::getByKey('PAGE_SIZE');
-		$subcampaigns   = Subcampaign::where('is_active', 1)->get();
-
+	private function getChannel($start_date, $end_date){
 		$channels      = Channel::all();
-
-		$table['c3'] = [];
-		$table['c3a'] = [];
-		$table['c3b'] = [];
-		$table['c3bg'] = [];
-		$table['c3_week'] = [];
-		$table['c3a_week'] = [];
-		$table['c3b_week'] = [];
-		$table['c3bg_week'] = [];
-
-		$data_where = $this->getWhereData();
-
-		$request        = request();
-		$date_time   = $request->date_time;
 
 		$array_channel = array();
 		foreach ($channels as $key => $channel) {
-			$array_channel[$key] = $channel->name;
+			$array_channel[$channel->_id] = $channel->name;
 		}
 
-		$array_channel[] = 'Unknown';
+		$array_channel['unknown'] = 'Unknown';
 
 		foreach ($array_channel as $channel) {
 			$table['c3'][$channel] = 0;
-			$table['c3a'][$channel] = 0;
 			$table['c3b'][$channel] = 0;
 			$table['c3bg'][$channel] = 0;
+			$table['l1'][$channel]   = 0;
+			$table['l3'][$channel]   = 0;
+			$table['l6'][$channel]   = 0;
+			$table['l8'][$channel]   = 0;
+
 			$table['c3_week'][$channel] = 0;
-			$table['c3a_week'][$channel] = 0;
 			$table['c3b_week'][$channel] = 0;
 			$table['c3bg_week'][$channel] = 0;
+			$table['l1_week'][$channel]   = 0;
+			$table['l3_week'][$channel]   = 0;
+			$table['l6_week'][$channel]   = 0;
+			$table['l8_week'][$channel]   = 0;
 		}
 
-		Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $date_time ) * 1000 )
-		       ->where( 'submit_time', '<', strtotime( $date_time ) * 1000 + 86400000)
-		       ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
-		       ->chunk( 1000, function ( $contacts ) use ( &$table ) {
-			       foreach ( $contacts as $contact ) {
-				       if ($contact->clevel == 'c3a'){
-					       $channel = $contact->channel_name;
-					       if (isset($table['c3a'][$channel]))
-						       $table['c3a'][$channel] += 1;
-					       else{
-						       $table['c3a'][$channel] = 1;
-					       }
-				       }
-				       else if ($contact->clevel == 'c3b'){
-					       $channel = $contact->channel_name;
-					       if (isset($table['c3b'][$channel]))
-						       $table['c3b'][$channel] += 1;
-					       else{
-						       $table['c3b'][$channel] = 1;
-					       }
-				       }
-				       else if ($contact->clevel == 'c3bg'){
-					       $channel = $contact->channel_name;
-					       if (isset($table['c3bg'][$channel]))
-						       $table['c3bg'][$channel] += 1;
-					       else{
-						       $table['c3bg'][$channel] = 1;
-					       }
-				       }
-			       }
-		       } );
+		$ad_id  = $this->getAds();
 
-		Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $date_time ) * 1000  - 7 * 86400000)
-		       ->where( 'submit_time', '<', strtotime( $date_time ) * 1000 + 86400000 )
-		       ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
-		       ->chunk( 1000, function ( $contacts ) use ( &$table ) {
-			       foreach ( $contacts as $contact ) {
-				       if ($contact->clevel == 'c3a'){
-					       $channel = $contact->channel_name;
-					       if (isset($table['c3a_week'][$channel]))
-						       $table['c3a_week'][$channel] += 1;
-					       else{
-						       $table['c3a_week'][$channel] = 1;
-					       }
-				       }
-				       else if ($contact->clevel == 'c3b'){
-					       $channel = $contact->channel_name;
-					       if (isset($table['c3b_week'][$channel]))
-						       $table['c3b_week'][$channel] += 1;
-					       else{
-						       $table['c3b_week'][$channel] = 1;
-					       }
-				       }
-				       else if ($contact->clevel == 'c3bg'){
-					       $channel = $contact->channel_name;
-					       if (isset($table['c3bg_week'][$channel]))
-						       $table['c3bg_week'][$channel] += 1;
-					       else{
-						       $table['c3bg_week'][$channel] = 1;
-					       }
-				       }
-			       }
-		       } );
+		if(count($ad_id) > 0){
+			$match = [
+				['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
+				['$match' => ['ad_id' => ['$in' => $ad_id]]],
+				[
+					'$group' => [
+						'_id'   => '$date',
+						'c3'    => ['$sum' => '$c3'],
+						'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
+						'c3bg'  => ['$sum' => '$c3bg'],
+						'l1'    => ['$sum' => '$l1'],
+						'l3'    => ['$sum' => '$l3'],
+						'l6'    => ['$sum' => '$l6'],
+						'l8'    => ['$sum' => '$l8'],
+					]
+				]
+			];
+			$match_week = [
+				['$match' => ['date' => ['$gte' => date('Y-m-d', strtotime( $start_date ) - 7 * 86400), '$lte' => $end_date]]],
+				['$match' => ['ad_id' => ['$in' => $ad_id]]],
+				[
+					'$group' => [
+						'_id'   => '$date',
+						'c3'    => ['$sum' => '$c3'],
+						'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
+						'c3bg'  => ['$sum' => '$c3bg'],
+						'l1'    => ['$sum' => '$l1'],
+						'l3'    => ['$sum' => '$l3'],
+						'l6'    => ['$sum' => '$l6'],
+						'l8'    => ['$sum' => '$l8'],
+					]
+				]
+			];
+		}else{
+			$match = [
+				['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
+				[
+					'$group' => [
+						'_id'   => '$ad_id',
+						'c3'    => ['$sum' => '$c3'],
+						'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
+						'c3bg'  => ['$sum' => '$c3bg'],
+						'l1'    => ['$sum' => '$l1'],
+						'l3'    => ['$sum' => '$l3'],
+						'l6'    => ['$sum' => '$l6'],
+						'l8'    => ['$sum' => '$l8'],
+					]
+				]
+			];
+			$match_week = [
+				['$match' => ['date' => ['$gte' => date('Y-m-d', strtotime( $start_date ) - 7 * 86400), '$lte' => $end_date]]],
+				[
+					'$group' => [
+						'_id'   => '$ad_id',
+						'c3'    => ['$sum' => '$c3'],
+						'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
+						'c3bg'  => ['$sum' => '$c3bg'],
+						'l1'    => ['$sum' => '$l1'],
+						'l3'    => ['$sum' => '$l3'],
+						'l6'    => ['$sum' => '$l6'],
+						'l8'    => ['$sum' => '$l8'],
+					]
+				]
+			];
+		}
 
-		foreach ($array_channel as $key=>$i){
-			$temp['c3a'] = isset($table['c3a'][$i]) ? $table['c3a'][$i] : 0;
-			$temp['c3b'] = isset($table['c3b'][$i]) ? $table['c3b'][$i] : 0;
-			$temp['c3bg'] = isset($table['c3bg'][$i]) ? $table['c3bg'][$i] : 0;
+		$arr_ad = Ad::pluck('channel_id','_id')->all();
 
-			$table['c3'][$i] =  $temp['c3a'] + $temp['c3b'] + $temp['c3bg'];
-			$table['c3b'][$i] =  $temp['c3b'] + $temp['c3bg'];
+		$query_chart = AdResult::raw(function ($collection) use ($match) {
+			return $collection->aggregate($match);
+		});
+		$query_chart_week = AdResult::raw(function ($collection) use ($match_week) {
+			return $collection->aggregate($match_week);
+		});
 
-			$temp['c3a_week'] = isset($table['c3a_week'][$i]) ? $table['c3a_week'][$i] : 0;
-			$temp['c3b_week'] = isset($table['c3b_week'][$i]) ? $table['c3b_week'][$i] : 0;
-			$temp['c3bg_week'] = isset($table['c3bg_week'][$i]) ? $table['c3bg_week'][$i] : 0;
-
-			$table['c3a_week'][$i] = intval( round($temp['c3a_week'] / 7));
-			$table['c3b_week'][$i] = intval( round($temp['c3b_week'] / 7));
-			$table['c3bg_week'][$i] = intval( round($temp['c3bg_week'] / 7));
-
-			$table['c3_week'][$i] =  $table['c3a_week'][$i] + $table['c3b_week'][$i] + $table['c3bg_week'][$i];
-			$table['c3b_week'][$i] = $table['c3b_week'][$i] + $table['c3bg_week'][$i];
-
-			if ($table['c3'][$i]==0 && $table['c3b'][$i]==0 && $table['c3bg'][$i]==0 &&
-			    $table['c3_week'][$i]==0 && $table['c3b_week'][$i]==0 && $table['c3bg_week'][$i]==0){
-				unset($array_channel[$key]);
+		foreach ( $query_chart as $item_result ) {
+			$channel_id = @$arr_ad[$item_result['_id']];
+			if ( $channel_id ) {
+				$channel    = @$array_channel[ $channel_id ];
+				if ( ! $channel ) {
+					$channel = 'Unknown';
+				}
+			} else {
+				$channel = 'Unknown';
 			}
-		}
 
-		$array_channel = array_values($array_channel);
+			$table['c3'][ $channel ]   += $item_result->c3;
+			$table['c3b'][ $channel ]  += $item_result->c3b;
+			$table['c3bg'][ $channel ] += $item_result->c3bg;
+			$table['l1'][ $channel ]   += $item_result->l1;
+			$table['l3'][ $channel ]   += $item_result->l3;
+			$table['l6'][ $channel ]   += $item_result->l6;
+			$table['l8'][ $channel ]   += $item_result->l8;
+		}
+		foreach ( $query_chart_week as $item_result ) {
+			$channel_id = @$arr_ad[$item_result['_id']];
+			if ( $channel_id ) {
+				$channel    = @$array_channel[ $channel_id ];
+				if ( ! $channel ) {
+					$channel = 'Unknown';
+				}
+			} else {
+				$channel = 'Unknown';
+			}
+
+			$table['c3_week'][ $channel ]   += intval( round($item_result->c3 / 7));
+			$table['c3b_week'][ $channel ]  += intval( round($item_result->c3b / 7));
+			$table['c3bg_week'][ $channel ] += intval( round($item_result->c3bg / 7));
+			$table['l1_week'][ $channel ]   += intval( round($item_result->l1 / 7));
+			$table['l3_week'][ $channel ]   += intval( round($item_result->l3 / 7));
+			$table['l6_week'][ $channel ]   += intval( round($item_result->l6 / 7));
+			$table['l8_week'][ $channel ]   += intval( round($item_result->l8 / 7));
+		}
 
 		arsort($table['c3']);
+		arsort($table['c3_week']);
+		$array_channel_new = [];
 
 		foreach ($table['c3'] as $key=>$value) {
 			if ($value != 0){
@@ -1351,23 +1369,30 @@ class SubReportController extends Controller
 
 		$array_channel = $array_channel_new;
 
-		return view('pages.channel-report', compact(
-			'page_title',
-			'page_css',
-			'no_main_header',
-			'active',
-			'breadcrumbs',
-			'sources',
-			'teams',
-			'marketers',
-			'campaigns',
-			'page_size',
-			'subcampaigns',
-			'table',
-			'data_where',
-			'date_time',
-			'array_channel'
-		));
+		return ['table'=>$table,'array_channel' => $array_channel];
+	}
+
+	public function channelReportFilter(){
+		$startDate = Date('Y-m-d');
+		$endDate = Date('Y-m-d');
+		$request = request();
+		if($request->registered_date){
+			$date_place = str_replace('-', ' ', $request->registered_date);
+			$date_arr = explode(' ', str_replace('/', '-', $date_place));
+			$startDate = Date('Y-m-d', strtotime($date_arr[0]));
+			$endDate = Date('Y-m-d', strtotime($date_arr[1]));
+		}
+
+		$data = $this->getChannel($startDate, $endDate);
+
+		if ($startDate != $endDate){
+			$data['week'] = false;
+		}
+		else{
+			$data['week'] = true;
+		}
+
+		return view('pages.table_sub-report-channel', $data);
 	}
 
     public function prepareDataByWeeks(){
@@ -1435,10 +1460,14 @@ class SubReportController extends Controller
         }
         else if ($type == 'quality') {
             $result['quality']  = $this->getQualityByWeeks($query_chart, $w);
+        }
+        else if ($type == 'C3AC3B') {
+	        $result['C3AC3B']  = $this->getC3AC3BByWeeks($start_date, $end_date, $w);
         } else {
             $result['budget']   = $this->getBudgetByWeeks($query_chart, $w);
             $result['quantity'] = $this->getQuantityByWeeks($query_chart, $w);
             $result['quality']  = $this->getQualityByWeeks($query_chart, $w);
+	        $result['C3AC3B']   = $this->getC3AC3BByWeeks($start_date, $end_date, $w);
         }
 
         return $result;
@@ -1687,7 +1716,263 @@ class SubReportController extends Controller
         return $result;
     }
 
-    private function getWeek( $date = null ){
+	private function getC3AC3BByWeeks($start_date, $end_date, $w){
+
+		$ad_id  = $this->getAds();
+
+		$array_reason = [ 'C3A_Duplicated', 'C3B_Under18', 'C3B_Duplicated15Days', 'C3A_Test' ];
+		$rs = [];
+		$count = 0;
+
+		if(count($ad_id) > 0){
+			Contact::whereIn( 'ad_id', $ad_id )
+			       ->where( 'submit_time', '>=', strtotime( $start_date ) * 1000 )
+			       ->where( 'submit_time', '<', strtotime( $end_date ) * 1000 )
+			       ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
+			       ->chunk( 1000, function ( $contacts ) use ( &$rs, &$count ) {
+				       foreach ( $contacts as $contact ) {
+					       $reason = (string) $contact->invalid_reason;
+					       $timestamp = $this->getWeek($contact->submit_time / 1000);
+					       if ( $reason == '' ) {
+						       if ( $contact->clevel == 'c3a' ) {
+							       if ( isset( $rs['C3A_Test'][ $timestamp ] ) ) {
+								       $rs['C3A_Test'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3A_Test'][ $timestamp ] = 1;
+							       }
+						       }
+					       } else if ( $reason == 'invalid age' ) {
+						       if ( $contact->clevel == 'c3b' ) {
+							       if ( isset( $rs['C3B_Under18'][ $timestamp ] ) ) {
+								       $rs['C3B_Under18'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3B_Under18'][ $timestamp ] = 1;
+							       }
+						       }
+					       } else if ( $reason == 'duplicated' ) {
+						       if ( $contact->clevel == 'c3a' ) {
+							       if ( isset( $rs['C3A_Duplicated'][ $timestamp ] ) ) {
+								       $rs['C3A_Duplicated'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3A_Duplicated'][ $timestamp ] = 1;
+							       }
+						       } else if ( $contact->clevel == 'c3b' ) {
+							       if ( isset( $rs['C3B_Duplicated15Days'][ $timestamp ] ) ) {
+								       $rs['C3B_Duplicated15Days'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3B_Duplicated15Days'][ $timestamp ] = 1;
+							       }
+						       }
+					       } else if ( $reason == 'C3A_Test' ) {
+						       if ( $contact->clevel == 'c3a' ) {
+							       if ( isset( $rs['C3A_Test'][ $timestamp ] ) ) {
+								       $rs['C3A_Test'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3A_Test'][ $timestamp ] = 1;
+							       }
+						       }
+					       }
+					       $count+=1;
+				       }
+			       } );
+		}else{
+			Contact::where( 'submit_time', '>=', strtotime( $start_date ) * 1000 )
+			       ->where( 'submit_time', '<', strtotime( $end_date ) * 1000 )
+			       ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
+			       ->chunk( 1000, function ( $contacts ) use ( &$rs, &$count ) {
+				       foreach ( $contacts as $contact ) {
+					       $reason = (string) $contact->invalid_reason;
+					       $timestamp = $this->getWeek($contact->submit_time / 1000);
+					       if ( $reason == '' ) {
+						       if ( $contact->clevel == 'c3a' ) {
+							       if ( isset( $rs['C3A_Test'][ $timestamp ] ) ) {
+								       $rs['C3A_Test'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3A_Test'][ $timestamp ] = 1;
+							       }
+						       }
+					       } else if ( $reason == 'invalid age' ) {
+						       if ( $contact->clevel == 'c3b' ) {
+							       if ( isset( $rs['C3B_Under18'][ $timestamp ] ) ) {
+								       $rs['C3B_Under18'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3B_Under18'][ $timestamp ] = 1;
+							       }
+						       }
+					       } else if ( $reason == 'duplicated' ) {
+						       if ( $contact->clevel == 'c3a' ) {
+							       if ( isset( $rs['C3A_Duplicated'][ $timestamp ] ) ) {
+								       $rs['C3A_Duplicated'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3A_Duplicated'][ $timestamp ] = 1;
+							       }
+						       } else if ( $contact->clevel == 'c3b' ) {
+							       if ( isset( $rs['C3B_Duplicated15Days'][ $timestamp ] ) ) {
+								       $rs['C3B_Duplicated15Days'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3B_Duplicated15Days'][ $timestamp ] = 1;
+							       }
+						       }
+					       } else if ( $reason == 'C3A_Test' ) {
+						       if ( $contact->clevel == 'c3a' ) {
+							       if ( isset( $rs['C3A_Test'][ $timestamp ] ) ) {
+								       $rs['C3A_Test'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3A_Test'][ $timestamp ] = 1;
+							       }
+						       }
+					       }
+					       $count+=1;
+				       }
+			       } );
+		}
+
+		$chart = [];
+		$result = [];
+
+		foreach ( $array_reason as $reason ) {
+			for ($timestamp = 1; $timestamp <= $w; $timestamp++) {
+				$chart[ $reason ][] = [
+					$timestamp,
+					isset( $rs[ $reason ][ $timestamp ] ) ? $rs[ $reason ][ $timestamp ] : 0,
+				];
+			}
+			$result[$reason] = json_encode($chart[ $reason ]);
+		}
+
+		return $result;
+	}
+
+	private function getC3AC3BByMonths($start_date, $end_date){
+
+		$ad_id  = $this->getAds();
+
+		$array_reason = [ 'C3A_Duplicated', 'C3B_Under18', 'C3B_Duplicated15Days', 'C3A_Test' ];
+		$rs = [];
+		$count = 0;
+
+		if(count($ad_id) > 0){
+			Contact::whereIn( 'ad_id', $ad_id )
+			       ->where( 'submit_time', '>=', strtotime( $start_date ) * 1000 )
+			       ->where( 'submit_time', '<', strtotime( $end_date ) * 1000 )
+			       ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
+			       ->chunk( 1000, function ( $contacts ) use ( &$rs, &$count ) {
+				       foreach ( $contacts as $contact ) {
+					       $reason = (string) $contact->invalid_reason;
+					       $timestamp = $this->getMonths($contact->submit_time / 1000);
+					       if ( $reason == '' ) {
+						       if ( $contact->clevel == 'c3a' ) {
+							       if ( isset( $rs['C3A_Test'][ $timestamp ] ) ) {
+								       $rs['C3A_Test'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3A_Test'][ $timestamp ] = 1;
+							       }
+						       }
+					       } else if ( $reason == 'invalid age' ) {
+						       if ( $contact->clevel == 'c3b' ) {
+							       if ( isset( $rs['C3B_Under18'][ $timestamp ] ) ) {
+								       $rs['C3B_Under18'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3B_Under18'][ $timestamp ] = 1;
+							       }
+						       }
+					       } else if ( $reason == 'duplicated' ) {
+						       if ( $contact->clevel == 'c3a' ) {
+							       if ( isset( $rs['C3A_Duplicated'][ $timestamp ] ) ) {
+								       $rs['C3A_Duplicated'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3A_Duplicated'][ $timestamp ] = 1;
+							       }
+						       } else if ( $contact->clevel == 'c3b' ) {
+							       if ( isset( $rs['C3B_Duplicated15Days'][ $timestamp ] ) ) {
+								       $rs['C3B_Duplicated15Days'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3B_Duplicated15Days'][ $timestamp ] = 1;
+							       }
+						       }
+					       } else if ( $reason == 'C3A_Test' ) {
+						       if ( $contact->clevel == 'c3a' ) {
+							       if ( isset( $rs['C3A_Test'][ $timestamp ] ) ) {
+								       $rs['C3A_Test'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3A_Test'][ $timestamp ] = 1;
+							       }
+						       }
+					       }
+					       $count+=1;
+				       }
+			       } );
+		}else{
+			Contact::where( 'submit_time', '>=', strtotime( $start_date ) * 1000 )
+			       ->where( 'submit_time', '<', strtotime( $end_date ) * 1000 )
+			       ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
+			       ->chunk( 1000, function ( $contacts ) use ( &$rs, &$count ) {
+				       foreach ( $contacts as $contact ) {
+					       $reason = (string) $contact->invalid_reason;
+					       $timestamp = $this->getMonths($contact->submit_time / 1000);
+
+					       if ( $reason == '' ) {
+						       if ( $contact->clevel == 'c3a' ) {
+							       if ( isset( $rs['C3A_Test'][ $timestamp ] ) ) {
+								       $rs['C3A_Test'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3A_Test'][ $timestamp ] = 1;
+							       }
+						       }
+					       } else if ( $reason == 'invalid age' ) {
+						       if ( $contact->clevel == 'c3b' ) {
+							       if ( isset( $rs['C3B_Under18'][ $timestamp ] ) ) {
+								       $rs['C3B_Under18'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3B_Under18'][ $timestamp ] = 1;
+							       }
+						       }
+					       } else if ( $reason == 'duplicated' ) {
+						       if ( $contact->clevel == 'c3a' ) {
+							       if ( isset( $rs['C3A_Duplicated'][ $timestamp ] ) ) {
+								       $rs['C3A_Duplicated'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3A_Duplicated'][ $timestamp ] = 1;
+							       }
+						       } else if ( $contact->clevel == 'c3b' ) {
+							       if ( isset( $rs['C3B_Duplicated15Days'][ $timestamp ] ) ) {
+								       $rs['C3B_Duplicated15Days'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3B_Duplicated15Days'][ $timestamp ] = 1;
+							       }
+						       }
+					       } else if ( $reason == 'C3A_Test' ) {
+						       if ( $contact->clevel == 'c3a' ) {
+							       if ( isset( $rs['C3A_Test'][ $timestamp ] ) ) {
+								       $rs['C3A_Test'][ $timestamp ] += 1;
+							       } else {
+								       $rs['C3A_Test'][ $timestamp ] = 1;
+							       }
+						       }
+					       }
+					       $count+=1;
+				       }
+			       } );
+		}
+
+		dd($rs);
+		$chart = [];
+		$result = [];
+
+		foreach ( $array_reason as $reason ) {
+			for ($timestamp = 1; $timestamp <= 12; $timestamp++) {
+				$chart[ $reason ][] = [
+					$timestamp,
+					isset( $rs[ $reason ][ $timestamp ] ) ? $rs[ $reason ][ $timestamp ] : 0,
+				];
+			}
+			$result[$reason] = json_encode($chart[ $reason ]);
+		}
+
+		return $result;
+	}
+
+	private function getWeek( $date = null ){
         if($date){
             $week_count = date('W', strtotime($date));
             return (int)$week_count;
@@ -1715,14 +2000,17 @@ class SubReportController extends Controller
         $budget_month   = $request->budget_month;
         $quantity_month = $request->quantity_month;
         $quality_month  = $request->quality_month;
+        $C3AC3B_month   = $request->C3AC3B_month;
 
         $budget     = $this->getBudget($budget_month);
         $quantity   = $this->getQuantity($quantity_month);
         $quality    = $this->getQuality($quality_month);
+        $C3AC3B     = $this->getC3AC3B($C3AC3B_month);
 
         $result['budget']   = $budget;
         $result['quantity'] = $quantity;
         $result['quality']  = $quality;
+        $result['C3A-C3B']  = $C3AC3B;
 
         return $result;
     }
@@ -1801,10 +2089,16 @@ class SubReportController extends Controller
         }
         else if ($type == 'quality') {
             $result['quality']  = $this->getQualityByMonths($query_chart);
+        }
+        else if ($type == 'C3AC3B') {
+	        dd(123);
+
+	        $result['C3AC3B']  = $this->getC3AC3BByMonths($start_date, $end_date);
         } else {
-            $result['budget']   = $this->getBudgetByMonths($query_chart);
+	        $result['budget']   = $this->getBudgetByMonths($query_chart);
             $result['quantity'] = $this->getQuantityByMonths($query_chart);
             $result['quality']  = $this->getQualityByMonths($query_chart);
+            $result['C3AC3B']  = $this->getC3AC3BByMonths($start_date, $end_date);
         }
 
         return $result;
