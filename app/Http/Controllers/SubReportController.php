@@ -1955,7 +1955,7 @@ class SubReportController extends Controller
 			       } );
 		}
 
-		dd($rs);
+//		dd($rs);
 		$chart = [];
 		$result = [];
 
@@ -2098,7 +2098,7 @@ class SubReportController extends Controller
 	        $result['budget']   = $this->getBudgetByMonths($query_chart);
             $result['quantity'] = $this->getQuantityByMonths($query_chart);
             $result['quality']  = $this->getQualityByMonths($query_chart);
-            $result['C3AC3B']  = $this->getC3AC3BByMonths($start_date, $end_date);
+//            $result['C3AC3B']  = $this->getC3AC3BByMonths($start_date, $end_date);
         }
 
         return $result;
