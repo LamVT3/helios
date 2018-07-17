@@ -250,6 +250,27 @@ $(document).ready(function () {
         }, 2000);
     });
 
+    $('button#confirm_export_to_olm').click(function (e) {
+        e.preventDefault();
+        $('.loading').show();
+        var is_update_all   = $('input[id=update_all]').is(':checked');
+        var id      = {};
+
+        if(is_update_all){
+            id = 'All';
+        }
+        else{
+            $("input:checkbox[id=is_update]:checked").each(function () {
+                $statusCell = $(this).parent().siblings('td.status');
+                id[$(this).val()] = $(this).val();
+            });
+        }
+
+        console.log(id);
+        exportToOLM(id);
+        // updateStatusExport(id);
+    });
+
     $('button#update_contact').click(function (e) {
         e.preventDefault();
         $('.loading').show();
@@ -273,10 +294,13 @@ $(document).ready(function () {
         var is_checked = this.checked;
         if(is_checked){
             $('input[name="update_all"]').val(1);
+            $('input:checkbox[id=is_update]').prop('disabled', true);
         }else{
             $('input[name="update_all"]').val(0);
+            $('input:checkbox[id=is_update]').prop('disabled', false);
         }
         $('input:checkbox[id=is_update]').prop('checked', this.checked);
+
         enable_update();
         $("input:checkbox[id=is_update]").each(function () {
             edit(this, 'all');
@@ -386,7 +410,14 @@ function initDataTable() {
             {
                 "data" : 'name',
                 "render": function ( data, type, row, meta ) {
-                    return '<input type="checkbox" class="is_update" id="is_update" onclick="enable_update();edit(this);" value="' + data[0] + '"/>';
+                    var check_all = $('input[name="update_all"]').val();
+                    var row = '';
+                    if(check_all == '1'){
+                        row = '<input type="checkbox" class="is_update" id="is_update" checked disabled onclick="enable_update();edit(this);" value="\' + data[0] + \'"/>';
+                    }
+                    else row = '<input type="checkbox" class="is_update" id="is_update" onclick="enable_update();edit(this);" value="\' + data[0] + \'"/>';
+
+                    return row;
                 },
                 "orderable": false,
             },
@@ -668,6 +699,57 @@ function updateStatusExport(id) {
             // if(old_status == '0'){
             //     $('input[name="exported"]').val(0);
             // }
+            initDataTable();
+            $('input#update_all').prop('checked', false); // Unchecks checkbox all
+
+            $('.loading').hide();
+            $('div#update_success').show();
+            $('div#export_success').hide();
+        }, 1000);
+    }).fail(
+        function (err) {
+            $('.loading').hide();
+            alert('Cannot connect to server. Please try again later.');
+        });
+
+    $('button#update_contact').prop('disabled', true);
+    $('button#update_contact').addClass('disabled');
+
+}
+
+function exportToOLM(id) {
+    var url             = $('input[name="export_to_olm_url"]').val();
+    var source_id       = $('input[name="source_id"]').val();
+    var team_id         = $('input[name="team_id"]').val();
+    var marketer_id     = $('input[name="marketer_id"]').val();
+    var campaign_id     = $('input[name="campaign_id"]').val();
+    var clevel          = $('input[name="clevel"]').val();
+    var current_level   = $('input[name="current_level"]').val();
+    var registered_date = $('.registered_date').text();
+    var subcampaign_id  = $('input[name="subcampaign_id"]').val();
+    var old_status      = $('input[name="status"]').val();
+    var landing_page    = $('select[name="landing_page"]').val();
+    var channel         = $('select[name="channel_id"]').val();
+
+    var data = {};
+    data.id                = id;
+    data.source_id         = source_id;
+    data.team_id           = team_id;
+    data.marketer_id       = marketer_id;
+    data.campaign_id       = campaign_id;
+    data.clevel            = clevel;
+    data.current_level     = current_level;
+    data.subcampaign_id    = subcampaign_id;
+    data.registered_date   = registered_date;
+    data.old_status        = old_status;
+    data.new_status        = status;
+    data.landing_page      = landing_page;
+    data.channel           = channel;
+
+    $.get(url, data, function (data) {
+        console.log(data);
+        countExported();
+        setTimeout(function(){
             initDataTable();
             $('input#update_all').prop('checked', false); // Unchecks checkbox all
 
