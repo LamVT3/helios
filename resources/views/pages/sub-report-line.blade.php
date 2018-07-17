@@ -154,6 +154,24 @@
                                                     </div>
                                                 @endcomponent
                                             </article>
+
+                                            {{--<article class="col-sm-12 col-md-12">--}}
+                                                {{--<div class="loading" style="display: none">--}}
+                                                    {{--<div class="col-md-12 text-center">--}}
+                                                        {{--<img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""--}}
+                                                             {{--style="width: 2%;"/>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                                {{--<br>--}}
+                                            {{--@component('components.jarviswidget',--}}
+                                            {{--['id' => 'C3A-C3B', 'icon' => 'fa-line-chart', 'title' => "C3A-C3B Report in ", 'dropdown' => 'true'])--}}
+                                                {{--<!-- widget content -->--}}
+                                                    {{--<div class="widget-body no-padding">--}}
+                                                        {{--@component('components.C3A-C3B_chart', ['id' => 'C3A-C3B_chart', 'chk' => 'C3A-C3B_chk'])--}}
+                                                        {{--@endcomponent--}}
+                                                    {{--</div>--}}
+                                                {{--@endcomponent--}}
+                                            {{--</article>--}}
                                         </div>
                                     </div>
                                     <div id="by_weeks" class="tab-pane fade">
@@ -195,6 +213,24 @@
                                                 @endcomponent
                                             </article>
 
+                                            {{--<article class="col-sm-12 col-md-12">--}}
+                                                {{--<div class="loading" style="display: none">--}}
+                                                    {{--<div class="col-md-12 text-center">--}}
+                                                        {{--<img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""--}}
+                                                             {{--style="width: 2%;"/>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                                {{--<br>--}}
+                                            {{--@component('components.jarviswidget',--}}
+                                            {{--['id' => 'C3A-C3B_by_weeks', 'icon' => 'fa-line-chart', 'title' => "C3A-C3B Report in ", 'dropdown' => 'true'])--}}
+                                                {{--<!-- widget content -->--}}
+                                                    {{--<div class="widget-body no-padding">--}}
+                                                        {{--@component('components.C3A-C3B_chart', ['id' => 'C3A-C3B_by_weeks_chart', 'chk' => 'C3A-C3B_by_weeks_chk'])--}}
+                                                        {{--@endcomponent--}}
+                                                    {{--</div>--}}
+                                                {{--@endcomponent--}}
+                                            {{--</article>--}}
+
                                         </div>
                                     </div>
                                     <div id="by_months" class="tab-pane fade">
@@ -235,6 +271,24 @@
                                                     </div>
                                                 @endcomponent
                                             </article>
+
+                                            {{--<article class="col-sm-12 col-md-12">--}}
+                                                {{--<div class="loading" style="display: none">--}}
+                                                    {{--<div class="col-md-12 text-center">--}}
+                                                        {{--<img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""--}}
+                                                             {{--style="width: 2%;"/>--}}
+                                                    {{--</div>--}}
+                                                {{--</div>--}}
+                                                {{--<br>--}}
+                                            {{--@component('components.jarviswidget',--}}
+                                            {{--['id' => 'C3A-C3B_by_months', 'icon' => 'fa-line-chart', 'title' => "C3A-C3B Report in ", 'dropdown' => 'true'])--}}
+                                                {{--<!-- widget content -->--}}
+                                                    {{--<div class="widget-body no-padding">--}}
+                                                        {{--@component('components.C3A-C3B_chart', ['id' => 'C3A-C3B_by_months_chart', 'chk' => 'C3A-C3B_by_months_chk'])--}}
+                                                        {{--@endcomponent--}}
+                                                    {{--</div>--}}
+                                                {{--@endcomponent--}}
+                                            {{--</article>--}}
                                         </div>
                                     </div>
                                 </div>
@@ -260,9 +314,11 @@
     <input type="hidden" name="budget_url" value="{{route('get-budget')}}">
     <input type="hidden" name="quantity_url" value="{{route('get-quantity')}}">
     <input type="hidden" name="quality_url" value="{{route('get-quality')}}">
+    <input type="hidden" name="C3AC3B_url" value="{{route('get-C3AC3B')}}">
     <input type="hidden" name="budget_month">
     <input type="hidden" name="quantity_month">
     <input type="hidden" name="quality_month">
+    <input type="hidden" name="C3AC3B_month">
     <input type="hidden" name="get_by_days" value="{{route('line-chart.getByDays')}}">
     <input type="hidden" name="get_by_weeks" value="{{route('line-chart.getByWeeks')}}">
     <input type="hidden" name="get_by_months" value="{{route('line-chart.getByMonths')}}">
@@ -293,6 +349,7 @@
             initBudgetByDays();
             initQuantityByDays();
             initQualityByDays();
+            // initC3AC3BByDays();
         });
 
         function initBudgetByDays() {
@@ -343,6 +400,19 @@
 
             initChart(item, data, arr_color, 'by_days');
             $("#quality_chart").UseTooltip('quality');
+        }
+
+        function initC3AC3BByDays() {
+            var item = $("#C3A-C3B_chart");
+            var data = [
+                {data: {{ $C3AC3B["C3A_Duplicated"] }}, label: "C3A-Duplicated"},
+                {data: {{ $C3AC3B["C3B_Under18"] }}, label: "C3B-Under18"},
+                {data: {{ $C3AC3B["C3B_Duplicated15Days"] }}, label: "C3B-Duplicated15Days"},
+                {data: {{ $C3AC3B["C3A_Test"] }}, label: "C3A-Test"}
+            ];
+
+            initChart(item, data, arr_color, 'by_days');
+            $("#C3A-C3B_chart").UseTooltip();
         }
 
     </script>
