@@ -752,7 +752,7 @@ class ContactController extends Controller
         }
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
-
+        
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
@@ -773,32 +773,32 @@ class ContactController extends Controller
         $contacts = $query->orderBy('submit_time', 'desc')->get();
         foreach ($contacts as $contact)
         {
-//            $data_array =  array(
-//                "ads_link"          => $contact->ad_link,
-//                "email"             => $contact->email,
-//                "fullname"          => $contact->name,
-//                "phone"             => $contact->phone,
-//                "contact_channel"   => $contact->channel_code,
-//                "source_type"       => 'helios',
-//                "registereddate"    => $contact->submit_time,
-//                "submit_time"       => $contact->submit_time,
-//            );
+            // echo $contact;
+           $data_array =  array(
+               "ads_link"          => $contact->ad_link,
+               "email"             => $contact->email,
+               "fullname"          => $contact->name,
+               "phone"             => $contact->phone,
+               "contact_channel"   => $contact->channel_name,
+               "source_type"       => 'helios',
+               "registereddate"    => $contact->submit_time,
+               "submit_time"       => $contact->submit_time,
+           );
 
-                $data_array =  array(
-                "ads_link"          => 'http://fastenglishforyou.topicanative.co.th/?id_landingpage=401&code_chanel=FABR11_Mike_Conversions_E-Book.M.TI.007_All Gender_30-65_Int.Motivation.Coaching&id_campaign=16&id=26492',
-                "email"             => 'C9ballkung1979@gmail.com',
-                "fullname"          => 'Meemi',
-                "phone"             => '993198657',
-                "contact_channel"   => 'FABR11_Mike_Conversions_E-Book.M.TI.007_All Gender_30-65_Int.Motivation.Coaching',
-                "source_type"       => 'helios',
-                "registereddate"    => 1522861083375,
-                "submit_time"       => 1530637707420,
-            );
-
+            // $data_array =  array(
+            //     "ads_link"          => 'http://fastenglishforyou.topicanative.co.th/?id_landingpage=401&code_chanel=FABR11_Mike_Conversions_E-Book.M.TI.007_All Gender_30-65_Int.Motivation.Coaching&id_campaign=16&id=26492',
+            //     "email"             => 'C9ballkung1979@gmail.com',
+            //     "fullname"          => 'Meemi',
+            //     "phone"             => '993198657',
+            //     "contact_channel"   => 'FABR11_Mike_Conversions_E-Book.M.TI.007_All Gender_30-65_Int.Motivation.Coaching',
+            //     "source_type"       => 'helios',
+            //     "registereddate"    => 1522861083375,
+            //     "submit_time"       => 1530637707420,
+            // );
             $make_call = $this->callAPI('POST', $url, json_encode($data_array));
             $response = json_decode($make_call, true);
-            $status   = @$response['results'][0]['Status'];
-
+            $status   = $response['results'][0]['Status'];
+            $this -> handleHandover($contact["_id"],date("Y-m-d"),$status);
 //            $contact->status_olm = $status;
             var_dump($status);die;
 
@@ -806,6 +806,40 @@ class ContactController extends Controller
         }
 
     }
+
+    private function handleHandover($_id, $handoverDate, $apiStatus){
+        $Contact = Contact::where("_id", $_id)->first();
+        if (!$Contact->ad_id){
+            $Contact->ad_id = "unknown";
+        }
+        if (strtolower($apiStatus) == "ok"){
+            $dateFromContactID = strtotime(substr($Contact["contact_id"],0,8));
+            $dateFromContactID = date('Y-m-d',$dateFromContactID);
+            
+            $Contact->handover_date = $handoverDate;
+            $Contact->current_level = "l1";
+            $Contact->export_status = "0";
+
+            // Update ad_results
+            // Get data base on date contact submited
+            $ad_result = AdResult::where("ad_id",$Contact["ad_id"])->where("date",$dateFromContactID)->get();
+            $countL1 = 1;
+            foreach($ad_result as $item){
+                $countL1 = $countL1 + $item["l1"];
+            }
+            $AdResult = AdResult::where("ad_id",$Contact["ad_id"])->where("date",$dateFromContactID)->first();
+            $AdResult->l1 = $countL1;
+            $AdResult->save();
+        } else if (strtolower($apiStatus) == "duplicated"){
+            $Contact->export_status = "1";
+        } else if (strtolower($apiStatus) == "error"){
+            $Contact->export_status = "2";
+        } else {
+            $Contact->export_status = "3";
+        }
+        $Contact->save();
+    }
+
 
     private function callAPI($method, $url, $data){
         $curl = curl_init();
