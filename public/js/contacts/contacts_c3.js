@@ -294,16 +294,21 @@ $(document).ready(function () {
         var is_checked = this.checked;
         if(is_checked){
             $('input[name="update_all"]').val(1);
-            $('input:checkbox[id=is_update]').prop('disabled', true);
         }else{
             $('input[name="update_all"]').val(0);
-            $('input:checkbox[id=is_update]').prop('disabled', false);
         }
         $('input:checkbox[id=is_update]').prop('checked', this.checked);
-
         enable_update();
         $("input:checkbox[id=is_update]").each(function () {
             edit(this, 'all');
+        });
+    });
+
+    $('button#edit_contact').click(function () {
+        $(this).hide();
+        $('button#update_contact').show();
+        $("input:checkbox[id=is_update]").each(function () {
+            edit(this);
         });
     });
 
@@ -373,10 +378,12 @@ function initDataTable() {
                 var search = $(this).val();
                 $('input[name=search_text]').val(search);
                 countExported();
-            })
-            //
-            // var search =  $('input[name="search"]').val();
-            // $('input[type=search]').val(search);
+            });
+
+            $('#table_contacts input[type=checkbox]').click(function () {
+                $('button#edit_contact').prop('disabled', false);
+                $('button#edit_contact').removeClass('disabled');
+            });
 
             responsiveHelper_table_campaign.respond();
         },
@@ -410,14 +417,7 @@ function initDataTable() {
             {
                 "data" : 'name',
                 "render": function ( data, type, row, meta ) {
-                    var check_all = $('input[name="update_all"]').val();
-                    var row = '';
-                    if(check_all == '1'){
-                        row = '<input type="checkbox" class="is_update" id="is_update" checked disabled onclick="enable_update();edit(this);" value="\' + data[0] + \'"/>';
-                    }
-                    else row = '<input type="checkbox" class="is_update" id="is_update" onclick="enable_update();edit(this);" value="\' + data[0] + \'"/>';
-
-                    return row;
+                    return '<input type="checkbox" class="is_update" id="is_update" onclick="enable_update();edit(this);" value="' + data[0] + '"/>';
                 },
                 "orderable": false,
             },
@@ -597,45 +597,54 @@ function enable_update() {
         is_checked = this.checked;
     });
 
+    var cnt =$('#table_contacts input[type=checkbox]:checked').length;
+
     if(is_checked){
+        $('button#update_contact').show();
+        $('button#edit_contact').hide();
         $('button#update_contact').prop('disabled', false);
         $('button#update_contact').removeClass('disabled');
     }else{
+
         $('button#update_contact').prop('disabled', true);
         $('button#update_contact').addClass('disabled');
     }
 }
 
 function edit(item, mode){
-    $statusCell = $(item).parents().siblings('td.status');
-    $status = $($statusCell).find('input#old_status').val();
-    $($statusCell).find('select#status_update').remove();
-    var is_checked = $(item).is(':checked');
-    if(is_checked){
-        $($statusCell).find('span#status').hide();
-        if($status == 1){
-            $($statusCell).append('' +
-                '<select id="status_update" onchange="setAll(this);">' +
-                '<option value="1" selected>Exported</option>' +
-                '<option value="0">Not Export</option>' +
-                '</select>' +
-                '');
-        }else{
-            $($statusCell).append('' +
-                '<select id="status_update" onchange="setAll(this);">' +
-                '<option value="1">Exported</option>' +
-                '<option value="0" selected>Not Export</option>' +
-                '</select>' +
-                '');
-        }
-        if(mode == 'all'){
-            $('select#status_update').first().focus(500);
-        }else{
-            $($statusCell).find('select#status_update').focus(500);
-        }
-    }else{
-        $($statusCell).find('span#status').show();
+    var is_show = $('button#update_contact').is(':visible');
+
+    if(is_show){
+        $statusCell = $(item).parents().siblings('td.status');
+        $status = $($statusCell).find('input#old_status').val();
         $($statusCell).find('select#status_update').remove();
+        var is_checked = $(item).is(':checked');
+        if(is_checked){
+            $($statusCell).find('span#status').hide();
+            if($status == 1){
+                $($statusCell).append('' +
+                    '<select id="status_update" onchange="setAll(this);">' +
+                    '<option value="1" selected>Exported</option>' +
+                    '<option value="0">Not Export</option>' +
+                    '</select>' +
+                    '');
+            }else{
+                $($statusCell).append('' +
+                    '<select id="status_update" onchange="setAll(this);">' +
+                    '<option value="1">Exported</option>' +
+                    '<option value="0" selected>Not Export</option>' +
+                    '</select>' +
+                    '');
+            }
+            if(mode == 'all'){
+                $('select#status_update').first().focus(500);
+            }else{
+                $($statusCell).find('select#status_update').focus(500);
+            }
+        }else{
+            $($statusCell).find('span#status').show();
+            $($statusCell).find('select#status_update').remove();
+        }
     }
 }
 
