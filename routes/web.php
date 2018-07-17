@@ -63,6 +63,7 @@ Route::group(['prefix' => 'contacts'], function () {
     Route::get('export', 'ContactController@export')->name('contacts.export');
     Route::post('import', 'ContactController@import')->name('contacts.import');
     Route::get('countExported', 'ContactController@countExported')->name('contacts.countExported');
+    Route::get('export-to-OLM', 'ContactController@exportToOLM')->name('contacts.export-to-OLM');
 });
 
 Route::get('/report', 'ReportController@index')->name('report');
