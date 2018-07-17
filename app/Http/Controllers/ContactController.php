@@ -769,42 +769,39 @@ class ContactController extends Controller
             $query->whereIn('_id', array_keys($request->id));
         }
 
-        $query->limit(1000);
-        $contacts = $query->orderBy('submit_time', 'desc')->get();
-        foreach ($contacts as $contact)
-        {
-            // echo $contact;
-           $data_array =  array(
-               "ads_link"          => $contact->ad_link,
-               "email"             => $contact->email,
-               "fullname"          => $contact->name,
-               "phone"             => $contact->phone,
-               "contact_channel"   => $contact->channel_name,
-               "source_type"       => 'helios',
-               "registereddate"    => $contact->submit_time,
-               "submit_time"       => $contact->submit_time,
-           );
+        $query->orderBy('submit_time', 'desc');
+        $query->chunk( 1000, function ( $contacts ) use ( $url ) {
+            foreach ($contacts as $contact)
+            {
+                // echo $contact;
+                $data_array =  array(
+                    "ads_link"          => $contact->ad_link,
+                    "email"             => $contact->email,
+                    "fullname"          => $contact->name,
+                    "phone"             => $contact->phone,
+                    "contact_channel"   => $contact->channel_name,
+                    "source_type"       => 'helios',
+                    "registereddate"    => $contact->submit_time,
+                    "submit_time"       => $contact->submit_time,
+                );
 
-            // $data_array =  array(
-            //     "ads_link"          => 'http://fastenglishforyou.topicanative.co.th/?id_landingpage=401&code_chanel=FABR11_Mike_Conversions_E-Book.M.TI.007_All Gender_30-65_Int.Motivation.Coaching&id_campaign=16&id=26492',
-            //     "email"             => 'C9ballkung1979@gmail.com',
-            //     "fullname"          => 'Meemi',
-            //     "phone"             => '993198657',
-            //     "contact_channel"   => 'FABR11_Mike_Conversions_E-Book.M.TI.007_All Gender_30-65_Int.Motivation.Coaching',
-            //     "source_type"       => 'helios',
-            //     "registereddate"    => 1522861083375,
-            //     "submit_time"       => 1530637707420,
-            // );
-            $make_call = $this->callAPI('POST', $url, json_encode($data_array));
-            $response = json_decode($make_call, true);
-            $status   = $response['results'][0]['Status'];
-            $this -> handleHandover($contact["_id"],date("Y-m-d"),$status);
-//            $contact->status_olm = $status;
-            var_dump($status);die;
-
-            $contact->save();
-        }
-
+                // $data_array =  array(
+                //     "ads_link"          => 'http://fastenglishforyou.topicanative.co.th/?id_landingpage=401&code_chanel=FABR11_Mike_Conversions_E-Book.M.TI.007_All Gender_30-65_Int.Motivation.Coaching&id_campaign=16&id=26492',
+                //     "email"             => 'C9ballkung1979@gmail.com',
+                //     "fullname"          => 'Meemi',
+                //     "phone"             => '993198657',
+                //     "contact_channel"   => 'FABR11_Mike_Conversions_E-Book.M.TI.007_All Gender_30-65_Int.Motivation.Coaching',
+                //     "source_type"       => 'helios',
+                //     "registereddate"    => 1522861083375,
+                //     "submit_time"       => 1530637707420,
+                // );
+                $make_call = $this->callAPI('POST', $url, json_encode($data_array));
+                $response = json_decode($make_call, true);
+                $status   = $response['results'][0]['Status'];
+                $this -> handleHandover($contact["_id"],date("Y-m-d"),$status);
+                $contact->save();
+            }
+        });
     }
 
     private function handleHandover($_id, $handoverDate, $apiStatus){

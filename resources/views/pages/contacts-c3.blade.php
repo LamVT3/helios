@@ -222,7 +222,7 @@
                                             <i class="fa fa-edit"></i>
                                             Export to OLM
                                         </button>
-                                        <button id="update_contact" class="btn btn-warning btn-sm disabled" type="button" disabled
+                                        <button id="update_contact" class="btn btn-warning btn-sm" type="button"
                                                 style="margin-left: 10px; display: none" data-toggle="modal" data-target="#myUpdateModal">
                                             <i class="fa fa-edit"></i>
                                             Update
@@ -273,7 +273,7 @@
                                 <thead>
                                     <tr>
                                         <th><input type="checkbox" id="update_all" value="all"/></th>
-                                        <th>Name</th>
+                                        <th class="long">Name</th>
                                         <th>Email</th>
                                         <th>Phone</th>
                                         <th>Age</th>

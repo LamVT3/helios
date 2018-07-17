@@ -299,9 +299,15 @@ $(document).ready(function () {
         }
         $('input:checkbox[id=is_update]').prop('checked', this.checked);
         enable_update();
-        $("input:checkbox[id=is_update]").each(function () {
-            edit(this, 'all');
-        });
+        if($(this).is(':unchecked')){
+            console.log(111);
+            $("input:checkbox[id=is_update]").each(function () {
+                edit(this, 'all');
+            });
+        }
+        $('button#edit_contact').prop('disabled', false);
+        $('button#edit_contact').removeClass('disabled');
+
     });
 
     $('button#edit_contact').click(function () {
@@ -385,6 +391,8 @@ function initDataTable() {
                 $('button#edit_contact').removeClass('disabled');
             });
 
+            enable_update();
+
             responsiveHelper_table_campaign.respond();
         },
         "order": [],
@@ -417,7 +425,7 @@ function initDataTable() {
             {
                 "data" : 'name',
                 "render": function ( data, type, row, meta ) {
-                    return '<input type="checkbox" class="is_update" id="is_update" onclick="enable_update();edit(this);" value="' + data[0] + '"/>';
+                    return '<input type="checkbox" class="is_update" id="is_update" onclick="edit(this);enable_update();" value="' + data[0] + '"/>';
                 },
                 "orderable": false,
             },
@@ -592,29 +600,45 @@ function countExportedWhenSearch() {
 }
 
 function enable_update() {
-    var is_checked = false;
-    $("input:checkbox[id=is_update]:checked").each(function () {
-        is_checked = this.checked;
-    });
+    // var is_checked = false;
+    // $("input:checkbox[id=is_update]:checked").each(function () {
+    //     is_checked = this.checked;
+    // });
+    //
+    // var cnt =$('#table_contacts input[type=checkbox]:checked').length;
+    //
+    // if(is_checked){
+    //     $('button#edit_contact').prop('disabled', false);
+    //     $('button#edit_contact').removeClass('disabled');
+    // }else{
+    //     if(cnt == 0){
+    //         $('button#update_contact').hide();
+    //         $('button#edit_contact').show();
+    //         $('button#edit_contact').prop('disabled', true);
+    //         $('button#edit_contact').addClass('disabled');
+    //     }
+    // }
+    var cnt = $('#table_contacts input[type=checkbox]:checked').length;
+    var check_all = $('input[id=update_all]').is(':checked');
 
-    var cnt =$('#table_contacts input[type=checkbox]:checked').length;
+    if(cnt <= 0 && !check_all){
+        console.log(cnt);
+        $('button#update_contact').hide();
+        $('button#edit_contact').show();
+        setTimeout(function(){
+            $('button#edit_contact').show().addClass('disabled');
+            $('button#edit_contact').show().prop('disabled', true);
+        }, 500);
 
-    if(is_checked){
-        $('button#update_contact').show();
-        $('button#edit_contact').hide();
-        $('button#update_contact').prop('disabled', false);
-        $('button#update_contact').removeClass('disabled');
-    }else{
 
-        $('button#update_contact').prop('disabled', true);
-        $('button#update_contact').addClass('disabled');
     }
+
 }
 
 function edit(item, mode){
     var is_show = $('button#update_contact').is(':visible');
 
-    if(is_show){
+    if(is_show || mode == 'all'){
         $statusCell = $(item).parents().siblings('td.status');
         $status = $($statusCell).find('input#old_status').val();
         $($statusCell).find('select#status_update').remove();
@@ -636,7 +660,8 @@ function edit(item, mode){
                     '</select>' +
                     '');
             }
-            if(mode == 'all'){
+            var check_all = $('input[id=update_all]').is(':checked');
+            if(check_all){
                 $('select#status_update').first().focus(500);
             }else{
                 $($statusCell).find('select#status_update').focus(500);
@@ -721,9 +746,6 @@ function updateStatusExport(id) {
             alert('Cannot connect to server. Please try again later.');
         });
 
-    $('button#update_contact').prop('disabled', true);
-    $('button#update_contact').addClass('disabled');
-
 }
 
 function exportToOLM(id) {
@@ -771,8 +793,5 @@ function exportToOLM(id) {
             $('.loading').hide();
             alert('Cannot connect to server. Please try again later.');
         });
-
-    $('button#update_contact').prop('disabled', true);
-    $('button#update_contact').addClass('disabled');
 
 }
