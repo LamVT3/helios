@@ -212,29 +212,29 @@
                                     {{--</section>--}}
                                 </div>
                                 <div class="row" id="filter">
-                                    <section class="col col-1 pull-right text-right">
-                                        <button id="filter" class="btn btn-primary btn-sm" type="submit" style="">
-                                            <i class="fa fa-filter"></i>
-                                            Filter
+                                    <section class="col col-12 pull-right text-right">
+                                        <button id="export" class="btn btn-success btn-sm" type="button" style="margin-left: 10px"
+                                                data-toggle="modal" data-target="#myExportModal"> <i class="fa fa-download"></i>
+                                            Export to excel
                                         </button>
-                                    </section>
-                                    <section class="col col-1 pull-right text-right">
-                                        <button id="export" class="btn btn-success btn-sm" type="button" style=""
-                                                style="" data-toggle="modal" data-target="#myExportModal"> <i class="fa fa-download"></i> Export
+                                        <button id="export_to_olm" class="btn btn-info btn-sm" type="button"
+                                                style="margin-left: 10px" data-toggle="modal" data-target="#myExportToOLMModal">
+                                            <i class="fa fa-edit"></i>
+                                            Export to OLM
                                         </button>
-                                    </section>
-                                    <section class="col col-1 pull-right text-right">
-                                        <button id="update_contact" class="btn btn-warning btn-sm disabled" disabled type="button"
-                                                style="" data-toggle="modal" data-target="#myUpdateModal">
+                                        <button id="update_contact" class="btn btn-warning btn-sm disabled" type="button" disabled
+                                                style="margin-left: 10px; display: none" data-toggle="modal" data-target="#myUpdateModal">
                                             <i class="fa fa-edit"></i>
                                             Update
                                         </button>
-                                    </section>
-                                    <section class="col col-3 pull-right text-right no-padding">
-                                        <button id="export_to_olm" class="btn btn-info btn-sm" type="button"
-                                                style="" data-toggle="modal" data-target="#myExportToOLMModal">
+                                        <button id="edit_contact" class="btn btn-warning btn-sm disabled" type="button" disabled
+                                                style="margin-left: 10px;">
                                             <i class="fa fa-edit"></i>
-                                            Export to OLM
+                                            Edit
+                                        </button>
+                                        <button id="filter" class="btn btn-primary btn-sm" type="submit" style="margin-left: 10px" >
+                                            <i class="fa fa-filter"></i>
+                                            Filter
                                         </button>
                                     </section>
                                 </div>
