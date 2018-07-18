@@ -392,17 +392,6 @@ class ContactController extends Controller
 //        }
     }
 
-
-
-
-
-
-
-
-
-
-
-
     private function getWhereData(){
         $request    = request();
         $data_where = array();
@@ -432,6 +421,12 @@ class ContactController extends Controller
         }
         if ($request->channel) {
             $data_where['channel_name']     = $request->channel;
+        }
+        if ($request->channel) {
+            $data_where['channel_name']     = $request->channel;
+        }
+        if (isset($request->olm_status)) {
+            $data_where['olm_status']       = $request->olm_status;
         }
 
         return $data_where;
@@ -720,7 +715,8 @@ class ContactController extends Controller
             11  =>'subcampaign_name',
             12  =>'ad_name',
             13  =>'landing_page',
-            14  =>'channel_name'
+            14  =>'channel_name',
+            15  =>'olm_status'
         );
 
         return $columns;
@@ -736,6 +732,8 @@ class ContactController extends Controller
     }
 
     public function exportToOLM(){
+
+        set_time_limit ( 5000 );
         $url = 'http://58.187.9.138/api/OlmInsert/InsertContactOLM';
 
         $data_where = $this->getWhereData();

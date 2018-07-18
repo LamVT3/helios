@@ -171,13 +171,13 @@
                                     </section>
                                     <section class="col col-2">
                                         <label class="label">Status OLM</label>
-                                        <select name="status_olm" id="status_olm" class="select2"
+                                        <select name="olm_status" id="olm_status" class="select2"
                                                 style="width: 280px" data-url="">
-                                            <option value="All">All</option>
-                                            <option value="SUCCESS">Success</option>
-                                            <option value="DUPLICATED">Duplicated</option>
-                                            <option value="ERROR">Error</option>
-                                            <option value="">Not Export</option>
+                                            <option value="">All</option>
+                                            <option value="0">Success</option>
+                                            <option value="1">Duplicated</option>
+                                            <option value="2">Error</option>
+                                            <option value="3">Not Export</option>
                                         </select>
                                         <i></i>
                                     </section>
@@ -217,7 +217,7 @@
                                                 data-toggle="modal" data-target="#myExportModal"> <i class="fa fa-download"></i>
                                             Export to excel
                                         </button>
-                                        <button id="export_to_olm" class="btn btn-info btn-sm" type="button"
+                                        <button id="export_to_olm" class="btn btn-danger btn-sm" type="button"
                                                 style="margin-left: 10px" data-toggle="modal" data-target="#myExportToOLMModal">
                                             <i class="fa fa-edit"></i>
                                             Export to OLM
@@ -257,6 +257,7 @@
                                 <input type="hidden" name="landing_page">
                                 <input type="hidden" name="channel">
                                 <input type="hidden" name="search_text" value="">
+                                <input type="hidden" name="olm_status" value="">
                             </form>
                         </div>
 
@@ -289,7 +290,8 @@
                                         <th>Subcampaign</th>
                                         <th class="long">Landing page</th>
                                         <th>Action</th>
-                                        <th class="long">Status</th>
+                                        <th class="long">Status export</th>
+                                        <th class="long">Status OLM</th>
                                     </tr>
                                 </thead>
                                 <tbody>

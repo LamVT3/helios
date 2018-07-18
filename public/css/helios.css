@@ -309,9 +309,9 @@ tr.is_export
     background-color: #739e73!important;
     color: white;
 }
-tr.is_export a.name_link
+tr.is_export a.name_link, tr.olm_status_duplicated a.name_link, tr.olm_status_error a.name_link, tr.olm_status_success a.name_link
 {
-    color: white;
+    color: white!important;;
 }
 label.export_label
 {
@@ -322,9 +322,9 @@ input#limit
 {
     padding-left: 3px;
 }
-.is_export select
+.is_export select, .olm_status_duplicated select, .olm_status_error select, .olm_status_success select
 {
-    color: #739e73!important;
+    color: black!important;
 }
 #table_contacts th:first-child{
     width: 40px!important;
@@ -482,8 +482,21 @@ div#wrapper_kpi, div#wrapper_kpi_by_team{
     width: 100%;
     padding-top: 20px;
 }
-
-
+.olm_status_success
+{
+    background-color: #5bc0de!important;
+    color: white!important;
+}
+.olm_status_duplicated
+{
+    background-color: #f0ad4e!important;
+    color: white!important;
+}
+.olm_status_error
+{
+    background-color: #d9534f!important;
+    color: white!important;
+}
 
 
 

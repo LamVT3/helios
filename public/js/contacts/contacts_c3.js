@@ -266,7 +266,6 @@ $(document).ready(function () {
             });
         }
 
-        console.log(id);
         exportToOLM(id);
         // updateStatusExport(id);
     });
@@ -300,7 +299,6 @@ $(document).ready(function () {
         $('input:checkbox[id=is_update]').prop('checked', this.checked);
         enable_update();
         if($(this).is(':unchecked')){
-            console.log(111);
             $("input:checkbox[id=is_update]").each(function () {
                 edit(this, 'all');
             });
@@ -339,6 +337,7 @@ function initDataTable() {
     var landing_page    = $('select[name="landing_page"]').val();
     var search          = $('input[name="search_text"]').val();
     var channel         = $('select[name="channel_id"]').val();
+    var olm_status      = $('select[name="olm_status"]').val();
 
 
     $('input[name="source_id"]').val(source_id);
@@ -355,6 +354,7 @@ function initDataTable() {
     $('input[name="limit"]').val(limit);
     $('input[name="landing_page"]').val(landing_page);
     $('input[name="channel"]').val(channel);
+    $('input[name="olm_status"]').val(olm_status);
 
     /* BASIC ;*/
     var responsiveHelper_table_campaign = undefined;
@@ -404,21 +404,22 @@ function initDataTable() {
             url: url,
             type: "GET",
             data: function (d) {
-                d.source_id         = source_id,
-                d.team_id           = team_id,
-                d.marketer_id       = marketer_id,
-                d.campaign_id       = campaign_id,
-                d.clevel            = clevel,
-                d.current_level     = current_level,
-                d.subcampaign_id    = subcampaign_id,
-                d.is_export         = is_export,
-                d.registered_date   = registered_date,
-                d.checked_date      = checked_date,
-                d.c3bg_checkbox     = c3bg_checkbox,
-                d.limit             = limit,
-                d.landing_page      = landing_page,
-                d.channel           = channel,
-                d.search_text       = search
+                    d.source_id         = source_id,
+                    d.team_id           = team_id,
+                    d.marketer_id       = marketer_id,
+                    d.campaign_id       = campaign_id,
+                    d.clevel            = clevel,
+                    d.current_level     = current_level,
+                    d.subcampaign_id    = subcampaign_id,
+                    d.is_export         = is_export,
+                    d.registered_date   = registered_date,
+                    d.checked_date      = checked_date,
+                    d.c3bg_checkbox     = c3bg_checkbox,
+                    d.limit             = limit,
+                    d.landing_page      = landing_page,
+                    d.channel           = channel,
+                    d.search_text       = search,
+                    d.olm_status    = olm_status
             }
         },
         "columns": [
@@ -476,13 +477,43 @@ function initDataTable() {
                     return '<span id="status" >Not Exported</span><input type="hidden" id="old_status" value="0">';
                 }
             },
+            {
+                "data"      : 'olm_status',
+                'className' : "olm_status",
+                "render"    : function ( data, type, row, meta ) {
+                    var status = '';
+
+                    if(data == 0){
+                        status = '<span id="status">Success</span><input type="hidden" id="old_status" value="1">';
+                    }
+                    else if(data == 1){
+                        status = '<span id="status">Duplicated</span><input type="hidden" id="old_status" value="1">';
+                    }
+                    else if(data == 2){
+                        status = '<span id="status">Error</span><input type="hidden" id="old_status" value="1">';
+                    }
+                    else{
+                        status = '<span id="status">Not Exported</span><input type="hidden" id="old_status" value="1">';
+                    }
+                    return status;
+                }
+            },
         ],
         'scrollY'       : '55vh',
         "scrollX"       : true,
         'scrollCollapse': true,
         "createdRow": function ( row, data, index ) {
-            if(data['is_export'] == 1){
-                $(row).addClass('is_export');
+            // if(data['is_export'] == 1){
+            //     $(row).addClass('is_export');
+            // }
+            if(data['olm_status'] == 0){
+                $(row).addClass('olm_status_success');
+            }
+            else if(data['olm_status'] == 1){
+                $(row).addClass('olm_status_duplicated');
+            }
+            else if(data['olm_status'] == 2){
+                $(row).addClass('olm_status_error');
             }
         },
         "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
@@ -516,6 +547,7 @@ function countExported() {
     var is_export       = $('select[name="is_export"]').val();
     var search          = $('input[type="search"]').val();
     var channel         = $('select[name="channel_id"]').val();
+    var olm_status      = $('select[name="olm_status"]').val();
 
     if(is_export === '0'){
         $('input[name="exported"]').val(0);
@@ -525,18 +557,19 @@ function countExported() {
     }
 
     var data = {};
-    data.source_id         = source_id;
-    data.team_id           = team_id;
-    data.marketer_id       = marketer_id;
-    data.campaign_id       = campaign_id;
-    data.clevel            = clevel;
-    data.current_level     = current_level;
-    data.subcampaign_id    = subcampaign_id;
-    data.registered_date   = registered_date;
-    data.landing_page      = landing_page;
-    data.is_export         = is_export;
-    data.search_text       = search;
-    data.channel           = channel;
+    data.source_id          = source_id;
+    data.team_id            = team_id;
+    data.marketer_id        = marketer_id;
+    data.campaign_id        = campaign_id;
+    data.clevel             = clevel;
+    data.current_level      = current_level;
+    data.subcampaign_id     = subcampaign_id;
+    data.registered_date    = registered_date;
+    data.landing_page       = landing_page;
+    data.is_export          = is_export;
+    data.search_text        = search;
+    data.channel            = channel;
+    data.olm_status         = olm_status;
 
     $.get(url, data, function (data) {
         $('input[name="exported"]').val(data);
@@ -622,7 +655,6 @@ function enable_update() {
     var check_all = $('input[id=update_all]').is(':checked');
 
     if(cnt <= 0 && !check_all){
-        console.log(cnt);
         $('button#update_contact').hide();
         $('button#edit_contact').show();
         setTimeout(function(){
@@ -761,24 +793,25 @@ function exportToOLM(id) {
     var old_status      = $('input[name="status"]').val();
     var landing_page    = $('select[name="landing_page"]').val();
     var channel         = $('select[name="channel_id"]').val();
+    var olm_status      = $('select[name="olm_status"]').val();
 
     var data = {};
-    data.id                = id;
-    data.source_id         = source_id;
-    data.team_id           = team_id;
-    data.marketer_id       = marketer_id;
-    data.campaign_id       = campaign_id;
-    data.clevel            = clevel;
-    data.current_level     = current_level;
-    data.subcampaign_id    = subcampaign_id;
-    data.registered_date   = registered_date;
-    data.old_status        = old_status;
-    data.new_status        = status;
-    data.landing_page      = landing_page;
-    data.channel           = channel;
+    data.id                 = id;
+    data.source_id          = source_id;
+    data.team_id            = team_id;
+    data.marketer_id        = marketer_id;
+    data.campaign_id        = campaign_id;
+    data.clevel             = clevel;
+    data.current_level      = current_level;
+    data.subcampaign_id     = subcampaign_id;
+    data.registered_date    = registered_date;
+    data.old_status         = old_status;
+    data.new_status         = status;
+    data.landing_page       = landing_page;
+    data.channel            = channel;
+    data.olm_status         = olm_status;
 
     $.get(url, data, function (data) {
-        console.log(data);
         countExported();
         setTimeout(function(){
             initDataTable();
