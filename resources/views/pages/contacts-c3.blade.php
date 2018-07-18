@@ -267,6 +267,10 @@
                             </div>
                         </div>
                         <hr>
+                        <div style="padding-left: 20px">
+                            <p id="cnt_exported" class="text-success no-margin"><strong>...</strong></p>
+                            <p id="cnt_export_to_olm" class="text-primary no-margin"><strong>...</strong></p>
+                        </div>
                         <div class="container-table-contacts">
                         <div class="wrapper">
                             <table id="table_contacts" class="table table-striped table-bordered table-hover"
@@ -442,7 +446,8 @@
 </div>
 
 <input type="hidden" name="page_size" value="{{$page_size}}">
-<input type="hidden" name="exported" value="{{$exported}}">
+<input type="hidden" name="exported" value="{{$export_to_excel}}">
+<input type="hidden" name="export_to_olm" value="{{$export_to_olm}}">
 <input type="hidden" name="exported_url" value="{{route("contacts.countExported")}}">
 <input type="hidden" name="update_status_export" value="{{route("ajax-updateStatusExport")}}">
 <input type="hidden" name="export_to_olm_url" value="{{route("contacts.export-to-OLM")}}">

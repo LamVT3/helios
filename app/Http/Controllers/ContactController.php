@@ -45,7 +45,8 @@ class ContactController extends Controller
         $marketers      = User::where('is_active', 1)->orderBy('username')->get();
         $campaigns      = Campaign::orderBy('name')->get();
         $subcampaigns   = Subcampaign::orderBy('name')->get();
-        $exported       = $this->countExported();
+        $export_to_excel    = $this->countExportToExcel();
+        $export_to_olm  = $this->countExportToOLM();
         $landing_page   = LandingPage::where('is_active', 1)->orderBy('name')->get();
         $channel        = Channel::where('is_active', 1)->orderBy('name')->get();
 
@@ -62,7 +63,8 @@ class ContactController extends Controller
             'campaigns',
             'page_size',
             'subcampaigns',
-            'exported',
+            'export_to_excel',
+            'export_to_olm',
             'landing_page',
             'channel'
         ));
@@ -157,6 +159,63 @@ class ContactController extends Controller
     }
 
     public function countExported()
+    {
+        $toExcel    = $this->countExportToExcel();
+        $toOLM      = $this->countExportToOLM();
+        $count['to_excel']  = $toExcel;
+        $count['to_olm']    = $toOLM;
+
+        return $count;
+    }
+
+    private function countExportToOLM()
+    {
+        $columns     = $this->setColumns();
+        $data_where  = $this->getWhereData();
+        $data_search = $this->getSeachData();
+        $request = request();
+
+        // DB::connection( 'mongodb' )->enableQueryLog();
+
+        $startDate = strtotime("midnight")*1000;
+        $endDate = strtotime("tomorrow")*1000;
+        if($request->registered_date){
+            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_arr = explode(' ', str_replace('/', '-', $date_place));
+            $startDate = strtotime($date_arr[0])*1000;
+            // $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
+            $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
+
+        $query = Contact::where('submit_time', '>=', $startDate);
+        $query->where('submit_time', '<', $endDate);
+
+        if(count($data_where) > 0){
+            if(@$data_where['clevel'] == 'c3b'){
+                $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }
+            if(@$data_where['current_level'] == 'l0'){
+                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+                unset($data_where['current_level']);
+            }
+            $query->where($data_where);
+        }
+
+        if($data_search != ''){
+            foreach ($columns as $key => $value){
+                $query->orWhere($value, 'like', "%{$data_search}%");
+            }
+        }
+
+        $query->whereIn('olm_status', ['0', '1', '2', '3']);
+
+        $count = $query->count();
+
+        return $count;
+    }
+
+    private function countExportToExcel()
     {
         $columns     = $this->setColumns();
         $data_where  = $this->getWhereData();
