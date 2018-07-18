@@ -86,6 +86,16 @@
                                             </select>
                                             <i></i>
                                         </section>
+                                        <section class="col col-2" style="display: none">
+                                            <label class="label">Type</label>
+                                            <select name="type" id="type" class="select2"
+                                                    style="width: 280px"
+                                                    data-url="">
+                                                <option value="TOA">TOA</option>
+                                                <option value="TOT">TOT</option>
+                                            </select>
+                                            <i></i>
+                                        </section>
                                     </div>
                                     <div class="row">
                                         <div id="reportrange" class="pull-left"
@@ -135,7 +145,6 @@
                                                 <tbody>
 
                                                 @foreach ($array_channel as $i)
-                                                    @if($table['c3'][$i]!=0 && $table['c3b'][$i]!=0 && $table['c3bg'][$i]!=0)
                                                     <tr>
                                                         <td>{{$i}}</td>
                                                         <td style="color:{{($table['c3'][$i]) >= ($table['c3_week'][$i]) ? 'green' : 'red'}}">{{$table['c3'][$i]}}</td>
@@ -149,7 +158,6 @@
                                                         <td>{{($table['c3bg'][$i] != 0) ? round($table['l3'][$i] * 100 / $table['c3bg'][$i] , 2) : 0}}</td>
                                                         <td>{{($table['l1'][$i] != 0) ? round($table['l8'][$i] * 100 / $table['l1'][$i] , 2) : 0}}</td>
                                                     </tr>
-                                                    @endif
                                                 @endforeach
                                                     <tr>
                                                         <th>Total</th>
@@ -273,6 +281,7 @@
                 var campaign_id = $('select[name="campaign_id"]').val();
                 var subcampaign_id = $('select[name="subcampaign_id"]').val();
                 var registered_date = $('.registered_date').text();
+                var type = $('select[name="type"]').val();
 
                 $('input[name="source_id"]').val(source_id);
                 $('input[name="team_id"]').val(team_id);
@@ -292,6 +301,7 @@
                         campaign_id     : campaign_id,
                         subcampaign_id  : subcampaign_id,
                         registered_date : registered_date,
+                        type : type,
                     }
                 }).done(function (response) {
                     $('.loading').hide();

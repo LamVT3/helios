@@ -20,7 +20,6 @@
             <tbody>
 
             @foreach ($array_channel as $i)
-                @if($table['c3'][$i]!=0 && $table['c3b'][$i]!=0 && $table['c3bg'][$i]!=0)
                     <tr>
                         <td>{{$i}}</td>
                         <td style="color:{{($table['c3'][$i]) >= ($table['c3_week'][$i]) ? 'green' : 'red'}}">{{$table['c3'][$i]}}</td>
@@ -34,7 +33,6 @@
                         <td>{{($table['c3bg'][$i] != 0) ? round($table['l3'][$i] * 100 / $table['c3bg'][$i] , 2) : 0}}</td>
                         <td>{{($table['l1'][$i] != 0) ? round($table['l8'][$i] * 100 / $table['l1'][$i] , 2) : 0}}</td>
                     </tr>
-                @endif
             @endforeach
             <tr>
                 <th>Total</th>
