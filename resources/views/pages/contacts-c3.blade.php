@@ -7,7 +7,7 @@
     <!-- MAIN CONTENT -->
     <div id="content">
 
-        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
+        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs, 'currency' => true])
             <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
                data-toggle="modal"
                data-target="#addModal"><i
