@@ -735,4 +735,141 @@ class ContactController extends Controller
         return $newStr;
     }
 
+    public function exportToOLM(){
+        $url = 'http://58.187.9.138/api/OlmInsert/InsertContactOLM';
+
+        $data_where = $this->getWhereData();
+        $request = request();
+
+        $startDate = strtotime("midnight")*1000;
+        $endDate = strtotime("tomorrow")*1000;
+        if($request->registered_date){
+            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_arr = explode(' ', str_replace('/', '-', $date_place));
+            $startDate = strtotime($date_arr[0])*1000;
+            // $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
+            $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
+        $query = Contact::where('submit_time', '>=', $startDate);
+        $query->where('submit_time', '<', $endDate);
+        
+        if(count($data_where) > 0){
+            if(@$data_where['clevel'] == 'c3b'){
+                $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }
+            if(@$data_where['current_level'] == 'l0'){
+                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+                unset($data_where['current_level']);
+            }
+            $query->where($data_where);
+        }
+
+        if($request->id != 'All'){
+            $query->whereIn('_id', array_keys($request->id));
+        }
+
+        $query->orderBy('submit_time', 'desc');
+        $query->chunk( 1000, function ( $contacts ) use ( $url ) {
+            foreach ($contacts as $contact)
+            {
+                if (!$contact->ad_id){
+                    $contact->ad_id = "unknown";
+                }
+
+                $data_array =  array(
+                    "ads_link"          => $contact->ad_link,
+                    "email"             => $contact->email,
+                    "fullname"          => $contact->name,
+                    "phone"             => $contact->phone,
+                    "contact_channel"   => $contact->channel_name,
+                    "source_type"       => 'helios',
+                    "registereddate"    => $contact->submit_time,
+                    "submit_time"       => $contact->submit_time,
+                );
+
+//                 $data_array =  array(
+//                     "ads_link"          => 'http://fastenglishforyou.topicanative.co.th/?id_landingpage=401&code_chanel=FABR11_Mike_Conversions_E-Book.M.TI.007_All Gender_30-65_Int.Motivation.Coaching&id_campaign=16&id=26492',
+//                     "email"             => 'C9ballkung1979@gmail.com',
+//                     "fullname"          => 'Meemi',
+//                     "phone"             => '993198657',
+//                     "contact_channel"   => 'FABR11_Mike_Conversions_E-Book.M.TI.007_All Gender_30-65_Int.Motivation.Coaching',
+//                     "source_type"       => 'helios',
+//                     "registereddate"    => 1522861083375,
+//                     "submit_time"       => 1530637707420,
+//                 );
+                $make_call  = $this->callAPI('POST', $url, json_encode($data_array));
+                $response   = json_decode($make_call, true);
+                $status     = $response['results'][0]['Status'];
+                $contact    = $this->handleHandover($contact,$status);
+
+                $contact->save();
+            }
+        });
+    }
+
+    private function handleHandover($contact, $apiStatus){
+
+        if (strtolower($apiStatus) == "ok"){
+            $dateFromContactID = strtotime(substr($contact->contact_id,0,8));
+            $dateFromContactID = date('Y-m-d',$dateFromContactID);
+
+            $contact->handover_date = date("Y-m-d");
+            $contact->current_level = "l1";
+            $contact->olm_status    = "0";
+
+            // Update ad_results
+            // Get data base on date contact submited
+            $ad_result  = AdResult::where("ad_id",$contact->ad_id)->where("date",$dateFromContactID)->get();
+            $countL1    = 1;
+            foreach($ad_result as $item){
+                $countL1 = $countL1 + $item["l1"];
+            }
+            $AdResult = AdResult::where("ad_id",$contact->ad_id)->where("date",$dateFromContactID)->first();
+            $AdResult->l1 = $countL1;
+            $AdResult->save();
+        } else if (strtolower($apiStatus) == "duplicated"){
+            $contact->olm_status = "1";
+        } else if (strtolower($apiStatus) == "error"){
+            $contact->olm_status = "2";
+        } else {
+            $contact->olm_status = "3";
+        }
+
+        return $contact;
+    }
+
+
+    private function callAPI($method, $url, $data){
+        $curl = curl_init();
+        switch ($method){
+            case "POST":
+                curl_setopt($curl, CURLOPT_POST, 1);
+                if ($data)
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+                break;
+            case "PUT":
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+                if ($data)
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+                break;
+            default:
+                if ($data)
+                    $url = sprintf("%s?%s", $url, http_build_query($data));
+        }
+        // OPTIONS:
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'APIKEY: 111111111111111111111',
+            'Content-Type: application/json',
+        ));
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        // EXECUTE:
+        $result = curl_exec($curl);
+        if(!$result){die("Connection Failure");}
+        curl_close($curl);
+        return $result;
+    }
+
 }

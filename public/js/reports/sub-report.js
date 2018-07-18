@@ -17,6 +17,7 @@ $(document).ready(function () {
     $('input[name="budget_month"]').val(month);
     $('input[name="quantity_month"]').val(month);
     $('input[name="quality_month"]').val(month);
+    $('input[name="C3AC3B_month"]').val(month);
 
     $('#sub_reportrange').daterangepicker({
         startDate: start,
@@ -62,6 +63,10 @@ $(document).ready(function () {
             title.html('Quantity in ' + dropdown.html());
             $('input[name="quantity_month"]').val(month);
             get_quantity(month);
+        // } else if (title_id == 'C3A-C3B') {
+        //     title.html('C3A-C3B Report in ' + dropdown.html());
+        //     $('input[name="C3AC3B_month"]').val(month);
+        //     get_C3AC3B(month);
         } else {
             title.html('Quality in ' + dropdown.html());
             $('input[name="quality_month"]').val(month);
@@ -86,14 +91,17 @@ function set_title() {
     $('h2#budget').html('Budget in ' + dropdown.html());
     $('h2#quantity').html('Quantity in ' + dropdown.html());
     $('h2#quality').html('Quality in ' + dropdown.html());
+    $('h2#C3A-C3B').html('C3A-C3B Report in ' + dropdown.html());
 
     $('h2#budget_by_weeks').html('Budget in ' + current_year);
     $('h2#quantity_by_weeks').html('Quantity in ' + current_year);
     $('h2#quality_by_weeks').html('Quality in ' + current_year);
+    $('h2#C3A-C3B_by_weeks').html('C3A-C3B Report in ' + current_year);
 
     $('h2#budget_by_months').html('Budget in ' + current_year);
     $('h2#quantity_by_months').html('Quantity in ' + current_year);
     $('h2#quality_by_months').html('Quality in ' + current_year);
+    $('h2#C3A-C3B_by_months').html('C3A-C3B Report in ' + current_year);
 
     $('li#month').click();
 }
@@ -345,6 +353,11 @@ $(document).ready(function () {
         get_quality(month);
     })
 
+    $('#C3A-C3B_chk input[type=checkbox]').change(function (e) {
+        var month = $('input[name="C3A-C3B_month"]').val();
+        get_C3AC3B(month);
+    })
+
     $('.nav-tabs a[href="#by_weeks"]').on('show.bs.tab', function () {
         loadDataByWeeks();
     });
@@ -361,7 +374,12 @@ $(document).ready(function () {
         loadDataByWeeks('quality');
     })
 
+    $('#C3A-C3B_by_weeks_chk input[type=checkbox]').change(function (e) {
+        loadDataByWeeks('C3A-C3B');
+    })
+
     $('.nav-tabs a[href="#by_months"]').on('show.bs.tab', function () {
+        console.log('months');
         loadDataByMonths();
     });
 
@@ -377,6 +395,9 @@ $(document).ready(function () {
         loadDataByMonths('quality');
     })
 
+    $('#C3A-C3B_by_months_chk input[type=checkbox]').change(function (e) {
+        loadDataByMonths('C3A-C3B');
+    })
 });
 
 function filterSubReport(){
@@ -486,6 +507,76 @@ function get_quality(month) {
         function (err) {
             alert('Cannot connect to server. Please try again later.');
         });
+}
+
+function get_C3AC3B(month) {
+    var url = $('input[name="C3AC3B_url"]').val();
+    var source_id = $('select[name="source_id"]').val();
+    var team_id = $('select[name="team_id"]').val();
+    var marketer_id = $('select[name="marketer_id"]').val();
+    var campaign_id = $('select[name="campaign_id"]').val();
+    var subcampaign_id = $('select[name="subcampaign_id"]').val();
+    var registered_date = $('.registered_date').text();
+
+    $('input[name="source_id"]').val(source_id);
+    $('input[name="team_id"]').val(team_id);
+    $('input[name="marketer_id"]').val(marketer_id);
+    $('input[name="campaign_id"]').val(campaign_id);
+    $('input[name="subcampaign_id"]').val(subcampaign_id);
+    $('input[name="registered_date"]').val(registered_date);
+
+    var data = {};
+    data.source_id = source_id;
+    data.team_id = team_id;
+    data.marketer_id = marketer_id;
+    data.campaign_id = campaign_id;
+    data.subcampaign_id = subcampaign_id;
+    data.month = month;
+
+    $("#C3A-C3B_chart").parent().parent().parent().parent().find('.loading').css("display", "block");
+    $.get(url, data, function (rs) {
+        set_C3AC3B(rs, $("#C3A-C3B_chart"), $('#C3A-C3B_chk'), 'by_days');
+    }).fail(
+        function (err) {
+            alert('Cannot connect to server. Please try again later.');
+        });
+}
+
+function set_C3AC3B(rs, element, checkbox, type) {
+    var item = element;
+    var dataSet = [];
+    var arr_color = [];
+
+    var C3A_Duplicated = {data: jQuery.parseJSON(rs.C3A_Duplicated), label: "C3A-Duplicated"};
+    var C3B_Under18 = {data: jQuery.parseJSON(rs.C3B_Under18), label: "C3B-Under18"};
+    var C3B_Duplicated15Days = {data: jQuery.parseJSON(rs.C3B_Duplicated15Days), label: "C3B-Duplicated15Days"};
+    var C3A_Test = {data: jQuery.parseJSON(rs.C3A_Test), label: "C3A-Test"};
+
+    var lst_checkbox = checkbox.find('input[type=checkbox]:checked');
+    jQuery.each(lst_checkbox, function (index, checkbox) {
+        $label = $(checkbox).val();
+        if ($label == 'C3A-Duplicated') {
+            dataSet.push(C3A_Duplicated);
+            arr_color.push('#800000');
+        }
+        if ($label == 'C3B-Under18') {
+            dataSet.push(C3B_Under18);
+            arr_color.push('#6A5ACD')
+        }
+        if ($label == 'C3B-Duplicated15Days') {
+            dataSet.push(C3B_Duplicated15Days);
+            arr_color.push('#808080')
+        }
+        if ($label == 'C3A-Test') {
+            dataSet.push(C3A_Test);
+            arr_color.push('#7CFC00')
+        }
+    });
+
+
+    initChart(item, dataSet, arr_color, type);
+    element.UseTooltip();
+    element.parent().parent().parent().parent().find('.loading').css("display", "none");
 }
 
 function set_budget_chart(data) {
@@ -785,10 +876,15 @@ function loadDataByWeeks(type) {
         }
         else if (type == 'quality') {
             set_quality_chart_by_weeks(response.quality);
-        } else {
+        }
+        // else if (type == 'C3A-C3B') {
+        //     set_C3AC3B(response.C3AC3B, $("#C3A-C3B_by_weeks_chart"), $('#C3A-C3B_by_weeks_chk'), 'by_weeks');
+        // }
+        else {
             set_budget_chart_by_weeks(response.budget);
             set_quantity_chart_by_weeks(response.quantity);
             set_quality_chart_by_weeks(response.quality);
+            // set_C3AC3B(response.C3AC3B, $("#C3A-C3B_by_weeks_chart"), $('#C3A-C3B_by_weeks_chk'), 'by_weeks');
         }
     });
 
@@ -807,6 +903,7 @@ function loadDataByDays() {
     var quantity_month = $('input[name="quantity_month"]').val();
     var quality_month = $('input[name="quality_month"]').val();
     var unit = $('#currency_unit').val();
+    // var C3AC3B_month = $('input[name="C3AC3B_month"]').val();
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -831,12 +928,14 @@ function loadDataByDays() {
             budget_month: budget_month,
             quantity_month: quantity_month,
             quality_month: quality_month,
-            unit: unit
+            unit: unit,
+            // C3AC3B_month: C3AC3B_month
         }
     }).done(function (response) {
         set_budget_chart(response.budget);
         set_quantity_chart(response.quantity);
         set_quality_chart(response.quality);
+        // set_C3AC3B(response.C3AC3B, $("#C3A-C3B_by_months_chart"), $('#C3A-C3B_by_months_chk'), 'by_months');
     });
 
     $('.loading').hide();
@@ -876,6 +975,7 @@ function loadDataByMonths(type) {
             unit: unit
         }
     }).done(function (response) {
+        console.log(response);
         if (type == 'budget') {
             set_budget_chart_by_months(response.budget);
         }
@@ -884,10 +984,16 @@ function loadDataByMonths(type) {
         }
         else if (type == 'quality') {
             set_quality_chart_by_months(response.quality);
-        } else {
+        }
+        // else if (type == 'C3A-C3B') {
+            // console.log(response.C3AC3B);
+            // set_C3AC3B(response.C3AC3B, $("#C3A-C3B_by_months_chart"), $('#C3A-C3B_by_months_chk'), 'by_months');
+        // }
+        else {
             set_budget_chart_by_months(response.budget);
             set_quantity_chart_by_months(response.quantity);
             set_quality_chart_by_months(response.quality);
+            // set_C3AC3B(response.C3AC3B, $("#C3A-C3B_by_months_chart"), $('#C3A-C3B_by_months_chk'), 'by_months');
         }
     });
 

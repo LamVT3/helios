@@ -24,8 +24,7 @@
                         ['id' => 1, 'icon' => 'fa-table', 'title' => 'Report'])
                             <div class="widget-body">
 
-                                <form id="search-form-channel-report" class="smart-form" method="post" action="{!! route('channel-report.filter') !!}">
-                                    {{csrf_field()}}
+                                <form id="search-form-channel-report" class="smart-form" action="#" url="{!! route('channel-report.filter') !!}">
                                     <div class="row" id="filter">
                                         <section class="col col-2">
                                             <label class="label">Source</label>
@@ -34,7 +33,7 @@
                                                     data-url="{!! route('ajax-getFilterSource') !!}">
                                                 <option value="">All</option>
                                                 @foreach($sources as $item)
-                                                    <option value="{{ $item->id }}" @if( $item->id == @$data_where['source_id']) Selected @endif>{{ $item->name }}</option>
+                                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
                                                 @endforeach
                                             </select>
                                             <i></i>
@@ -46,7 +45,7 @@
                                                     data-url="{!! route('ajax-getFilterTeam') !!}">
                                                 <option value="">All</option>
                                                 @foreach($teams as $item)
-                                                    <option value="{{ $item->id }}" @if( $item->id == @$data_where['team_id']) Selected @endif>{{ $item->name }}</option>
+                                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
                                                 @endforeach
                                             </select>
                                             <i></i>
@@ -58,7 +57,7 @@
                                                     data-url="{!! route('ajax-getFilterMaketer') !!}" tabindex="3">
                                                 <option value="">All</option>
                                                 @foreach($marketers as $item)
-                                                    <option value="{{ $item->id }}" @if( $item->id == @$data_where['marketer_id']) Selected @endif>{{ $item->username }}</option>
+                                                    <option value="{{ $item->id }}">{{ $item->username }}</option>
                                                 @endforeach
                                             </select>
                                             <i></i>
@@ -70,7 +69,7 @@
                                                     data-url="{!! route('ajax-getFilterCampaign') !!}">
                                                 <option value="">All</option>
                                                 @foreach($campaigns as $item)
-                                                    <option value="{{ $item->id }}" @if( $item->id == @$data_where['campaign_id']) Selected @endif>{{ $item->name }}</option>
+                                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
                                                 @endforeach
                                             </select>
                                             <i></i>
@@ -82,17 +81,18 @@
                                                     data-url="">
                                                 <option value="">All</option>
                                                 @foreach($subcampaigns as $item)
-                                                    <option value="{{ $item->id }}" @if( $item->id == @$data_where['subcampaign_id']) Selected @endif>{{ $item->name }}</option>
+                                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
                                                 @endforeach
                                             </select>
                                             <i></i>
                                         </section>
                                     </div>
                                     <div class="row">
-                                        <section class="col col-2">
-                                            <label class="label">Choose date</label>
-                                            <input type="date" name="date_time" class="form-control" value="{{$date_time}}">
-                                        </section>
+                                        <div id="reportrange" class="pull-left"
+                                             style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; margin: 10px 15px">
+                                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                                            <span class="registered_date"></span> <b class="caret"></b>
+                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12 text-right">
@@ -112,8 +112,8 @@
                                 </div>
                                 <hr>
 
-                                <div class="row">
-                                    <div class="col-sm-5">
+                                <div class="row" id="wrapper_report">
+                                    <div class="col-sm-12">
                                         <article class="col-sm-12 col-md-12">
                                             <table class="table table-bordered table-hover"
                                                    width="100%">
@@ -124,6 +124,12 @@
                                                     <th>C3B</th>
                                                     <th>C3BG</th>
                                                     <th>C3BG/C3B (%)</th>
+                                                    <th>L1</th>
+                                                    <th>L3</th>
+                                                    <th>L6</th>
+                                                    <th>L8</th>
+                                                    <th>L3/C3BG (%)</th>
+                                                    <th>L8/L1 (%)</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -136,6 +142,12 @@
                                                         <td style="color:{{$table['c3b'][$i] >= $table['c3b_week'][$i] ? 'green' : 'red'}}">{{$table['c3b'][$i]}}</td>
                                                         <td style="color:{{$table['c3bg'][$i] >= $table['c3bg_week'][$i] ? 'green' : 'red'}}">{{$table['c3bg'][$i]}}</td>
                                                         <td>{{($table['c3b'][$i] != 0) ? round($table['c3bg'][$i] * 100 / $table['c3b'][$i] , 2) : 0}}</td>
+                                                        <td style="color:{{($table['l1'][$i]) >= ($table['l1_week'][$i]) ? 'green' : 'red'}}">{{$table['l1'][$i]}}</td>
+                                                        <td style="color:{{($table['l3'][$i]) >= ($table['l3_week'][$i]) ? 'green' : 'red'}}">{{$table['l3'][$i]}}</td>
+                                                        <td style="color:{{($table['l6'][$i]) >= ($table['l6_week'][$i]) ? 'green' : 'red'}}">{{$table['l6'][$i]}}</td>
+                                                        <td style="color:{{($table['l8'][$i]) >= ($table['l8_week'][$i]) ? 'green' : 'red'}}">{{$table['l8'][$i]}}</td>
+                                                        <td>{{($table['c3bg'][$i] != 0) ? round($table['l3'][$i] * 100 / $table['c3bg'][$i] , 2) : 0}}</td>
+                                                        <td>{{($table['l1'][$i] != 0) ? round($table['l8'][$i] * 100 / $table['l1'][$i] , 2) : 0}}</td>
                                                     </tr>
                                                     @endif
                                                 @endforeach
@@ -145,13 +157,19 @@
                                                         <th>{{array_sum($table['c3b'])}}</th>
                                                         <th>{{array_sum($table['c3bg'])}}</th>
                                                         <th>{{(array_sum($table['c3b']) != 0) ? round(array_sum($table['c3bg']) * 100 / array_sum($table['c3b']) , 2) : 0}}</th>
+                                                        <th>{{array_sum($table['l1'])}}</th>
+                                                        <th>{{array_sum($table['l3'])}}</th>
+                                                        <th>{{array_sum($table['l6'])}}</th>
+                                                        <th>{{array_sum($table['l8'])}}</th>
+                                                        <th>{{(array_sum($table['c3bg']) != 0) ? round(array_sum($table['l3']) * 100 / array_sum($table['c3bg']) , 2) : 0}}</th>
+                                                        <th>{{(array_sum($table['l1']) != 0) ? round(array_sum($table['l8']) * 100 / array_sum($table['l1']) , 2) : 0}}</th>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </article>
                                     </div>
 
-                                    <div class="col-sm-7">
+                                    <div class="col-sm-12">
                                         <article class="col-sm-12 col-md-12">
                                         @component('components.jarviswidget',
                                         ['id' => 'c3bg', 'icon' => 'fa-line-chart', 'title' => "C3BG ", 'dropdown' => 'false'])
@@ -201,6 +219,12 @@
 
     </div>
     <!-- END MAIN PANEL -->
+    <input type="hidden" name="source_id">
+    <input type="hidden" name="marketer_id">
+    <input type="hidden" name="team_id">
+    <input type="hidden" name="campaign_id">
+    <input type="hidden" name="subcampaign_id">
+    <input type="hidden" name="registered_date">
 
 @endsection
 
@@ -239,6 +263,41 @@
             initC3();
             initC3B();
             initC3BG();
+
+            $('#search-form-channel-report').submit(function (e) {
+                e.preventDefault();
+                var url = $('#search-form-channel-report').attr('url');
+                var source_id = $('select[name="source_id"]').val();
+                var team_id = $('select[name="team_id"]').val();
+                var marketer_id = $('select[name="marketer_id"]').val();
+                var campaign_id = $('select[name="campaign_id"]').val();
+                var subcampaign_id = $('select[name="subcampaign_id"]').val();
+                var registered_date = $('.registered_date').text();
+
+                $('input[name="source_id"]').val(source_id);
+                $('input[name="team_id"]').val(team_id);
+                $('input[name="marketer_id"]').val(marketer_id);
+                $('input[name="campaign_id"]').val(campaign_id);
+                $('input[name="subcampaign_id"]').val(subcampaign_id);
+                $('input[name="registered_date"]').val(registered_date);
+
+                $('.loading').show();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: {
+                        source_id       : source_id,
+                        team_id         : team_id,
+                        marketer_id     : marketer_id,
+                        campaign_id     : campaign_id,
+                        subcampaign_id  : subcampaign_id,
+                        registered_date : registered_date,
+                    }
+                }).done(function (response) {
+                    $('.loading').hide();
+                    $('#wrapper_report').html(response);
+                });
+            });
         });
 
         function initChartChannel(item, data, arr_color){

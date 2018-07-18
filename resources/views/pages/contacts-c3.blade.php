@@ -148,16 +148,6 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
-                                        <label class="label">Status</label>
-                                        <select name="is_export" id="is_export" class="select2"
-                                                style="width: 280px" data-url="">
-                                            <option value="">All</option>
-                                            <option value="1">Exported</option>
-                                            <option value="0">Not Export</option>
-                                        </select>
-                                        <i></i>
-                                    </section>
                                     <section class="col col-4">
                                         <label class="label">Landing Page</label>
                                         <select name="landing_page" id="landing_page" class="select2" style="width: 280px"
@@ -166,6 +156,28 @@
                                             @foreach($landing_page as $item)
                                                 <option value="{{ $item->url }}">{{ $item->url }}</option>
                                             @endforeach
+                                        </select>
+                                        <i></i>
+                                    </section>
+                                    <section class="col col-2">
+                                        <label class="label">Status Export</label>
+                                        <select name="is_export" id="is_export" class="select2"
+                                                style="width: 280px" data-url="">
+                                            <option value="">All</option>
+                                            <option value="1">Exported</option>
+                                            <option value="0">Not Export</option>
+                                        </select>
+                                        <i></i>
+                                    </section>
+                                    <section class="col col-2">
+                                        <label class="label">Status OLM</label>
+                                        <select name="status_olm" id="status_olm" class="select2"
+                                                style="width: 280px" data-url="">
+                                            <option value="All">All</option>
+                                            <option value="SUCCESS">Success</option>
+                                            <option value="DUPLICATED">Duplicated</option>
+                                            <option value="ERROR">Error</option>
+                                            <option value="">Not Export</option>
                                         </select>
                                         <i></i>
                                     </section>
@@ -199,28 +211,35 @@
                                         {{--</div>--}}
                                     {{--</section>--}}
                                 </div>
+                                <div class="row" id="filter">
+                                    <section class="col col-12 pull-right text-right">
+                                        <button id="export" class="btn btn-success btn-sm" type="button" style="margin-left: 10px"
+                                                data-toggle="modal" data-target="#myExportModal"> <i class="fa fa-download"></i>
+                                            Export to excel
+                                        </button>
+                                        <button id="export_to_olm" class="btn btn-info btn-sm" type="button"
+                                                style="margin-left: 10px" data-toggle="modal" data-target="#myExportToOLMModal">
+                                            <i class="fa fa-edit"></i>
+                                            Export to OLM
+                                        </button>
+                                        <button id="update_contact" class="btn btn-warning btn-sm" type="button"
+                                                style="margin-left: 10px; display: none" data-toggle="modal" data-target="#myUpdateModal">
+                                            <i class="fa fa-edit"></i>
+                                            Update
+                                        </button>
+                                        <button id="edit_contact" class="btn btn-warning btn-sm disabled" type="button" disabled
+                                                style="margin-left: 10px;">
+                                            <i class="fa fa-edit"></i>
+                                            Edit
+                                        </button>
+                                        <button id="filter" class="btn btn-primary btn-sm" type="submit" style="margin-left: 10px" >
+                                            <i class="fa fa-filter"></i>
+                                            Filter
+                                        </button>
+                                    </section>
+                                </div>
                             </fieldset>
 
-                            <div class="row">
-                                <div class="col-md-10 text-right">
-                                    <button id="update_contact" class="btn btn-warning btn-sm disabled" disabled type="button"
-                                            style="" data-toggle="modal" data-target="#myUpdateModal">
-                                        <i class="fa fa-edit"></i>
-                                        Update
-                                    </button>
-                                </div>
-                                <div class="col-md-1 text-right">
-                                    <button id="export" class="btn btn-success btn-sm" type="button" style="margin-right: 2px"
-                                            style="" data-toggle="modal" data-target="#myExportModal"> <i class="fa fa-download"></i> Export
-                                    </button>
-                                </div>
-                                <div class="col-md-1 text-right">
-                                    <button id="filter" class="btn btn-primary btn-sm" type="submit" style="margin-right: 15px">
-                                        <i class="fa fa-filter"></i>
-                                        Filter
-                                    </button>
-                                </div>
-                            </div>
                         </form>
 
                         <div style="position: relative">
@@ -254,7 +273,7 @@
                                 <thead>
                                     <tr>
                                         <th><input type="checkbox" id="update_all" value="all"/></th>
-                                        <th>Name</th>
+                                        <th class="long">Name</th>
                                         <th>Email</th>
                                         <th>Phone</th>
                                         <th>Age</th>
@@ -398,10 +417,33 @@
     </div>
 </div>
 
+<!-- Export To OLM Modal -->
+<div class="modal fade" id="myExportToOLMModal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title">Confirm Export To OLM</h3>
+            </div>
+            <div class="modal-body">
+                <h4>{{config('constants.CONFIRM_EXPORT')}}</h4>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm_export_to_olm" type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 <input type="hidden" name="page_size" value="{{$page_size}}">
 <input type="hidden" name="exported" value="{{$exported}}">
 <input type="hidden" name="exported_url" value="{{route("contacts.countExported")}}">
 <input type="hidden" name="update_status_export" value="{{route("ajax-updateStatusExport")}}">
+<input type="hidden" name="export_to_olm_url" value="{{route("contacts.export-to-OLM")}}">
 <input type="hidden" name="update_all" value="0">
 <input type="hidden" name="status_update_all" value="">
 @endsection

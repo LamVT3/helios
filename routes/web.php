@@ -63,6 +63,7 @@ Route::group(['prefix' => 'contacts'], function () {
     Route::get('export', 'ContactController@export')->name('contacts.export');
     Route::post('import', 'ContactController@import')->name('contacts.import');
     Route::get('countExported', 'ContactController@countExported')->name('contacts.countExported');
+    Route::get('export-to-OLM', 'ContactController@exportToOLM')->name('contacts.export-to-OLM');
 });
 
 Route::get('/report', 'ReportController@index')->name('report');
@@ -160,10 +161,11 @@ Route::group(['prefix' => 'sub_report'], function () {
     Route::get('/getReport', 'SubReportController@getBudget')->name('get-budget');
     Route::get('/getQuantity', 'SubReportController@getQuantity')->name('get-quantity');
     Route::get('/getQuality', 'SubReportController@getQuality')->name('get-quality');
+    Route::get('/getC3AC3B', 'SubReportController@getC3AC3B')->name('get-C3AC3B');
 
     Route::get('/line-chart-filter', 'SubReportController@getFilter')->name('line-chart.filter');
 	Route::get('/channel-report', 'SubReportController@channelReport')->name('channel-report');
-	Route::post('/channel-report', 'SubReportController@channelReportFilter')->name('channel-report.filter');
+	Route::get('/channel-report-filter', 'SubReportController@channelReportFilter')->name('channel-report.filter');
 	Route::get('/hour-report', 'SubReportController@hourReport')->name('hour-report');
 	Route::post('/hour-report', 'SubReportController@hourReportFilter')->name('hour-report.filter');
 
