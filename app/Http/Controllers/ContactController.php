@@ -765,8 +765,10 @@ class ContactController extends Controller
             $query->where($data_where);
         }
 
-        if($request->id != 'All'){
-            $query->whereIn('_id', array_keys($request->id));
+        if($request->id){
+            if($request->id != 'All' && count($request->id) > 0){
+                $query->whereIn('_id', array_keys($request->id));
+            }
         }
 
         $query->orderBy('submit_time', 'desc');
