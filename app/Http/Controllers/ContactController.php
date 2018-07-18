@@ -588,6 +588,116 @@ class ContactController extends Controller
         return redirect()->back();
     }
 
+    public function importEgentic(Request $request)
+    {
+        $file = $request->file('import');
+
+        $destinationPath = storage_path('app/upload');
+        $file->move($destinationPath,$file->getClientOriginalName());
+
+        $filePath =  $destinationPath . '/' . $file->getClientOriginalName();
+        // DB::connection( 'mongodb' )->enableQueryLog();
+
+        Excel::load($filePath, function($reader) {
+
+            $client = new Client();
+            // Getting all results
+            $results = $reader->get();
+            /*$r = $client->request('POST', "http://209.58.165.15/api/v5/tracking/submitter", [
+                'json' => $results->toArray()
+            ]);*/
+
+            $import_time = time();
+
+            $cnt = 0;
+            $template = \config('constants.TEMPLATE_IMPORT_EGENTIC');
+            $invalid = array_diff($template,$results->getHeading());
+
+            if(count($invalid) > 0){
+                if(count($invalid) < 5){
+                    $fields = implode("',' ",$invalid);
+                    $errors =  'Invalid field(s): \''.$fields.'\' in file import !!! - Please download sample file.';
+                    return redirect()->back()->withErrors($errors);
+                }
+                $errors =  'File import is invalid !!! - Please download sample file.';
+                return redirect()->back()->withErrors($errors);
+            }
+
+            foreach($results as $item){
+
+                if($item->phone == '' && $item->name == '' && $item->email == ''){
+                    continue; // check import blank record
+                }
+
+                // validate submit_time
+                $submit_time = is_object($item->submit_time) ? $item->submit_time->timestamp : $import_time;
+
+                $contact = new Contact();
+                $contact->contact_source = "import_data";
+                $contact->msg_type = "submitter";
+                $contact->submit_time = $submit_time * 1000;
+                $contact->source_name = "";
+                $contact->team_name = "";
+                $contact->marketer_name = "";
+                $contact->utm_medium = "";
+                $contact->campaign_name = "";
+                $contact->subcampaign_name = "";
+                $contact->ad_name = "";
+                $contact->name = $item->firstname." ".$item->lastname;
+                $contact->phone = $item->tel_number_complete;
+                $contact->email = $item->email;
+                $contact->age = $item->age;
+                $contact->landing_page = "";
+                $contact->ad_link = "";
+                $contact->channel = "TK100.eGentic";
+                $contact->import_time = $import_time;
+                $contact->clevel = "c3bg";
+
+                // match ad_id
+                $uri_query = "utm_source={$item->utm_source}&utm_team={$item->utm_team}&utm_agent={$item->utm_agent}&utm_campaign={$item->utm_campaign}&utm_medium={$item->utm_medium}&utm_subcampaign={$item->utm_subcampaign}&utm_ad={$item->utm_ad}";
+                $ad = Ad::where('uri_query', $uri_query)->first();
+                if($ad === null){
+                    $contact->ad_id = 'unknown';
+                }else{
+                    $contact->ad_id = $ad->_id;
+                    $contact->source_id = $ad->source_id;
+                    $contact->team_id = $ad->team_id;
+                    $contact->marketer_id = $ad->creator_id;
+                    $contact->campaign_id = $ad->campaign_id;
+                    $contact-> subcampaign_id = $ad->subcampaign_id;
+                }
+                $contact->contact_id = $this->gen_contact_id($contact);
+
+                $cnt++;
+                $contact->save();
+
+                // Update c3, c3b statistic in ad_results
+                $ad_result = AdResult::where('ad_id', $contact->ad_id)->where('date', date('Y-m-d', $contact->submit_time/1000))->first();
+                if($ad_result === null){
+                    $ad_result = new AdResult();
+                    $ad_result->ad_id   = $contact->ad_id;
+                    $ad_result->date    = date('Y-m-d', $contact->submit_time/1000);
+                    $ad_result->c3      = 1;
+                    $ad_result->c3a     = ($contact->clevel === "c3a")  ? 1 : 0;
+                    $ad_result->c3b     = ($contact->clevel === "c3b")  ? 1 : 0;
+                    $ad_result->c3bg    = ($contact->clevel === "c3bg") ? 1 : 0;
+                    if($contact->ad_id !== 'unknown') $ad_result->creator_id = $ad->creator_id;
+                }else{
+                    $ad_result->c3++;
+                    $ad_result->c3a     += ($contact->clevel === "c3a")     ? 1 : 0;
+                    $ad_result->c3b     += ($contact->clevel === "c3b")     ? 1 : 0;
+                    $ad_result->c3bg    += ($contact->clevel === "c3bg")    ? 1 : 0;
+                }
+                $ad_result->save();
+            }
+
+            session()->flash('message', $cnt.' Contact(s) have been imported successfully');
+
+        });
+        //DB::connection('mongodb')->getQueryLog();
+        return redirect()->back();
+    }
+
     private function format_phone($phone)
     {
         $phone = preg_replace('/[^0-9]/', "", $phone);
