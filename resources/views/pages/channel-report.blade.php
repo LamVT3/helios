@@ -86,8 +86,8 @@
                                             </select>
                                             <i></i>
                                         </section>
-                                        <section class="col col-2" style="display: none">
-                                            <label class="label">Type</label>
+                                        <section class="col col-2">
+                                            <label class="label">Mode</label>
                                             <select name="type" id="type" class="select2"
                                                     style="width: 280px"
                                                     data-url="">
@@ -151,10 +151,10 @@
                                                         <td style="color:{{$table['c3b'][$i] >= $table['c3b_week'][$i] ? 'green' : 'red'}}">{{$table['c3b'][$i]}}</td>
                                                         <td style="color:{{$table['c3bg'][$i] >= $table['c3bg_week'][$i] ? 'green' : 'red'}}">{{$table['c3bg'][$i]}}</td>
                                                         <td>{{($table['c3b'][$i] != 0) ? round($table['c3bg'][$i] * 100 / $table['c3b'][$i] , 2) : 0}}</td>
-                                                        <td style="color:{{($table['l1'][$i]) >= ($table['l1_week'][$i]) ? 'green' : 'red'}}">{{$table['l1'][$i]}}</td>
-                                                        <td style="color:{{($table['l3'][$i]) >= ($table['l3_week'][$i]) ? 'green' : 'red'}}">{{$table['l3'][$i]}}</td>
-                                                        <td style="color:{{($table['l6'][$i]) >= ($table['l6_week'][$i]) ? 'green' : 'red'}}">{{$table['l6'][$i]}}</td>
-                                                        <td style="color:{{($table['l8'][$i]) >= ($table['l8_week'][$i]) ? 'green' : 'red'}}">{{$table['l8'][$i]}}</td>
+                                                        <td>{{$table['l1'][$i]}}</td>
+                                                        <td>{{$table['l3'][$i]}}</td>
+                                                        <td>{{$table['l6'][$i]}}</td>
+                                                        <td>{{$table['l8'][$i]}}</td>
                                                         <td>{{($table['c3bg'][$i] != 0) ? round($table['l3'][$i] * 100 / $table['c3bg'][$i] , 2) : 0}}</td>
                                                         <td>{{($table['l1'][$i] != 0) ? round($table['l8'][$i] * 100 / $table['l1'][$i] , 2) : 0}}</td>
                                                     </tr>
