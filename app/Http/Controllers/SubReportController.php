@@ -1208,6 +1208,7 @@ class SubReportController extends Controller
 		}
 
 		$array_channel['unknown'] = 'Unknown';
+		$array_channel[""] = 'Unknown';
 
 		foreach ($array_channel as $channel) {
 			$table['c3'][$channel] = 0;
@@ -1339,8 +1340,27 @@ class SubReportController extends Controller
 			arsort($table['c3_week']);
 			$array_channel_new = [];
 			foreach ($table['c3'] as $key=>$value) {
-
 				if ($value != 0){
+					$array_channel_new[] = $key;
+				}
+			}
+			foreach ($table['l1'] as $key=>$value) {
+				if ($value != 0 && !in_array($key,$array_channel_new)){
+					$array_channel_new[] = $key;
+				}
+			}
+			foreach ($table['l3'] as $key=>$value) {
+				if ($value != 0 && !in_array($key,$array_channel_new)){
+					$array_channel_new[] = $key;
+				}
+			}
+			foreach ($table['l6'] as $key=>$value) {
+				if ($value != 0 && !in_array($key,$array_channel_new)){
+					$array_channel_new[] = $key;
+				}
+			}
+			foreach ($table['l8'] as $key=>$value) {
+				if ($value != 0 && !in_array($key,$array_channel_new)){
 					$array_channel_new[] = $key;
 				}
 			}
@@ -1442,21 +1462,47 @@ class SubReportController extends Controller
 			arsort($table['c3_week']);
 			$array_channel_new = [];
 
+			$end_date_l = date('Y-m-d', strtotime( $end_date ) + 86400);
+			foreach ($array_channel as $key => $channel) {
+				$table['l1'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l1_time', '>=', $start_date )->where( 'l1_time', '<', $end_date_l )->count();
+				$table['l3'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l3_time', '>=', $start_date )->where( 'l3_time', '<', $end_date_l )->count();
+				$table['l6'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l6_time', '>=', $start_date )->where( 'l6_time', '<', $end_date_l )->count();
+				$table['l8'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l8_time', '>=', $start_date )->where( 'l8_time', '<', $end_date_l )->count();
+			}
+
+			$table['l1'][ 'Unknown' ]   += Contact::where('channel_name', null)->where( 'l1_time', '>=', $start_date )->where( 'l1_time', '<', $end_date_l )->count();
+			$table['l3'][ 'Unknown' ]   += Contact::where('channel_name', null)->where( 'l3_time', '>=', $start_date )->where( 'l3_time', '<', $end_date_l )->count();
+			$table['l6'][ 'Unknown' ]   += Contact::where('channel_name', null)->where( 'l6_time', '>=', $start_date )->where( 'l6_time', '<', $end_date_l )->count();
+			$table['l8'][ 'Unknown' ]   += Contact::where('channel_name', null)->where( 'l8_time', '>=', $start_date )->where( 'l8_time', '<', $end_date_l )->count();
+
 			foreach ($table['c3'] as $key=>$value) {
 				if ($value != 0){
 					$array_channel_new[] = $key;
 				}
 
 			}
+			foreach ($table['l1'] as $key=>$value) {
+				if ($value != 0 && !in_array($key,$array_channel_new)){
+					$array_channel_new[] = $key;
+				}
+			}
+			foreach ($table['l3'] as $key=>$value) {
+				if ($value != 0 && !in_array($key,$array_channel_new)){
+					$array_channel_new[] = $key;
+				}
+			}
+			foreach ($table['l6'] as $key=>$value) {
+				if ($value != 0 && !in_array($key,$array_channel_new)){
+					$array_channel_new[] = $key;
+				}
+			}
+			foreach ($table['l8'] as $key=>$value) {
+				if ($value != 0 && !in_array($key,$array_channel_new)){
+					$array_channel_new[] = $key;
+				}
+			}
 
 			$array_channel = $array_channel_new;
-
-			foreach ($array_channel as $key => $channel) {
-				$table['l1'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l1_time', '>=', $start_date )->where( 'l1_time', '<', $end_date )->count();
-				$table['l3'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l3_time', '>=', $start_date )->where( 'l3_time', '<', $end_date )->count();
-				$table['l6'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l6_time', '>=', $start_date )->where( 'l6_time', '<', $end_date )->count();
-				$table['l8'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l8_time', '>=', $start_date )->where( 'l8_time', '<', $end_date )->count();
-			}
 
 			return ['table'=>$table,'array_channel' => $array_channel];
 		}
