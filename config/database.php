@@ -80,16 +80,9 @@ return [
 
         'mongodb' => [
             'driver'   => 'mongodb',
-            'host'     => ['db01','db02','db03'],
+            'host'     => env('DB_HOST', 'localhost'),
             'port'     => env('DB_PORT', 27017),
-            'database' => env('DB_DATABASE'),
-	    'username' => env('DB_USERNAME'),
-	    'password' => env('DB_PASSWORD'),
-	    'options'  => [
-		'replicaSet' => 'heliosrepl',
-		'database' => 'helios'
-		]
-
+            'database' => env('DB_DATABASE','helios')
         ],
 
     ],
