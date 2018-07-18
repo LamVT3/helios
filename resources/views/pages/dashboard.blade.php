@@ -7,20 +7,18 @@
         <!-- MAIN CONTENT -->
         <div id="content">
 
-            @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
+        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs, 'currency' => true])
+            <form action="/home" method="GET" class="form_search">
+                {{ csrf_field()}}
+                <div id="reportrange" class="pull-right"
+                     style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc;">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                    <span></span> <b class="caret"></b>
+                </div>
 
-                <form action="/home" method="GET" class="form_search">
-                    {{ csrf_field()}}
-                    <div id="reportrange" class="pull-right"
-                         style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc;">
-                        <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
-                        <span></span> <b class="caret"></b>
-                    </div>
-
-                    @component('components.currency')
-                    @endcomponent
-                </form>
-
+                @component('components.currency')
+                @endcomponent
+            </form>
         @endcomponent
 
         <!-- widget grid -->
