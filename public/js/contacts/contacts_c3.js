@@ -238,6 +238,13 @@ $(document).ready(function () {
 
     $('button#confirm_export').click(function (e) {
         e.preventDefault();
+        var id = '';
+        $("input:checkbox[id=is_update]:checked").each(function () {
+            id += $(this).val() + ',';
+        });
+
+        $('input[name=contact_id]').val(id);
+        console.log($('input[name=contact_id]').val());
 
         $('#export-form-c3').submit();
 
@@ -393,6 +400,14 @@ function initDataTable() {
 
             enable_update();
 
+            var exported        = $('input[name="exported"]').val();
+            var cnt_exported    = '<strong>'+ exported + ' contact(s) export to excel'+'</strong>';
+            $('p#cnt_exported').html(cnt_exported);
+
+            var exported_olm            = $('input[name="export_to_olm"]').val();
+            var cnt_exported_to_olm     = '<strong>'+ exported_olm + ' contact(s) export to OLM'+'</strong>';
+            $('p#cnt_export_to_olm').html(cnt_exported_to_olm);
+
             responsiveHelper_table_campaign.respond();
         },
         "order": [],
@@ -489,7 +504,7 @@ function initDataTable() {
                     else if(data == 1){
                         status = '<span id="status">Duplicated</span><input type="hidden" id="old_status" value="1">';
                     }
-                    else if(data == 2){
+                    else if(data == 2 || data == 3){
                         status = '<span id="status">Error</span><input type="hidden" id="old_status" value="1">';
                     }
                     else{
@@ -512,21 +527,21 @@ function initDataTable() {
             else if(data['olm_status'] == 1){
                 $(row).addClass('olm_status_duplicated');
             }
-            else if(data['olm_status'] == 2){
+            else if(data['olm_status'] == 2 || data['olm_status'] == 3){
                 $(row).addClass('olm_status_error');
             }
         },
-        "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
-
-            if(iTotal == 0){
-                return "";
-            }
-            // countExportedWhenSearch();
-            var exported    = $('input[name="exported"]').val();
-            var count_str   = '<span id="cnt_exported" class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
-
-            return sPre + count_str;
-        },
+        // "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
+        //
+        //     if(iTotal == 0){
+        //         return "";
+        //     }
+        //     // countExportedWhenSearch();
+        //     var exported    = $('input[name="exported"]').val();
+        //     var count_str   = '<span id="cnt_exported" class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
+        //
+        //     return sPre + count_str;
+        // },
     });
 
 }
@@ -572,7 +587,9 @@ function countExported() {
     data.olm_status         = olm_status;
 
     $.get(url, data, function (data) {
-        $('input[name="exported"]').val(data);
+        console.log(data);
+        $('input[name="exported"]').val(data.to_excel);
+        $('input[name="export_to_olm"]').val(data.to_olm);
         // setTimeout(function(){
             // if(status == '0'){
             //     $('input[name="exported"]').val(0);
@@ -817,9 +834,9 @@ function exportToOLM(id) {
             initDataTable();
             $('input#update_all').prop('checked', false); // Unchecks checkbox all
 
+            $('div#update_success').hide();
+            $('div#export_success').show();
             $('.loading').hide();
-            $('div#update_success').show();
-            $('div#export_success').hide();
         }, 1000);
     }).fail(
         function (err) {

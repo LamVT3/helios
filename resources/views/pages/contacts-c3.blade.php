@@ -7,11 +7,16 @@
     <!-- MAIN CONTENT -->
     <div id="content">
 
-        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
-        <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
-           data-toggle="modal"
-           data-target="#addModal"><i
-                    class="fa fa-upload fa-lg"></i> Import Contact</a>
+        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs, 'currency' => true])
+            <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
+               data-toggle="modal"
+               data-target="#addModal"><i
+                        class="fa fa-upload fa-lg"></i> Import Contact</a>
+
+            <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
+               data-toggle="modal"
+               data-target="#eGenticModal" style="margin-right: 10px;"><i
+                        class="fa fa-upload fa-lg"></i> Import eGentic</a>
         @endcomponent
 
         @include('layouts.errors')
@@ -259,6 +264,7 @@
                                 <input type="hidden" name="channel">
                                 <input type="hidden" name="search_text" value="">
                                 <input type="hidden" name="olm_status" value="">
+                                <input type="hidden" name="contact_id" value="">
                             </form>
                         </div>
 
@@ -268,6 +274,10 @@
                             </div>
                         </div>
                         <hr>
+                        <div style="padding-left: 20px">
+                            <p id="cnt_exported" class="text-success no-margin"><strong>...</strong></p>
+                            <p id="cnt_export_to_olm" class="text-primary no-margin"><strong>...</strong></p>
+                        </div>
                         <div class="container-table-contacts">
                         <div class="wrapper">
                             <table id="table_contacts" class="table table-striped table-bordered table-hover"
@@ -345,6 +355,7 @@
         <!-- end widget grid -->
 
         @include('components.form-import-contact', ['type' => null])
+        @include('components.form-import-egentic', ['type' => null])
 
         {{--
         <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
@@ -443,7 +454,8 @@
 </div>
 
 <input type="hidden" name="page_size" value="{{$page_size}}">
-<input type="hidden" name="exported" value="{{$exported}}">
+<input type="hidden" name="exported" value="{{$export_to_excel}}">
+<input type="hidden" name="export_to_olm" value="{{$export_to_olm}}">
 <input type="hidden" name="exported_url" value="{{route("contacts.countExported")}}">
 <input type="hidden" name="update_status_export" value="{{route("ajax-updateStatusExport")}}">
 <input type="hidden" name="export_to_olm_url" value="{{route("contacts.export-to-OLM")}}">

@@ -30,6 +30,7 @@ return [
     'UNIT_VND'              => 'VND',
     'UNIT_BAHT'             => 'Baht',
     'EXPORT_MONTHLY_REPORT' => 'Are you sure you want to export this report?',
+    'TEMPLATE_IMPORT_EGENTIC' => ['firstname', 'lastname', 'age', 'email', 'tel_number_complete'],
 ];
 
 
