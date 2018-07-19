@@ -661,16 +661,9 @@ class ContactController extends Controller
         // DB::connection( 'mongodb' )->enableQueryLog();
 
         Excel::load($filePath, function($reader) {
-
-            $client = new Client();
             // Getting all results
             $results = $reader->get();
-            /*$r = $client->request('POST', "http://209.58.165.15/api/v5/tracking/submitter", [
-                'json' => $results->toArray()
-            ]);*/
-
             $import_time = time();
-
             $cnt = 0;
             $template = \config('constants.TEMPLATE_IMPORT_EGENTIC');
             $invalid = array_diff($template,$results->getHeading());
@@ -685,10 +678,25 @@ class ContactController extends Controller
                 return redirect()->back()->withErrors($errors);
             }
 
+            $startDate = strtotime("midnight")*1000;
+            $endDate = strtotime("tomorrow")*1000;
+            $query = Contact::where('submit_time', '>=', $startDate);
+            $query->where('submit_time', '<', $endDate);
+            $contacts = $query->get();
+
+            $phone_array = array();
+            foreach ($contacts as $item) {
+                array_push($phone_array, $item->phone);
+            }
+
             foreach($results as $item){
 
-                if($item->phone == '' && $item->name == '' && $item->email == ''){
+                if($item->tel_number_complete == '' && $item->firstname == '' && $item->lastname == '' && $item->email == ''){
                     continue; // check import blank record
+                }
+
+                if (in_array($item->tel_number_complete, $phone_array)) {
+                    continue;
                 }
 
                 // validate submit_time
@@ -726,7 +734,7 @@ class ContactController extends Controller
                     $contact->team_id = $ad->team_id;
                     $contact->marketer_id = $ad->creator_id;
                     $contact->campaign_id = $ad->campaign_id;
-                    $contact-> subcampaign_id = $ad->subcampaign_id;
+                    $contact->subcampaign_id = $ad->subcampaign_id;
                 }
                 $contact->contact_id = $this->gen_contact_id($contact);
 
