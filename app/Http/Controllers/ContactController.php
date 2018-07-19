@@ -126,6 +126,9 @@ class ContactController extends Controller
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
                 unset($data_where['clevel']);
+            }elseif (@$data_where['clevel'] == 'c3b_only'){
+                $query->where('clevel', 'c3b');
+                unset($data_where['clevel']);
             }
             if(@$data_where['current_level'] == 'l0'){
                 $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
