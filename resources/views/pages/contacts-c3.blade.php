@@ -7,11 +7,16 @@
     <!-- MAIN CONTENT -->
     <div id="content">
 
-        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
-        <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
-           data-toggle="modal"
-           data-target="#addModal"><i
-                    class="fa fa-upload fa-lg"></i> Import Contact</a>
+        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs, 'currency' => true])
+            <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
+               data-toggle="modal"
+               data-target="#addModal"><i
+                        class="fa fa-upload fa-lg"></i> Import Contact</a>
+
+            <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
+               data-toggle="modal"
+               data-target="#eGenticModal" style="margin-right: 10px;"><i
+                        class="fa fa-upload fa-lg"></i> Import eGentic</a>
         @endcomponent
 
         @include('layouts.errors')
@@ -349,6 +354,7 @@
         <!-- end widget grid -->
 
         @include('components.form-import-contact', ['type' => null])
+        @include('components.form-import-egentic', ['type' => null])
 
         {{--
         <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
