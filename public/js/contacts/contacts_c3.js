@@ -238,6 +238,13 @@ $(document).ready(function () {
 
     $('button#confirm_export').click(function (e) {
         e.preventDefault();
+        var id = '';
+        $("input:checkbox[id=is_update]:checked").each(function () {
+            id += $(this).val() + ',';
+        });
+
+        $('input[name=contact_id]').val(id);
+        console.log($('input[name=contact_id]').val());
 
         $('#export-form-c3').submit();
 
@@ -497,7 +504,7 @@ function initDataTable() {
                     else if(data == 1){
                         status = '<span id="status">Duplicated</span><input type="hidden" id="old_status" value="1">';
                     }
-                    else if(data == 2){
+                    else if(data == 2 || data == 3){
                         status = '<span id="status">Error</span><input type="hidden" id="old_status" value="1">';
                     }
                     else{
@@ -520,7 +527,7 @@ function initDataTable() {
             else if(data['olm_status'] == 1){
                 $(row).addClass('olm_status_duplicated');
             }
-            else if(data['olm_status'] == 2){
+            else if(data['olm_status'] == 2 || data['olm_status'] == 3){
                 $(row).addClass('olm_status_error');
             }
         },
@@ -827,9 +834,9 @@ function exportToOLM(id) {
             initDataTable();
             $('input#update_all').prop('checked', false); // Unchecks checkbox all
 
+            $('div#update_success').hide();
+            $('div#export_success').show();
             $('.loading').hide();
-            $('div#update_success').show();
-            $('div#export_success').hide();
         }, 1000);
     }).fail(
         function (err) {

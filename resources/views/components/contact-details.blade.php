@@ -135,7 +135,7 @@
             <td>Success</td>
         @elseif($contact->olm_status == '1')
             <td>Duplicated</td>
-        @elseif($contact->olm_status == '2')
+        @elseif($contact->olm_status == '2' || $contact->olm_status == '3')
             <td>Error</td>
         @else
             <td>Not Exported</td>

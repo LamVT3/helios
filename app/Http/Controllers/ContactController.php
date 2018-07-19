@@ -333,9 +333,6 @@ class ContactController extends Controller
 
     public function export()
     {
-
-        set_time_limit ( 5000 );
-        ini_set('memory_limit', '3500M');
 //        $contacts = $data['contacts'];
 //        if (count($contacts) >= 1) {
         $date = \request('registered_date');
@@ -383,6 +380,12 @@ class ContactController extends Controller
                         $query->orWhere($value, 'like', "%{$data_search}%");
                     }
                 }
+
+                if($request->contact_id){
+                    $id = explode(',', $request->contact_id);
+                    $query->whereIn('_id', $id);
+                }
+
                 if($order){
                     $query->orderBy($columns[$order['column']], $order['type']);
                 } else {
@@ -902,7 +905,6 @@ class ContactController extends Controller
 
     public function exportToOLM(){
 
-        set_time_limit ( 5000 );
         $url = 'http://58.187.9.138/api/OlmInsert/InsertContactOLM';
 
         $data_where = $this->getWhereData();
