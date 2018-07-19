@@ -258,6 +258,7 @@
                                 <input type="hidden" name="channel">
                                 <input type="hidden" name="search_text" value="">
                                 <input type="hidden" name="olm_status" value="">
+                                <input type="hidden" name="contact_id" value="">
                             </form>
                         </div>
 
