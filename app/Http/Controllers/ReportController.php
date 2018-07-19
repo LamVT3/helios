@@ -215,23 +215,19 @@ class ReportController extends Controller
             if (!isset($report[$item->ad_id])) {
                 $ad = Ad::find($item->ad_id);
                 // TO DO unknown
-                $source_name = '(unknown)';
-                // 2018-04-13 LamVT update show team name in report
-                $team_name = '(unknown)';
-                // end 2018-04-13 LamVT update show team name in report
-                $marketer_name = '(unknown)';
-                $campaign_name = '(unknown)';
-                $subcampaign_name = '(unknown)';
-                $ad_name = '(unknown)';
+                $source_name        = '(unknown)';
+                $team_name          = '(unknown)';
+                $marketer_name      = '(unknown)';
+                $campaign_name      = '(unknown)';
+                $subcampaign_name   = '(unknown)';
+                $ad_name            = '(unknown)';
                 if($ad){
-                    $source_name = $ad->source_name;
-                    // 2018-04-13 LamVT update show team name in report
-                    $team_name = $ad->team_name;
-                    // end 2018-04-13 LamVT update show team name in report
-                    $marketer_name = $ad->creator_name;
-                    $campaign_name = $ad->campaign_name;
-                    $subcampaign_name = $ad->subcampaign_name;
-                    $ad_name = $ad->name;
+                    $source_name        = $ad->source_name;
+                    $team_name          = $ad->team_name;
+                    $marketer_name      = $ad->creator_name;
+                    $campaign_name      = $ad->campaign_name;
+                    $subcampaign_name   = $ad->subcampaign_name;
+                    $ad_name            = $ad->name;
                 }
                 $report[$item->ad_id] = (object)[
                     'source'    => $source_name,

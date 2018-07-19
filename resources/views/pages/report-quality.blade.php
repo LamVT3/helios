@@ -7,7 +7,7 @@
     <!-- MAIN CONTENT -->
     <div id="content">
 {{-- --}}
-        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
+        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs, 'currency' => true])
             @component('components.currency')
             @endcomponent
         @endcomponent
