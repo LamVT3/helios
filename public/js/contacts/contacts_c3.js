@@ -531,35 +531,35 @@ function initDataTable() {
         "scrollX"       : true,
         'scrollCollapse': true,
         "createdRow": function ( row, data, index ) {
-            var mode = $('input[name=mode]:checked').val();
-            if(mode == '0'){
+            // var mode = $('input[name=mode]:checked').val();
+            // if(mode == '0'){
                 if(data['is_export'] == 1){
                     $(row).addClass('is_export');
                 }
-            }
-            else{
-                if(data['olm_status'] == 0){
-                    $(row).addClass('olm_status_success');
-                }
-                else if(data['olm_status'] == 1){
-                    $(row).addClass('olm_status_duplicated');
-                }
-                else if(data['olm_status'] == 2 || data['olm_status'] == 3){
-                    $(row).addClass('olm_status_error');
-                }
-            }
+            // }
+            // else{
+            //     if(data['olm_status'] == 0){
+            //         $(row).addClass('olm_status_success');
+            //     }
+            //     else if(data['olm_status'] == 1){
+            //         $(row).addClass('olm_status_duplicated');
+            //     }
+            //     else if(data['olm_status'] == 2 || data['olm_status'] == 3){
+            //         $(row).addClass('olm_status_error');
+            //     }
+            // }
         },
-        // "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
-        //
-        //     if(iTotal == 0){
-        //         return "";
-        //     }
-        //     // countExportedWhenSearch();
-        //     var exported    = $('input[name="exported"]').val();
-        //     var count_str   = '<span id="cnt_exported" class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
-        //
-        //     return sPre + count_str;
-        // },
+        "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
+
+            if(iTotal == 0){
+                return "";
+            }
+            // countExportedWhenSearch();
+            var exported    = $('input[name="exported"]').val();
+            var count_str   = '<span id="cnt_exported" class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
+
+            return sPre + count_str;
+        },
     });
 
 }

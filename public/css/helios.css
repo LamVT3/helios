@@ -196,7 +196,7 @@ fieldset:first-of-type {
     background-color: rgba(255, 247, 0, 0.31);
 }
 
-#table_ads td{
+#table_ads td, #table_campaigns td, #table_campaigns th{
     min-width: 95px;
     max-width: 300px;
     word-wrap: break-word;
