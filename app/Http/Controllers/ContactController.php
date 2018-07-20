@@ -95,6 +95,7 @@ class ContactController extends Controller
 
     public function getC3()
     {
+        
         $data = $this->getC3Data();
         return view('pages.table_contact_c3', $data);
 
@@ -126,6 +127,9 @@ class ContactController extends Controller
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }elseif (@$data_where['clevel'] == 'c3b_only'){
+                $query->where('clevel', 'c3b');
                 unset($data_where['clevel']);
             }
             if(@$data_where['current_level'] == 'l0'){
@@ -194,6 +198,9 @@ class ContactController extends Controller
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
                 unset($data_where['clevel']);
+            }elseif (@$data_where['clevel'] == 'c3b_only'){
+                $query->where('clevel', 'c3b');
+                unset($data_where['clevel']);
             }
             if(@$data_where['current_level'] == 'l0'){
                 $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
@@ -241,6 +248,9 @@ class ContactController extends Controller
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }elseif (@$data_where['clevel'] == 'c3b_only'){
+                $query->where('clevel', 'c3b');
                 unset($data_where['clevel']);
             }
             if(@$data_where['current_level'] == 'l0'){
@@ -368,6 +378,9 @@ class ContactController extends Controller
                     if(@$data_where['clevel'] == 'c3b'){
                         $query->where('clevel', 'like', '%c3b%');
                         unset($data_where['clevel']);
+                    }elseif (@$data_where['clevel'] == 'c3b_only'){
+                        $query->where('clevel', 'c3b');
+                        unset($data_where['clevel']);
                     }
                     if(@$data_where['current_level'] == 'l0'){
                         $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
@@ -455,6 +468,7 @@ class ContactController extends Controller
     }
 
     private function getWhereData(){
+        
         $request    = request();
         $data_where = array();
         if ($request->source_id) {
@@ -516,6 +530,9 @@ class ContactController extends Controller
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }elseif (@$data_where['clevel'] == 'c3b_only'){
+                $query->where('clevel', 'c3b');
                 unset($data_where['clevel']);
             }
             if(@$data_where['current_level'] == 'l0'){
@@ -912,7 +929,7 @@ class ContactController extends Controller
     }
 
     public function exportToOLM(){
-
+        set_time_limit ( 5000 );
         $url = 'http://58.187.9.138/api/OlmInsert/InsertContactOLM';
 
         $data_where = $this->getWhereData();
@@ -933,6 +950,9 @@ class ContactController extends Controller
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }elseif (@$data_where['clevel'] == 'c3b_only'){
+                $query->where('clevel', 'c3b');
                 unset($data_where['clevel']);
             }
             if(@$data_where['current_level'] == 'l0'){

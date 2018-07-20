@@ -132,6 +132,7 @@
                                             <option value="">All</option>
                                             <option value="c3a">c3a</option>
                                             <option value="c3b" selected>c3b</option>
+                                            <option value="c3b_only">c3b Only</option>
                                             <option value="c3bg">c3bg</option>
                                         </select>
                                         <i></i>
