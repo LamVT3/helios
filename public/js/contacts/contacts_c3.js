@@ -201,6 +201,19 @@ $(document).ready(function () {
         }
     });
 
+    $('input#mode').change(function (e) {
+        $('.loading').show();
+
+        countExported();
+
+        setTimeout(function(){
+            // initDataTable();
+            // countExported();
+            initDataTable();
+            $('.loading').hide();
+        },1000);
+    });
+
 });
 
 $(document).ready(function () {
@@ -518,17 +531,22 @@ function initDataTable() {
         "scrollX"       : true,
         'scrollCollapse': true,
         "createdRow": function ( row, data, index ) {
-            // if(data['is_export'] == 1){
-            //     $(row).addClass('is_export');
-            // }
-            if(data['olm_status'] == 0){
-                $(row).addClass('olm_status_success');
+            var mode = $('input[name=mode]:checked').val();
+            if(mode == '0'){
+                if(data['is_export'] == 1){
+                    $(row).addClass('is_export');
+                }
             }
-            else if(data['olm_status'] == 1){
-                $(row).addClass('olm_status_duplicated');
-            }
-            else if(data['olm_status'] == 2 || data['olm_status'] == 3){
-                $(row).addClass('olm_status_error');
+            else{
+                if(data['olm_status'] == 0){
+                    $(row).addClass('olm_status_success');
+                }
+                else if(data['olm_status'] == 1){
+                    $(row).addClass('olm_status_duplicated');
+                }
+                else if(data['olm_status'] == 2 || data['olm_status'] == 3){
+                    $(row).addClass('olm_status_error');
+                }
             }
         },
         // "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {

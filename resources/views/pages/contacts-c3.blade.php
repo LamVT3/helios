@@ -275,8 +275,14 @@
                         </div>
                         <hr>
                         <div style="padding-left: 20px">
-                            <p id="cnt_exported" class="text-success no-margin"><strong>...</strong></p>
-                            <p id="cnt_export_to_olm" class="text-primary no-margin"><strong>...</strong></p>
+                            <div class="radio">
+                                <input style="float: left; margin-top: 2px;" type="radio" id="mode" name="mode" value="0" checked>
+                                <p id="cnt_exported" class="text-success no-margin"><strong>...</strong></p>
+                            </div>
+                            <div class="radio">
+                                <input style="float: left; margin-top: 2px;" type="radio" id="mode" name="mode" value="1">
+                                <p id="cnt_export_to_olm" class="text-primary no-margin"><strong>...</strong></p>
+                            </div>
                         </div>
                         <div class="container-table-contacts">
                         <div class="wrapper">
