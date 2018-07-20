@@ -201,6 +201,19 @@ $(document).ready(function () {
         }
     });
 
+    $('input#mode').change(function (e) {
+        $('.loading').show();
+
+        countExported();
+
+        setTimeout(function(){
+            // initDataTable();
+            // countExported();
+            initDataTable();
+            $('.loading').hide();
+        },1000);
+    });
+
 });
 
 $(document).ready(function () {
@@ -238,6 +251,13 @@ $(document).ready(function () {
 
     $('button#confirm_export').click(function (e) {
         e.preventDefault();
+        var id = '';
+        $("input:checkbox[id=is_update]:checked").each(function () {
+            id += $(this).val() + ',';
+        });
+
+        $('input[name=contact_id]').val(id);
+        console.log($('input[name=contact_id]').val());
 
         $('#export-form-c3').submit();
 
@@ -248,6 +268,26 @@ $(document).ready(function () {
             $('div#update_success').hide();
             $('input#update_all').prop('checked', false); // Unchecks checkbox all
         }, 2000);
+    });
+
+    $('button#confirm_export_to_olm').click(function (e) {
+        e.preventDefault();
+        $('.loading').show();
+        var is_update_all   = $('input[id=update_all]').is(':checked');
+        var id      = {};
+
+        if(is_update_all){
+            id = 'All';
+        }
+        else{
+            $("input:checkbox[id=is_update]:checked").each(function () {
+                $statusCell = $(this).parent().siblings('td.status');
+                id[$(this).val()] = $(this).val();
+            });
+        }
+
+        exportToOLM(id);
+        // updateStatusExport(id);
     });
 
     $('button#update_contact').click(function (e) {
@@ -278,8 +318,21 @@ $(document).ready(function () {
         }
         $('input:checkbox[id=is_update]').prop('checked', this.checked);
         enable_update();
+        if($(this).is(':unchecked')){
+            $("input:checkbox[id=is_update]").each(function () {
+                edit(this, 'all');
+            });
+        }
+        $('button#edit_contact').prop('disabled', false);
+        $('button#edit_contact').removeClass('disabled');
+
+    });
+
+    $('button#edit_contact').click(function () {
+        $(this).hide();
+        $('button#update_contact').show();
         $("input:checkbox[id=is_update]").each(function () {
-            edit(this, 'all');
+            edit(this);
         });
     });
 
@@ -304,6 +357,7 @@ function initDataTable() {
     var landing_page    = $('select[name="landing_page"]').val();
     var search          = $('input[name="search_text"]').val();
     var channel         = $('select[name="channel_id"]').val();
+    var olm_status      = $('select[name="olm_status"]').val();
 
 
     $('input[name="source_id"]').val(source_id);
@@ -320,6 +374,7 @@ function initDataTable() {
     $('input[name="limit"]').val(limit);
     $('input[name="landing_page"]').val(landing_page);
     $('input[name="channel"]').val(channel);
+    $('input[name="olm_status"]').val(olm_status);
 
     /* BASIC ;*/
     var responsiveHelper_table_campaign = undefined;
@@ -349,10 +404,22 @@ function initDataTable() {
                 var search = $(this).val();
                 $('input[name=search_text]').val(search);
                 countExported();
-            })
-            //
-            // var search =  $('input[name="search"]').val();
-            // $('input[type=search]').val(search);
+            });
+
+            $('#table_contacts input[type=checkbox]').click(function () {
+                $('button#edit_contact').prop('disabled', false);
+                $('button#edit_contact').removeClass('disabled');
+            });
+
+            enable_update();
+
+            var exported        = $('input[name="exported"]').val();
+            var cnt_exported    = '<strong>'+ exported + ' contact(s) export to excel'+'</strong>';
+            $('p#cnt_exported').html(cnt_exported);
+
+            var exported_olm            = $('input[name="export_to_olm"]').val();
+            var cnt_exported_to_olm     = '<strong>'+ exported_olm + ' contact(s) export to OLM'+'</strong>';
+            $('p#cnt_export_to_olm').html(cnt_exported_to_olm);
 
             responsiveHelper_table_campaign.respond();
         },
@@ -365,28 +432,29 @@ function initDataTable() {
             url: url,
             type: "GET",
             data: function (d) {
-                d.source_id         = source_id,
-                d.team_id           = team_id,
-                d.marketer_id       = marketer_id,
-                d.campaign_id       = campaign_id,
-                d.clevel            = clevel,
-                d.current_level     = current_level,
-                d.subcampaign_id    = subcampaign_id,
-                d.is_export         = is_export,
-                d.registered_date   = registered_date,
-                d.checked_date      = checked_date,
-                d.c3bg_checkbox     = c3bg_checkbox,
-                d.limit             = limit,
-                d.landing_page      = landing_page,
-                d.channel           = channel,
-                d.search_text       = search
+                    d.source_id         = source_id,
+                    d.team_id           = team_id,
+                    d.marketer_id       = marketer_id,
+                    d.campaign_id       = campaign_id,
+                    d.clevel            = clevel,
+                    d.current_level     = current_level,
+                    d.subcampaign_id    = subcampaign_id,
+                    d.is_export         = is_export,
+                    d.registered_date   = registered_date,
+                    d.checked_date      = checked_date,
+                    d.c3bg_checkbox     = c3bg_checkbox,
+                    d.limit             = limit,
+                    d.landing_page      = landing_page,
+                    d.channel           = channel,
+                    d.search_text       = search,
+                    d.olm_status    = olm_status
             }
         },
         "columns": [
             {
                 "data" : 'name',
                 "render": function ( data, type, row, meta ) {
-                    return '<input type="checkbox" class="is_update" id="is_update" onclick="enable_update();edit(this);" value="' + data[0] + '"/>';
+                    return '<input type="checkbox" class="is_update" id="is_update" onclick="edit(this);enable_update();" value="' + data[0] + '"/>';
                 },
                 "orderable": false,
             },
@@ -437,26 +505,61 @@ function initDataTable() {
                     return '<span id="status" >Not Exported</span><input type="hidden" id="old_status" value="0">';
                 }
             },
+            {
+                "data"      : 'olm_status',
+                'className' : "olm_status",
+                "render"    : function ( data, type, row, meta ) {
+                    var status = '';
+
+                    if(data == 0){
+                        status = '<span id="status">Success</span><input type="hidden" id="old_status" value="1">';
+                    }
+                    else if(data == 1){
+                        status = '<span id="status">Duplicated</span><input type="hidden" id="old_status" value="1">';
+                    }
+                    else if(data == 2 || data == 3){
+                        status = '<span id="status">Error</span><input type="hidden" id="old_status" value="1">';
+                    }
+                    else{
+                        status = '<span id="status">Not Exported</span><input type="hidden" id="old_status" value="1">';
+                    }
+                    return status;
+                }
+            },
         ],
         'scrollY'       : '55vh',
         "scrollX"       : true,
         'scrollCollapse': true,
         "createdRow": function ( row, data, index ) {
-            if(data['is_export'] == 1){
-                $(row).addClass('is_export');
+            var mode = $('input[name=mode]:checked').val();
+            if(mode == '0'){
+                if(data['is_export'] == 1){
+                    $(row).addClass('is_export');
+                }
+            }
+            else{
+                if(data['olm_status'] == 0){
+                    $(row).addClass('olm_status_success');
+                }
+                else if(data['olm_status'] == 1){
+                    $(row).addClass('olm_status_duplicated');
+                }
+                else if(data['olm_status'] == 2 || data['olm_status'] == 3){
+                    $(row).addClass('olm_status_error');
+                }
             }
         },
-        "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
-
-            if(iTotal == 0){
-                return "";
-            }
-            // countExportedWhenSearch();
-            var exported    = $('input[name="exported"]').val();
-            var count_str   = '<span id="cnt_exported" class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
-
-            return sPre + count_str;
-        },
+        // "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
+        //
+        //     if(iTotal == 0){
+        //         return "";
+        //     }
+        //     // countExportedWhenSearch();
+        //     var exported    = $('input[name="exported"]').val();
+        //     var count_str   = '<span id="cnt_exported" class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
+        //
+        //     return sPre + count_str;
+        // },
     });
 
 }
@@ -477,6 +580,7 @@ function countExported() {
     var is_export       = $('select[name="is_export"]').val();
     var search          = $('input[type="search"]').val();
     var channel         = $('select[name="channel_id"]').val();
+    var olm_status      = $('select[name="olm_status"]').val();
 
     if(is_export === '0'){
         $('input[name="exported"]').val(0);
@@ -486,21 +590,24 @@ function countExported() {
     }
 
     var data = {};
-    data.source_id         = source_id;
-    data.team_id           = team_id;
-    data.marketer_id       = marketer_id;
-    data.campaign_id       = campaign_id;
-    data.clevel            = clevel;
-    data.current_level     = current_level;
-    data.subcampaign_id    = subcampaign_id;
-    data.registered_date   = registered_date;
-    data.landing_page      = landing_page;
-    data.is_export         = is_export;
-    data.search_text       = search;
-    data.channel           = channel;
+    data.source_id          = source_id;
+    data.team_id            = team_id;
+    data.marketer_id        = marketer_id;
+    data.campaign_id        = campaign_id;
+    data.clevel             = clevel;
+    data.current_level      = current_level;
+    data.subcampaign_id     = subcampaign_id;
+    data.registered_date    = registered_date;
+    data.landing_page       = landing_page;
+    data.is_export          = is_export;
+    data.search_text        = search;
+    data.channel            = channel;
+    data.olm_status         = olm_status;
 
     $.get(url, data, function (data) {
-        $('input[name="exported"]').val(data);
+        console.log(data);
+        $('input[name="exported"]').val(data.to_excel);
+        $('input[name="export_to_olm"]').val(data.to_olm);
         // setTimeout(function(){
             // if(status == '0'){
             //     $('input[name="exported"]').val(0);
@@ -561,50 +668,75 @@ function countExportedWhenSearch() {
 }
 
 function enable_update() {
-    var is_checked = false;
-    $("input:checkbox[id=is_update]:checked").each(function () {
-        is_checked = this.checked;
-    });
+    // var is_checked = false;
+    // $("input:checkbox[id=is_update]:checked").each(function () {
+    //     is_checked = this.checked;
+    // });
+    //
+    // var cnt =$('#table_contacts input[type=checkbox]:checked').length;
+    //
+    // if(is_checked){
+    //     $('button#edit_contact').prop('disabled', false);
+    //     $('button#edit_contact').removeClass('disabled');
+    // }else{
+    //     if(cnt == 0){
+    //         $('button#update_contact').hide();
+    //         $('button#edit_contact').show();
+    //         $('button#edit_contact').prop('disabled', true);
+    //         $('button#edit_contact').addClass('disabled');
+    //     }
+    // }
+    var cnt = $('#table_contacts input[type=checkbox]:checked').length;
+    var check_all = $('input[id=update_all]').is(':checked');
 
-    if(is_checked){
-        $('button#update_contact').prop('disabled', false);
-        $('button#update_contact').removeClass('disabled');
-    }else{
-        $('button#update_contact').prop('disabled', true);
-        $('button#update_contact').addClass('disabled');
+    if(cnt <= 0 && !check_all){
+        $('button#update_contact').hide();
+        $('button#edit_contact').show();
+        setTimeout(function(){
+            $('button#edit_contact').show().addClass('disabled');
+            $('button#edit_contact').show().prop('disabled', true);
+        }, 500);
+
+
     }
+
 }
 
 function edit(item, mode){
-    $statusCell = $(item).parents().siblings('td.status');
-    $status = $($statusCell).find('input#old_status').val();
-    $($statusCell).find('select#status_update').remove();
-    var is_checked = $(item).is(':checked');
-    if(is_checked){
-        $($statusCell).find('span#status').hide();
-        if($status == 1){
-            $($statusCell).append('' +
-                '<select id="status_update" onchange="setAll(this);">' +
-                '<option value="1" selected>Exported</option>' +
-                '<option value="0">Not Export</option>' +
-                '</select>' +
-                '');
-        }else{
-            $($statusCell).append('' +
-                '<select id="status_update" onchange="setAll(this);">' +
-                '<option value="1">Exported</option>' +
-                '<option value="0" selected>Not Export</option>' +
-                '</select>' +
-                '');
-        }
-        if(mode == 'all'){
-            $('select#status_update').first().focus(500);
-        }else{
-            $($statusCell).find('select#status_update').focus(500);
-        }
-    }else{
-        $($statusCell).find('span#status').show();
+    var is_show = $('button#update_contact').is(':visible');
+
+    if(is_show || mode == 'all'){
+        $statusCell = $(item).parents().siblings('td.status');
+        $status = $($statusCell).find('input#old_status').val();
         $($statusCell).find('select#status_update').remove();
+        var is_checked = $(item).is(':checked');
+        if(is_checked){
+            $($statusCell).find('span#status').hide();
+            if($status == 1){
+                $($statusCell).append('' +
+                    '<select id="status_update" onchange="setAll(this);">' +
+                    '<option value="1" selected>Exported</option>' +
+                    '<option value="0">Not Export</option>' +
+                    '</select>' +
+                    '');
+            }else{
+                $($statusCell).append('' +
+                    '<select id="status_update" onchange="setAll(this);">' +
+                    '<option value="1">Exported</option>' +
+                    '<option value="0" selected>Not Export</option>' +
+                    '</select>' +
+                    '');
+            }
+            var check_all = $('input[id=update_all]').is(':checked');
+            if(check_all){
+                $('select#status_update').first().focus(500);
+            }else{
+                $($statusCell).find('select#status_update').focus(500);
+            }
+        }else{
+            $($statusCell).find('span#status').show();
+            $($statusCell).find('select#status_update').remove();
+        }
     }
 }
 
@@ -681,7 +813,53 @@ function updateStatusExport(id) {
             alert('Cannot connect to server. Please try again later.');
         });
 
-    $('button#update_contact').prop('disabled', true);
-    $('button#update_contact').addClass('disabled');
+}
+
+function exportToOLM(id) {
+    var url             = $('input[name="export_to_olm_url"]').val();
+    var source_id       = $('input[name="source_id"]').val();
+    var team_id         = $('input[name="team_id"]').val();
+    var marketer_id     = $('input[name="marketer_id"]').val();
+    var campaign_id     = $('input[name="campaign_id"]').val();
+    var clevel          = $('input[name="clevel"]').val();
+    var current_level   = $('input[name="current_level"]').val();
+    var registered_date = $('.registered_date').text();
+    var subcampaign_id  = $('input[name="subcampaign_id"]').val();
+    var old_status      = $('input[name="status"]').val();
+    var landing_page    = $('select[name="landing_page"]').val();
+    var channel         = $('select[name="channel_id"]').val();
+    var olm_status      = $('select[name="olm_status"]').val();
+
+    var data = {};
+    data.id                 = id;
+    data.source_id          = source_id;
+    data.team_id            = team_id;
+    data.marketer_id        = marketer_id;
+    data.campaign_id        = campaign_id;
+    data.clevel             = clevel;
+    data.current_level      = current_level;
+    data.subcampaign_id     = subcampaign_id;
+    data.registered_date    = registered_date;
+    data.old_status         = old_status;
+    data.new_status         = status;
+    data.landing_page       = landing_page;
+    data.channel            = channel;
+    data.olm_status         = olm_status;
+
+    $.get(url, data, function (data) {
+        countExported();
+        setTimeout(function(){
+            initDataTable();
+            $('input#update_all').prop('checked', false); // Unchecks checkbox all
+
+            $('div#update_success').hide();
+            $('div#export_success').show();
+            $('.loading').hide();
+        }, 1000);
+    }).fail(
+        function (err) {
+            $('.loading').hide();
+            alert('Cannot connect to server. Please try again later.');
+        });
 
 }

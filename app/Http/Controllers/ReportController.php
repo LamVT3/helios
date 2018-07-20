@@ -7,6 +7,7 @@ use App\AdResult;
 use App\Campaign;
 use App\Channel;
 use App\Config;
+use App\Contact;
 use App\LandingPage;
 use App\Source;
 use App\Team;
@@ -142,7 +143,11 @@ class ReportController extends Controller
         // DB::connection('mongodb')->getQueryLog();
         $report = $total = [];
         if ($results) {
-            $report = $this->prepare_report($results);
+            if(!$request->mode || $request->mode == 'TOA'){
+                $report = $this->prepare_report($results);
+            }else{
+                $report = $this->prepare_report_tot($results);
+            }
         }
 
         $data = $data_where;
@@ -215,23 +220,167 @@ class ReportController extends Controller
             if (!isset($report[$item->ad_id])) {
                 $ad = Ad::find($item->ad_id);
                 // TO DO unknown
-                $source_name = '(unknown)';
-                // 2018-04-13 LamVT update show team name in report
-                $team_name = '(unknown)';
-                // end 2018-04-13 LamVT update show team name in report
-                $marketer_name = '(unknown)';
-                $campaign_name = '(unknown)';
-                $subcampaign_name = '(unknown)';
-                $ad_name = '(unknown)';
+                $source_name        = '(unknown)';
+                $team_name          = '(unknown)';
+                $marketer_name      = '(unknown)';
+                $campaign_name      = '(unknown)';
+                $subcampaign_name   = '(unknown)';
+                $ad_name            = '(unknown)';
                 if($ad){
-                    $source_name = $ad->source_name;
-                    // 2018-04-13 LamVT update show team name in report
-                    $team_name = $ad->team_name;
-                    // end 2018-04-13 LamVT update show team name in report
-                    $marketer_name = $ad->creator_name;
-                    $campaign_name = $ad->campaign_name;
-                    $subcampaign_name = $ad->subcampaign_name;
-                    $ad_name = $ad->name;
+                    $source_name        = $ad->source_name;
+                    $team_name          = $ad->team_name;
+                    $marketer_name      = $ad->creator_name;
+                    $campaign_name      = $ad->campaign_name;
+                    $subcampaign_name   = $ad->subcampaign_name;
+                    $ad_name            = $ad->name;
+                }
+                $report[$item->ad_id] = (object)[
+                    'source'    => $source_name,
+                    'team'      => $team_name,
+                    'marketer'  => $marketer_name,
+                    'campaign'  => $campaign_name,
+                    'subcampaign'   => $subcampaign_name,
+                    'ad'        => $ad_name,
+                    'c1'        => $item->c1       ? $item->c1         : 0,
+                    'c2'        => $item->c2       ? $item->c2         : 0,
+                    'c3'        => $item->c3a + $item->c3b + $item->c3bg,
+                    'c3b'       => $item->c3b + $item->c3bg,
+                    'c3bg'      => $item->c3bg     ? $item->c3bg       : 0,
+                    'spent'     => $spent,
+                    'l1'        => $item->l1       ? $item->l1         : 0,
+                    'l3'        => $item->l3       ? $item->l3         : 0,
+                    'l8'        => $item->l8       ? $item->l8         : 0,
+                    'revenue'   => $revenue,
+                ];
+            } else {
+                $report[$item->ad_id]->c1       += isset($item->c1)        ? $item->c1         : 0;
+                $report[$item->ad_id]->c2       += isset($item->c2)        ? $item->c2         : 0;
+                $report[$item->ad_id]->c3       += $item->c3a + $item->c3b + $item->c3bg;
+                $report[$item->ad_id]->c3b      += $item->c3b + $item->c3bg;
+                $report[$item->ad_id]->c3bg     += isset($item->c3bg)      ? $item->c3bg       : 0;
+                $report[$item->ad_id]->spent    += $spent;
+                $report[$item->ad_id]->l1       += isset($item->l1)        ? $item->l1         : 0;
+                $report[$item->ad_id]->l3       += isset($item->l3)        ? $item->l3         : 0;
+                $report[$item->ad_id]->l8       += isset($item->l8)        ? $item->l8         : 0;
+                $report[$item->ad_id]->revenue  += $revenue;
+            }
+        }
+        foreach ($report as $key => $item) {
+            $item->c1_cost  = $item->c1     ? round($item->spent / $item->c1, 2)    : '0';
+            $item->c2_cost  = $item->c2     ? round($item->spent / $item->c2, 2)    : '0';
+            $item->c2_c1    = $item->c1     ? round($item->c2 / $item->c1, 4) * 100         : '0';
+            $item->c3_cost  = $item->c3     ? round($item->spent / $item->c3, 2)    : '0';
+            $item->c3b_cost = $item->c3b    ? round($item->spent / $item->c3b, 2)   : '0';
+            $item->c3bg_cost = $item->c3bg  ? round($item->spent / $item->c3bg, 2)   : '0';
+            $item->c3_c2    = $item->c2     ? round($item->c3 / $item->c2, 4) * 100         : '0';
+            $item->l3_l1    = $item->l1     ? round($item->l3 / $item->l1, 4) * 100         : '0';
+            $item->l8_l1    = $item->l1     ? round($item->l8 / $item->l1, 4) * 100         : '0';
+            $item->me_re    = $item->revenue ? round($item->spent / $item->revenue, 4) * 100 : '0';
+            $report[$key]   = $item;
+        }
+
+        return $report;
+    }
+
+    private function prepare_report_tot($results)
+    {
+        $request = request();
+        $source_name = $team_name = $campaign_name = $marketer_name = 'All';
+        if($request->source_id){
+            $source = Source::find($request->source_id);
+            $source_name = $source ? $source->name : 'All';
+        }
+        if($request->team_id){
+            $team = Team::find($request->team_id);
+            $team_name = $team ? $team->name : 'All';
+        }
+        if($request->marketer_id){
+            $marketer = User::find($request->marketer_id);
+            $marketer_name = $marketer ? $marketer->username : 'All';
+        }
+        if($request->campaign_id){
+            $campaign = Campaign::find($request->campaign_id);
+            $campaign_name = $campaign ? $campaign->name : 'All';
+        }
+
+        $report = [
+            'total' => (object)[
+                'source' => 'All',
+                'team' => 'All',
+                'marketer' => 'All',
+                'campaign' => 'All',
+                'subcampaign' => 'All',
+                'ad' => 'All',
+                'c1' => 0,
+                'c2' => 0,
+                'c3' => 0,
+                'c3b' => 0,
+                'c3bg' => 0,
+                'spent' => 0,
+                'l1' => 0,
+                'l3' => 0,
+                'l8' => 0,
+                'revenue' => 0,
+            ]
+        ];
+
+        $startDate   = strtotime("midnight")*1000;
+        $endDate     = strtotime("tomorrow")*1000;
+        if($request->registered_date){
+            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
+        $query = Contact::raw(function ($collection) use ($startDate, $endDate) {
+            return $collection->aggregate([
+                ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
+                ['$match' => ['l8_time' => ['$ne' => null]]],
+                [
+                    '$group' => [
+                        '_id' => '$ad_id',
+//                        'count' => ['$sum' => 1],
+                    ]
+                ]
+            ]);
+        });
+
+        foreach ($results as $item) {
+
+            if(!isset($item->ad_id)){
+                continue;
+            }
+
+            $spent      = isset($item->spent)      ? $this->convert_spent($item->spent)        : 0;
+            $revenue    = isset($item->revenue)    ? $this->convert_revenue($item->revenue)    : 0;
+
+            $report['total']->c1        += $item->c1        ? $item->c1        : 0;
+            $report['total']->c2        += $item->c2        ? $item->c2        : 0;
+            $report['total']->c3        += $item->c3a + $item->c3b + $item->c3bg;
+            $report['total']->c3b       += $item->c3b + $item->c3bg;
+            $report['total']->c3bg      += $item->c3bg      ? $item->c3bg      : 0;
+            $report['total']->spent     += $spent;
+            $report['total']->l1        += $item->l1        ? $item->l1        : 0;
+            $report['total']->l3        += $item->l3        ? $item->l3        : 0;
+            $report['total']->l8        += $item->l8        ? $item->l8        : 0;
+            $report['total']->revenue   += $revenue;
+
+            if (!isset($report[$item->ad_id])) {
+                $ad = Ad::find($item->ad_id);
+                // TO DO unknown
+                $source_name        = '(unknown)';
+                $team_name          = '(unknown)';
+                $marketer_name      = '(unknown)';
+                $campaign_name      = '(unknown)';
+                $subcampaign_name   = '(unknown)';
+                $ad_name            = '(unknown)';
+                if($ad){
+                    $source_name        = $ad->source_name;
+                    $team_name          = $ad->team_name;
+                    $marketer_name      = $ad->creator_name;
+                    $campaign_name      = $ad->campaign_name;
+                    $subcampaign_name   = $ad->subcampaign_name;
+                    $ad_name            = $ad->name;
                 }
                 $report[$item->ad_id] = (object)[
                     'source'    => $source_name,
@@ -298,6 +447,8 @@ class ReportController extends Controller
         return round($revenue, 2);
 
     }
+
+
 
     private function convert_spent($spent){
         $request    = request();

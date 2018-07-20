@@ -1,4 +1,4 @@
-<div id="lst_currency" class="col-sm-8 pull-right">
+<div id="lst_currency" class="col-sm-8 text-right" style="float: right">
     <label class="radio-inline radio_currency">
         <input type="radio" name="currency" id="currency" value="USD" checked>USD
         <span class="checkmark"></span>

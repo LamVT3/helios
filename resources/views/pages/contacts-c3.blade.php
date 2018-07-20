@@ -7,11 +7,16 @@
     <!-- MAIN CONTENT -->
     <div id="content">
 
-        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
-        <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
-           data-toggle="modal"
-           data-target="#addModal"><i
-                    class="fa fa-upload fa-lg"></i> Import Contact</a>
+        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs, 'currency' => true])
+            <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
+               data-toggle="modal"
+               data-target="#addModal"><i
+                        class="fa fa-upload fa-lg"></i> Import Contact</a>
+
+            <a class="btn btn-primary btn-lg pull-right header-btn hidden-mobile"
+               data-toggle="modal"
+               data-target="#eGenticModal" style="margin-right: 10px;"><i
+                        class="fa fa-upload fa-lg"></i> Import eGentic</a>
         @endcomponent
 
         @include('layouts.errors')
@@ -127,6 +132,7 @@
                                             <option value="">All</option>
                                             <option value="c3a">c3a</option>
                                             <option value="c3b" selected>c3b</option>
+                                            <option value="c3b_only">c3b Only</option>
                                             <option value="c3bg">c3bg</option>
                                         </select>
                                         <i></i>
@@ -148,16 +154,6 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
-                                        <label class="label">Status</label>
-                                        <select name="is_export" id="is_export" class="select2"
-                                                style="width: 280px" data-url="">
-                                            <option value="">All</option>
-                                            <option value="1">Exported</option>
-                                            <option value="0">Not Export</option>
-                                        </select>
-                                        <i></i>
-                                    </section>
                                     <section class="col col-4">
                                         <label class="label">Landing Page</label>
                                         <select name="landing_page" id="landing_page" class="select2" style="width: 280px"
@@ -166,6 +162,28 @@
                                             @foreach($landing_page as $item)
                                                 <option value="{{ $item->url }}">{{ $item->url }}</option>
                                             @endforeach
+                                        </select>
+                                        <i></i>
+                                    </section>
+                                    <section class="col col-2">
+                                        <label class="label">Status Export</label>
+                                        <select name="is_export" id="is_export" class="select2"
+                                                style="width: 280px" data-url="">
+                                            <option value="">All</option>
+                                            <option value="1">Exported</option>
+                                            <option value="0">Not Export</option>
+                                        </select>
+                                        <i></i>
+                                    </section>
+                                    <section class="col col-2">
+                                        <label class="label">Status OLM</label>
+                                        <select name="olm_status" id="olm_status" class="select2"
+                                                style="width: 280px" data-url="">
+                                            <option value="">All</option>
+                                            <option value="0">Success</option>
+                                            <option value="1">Duplicated</option>
+                                            <option value="2">Error</option>
+                                            <option value="3">Not Export</option>
                                         </select>
                                         <i></i>
                                     </section>
@@ -199,28 +217,35 @@
                                         {{--</div>--}}
                                     {{--</section>--}}
                                 </div>
+                                <div class="row" id="filter">
+                                    <section class="col col-12 pull-right text-right">
+                                        <button id="export" class="btn btn-success btn-sm" type="button" style="margin-left: 10px"
+                                                data-toggle="modal" data-target="#myExportModal"> <i class="fa fa-download"></i>
+                                            Export to excel
+                                        </button>
+                                        <button id="export_to_olm" class="btn btn-danger btn-sm" type="button"
+                                                style="margin-left: 10px" data-toggle="modal" data-target="#myExportToOLMModal">
+                                            <i class="fa fa-edit"></i>
+                                            Export to OLM
+                                        </button>
+                                        <button id="update_contact" class="btn btn-warning btn-sm" type="button"
+                                                style="margin-left: 10px; display: none" data-toggle="modal" data-target="#myUpdateModal">
+                                            <i class="fa fa-edit"></i>
+                                            Update
+                                        </button>
+                                        <button id="edit_contact" class="btn btn-warning btn-sm disabled" type="button" disabled
+                                                style="margin-left: 10px;">
+                                            <i class="fa fa-edit"></i>
+                                            Edit
+                                        </button>
+                                        <button id="filter" class="btn btn-primary btn-sm" type="submit" style="margin-left: 10px" >
+                                            <i class="fa fa-filter"></i>
+                                            Filter
+                                        </button>
+                                    </section>
+                                </div>
                             </fieldset>
 
-                            <div class="row">
-                                <div class="col-md-10 text-right">
-                                    <button id="update_contact" class="btn btn-warning btn-sm disabled" disabled type="button"
-                                            style="" data-toggle="modal" data-target="#myUpdateModal">
-                                        <i class="fa fa-edit"></i>
-                                        Update
-                                    </button>
-                                </div>
-                                <div class="col-md-1 text-right">
-                                    <button id="export" class="btn btn-success btn-sm" type="button" style="margin-right: 2px"
-                                            style="" data-toggle="modal" data-target="#myExportModal"> <i class="fa fa-download"></i> Export
-                                    </button>
-                                </div>
-                                <div class="col-md-1 text-right">
-                                    <button id="filter" class="btn btn-primary btn-sm" type="submit" style="margin-right: 15px">
-                                        <i class="fa fa-filter"></i>
-                                        Filter
-                                    </button>
-                                </div>
-                            </div>
                         </form>
 
                         <div style="position: relative">
@@ -238,6 +263,8 @@
                                 <input type="hidden" name="landing_page">
                                 <input type="hidden" name="channel">
                                 <input type="hidden" name="search_text" value="">
+                                <input type="hidden" name="olm_status" value="">
+                                <input type="hidden" name="contact_id" value="">
                             </form>
                         </div>
 
@@ -247,6 +274,16 @@
                             </div>
                         </div>
                         <hr>
+                        <div style="padding-left: 20px">
+                            <div class="radio">
+                                <input style="float: left; margin-top: 2px;" type="radio" id="mode" name="mode" value="0" checked>
+                                <p id="cnt_exported" class="text-success no-margin"><strong>...</strong></p>
+                            </div>
+                            <div class="radio">
+                                <input style="float: left; margin-top: 2px;" type="radio" id="mode" name="mode" value="1">
+                                <p id="cnt_export_to_olm" class="text-primary no-margin"><strong>...</strong></p>
+                            </div>
+                        </div>
                         <div class="container-table-contacts">
                         <div class="wrapper">
                             <table id="table_contacts" class="table table-striped table-bordered table-hover"
@@ -254,7 +291,7 @@
                                 <thead>
                                     <tr>
                                         <th><input type="checkbox" id="update_all" value="all"/></th>
-                                        <th>Name</th>
+                                        <th class="long">Name</th>
                                         <th>Email</th>
                                         <th>Phone</th>
                                         <th>Age</th>
@@ -270,7 +307,8 @@
                                         <th>Subcampaign</th>
                                         <th class="long">Landing page</th>
                                         <th>Action</th>
-                                        <th class="long">Status</th>
+                                        <th class="long">Status export</th>
+                                        <th class="long">Status OLM</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -323,6 +361,7 @@
         <!-- end widget grid -->
 
         @include('components.form-import-contact', ['type' => null])
+        @include('components.form-import-egentic', ['type' => null])
 
         {{--
         <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
@@ -398,10 +437,34 @@
     </div>
 </div>
 
+<!-- Export To OLM Modal -->
+<div class="modal fade" id="myExportToOLMModal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title">Confirm Export To OLM</h3>
+            </div>
+            <div class="modal-body">
+                <h4>{{config('constants.CONFIRM_EXPORT')}}</h4>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm_export_to_olm" type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 <input type="hidden" name="page_size" value="{{$page_size}}">
-<input type="hidden" name="exported" value="{{$exported}}">
+<input type="hidden" name="exported" value="{{$export_to_excel}}">
+<input type="hidden" name="export_to_olm" value="{{$export_to_olm}}">
 <input type="hidden" name="exported_url" value="{{route("contacts.countExported")}}">
 <input type="hidden" name="update_status_export" value="{{route("ajax-updateStatusExport")}}">
+<input type="hidden" name="export_to_olm_url" value="{{route("contacts.export-to-OLM")}}">
 <input type="hidden" name="update_all" value="0">
 <input type="hidden" name="status_update_all" value="">
 @endsection

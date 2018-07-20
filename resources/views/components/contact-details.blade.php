@@ -2,7 +2,7 @@
        width="100%">
     <tbody>
     <tr>
-        <td>Type</td>
+        <td width="150px">Type</td>
         <td>{{ $contact->contact_source or 'Landing page' }}</td>
     </tr>
     <tr>
@@ -126,8 +126,20 @@
         <td>{{ $contact->platform or '' }}</td>
     </tr>
     <tr>
-        <td>Exported</td>
-        <td>{{ $contact->is_export ? 'Yes' : 'No' }}</td>
+        <td>Exported to excel</td>
+        <td>{{ $contact->is_export ? 'Exported' : 'Not Exported' }}</td>
+    </tr>
+    <tr>
+        <td>Exported to OLM</td>
+        @if($contact->olm_status == '0')
+            <td>Success</td>
+        @elseif($contact->olm_status == '1')
+            <td>Duplicated</td>
+        @elseif($contact->olm_status == '2' || $contact->olm_status == '3')
+            <td>Error</td>
+        @else
+            <td>Not Exported</td>
+        @endif
     </tr>
     </tbody>
 </table>

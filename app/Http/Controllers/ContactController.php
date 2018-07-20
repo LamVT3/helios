@@ -45,7 +45,8 @@ class ContactController extends Controller
         $marketers      = User::where('is_active', 1)->orderBy('username')->get();
         $campaigns      = Campaign::orderBy('name')->get();
         $subcampaigns   = Subcampaign::orderBy('name')->get();
-        $exported       = $this->countExported();
+        $export_to_excel    = $this->countExportToExcel();
+        $export_to_olm  = $this->countExportToOLM();
         $landing_page   = LandingPage::where('is_active', 1)->orderBy('name')->get();
         $channel        = Channel::where('is_active', 1)->orderBy('name')->get();
 
@@ -62,7 +63,8 @@ class ContactController extends Controller
             'campaigns',
             'page_size',
             'subcampaigns',
-            'exported',
+            'export_to_excel',
+            'export_to_olm',
             'landing_page',
             'channel'
         ));
@@ -93,6 +95,7 @@ class ContactController extends Controller
 
     public function getC3()
     {
+        
         $data = $this->getC3Data();
         return view('pages.table_contact_c3', $data);
 
@@ -124,6 +127,9 @@ class ContactController extends Controller
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }elseif (@$data_where['clevel'] == 'c3b_only'){
+                $query->where('clevel', 'c3b');
                 unset($data_where['clevel']);
             }
             if(@$data_where['current_level'] == 'l0'){
@@ -158,6 +164,66 @@ class ContactController extends Controller
 
     public function countExported()
     {
+        $toExcel    = $this->countExportToExcel();
+        $toOLM      = $this->countExportToOLM();
+        $count['to_excel']  = $toExcel;
+        $count['to_olm']    = $toOLM;
+
+        return $count;
+    }
+
+    private function countExportToOLM()
+    {
+        $columns     = $this->setColumns();
+        $data_where  = $this->getWhereData();
+        $data_search = $this->getSeachData();
+        $request = request();
+
+        // DB::connection( 'mongodb' )->enableQueryLog();
+
+        $startDate = strtotime("midnight")*1000;
+        $endDate = strtotime("tomorrow")*1000;
+        if($request->registered_date){
+            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_arr = explode(' ', str_replace('/', '-', $date_place));
+            $startDate = strtotime($date_arr[0])*1000;
+            // $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
+            $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
+
+        $query = Contact::where('submit_time', '>=', $startDate);
+        $query->where('submit_time', '<', $endDate);
+
+        if(count($data_where) > 0){
+            if(@$data_where['clevel'] == 'c3b'){
+                $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }elseif (@$data_where['clevel'] == 'c3b_only'){
+                $query->where('clevel', 'c3b');
+                unset($data_where['clevel']);
+            }
+            if(@$data_where['current_level'] == 'l0'){
+                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+                unset($data_where['current_level']);
+            }
+            $query->where($data_where);
+        }
+
+        if($data_search != ''){
+            foreach ($columns as $key => $value){
+                $query->orWhere($value, 'like', "%{$data_search}%");
+            }
+        }
+
+        $query->whereIn('olm_status', ['0', '1', '2', '3']);
+
+        $count = $query->count();
+
+        return $count;
+    }
+
+    private function countExportToExcel()
+    {
         $columns     = $this->setColumns();
         $data_where  = $this->getWhereData();
         $data_search = $this->getSeachData();
@@ -182,6 +248,9 @@ class ContactController extends Controller
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }elseif (@$data_where['clevel'] == 'c3b_only'){
+                $query->where('clevel', 'c3b');
                 unset($data_where['clevel']);
             }
             if(@$data_where['current_level'] == 'l0'){
@@ -274,9 +343,6 @@ class ContactController extends Controller
 
     public function export()
     {
-
-        set_time_limit ( 5000 );
-        ini_set('memory_limit', '3500M');
 //        $contacts = $data['contacts'];
 //        if (count($contacts) >= 1) {
         $date = \request('registered_date');
@@ -312,6 +378,9 @@ class ContactController extends Controller
                     if(@$data_where['clevel'] == 'c3b'){
                         $query->where('clevel', 'like', '%c3b%');
                         unset($data_where['clevel']);
+                    }elseif (@$data_where['clevel'] == 'c3b_only'){
+                        $query->where('clevel', 'c3b');
+                        unset($data_where['clevel']);
                     }
                     if(@$data_where['current_level'] == 'l0'){
                         $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
@@ -324,6 +393,12 @@ class ContactController extends Controller
                         $query->orWhere($value, 'like', "%{$data_search}%");
                     }
                 }
+
+                if($request->contact_id){
+                    $id = explode(',', $request->contact_id);
+                    $query->whereIn('_id', $id);
+                }
+
                 if($order){
                     $query->orderBy($columns[$order['column']], $order['type']);
                 } else {
@@ -392,18 +467,8 @@ class ContactController extends Controller
 //        }
     }
 
-
-
-
-
-
-
-
-
-
-
-
     private function getWhereData(){
+        
         $request    = request();
         $data_where = array();
         if ($request->source_id) {
@@ -433,6 +498,12 @@ class ContactController extends Controller
         if ($request->channel) {
             $data_where['channel_name']     = $request->channel;
         }
+        if ($request->channel) {
+            $data_where['channel_name']     = $request->channel;
+        }
+        if (isset($request->olm_status)) {
+            $data_where['olm_status']       = $request->olm_status;
+        }
 
         return $data_where;
     }
@@ -460,6 +531,9 @@ class ContactController extends Controller
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
                 unset($data_where['clevel']);
+            }elseif (@$data_where['clevel'] == 'c3b_only'){
+                $query->where('clevel', 'c3b');
+                unset($data_where['clevel']);
             }
             if(@$data_where['current_level'] == 'l0'){
                 $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
@@ -467,6 +541,12 @@ class ContactController extends Controller
             }
             $query->where($data_where);
         }
+
+        if($request->contact_id){
+            $id = explode(',', $request->contact_id);
+            $query->whereIn('_id', $id);
+        }
+
         $query->limit((int)$limit);
         $contacts = $query->orderBy('submit_time', 'desc')->get();
         foreach ($contacts as $contact)
@@ -560,6 +640,124 @@ class ContactController extends Controller
                     $contact->marketer_id = $ad->creator_id;
                     $contact->campaign_id = $ad->campaign_id;
                     $contact-> subcampaign_id = $ad->subcampaign_id;
+                }
+                $contact->contact_id = $this->gen_contact_id($contact);
+
+                $cnt++;
+                $contact->save();
+
+                // Update c3, c3b statistic in ad_results
+                $ad_result = AdResult::where('ad_id', $contact->ad_id)->where('date', date('Y-m-d', $contact->submit_time/1000))->first();
+                if($ad_result === null){
+                    $ad_result = new AdResult();
+                    $ad_result->ad_id   = $contact->ad_id;
+                    $ad_result->date    = date('Y-m-d', $contact->submit_time/1000);
+                    $ad_result->c3      = 1;
+                    $ad_result->c3a     = ($contact->clevel === "c3a")  ? 1 : 0;
+                    $ad_result->c3b     = ($contact->clevel === "c3b")  ? 1 : 0;
+                    $ad_result->c3bg    = ($contact->clevel === "c3bg") ? 1 : 0;
+                    if($contact->ad_id !== 'unknown') $ad_result->creator_id = $ad->creator_id;
+                }else{
+                    $ad_result->c3++;
+                    $ad_result->c3a     += ($contact->clevel === "c3a")     ? 1 : 0;
+                    $ad_result->c3b     += ($contact->clevel === "c3b")     ? 1 : 0;
+                    $ad_result->c3bg    += ($contact->clevel === "c3bg")    ? 1 : 0;
+                }
+                $ad_result->save();
+            }
+
+            session()->flash('message', $cnt.' Contact(s) have been imported successfully');
+
+        });
+        //DB::connection('mongodb')->getQueryLog();
+        return redirect()->back();
+    }
+
+    public function importEgentic(Request $request)
+    {
+        $file = $request->file('import');
+
+        $destinationPath = storage_path('app/upload');
+        $file->move($destinationPath,$file->getClientOriginalName());
+
+        $filePath =  $destinationPath . '/' . $file->getClientOriginalName();
+        // DB::connection( 'mongodb' )->enableQueryLog();
+
+        Excel::load($filePath, function($reader) {
+            // Getting all results
+            $results = $reader->get();
+            $import_time = time();
+            $cnt = 0;
+            $template = \config('constants.TEMPLATE_IMPORT_EGENTIC');
+            $invalid = array_diff($template,$results->getHeading());
+
+            if(count($invalid) > 0){
+                if(count($invalid) < 5){
+                    $fields = implode("',' ",$invalid);
+                    $errors =  'Invalid field(s): \''.$fields.'\' in file import !!! - Please download sample file.';
+                    return redirect()->back()->withErrors($errors);
+                }
+                $errors =  'File import is invalid !!! - Please download sample file.';
+                return redirect()->back()->withErrors($errors);
+            }
+
+            $startDate = strtotime("midnight")*1000;
+            $endDate = strtotime("tomorrow")*1000;
+            $query = Contact::where('submit_time', '>=', $startDate);
+            $query->where('submit_time', '<', $endDate);
+            $contacts = $query->get();
+
+            $phone_array = array();
+            foreach ($contacts as $item) {
+                array_push($phone_array, $item->phone);
+            }
+
+            foreach($results as $item){
+
+                if($item->tel_number_complete == '' && $item->firstname == '' && $item->lastname == '' && $item->email == ''){
+                    continue; // check import blank record
+                }
+
+                if (in_array($item->tel_number_complete, $phone_array)) {
+                    continue;
+                }
+
+                // validate submit_time
+                $submit_time = is_object($item->submit_time) ? $item->submit_time->timestamp : $import_time;
+
+                $contact = new Contact();
+                $contact->contact_source = "import_data";
+                $contact->msg_type = "submitter";
+                $contact->submit_time = $submit_time * 1000;
+                $contact->source_name = "";
+                $contact->team_name = "";
+                $contact->marketer_name = "";
+                $contact->utm_medium = "";
+                $contact->campaign_name = "";
+                $contact->subcampaign_name = "";
+                $contact->ad_name = "";
+                $contact->name = $item->firstname." ".$item->lastname;
+                $contact->phone = $item->tel_number_complete;
+                $contact->email = $item->email;
+                $contact->age = $item->age;
+                $contact->landing_page = "";
+                $contact->ad_link = "";
+                $contact->channel = "TK100.eGentic";
+                $contact->import_time = $import_time;
+                $contact->clevel = "c3bg";
+
+                // match ad_id
+                $uri_query = "utm_source={$item->utm_source}&utm_team={$item->utm_team}&utm_agent={$item->utm_agent}&utm_campaign={$item->utm_campaign}&utm_medium={$item->utm_medium}&utm_subcampaign={$item->utm_subcampaign}&utm_ad={$item->utm_ad}";
+                $ad = Ad::where('uri_query', $uri_query)->first();
+                if($ad === null){
+                    $contact->ad_id = 'unknown';
+                }else{
+                    $contact->ad_id = $ad->_id;
+                    $contact->source_id = $ad->source_id;
+                    $contact->team_id = $ad->team_id;
+                    $contact->marketer_id = $ad->creator_id;
+                    $contact->campaign_id = $ad->campaign_id;
+                    $contact->subcampaign_id = $ad->subcampaign_id;
                 }
                 $contact->contact_id = $this->gen_contact_id($contact);
 
@@ -720,7 +918,8 @@ class ContactController extends Controller
             11  =>'subcampaign_name',
             12  =>'ad_name',
             13  =>'landing_page',
-            14  =>'channel_name'
+            14  =>'channel_name',
+            15  =>'olm_status'
         );
 
         return $columns;
@@ -733,6 +932,149 @@ class ContactController extends Controller
         $newStr = str_replace($pattern, "", $str);
 
         return $newStr;
+    }
+
+    public function exportToOLM(){
+        set_time_limit ( 5000 );
+        $url = 'http://58.187.9.138/api/OlmInsert/InsertContactOLM';
+
+        $data_where = $this->getWhereData();
+        $request = request();
+
+        $startDate = strtotime("midnight")*1000;
+        $endDate = strtotime("tomorrow")*1000;
+        if($request->registered_date){
+            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_arr = explode(' ', str_replace('/', '-', $date_place));
+            $startDate = strtotime($date_arr[0])*1000;
+            // $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
+            $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
+        $query = Contact::where('submit_time', '>=', $startDate);
+        $query->where('submit_time', '<', $endDate);
+        
+        if(count($data_where) > 0){
+            if(@$data_where['clevel'] == 'c3b'){
+                $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }elseif (@$data_where['clevel'] == 'c3b_only'){
+                $query->where('clevel', 'c3b');
+                unset($data_where['clevel']);
+            }
+            if(@$data_where['current_level'] == 'l0'){
+                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+                unset($data_where['current_level']);
+            }
+            $query->where($data_where);
+        }
+
+        if($request->id){
+            if($request->id != 'All' && count($request->id) > 0){
+                $query->whereIn('_id', array_keys($request->id));
+            }
+        }
+
+        $query->orderBy('submit_time', 'desc');
+        $query->chunk( 1000, function ( $contacts ) use ( $url ) {
+            foreach ($contacts as $contact)
+            {
+                if (!$contact->ad_id){
+                    $contact->ad_id = "unknown";
+                }
+
+                $data_array =  array(
+                    "ads_link"          => $contact->ad_link,
+                    "email"             => $contact->email,
+                    "fullname"          => $contact->name,
+                    "phone"             => $contact->phone,
+                    "contact_channel"   => $contact->channel_name,
+                    "source_type"       => 'helios',
+                    "registereddate"    => $contact->submit_time,
+                    "submit_time"       => $contact->submit_time,
+                );
+
+//                 $data_array =  array(
+//                     "ads_link"          => 'http://fastenglishforyou.topicanative.co.th/?id_landingpage=401&code_chanel=FABR11_Mike_Conversions_E-Book.M.TI.007_All Gender_30-65_Int.Motivation.Coaching&id_campaign=16&id=26492',
+//                     "email"             => 'C9ballkung1979@gmail.com',
+//                     "fullname"          => 'Meemi',
+//                     "phone"             => '993198657',
+//                     "contact_channel"   => 'FABR11_Mike_Conversions_E-Book.M.TI.007_All Gender_30-65_Int.Motivation.Coaching',
+//                     "source_type"       => 'helios',
+//                     "registereddate"    => 1522861083375,
+//                     "submit_time"       => 1530637707420,
+//                 );
+                $make_call  = $this->callAPI('POST', $url, json_encode($data_array));
+                $response   = json_decode($make_call, true);
+                $status     = $response['results'][0]['Status'];
+                $contact    = $this->handleHandover($contact,$status);
+
+                $contact->save();
+            }
+        });
+    }
+
+    private function handleHandover($contact, $apiStatus){
+
+        if (strtolower($apiStatus) == "ok"){
+            $dateFromContactID = strtotime(substr($contact->contact_id,0,8));
+            $dateFromContactID = date('Y-m-d',$dateFromContactID);
+
+            $contact->handover_date = date("Y-m-d");
+            $contact->current_level = "l1";
+            $contact->olm_status    = "0";
+
+            // Update ad_results
+            // Get data base on date contact submited
+            $ad_result  = AdResult::where("ad_id",$contact->ad_id)->where("date",$dateFromContactID)->get();
+            $countL1    = 1;
+            foreach($ad_result as $item){
+                $countL1 = $countL1 + $item["l1"];
+            }
+            $AdResult = AdResult::where("ad_id",$contact->ad_id)->where("date",$dateFromContactID)->first();
+            $AdResult->l1 = $countL1;
+            $AdResult->save();
+        } else if (strtolower($apiStatus) == "duplicated"){
+            $contact->olm_status = "1";
+        } else if (strtolower($apiStatus) == "error"){
+            $contact->olm_status = "2";
+        } else {
+            $contact->olm_status = "3";
+        }
+
+        return $contact;
+    }
+
+
+    private function callAPI($method, $url, $data){
+        $curl = curl_init();
+        switch ($method){
+            case "POST":
+                curl_setopt($curl, CURLOPT_POST, 1);
+                if ($data)
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+                break;
+            case "PUT":
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+                if ($data)
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+                break;
+            default:
+                if ($data)
+                    $url = sprintf("%s?%s", $url, http_build_query($data));
+        }
+        // OPTIONS:
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'APIKEY: 111111111111111111111',
+            'Content-Type: application/json',
+        ));
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        // EXECUTE:
+        $result = curl_exec($curl);
+        if(!$result){die("Connection Failure");}
+        curl_close($curl);
+        return $result;
     }
 
 }
