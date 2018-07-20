@@ -345,8 +345,6 @@ class ReportController extends Controller
             ]);
         });
 
-        var_dump($query);die;
-
         foreach ($results as $item) {
 
             if(!isset($item->ad_id)){
