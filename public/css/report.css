@@ -16,6 +16,9 @@ col:first-child {
 .center {
     text-align: center;
 }
+.right {
+    text-align: right;
+}
 .orange {
     color: #ED8515;
 }
