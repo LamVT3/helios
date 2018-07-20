@@ -541,6 +541,12 @@ class ContactController extends Controller
             }
             $query->where($data_where);
         }
+
+        if($request->contact_id){
+            $id = explode(',', $request->contact_id);
+            $query->whereIn('_id', $id);
+        }
+
         $query->limit((int)$limit);
         $contacts = $query->orderBy('submit_time', 'desc')->get();
         foreach ($contacts as $contact)

@@ -7,7 +7,7 @@
     <!-- MAIN CONTENT -->
     <div id="content">
 {{-- --}}
-        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
+        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs, 'currency' => true])
             @component('components.currency')
             @endcomponent
         @endcomponent
@@ -109,6 +109,15 @@
                                                         @foreach($landing_page as $item)
                                                             <option value="{{ $item->id }}">{{ $item->url }}</option>
                                                         @endforeach
+                                                    </select>
+                                                    <i></i>
+                                                </section>
+                                                <section class="col col-2">
+                                                    <label class="label">Mode</label>
+                                                    <select name="mode" id="mode" class="select2" style="width: 280px"
+                                                            data-url="">
+                                                        <option value="TOA" selected>TOA</option>
+                                                        <option value="TOT">TOT</option>
                                                     </select>
                                                     <i></i>
                                                 </section>
