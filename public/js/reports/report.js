@@ -199,6 +199,7 @@ function filterReport(){
     var registered_date = $('.registered_date').text();
     var landing_page    = $('select[name="landing_page"]').val();
     var unit = $('#currency_unit').val();
+    var mode = $('select[name="mode"]').val();
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -220,7 +221,8 @@ function filterReport(){
             subcampaign_id  : subcampaign_id,
             registered_date : registered_date,
             landing_page    : landing_page,
-            unit            : unit
+            unit            : unit,
+            mode            : mode
         }
     }).done(function (response) {
         $('.loading').hide();

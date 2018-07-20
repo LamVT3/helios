@@ -112,6 +112,15 @@
                                                     </select>
                                                     <i></i>
                                                 </section>
+                                                <section class="col col-2">
+                                                    <label class="label">Mode</label>
+                                                    <select name="mode" id="mode" class="select2" style="width: 280px"
+                                                            data-url="">
+                                                        <option value="TOA" selected>TOA</option>
+                                                        <option value="TOT">TOT</option>
+                                                    </select>
+                                                    <i></i>
+                                                </section>
                                             </div>
                                             <div class="row">
                                             <div class="col-md-12 text-right">
