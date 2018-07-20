@@ -571,7 +571,7 @@ class ReportController extends Controller
                 $usd_thb = $report['config']['USD_THB'];
                 $data = array();
                 $data['weeks'] = array('','Weeks');
-                $data['days'] = array('','N.o Days');
+                $data['days'] = array('','Num of days');
                 $data['budget'] = array('BUDGET');
                 $data['me_re'] = array('Actual', 'ME/RE (%)'); $data['spent'] = array('','ME (USD)');
                 $data['revenue'] = array('','RE (THB)'); $data['c3b_cost'] = array('','C3B');
@@ -623,9 +623,9 @@ class ReportController extends Controller
                 $sheet->fromArray($data, NULL, 'A1', FALSE, FALSE);
 
                 $headings1 = array('MONTHLY MARKETING REPORT');
-                $headings2 = array('Budget :','', '', 'Target L1 :','', '', 'L3/C3B :','', '');
-                $headings3 = array('Spent :','', $report['total']->spent, 'Produced :','', $report['total']->l1,
-                    'Actual :','', ($report['total']->c3bg != 0) ? round($report['total']->l3 / $report['total']->c3bg,4)*100 : '0');
+                $headings2 = array('Budget:','', '', 'TargetL1:','', '', 'L3/C3B:','', '');
+                $headings3 = array('Spent:','', $report['total']->spent." USD", 'Produced:','', $report['total']->l1,
+                    'Actual:','', (($report['total']->c3bg != 0) ? round($report['total']->l3 / $report['total']->c3bg, 4) * 100 : '0')."%");
                 $sheet->prependRow(1, $headings1);
                 $sheet->prependRow(2, $headings2);
                 $sheet->prependRow(3, $headings3);
