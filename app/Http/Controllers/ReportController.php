@@ -930,7 +930,7 @@ class ReportController extends Controller
             $end    = date('Y-m-d', $endDate/1000);
 
             return $collection->aggregate([
-                ['$match' => ['l3a_time' => ['$gte' => $start, '$lte' => $end]]],
+                ['$match' => ['l3_time' => ['$gte' => $start, '$lte' => $end]]],
                 [
                     '$group' => [
                         '_id' => '$ad_id',
