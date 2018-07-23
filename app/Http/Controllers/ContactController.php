@@ -527,7 +527,7 @@ class ContactController extends Controller
                 $contact->age = $item->age;
                 $contact->landing_page = $item->landing_page;
                 $contact->ad_link = $item->ad_link;
-                $contact->channel = $item->channel;
+                $contact->channel_name = $item->channel;
                 $contact->import_time = $import_time;
                 $contact->clevel = "c3a";
 
@@ -651,7 +651,7 @@ class ContactController extends Controller
                 $contact->age = $item->age;
                 $contact->landing_page = "";
                 $contact->ad_link = "";
-                $contact->channel = "TK100.eGentic";
+                $contact->channel_name = "TK100.eGentic";
                 $contact->import_time = $import_time;
                 $contact->clevel = "c3bg";
 
