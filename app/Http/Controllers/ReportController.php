@@ -5,17 +5,13 @@ namespace App\Http\Controllers;
 use App\Ad;
 use App\AdResult;
 use App\Campaign;
-use App\Channel;
 use App\Config;
 use App\Contact;
 use App\LandingPage;
 use App\Source;
+use App\Subcampaign;
 use App\Team;
 use App\User;
-use App\Subcampaign;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
@@ -146,7 +142,7 @@ class ReportController extends Controller
             if(!$request->mode || $request->mode == 'TOA'){
                 $report = $this->prepare_report($results);
             }else{
-                $report = $this->prepare_report_tot($results);
+                $report = $this->prepare_report_tot($query->groupBy('ad_id')->get());
             }
         }
 
@@ -393,7 +389,9 @@ class ReportController extends Controller
                 $report[$item->ad_id]->l8       += @$data_tot[$item->ad_id]->l8  ? $data_tot[$item->ad_id]->l8  : 0;
                 $report[$item->ad_id]->revenue  += $revenue;
             }
+
         }
+
         foreach ($report as $key => $item) {
             $item->c1_cost  = $item->c1     ? round($item->spent / $item->c1, 2)    : '0';
             $item->c2_cost  = $item->c2     ? round($item->spent / $item->c2, 2)    : '0';
@@ -910,49 +908,93 @@ class ReportController extends Controller
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
 
-        $query_l1 = Contact::raw(function ($collection) use ($startDate, $endDate) {
+        $ad_id  = $this->getAds();
+
+        $query_l1 = Contact::raw(function ($collection) use ($startDate, $endDate, $ad_id) {
             $start  = date('Y-m-d', $startDate/1000);
             $end    = date('Y-m-d', $endDate/1000);
 
-            return $collection->aggregate([
-                ['$match' => ['l1_time' => ['$gte' => $start, '$lte' => $end]]],
-                [
-                    '$group' => [
-                        '_id' => '$ad_id',
-                        'count' => ['$sum' => 1],
+            if(count($ad_id) > 0){
+                $match = [
+                    ['$match' => ['l1_time' => ['$gte' => $start, '$lte' => $end]]],
+                    ['$match' => ['ad_id' => ['$in' => $ad_id]]],
+                    [
+                        '$group' => [
+                            '_id' => '$ad_id',
+                            'count' => ['$sum' => 1],
+                        ]
                     ]
-                ]
-            ]);
+                ];
+            }else{
+                $match = [
+                    ['$match' => ['l1_time' => ['$gte' => $start, '$lte' => $end]]],
+                    [
+                        '$group' => [
+                            '_id' => '$ad_id',
+                            'count' => ['$sum' => 1],
+                        ]
+                    ]
+                ];
+            }
+            return $collection->aggregate($match);
         });
 
-        $query_l3 = Contact::raw(function ($collection) use ($startDate, $endDate) {
+        $query_l3 = Contact::raw(function ($collection) use ($startDate, $endDate, $ad_id) {
             $start  = date('Y-m-d', $startDate/1000);
             $end    = date('Y-m-d', $endDate/1000);
 
-            return $collection->aggregate([
-                ['$match' => ['l3_time' => ['$gte' => $start, '$lte' => $end]]],
-                [
-                    '$group' => [
-                        '_id' => '$ad_id',
-                        'count' => ['$sum' => 1],
+            if(count($ad_id) > 0){
+                $match = [
+                    ['$match' => ['l3_time' => ['$gte' => $start, '$lte' => $end]]],
+                    ['$match' => ['ad_id' => ['$in' => $ad_id]]],
+                    [
+                        '$group' => [
+                            '_id' => '$ad_id',
+                            'count' => ['$sum' => 1],
+                        ]
                     ]
-                ]
-            ]);
+                ];
+            }else{
+                $match = [
+                    ['$match' => ['l3_time' => ['$gte' => $start, '$lte' => $end]]],
+                    [
+                        '$group' => [
+                            '_id' => '$ad_id',
+                            'count' => ['$sum' => 1],
+                        ]
+                    ]
+                ];
+            }
+            return $collection->aggregate($match);
         });
 
-        $query_l8 = Contact::raw(function ($collection) use ($startDate, $endDate) {
+        $query_l8 = Contact::raw(function ($collection) use ($startDate, $endDate, $ad_id) {
             $start  = date('Y-m-d', $startDate/1000);
             $end    = date('Y-m-d', $endDate/1000);
 
-            return $collection->aggregate([
-                ['$match' => ['l8_time' => ['$gte' => $start, '$lte' => $end]]],
-                [
-                    '$group' => [
-                        '_id' => '$ad_id',
-                        'count' => ['$sum' => 1],
+            if(count($ad_id) > 0){
+                $match = [
+                    ['$match' => ['l8_time' => ['$gte' => $start, '$lte' => $end]]],
+                    ['$match' => ['ad_id' => ['$in' => $ad_id]]],
+                    [
+                        '$group' => [
+                            '_id' => '$ad_id',
+                            'count' => ['$sum' => 1],
+                        ]
                     ]
-                ]
-            ]);
+                ];
+            }else{
+                $match = [
+                    ['$match' => ['l8_time' => ['$gte' => $start, '$lte' => $end]]],
+                    [
+                        '$group' => [
+                            '_id' => '$ad_id',
+                            'count' => ['$sum' => 1],
+                        ]
+                    ]
+                ];
+            }
+            return $collection->aggregate($match);
         });
 
         $result = array();
@@ -967,6 +1009,37 @@ class ReportController extends Controller
         }
 
         return $result;
+    }
+
+    private function getAds(){
+        $data_where = $this->getWhereData();
+        $ads    = array();
+        if (count($data_where) >= 1) {
+            $ads = Ad::where($data_where)->pluck('_id')->toArray();
+        }
+        return $ads;
+    }
+
+    private function getWhereData(){
+        $request    = request();
+        $data_where = array();
+        if ($request->source_id) {
+            $data_where['source_id']        = $request->source_id;
+        }
+        if ($request->team_id) {
+            $data_where['team_id']          = $request->team_id;
+        }
+        if ($request->marketer_id) {
+            $data_where['marketer_id']      = $request->marketer_id;
+        }
+        if ($request->campaign_id) {
+            $data_where['campaign_id']      = $request->campaign_id;
+        }
+        if ($request->subcampaign_id) {
+            $data_where['subcampaign_id']   = $request->subcampaign_id;
+        }
+
+        return $data_where;
     }
 
 }

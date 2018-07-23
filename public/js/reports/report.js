@@ -175,7 +175,7 @@ $(document).ready(function () {
     $('input#currency').click(function (e) {
         var unit = $(this).val();
         $('#currency_unit').val(unit);
-
+        $('.loading').show();
         filterReport();
     })
 
@@ -185,11 +185,13 @@ $(document).ready(function () {
 $(document).ready(function () {
     $('#search-form-report').submit(function (e) {
         e.preventDefault();
+        $('.loading').show();
         filterReport();
     });
 });
 
 function filterReport(){
+    $('.loading').show();
     var url = $('#search-form-report').attr('url');
     var source_id = $('select[name="source_id"]').val();
     var team_id = $('select[name="team_id"]').val();
@@ -209,7 +211,7 @@ function filterReport(){
     $('input[name="registered_date"]').val(registered_date);
 
     // var url = "{!! route('contacts.filter') !!}";
-    $('.loading').show();
+
     $.ajax({
         url: url,
         type: 'GET',
@@ -253,6 +255,7 @@ function filterReport(){
                 responsiveHelper_table_report.respond();
 
                 fixedTotalRow();
+                $('.loading').hide();
             },
             'order': [],
             "iDisplayLength": parseInt(page_size),
@@ -261,7 +264,6 @@ function filterReport(){
             'scrollCollapse': true,
         });
     });
-    $('.loading').hide();
 }
 
 function fixedTotalRow () {
