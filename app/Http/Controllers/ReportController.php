@@ -5,17 +5,13 @@ namespace App\Http\Controllers;
 use App\Ad;
 use App\AdResult;
 use App\Campaign;
-use App\Channel;
 use App\Config;
 use App\Contact;
 use App\LandingPage;
 use App\Source;
+use App\Subcampaign;
 use App\Team;
 use App\User;
-use App\Subcampaign;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
@@ -146,7 +142,7 @@ class ReportController extends Controller
             if(!$request->mode || $request->mode == 'TOA'){
                 $report = $this->prepare_report($results);
             }else{
-                $report = $this->prepare_report_tot($results);
+                $report = $this->prepare_report_tot($query->groupBy('ad_id')->get());
             }
         }
 
@@ -324,26 +320,7 @@ class ReportController extends Controller
             ]
         ];
 
-        $startDate   = strtotime("midnight")*1000;
-        $endDate     = strtotime("tomorrow")*1000;
-        if($request->registered_date){
-            $date_place = str_replace('-', ' ', $request->registered_date);
-            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
-            $startDate  = strtotime($date_arr[0])*1000;
-            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
-        }
-        $query = Contact::raw(function ($collection) use ($startDate, $endDate) {
-            return $collection->aggregate([
-                ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['l8_time' => ['$ne' => null]]],
-                [
-                    '$group' => [
-                        '_id' => '$ad_id',
-//                        'count' => ['$sum' => 1],
-                    ]
-                ]
-            ]);
-        });
+        $data_tot = $this->getReportDataTOT();
 
         foreach ($results as $item) {
 
@@ -360,9 +337,9 @@ class ReportController extends Controller
             $report['total']->c3b       += $item->c3b + $item->c3bg;
             $report['total']->c3bg      += $item->c3bg      ? $item->c3bg      : 0;
             $report['total']->spent     += $spent;
-            $report['total']->l1        += $item->l1        ? $item->l1        : 0;
-            $report['total']->l3        += $item->l3        ? $item->l3        : 0;
-            $report['total']->l8        += $item->l8        ? $item->l8        : 0;
+            $report['total']->l1        += @$data_tot[$item->ad_id]->l1 ? $data_tot[$item->ad_id]->l1  : 0;
+            $report['total']->l3        += @$data_tot[$item->ad_id]->l3 ? $data_tot[$item->ad_id]->l3  : 0;
+            $report['total']->l8        += @$data_tot[$item->ad_id]->l8 ? $data_tot[$item->ad_id]->l8  : 0;
             $report['total']->revenue   += $revenue;
 
             if (!isset($report[$item->ad_id])) {
@@ -395,9 +372,9 @@ class ReportController extends Controller
                     'c3b'       => $item->c3b + $item->c3bg,
                     'c3bg'      => $item->c3bg     ? $item->c3bg       : 0,
                     'spent'     => $spent,
-                    'l1'        => $item->l1       ? $item->l1         : 0,
-                    'l3'        => $item->l3       ? $item->l3         : 0,
-                    'l8'        => $item->l8       ? $item->l8         : 0,
+                    'l1'        => @$data_tot[$item->ad_id]->l1 ? $data_tot[$item->ad_id]->l1  : 0,
+                    'l3'        => @$data_tot[$item->ad_id]->l3 ? $data_tot[$item->ad_id]->l3  : 0,
+                    'l8'        => @$data_tot[$item->ad_id]->l8 ? $data_tot[$item->ad_id]->l8  : 0,
                     'revenue'   => $revenue,
                 ];
             } else {
@@ -407,12 +384,14 @@ class ReportController extends Controller
                 $report[$item->ad_id]->c3b      += $item->c3b + $item->c3bg;
                 $report[$item->ad_id]->c3bg     += isset($item->c3bg)      ? $item->c3bg       : 0;
                 $report[$item->ad_id]->spent    += $spent;
-                $report[$item->ad_id]->l1       += isset($item->l1)        ? $item->l1         : 0;
-                $report[$item->ad_id]->l3       += isset($item->l3)        ? $item->l3         : 0;
-                $report[$item->ad_id]->l8       += isset($item->l8)        ? $item->l8         : 0;
+                $report[$item->ad_id]->l1       += @$data_tot[$item->ad_id]->l1  ? $data_tot[$item->ad_id]->l1  : 0;
+                $report[$item->ad_id]->l3       += @$data_tot[$item->ad_id]->l3  ? $data_tot[$item->ad_id]->l3  : 0;
+                $report[$item->ad_id]->l8       += @$data_tot[$item->ad_id]->l8  ? $data_tot[$item->ad_id]->l8  : 0;
                 $report[$item->ad_id]->revenue  += $revenue;
             }
+
         }
+
         foreach ($report as $key => $item) {
             $item->c1_cost  = $item->c1     ? round($item->spent / $item->c1, 2)    : '0';
             $item->c2_cost  = $item->c2     ? round($item->spent / $item->c2, 2)    : '0';
@@ -722,7 +701,7 @@ class ReportController extends Controller
                 $usd_thb = $report['config']['USD_THB'];
                 $data = array();
                 $data['weeks'] = array('','Weeks');
-                $data['days'] = array('','N.o Days');
+                $data['days'] = array('','Num of days');
                 $data['budget'] = array('BUDGET');
                 $data['me_re'] = array('Actual', 'ME/RE (%)'); $data['spent'] = array('','ME (USD)');
                 $data['revenue'] = array('','RE (THB)'); $data['c3b_cost'] = array('','C3B');
@@ -774,9 +753,9 @@ class ReportController extends Controller
                 $sheet->fromArray($data, NULL, 'A1', FALSE, FALSE);
 
                 $headings1 = array('MONTHLY MARKETING REPORT');
-                $headings2 = array('Budget :','', '', 'Target L1 :','', '', 'L3/C3B :','', '');
-                $headings3 = array('Spent :','', $report['total']->spent, 'Produced :','', $report['total']->l1,
-                    'Actual :','', ($report['total']->c3bg != 0) ? round($report['total']->l3 / $report['total']->c3bg,4)*100 : '0');
+                $headings2 = array('Budget:','', '', 'TargetL1:','', '', 'L3/C3B:','', '');
+                $headings3 = array('Spent:','', $report['total']->spent." USD", 'Produced:','', $report['total']->l1,
+                    'Actual:','', (($report['total']->c3bg != 0) ? round($report['total']->l3 / $report['total']->c3bg, 4) * 100 : '0')."%");
                 $sheet->prependRow(1, $headings1);
                 $sheet->prependRow(2, $headings2);
                 $sheet->prependRow(3, $headings3);
@@ -915,6 +894,152 @@ class ReportController extends Controller
                 });
             });
         })->export('xls');
+    }
+
+    private function getReportDataTOT(){
+        $request = request();
+
+        $startDate   = strtotime("midnight")*1000;
+        $endDate     = strtotime("tomorrow")*1000;
+        if($request->registered_date){
+            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
+
+        $ad_id  = $this->getAds();
+
+        $query_l1 = Contact::raw(function ($collection) use ($startDate, $endDate, $ad_id) {
+            $start  = date('Y-m-d', $startDate/1000);
+            $end    = date('Y-m-d', $endDate/1000);
+
+            if(count($ad_id) > 0){
+                $match = [
+                    ['$match' => ['l1_time' => ['$gte' => $start, '$lte' => $end]]],
+                    ['$match' => ['ad_id' => ['$in' => $ad_id]]],
+                    [
+                        '$group' => [
+                            '_id' => '$ad_id',
+                            'count' => ['$sum' => 1],
+                        ]
+                    ]
+                ];
+            }else{
+                $match = [
+                    ['$match' => ['l1_time' => ['$gte' => $start, '$lte' => $end]]],
+                    [
+                        '$group' => [
+                            '_id' => '$ad_id',
+                            'count' => ['$sum' => 1],
+                        ]
+                    ]
+                ];
+            }
+            return $collection->aggregate($match);
+        });
+
+        $query_l3 = Contact::raw(function ($collection) use ($startDate, $endDate, $ad_id) {
+            $start  = date('Y-m-d', $startDate/1000);
+            $end    = date('Y-m-d', $endDate/1000);
+
+            if(count($ad_id) > 0){
+                $match = [
+                    ['$match' => ['l3_time' => ['$gte' => $start, '$lte' => $end]]],
+                    ['$match' => ['ad_id' => ['$in' => $ad_id]]],
+                    [
+                        '$group' => [
+                            '_id' => '$ad_id',
+                            'count' => ['$sum' => 1],
+                        ]
+                    ]
+                ];
+            }else{
+                $match = [
+                    ['$match' => ['l3_time' => ['$gte' => $start, '$lte' => $end]]],
+                    [
+                        '$group' => [
+                            '_id' => '$ad_id',
+                            'count' => ['$sum' => 1],
+                        ]
+                    ]
+                ];
+            }
+            return $collection->aggregate($match);
+        });
+
+        $query_l8 = Contact::raw(function ($collection) use ($startDate, $endDate, $ad_id) {
+            $start  = date('Y-m-d', $startDate/1000);
+            $end    = date('Y-m-d', $endDate/1000);
+
+            if(count($ad_id) > 0){
+                $match = [
+                    ['$match' => ['l8_time' => ['$gte' => $start, '$lte' => $end]]],
+                    ['$match' => ['ad_id' => ['$in' => $ad_id]]],
+                    [
+                        '$group' => [
+                            '_id' => '$ad_id',
+                            'count' => ['$sum' => 1],
+                        ]
+                    ]
+                ];
+            }else{
+                $match = [
+                    ['$match' => ['l8_time' => ['$gte' => $start, '$lte' => $end]]],
+                    [
+                        '$group' => [
+                            '_id' => '$ad_id',
+                            'count' => ['$sum' => 1],
+                        ]
+                    ]
+                ];
+            }
+            return $collection->aggregate($match);
+        });
+
+        $result = array();
+        foreach ($query_l1 as $key => $item){
+            @$result[$item->id]->l1 = $item->count;
+        }
+        foreach ($query_l3 as $key => $item){
+            @$result[$item->id]->l3 = $item->count;
+        }
+        foreach ($query_l8 as $key => $item){
+            @$result[$item->id]->l8 = $item->count;
+        }
+
+        return $result;
+    }
+
+    private function getAds(){
+        $data_where = $this->getWhereData();
+        $ads    = array();
+        if (count($data_where) >= 1) {
+            $ads = Ad::where($data_where)->pluck('_id')->toArray();
+        }
+        return $ads;
+    }
+
+    private function getWhereData(){
+        $request    = request();
+        $data_where = array();
+        if ($request->source_id) {
+            $data_where['source_id']        = $request->source_id;
+        }
+        if ($request->team_id) {
+            $data_where['team_id']          = $request->team_id;
+        }
+        if ($request->marketer_id) {
+            $data_where['marketer_id']      = $request->marketer_id;
+        }
+        if ($request->campaign_id) {
+            $data_where['campaign_id']      = $request->campaign_id;
+        }
+        if ($request->subcampaign_id) {
+            $data_where['subcampaign_id']   = $request->subcampaign_id;
+        }
+
+        return $data_where;
     }
 
 }

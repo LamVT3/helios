@@ -223,11 +223,11 @@
                                                 data-toggle="modal" data-target="#myExportModal"> <i class="fa fa-download"></i>
                                             Export to excel
                                         </button>
-                                        <button id="export_to_olm" class="btn btn-danger btn-sm" type="button"
-                                                style="margin-left: 10px" data-toggle="modal" data-target="#myExportToOLMModal">
-                                            <i class="fa fa-edit"></i>
-                                            Export to OLM
-                                        </button>
+                                        {{--<button id="export_to_olm" class="btn btn-danger btn-sm" type="button"--}}
+                                                {{--style="margin-left: 10px" data-toggle="modal" data-target="#myExportToOLMModal">--}}
+                                            {{--<i class="fa fa-edit"></i>--}}
+                                            {{--Export to OLM--}}
+                                        {{--</button>--}}
                                         <button id="update_contact" class="btn btn-warning btn-sm" type="button"
                                                 style="margin-left: 10px; display: none" data-toggle="modal" data-target="#myUpdateModal">
                                             <i class="fa fa-edit"></i>
@@ -275,14 +275,14 @@
                         </div>
                         <hr>
                         <div style="padding-left: 20px">
-                            <div class="radio">
-                                <input style="float: left; margin-top: 2px;" type="radio" id="mode" name="mode" value="0" checked>
-                                <p id="cnt_exported" class="text-success no-margin"><strong>...</strong></p>
-                            </div>
-                            <div class="radio">
-                                <input style="float: left; margin-top: 2px;" type="radio" id="mode" name="mode" value="1">
-                                <p id="cnt_export_to_olm" class="text-primary no-margin"><strong>...</strong></p>
-                            </div>
+                            {{--<div class="radio">--}}
+                                {{--<input style="float: left; margin-top: 2px;" type="radio" id="mode" name="mode" value="0" checked>--}}
+                                {{--<p id="cnt_exported" class="text-success no-margin"><strong>...</strong></p>--}}
+                            {{--</div>--}}
+                            {{--<div class="radio">--}}
+                                {{--<input style="float: left; margin-top: 2px;" type="radio" id="mode" name="mode" value="1">--}}
+                                {{--<p id="cnt_export_to_olm" class="text-primary no-margin"><strong>...</strong></p>--}}
+                            {{--</div>--}}
                         </div>
                         <div class="container-table-contacts">
                         <div class="wrapper">
@@ -306,6 +306,7 @@
                                         <th>Campaign</th>
                                         <th>Subcampaign</th>
                                         <th class="long">Landing page</th>
+                                        <th class="long">Invalid reason</th>
                                         <th>Action</th>
                                         <th class="long">Status export</th>
                                         <th class="long">Status OLM</th>
@@ -329,6 +330,7 @@
                                         {{--<td>{{ $item->subcampaign_name or '-100' }}</td>--}}
                                         {{--<td>{{ $item->ad_name or '-100' }}</td>--}}
                                         {{--<td>{{ $item->landing_page }}</td>--}}
+                                        {{--<td>{{ $item->invalid_reason }}</td>--}}
                                         {{--<td>--}}
                                             {{--@permission('edit-review')--}}
                                             {{--<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="{{ $item->_id }}"><i--}}

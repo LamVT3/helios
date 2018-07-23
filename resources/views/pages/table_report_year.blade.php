@@ -34,20 +34,20 @@
     ?>
     <div style="font-size: xx-large; border-bottom: 1px solid #ddd !important; padding: 15px 0; background: #fafafa" class="bold center orange">RADAR MARKETING ONLINE</div>
     <div style="font-size: x-large; border-bottom: 1px #ddd solid !important; padding: 15px 0; float: left; width: 100%" class="bold italic blue">
-        <div class="inlineBlock col-md-2">Budget :</div><!--
-        --><div class="orange inlineBlock col-md-2"></div><!--
-        --><div class="inlineBlock col-md-2">Target L1 :</div><!--
-        --><div class="orange inlineBlock col-md-2"></div><!--
-        --><div class="inlineBlock col-md-2">L3/C3B :</div><!--
-        --><div class="orange inlineBlock col-md-2"></div>
+        <div class="inlineBlock col-md-1">Budget:</div><!--
+        --><div class="orange right inlineBlock col-md-3"></div><!--
+        --><div class="inlineBlock col-md-1">TargetL1:</div><!--
+        --><div class="orange right inlineBlock col-md-3"></div><!--
+        --><div class="inlineBlock col-md-1">L3/C3B:</div><!--
+        --><div class="orange right inlineBlock col-md-3"></div>
     </div>
     <div style="font-size: x-large; padding: 15px 0; float: left; width: 100%; " class="bold blue">
-        <div class="inlineBlock col-md-2">Spent :</div><!--
-        --><div class="orange inlineBlock col-md-2">{{ $reportY['Total']->spent }} USD</div><!--
-        --><div class="inlineBlock col-md-2">Produced :</div><!--
-        --><div class="orange inlineBlock col-md-2">{{ $reportY['Total']->l1 }} </div><!--
-        --><div class="inlineBlock col-md-2">Actual : </div><!--
-        --><div class="orange inlineBlock col-md-2">{{ ($reportY['Total']->c3bg != 0) ? round($reportY['Total']->l3 / $reportY['Total']->c3bg,4)*100 : 0 }}%</div>
+        <div class="inlineBlock col-md-1">Spent:</div><!--
+        --><div class="orange right inlineBlock col-md-3">{{ $reportY['Total']->spent }} USD</div><!--
+        --><div class="inlineBlock col-md-1">Produced:</div><!--
+        --><div class="orange right inlineBlock col-md-3">{{ $reportY['Total']->l1 }} </div><!--
+        --><div class="inlineBlock col-md-1">Actual:</div><!--
+        --><div class="orange right inlineBlock col-md-3">{{ ($reportY['Total']->c3bg != 0) ? round($reportY['Total']->l3 / $reportY['Total']->c3bg,4)*100 : 0 }}%</div>
     </div>
     <div class="wrapper_report_year gray">
         <div style="width: 250px; display: inline-block;">
