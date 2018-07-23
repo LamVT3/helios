@@ -1430,17 +1430,36 @@ class SubReportController extends Controller
 			$array_channel_new = [];
 
 			$end_date_l = date('Y-m-d', strtotime( $end_date ) + 86400);
-			foreach ($array_channel as $key => $channel) {
-				$table['l1'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l1_time', '>=', $start_date )->where( 'l1_time', '<', $end_date_l )->count();
-				$table['l3'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l3_time', '>=', $start_date )->where( 'l3_time', '<', $end_date_l )->count();
-				$table['l6'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l6_time', '>=', $start_date )->where( 'l6_time', '<', $end_date_l )->count();
-				$table['l8'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l8_time', '>=', $start_date )->where( 'l8_time', '<', $end_date_l )->count();
-			}
 
-			$table['l1'][ 'Unknown' ]   += Contact::where('channel_name', null)->where( 'l1_time', '>=', $start_date )->where( 'l1_time', '<', $end_date_l )->count();
-			$table['l3'][ 'Unknown' ]   += Contact::where('channel_name', null)->where( 'l3_time', '>=', $start_date )->where( 'l3_time', '<', $end_date_l )->count();
-			$table['l6'][ 'Unknown' ]   += Contact::where('channel_name', null)->where( 'l6_time', '>=', $start_date )->where( 'l6_time', '<', $end_date_l )->count();
-			$table['l8'][ 'Unknown' ]   += Contact::where('channel_name', null)->where( 'l8_time', '>=', $start_date )->where( 'l8_time', '<', $end_date_l )->count();
+			if(count($ad_id) > 0){
+
+				foreach ($array_channel as $key => $channel) {
+					$table['l1'][ $channel ]   += Contact::whereIn('ad_id', $ad_id)->where('channel_name', $channel)->where( 'l1_time', '>=', $start_date )->where( 'l1_time', '<', $end_date_l )->count();
+					$table['l3'][ $channel ]   += Contact::whereIn('ad_id', $ad_id)->where('channel_name', $channel)->where( 'l3_time', '>=', $start_date )->where( 'l3_time', '<', $end_date_l )->count();
+					$table['l6'][ $channel ]   += Contact::whereIn('ad_id', $ad_id)->where('channel_name', $channel)->where( 'l6_time', '>=', $start_date )->where( 'l6_time', '<', $end_date_l )->count();
+					$table['l8'][ $channel ]   += Contact::whereIn('ad_id', $ad_id)->where('channel_name', $channel)->where( 'l8_time', '>=', $start_date )->where( 'l8_time', '<', $end_date_l )->count();
+				}
+
+				$table['l1'][ 'Unknown' ]   += Contact::whereIn('ad_id', $ad_id)->where('channel_name', null)->where( 'l1_time', '>=', $start_date )->where( 'l1_time', '<', $end_date_l )->count();
+				$table['l3'][ 'Unknown' ]   += Contact::whereIn('ad_id', $ad_id)->where('channel_name', null)->where( 'l3_time', '>=', $start_date )->where( 'l3_time', '<', $end_date_l )->count();
+				$table['l6'][ 'Unknown' ]   += Contact::whereIn('ad_id', $ad_id)->where('channel_name', null)->where( 'l6_time', '>=', $start_date )->where( 'l6_time', '<', $end_date_l )->count();
+				$table['l8'][ 'Unknown' ]   += Contact::whereIn('ad_id', $ad_id)->where('channel_name', null)->where( 'l8_time', '>=', $start_date )->where( 'l8_time', '<', $end_date_l )->count();
+
+			}
+			else {
+				foreach ($array_channel as $key => $channel) {
+					$table['l1'][ $channel ]   += Contact::where('channel_name', $channel)->where('channel_name', $channel)->where( 'l1_time', '>=', $start_date )->where( 'l1_time', '<', $end_date_l )->count();
+					$table['l3'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l3_time', '>=', $start_date )->where( 'l3_time', '<', $end_date_l )->count();
+					$table['l6'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l6_time', '>=', $start_date )->where( 'l6_time', '<', $end_date_l )->count();
+					$table['l8'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l8_time', '>=', $start_date )->where( 'l8_time', '<', $end_date_l )->count();
+				}
+
+				$table['l1'][ 'Unknown' ]   += Contact::where('channel_name', null)->where( 'l1_time', '>=', $start_date )->where( 'l1_time', '<', $end_date_l )->count();
+				$table['l3'][ 'Unknown' ]   += Contact::where('channel_name', null)->where( 'l3_time', '>=', $start_date )->where( 'l3_time', '<', $end_date_l )->count();
+				$table['l6'][ 'Unknown' ]   += Contact::where('channel_name', null)->where( 'l6_time', '>=', $start_date )->where( 'l6_time', '<', $end_date_l )->count();
+				$table['l8'][ 'Unknown' ]   += Contact::where('channel_name', null)->where( 'l8_time', '>=', $start_date )->where( 'l8_time', '<', $end_date_l )->count();
+
+			}
 
 			foreach ($table['c3'] as $key=>$value) {
 				if ($value != 0){
