@@ -136,7 +136,6 @@ class ReportController extends Controller
 
         $results = $query->get();
 
-        // DB::connection('mongodb')->getQueryLog();
         $report = $total = [];
         if ($results) {
             if(!$request->mode || $request->mode == 'TOA'){
@@ -344,14 +343,22 @@ class ReportController extends Controller
 
             if (!isset($report[$item->ad_id])) {
                 $ad = Ad::find($item->ad_id);
-                // TO DO unknown
+
                 $source_name        = '(unknown)';
                 $team_name          = '(unknown)';
                 $marketer_name      = '(unknown)';
                 $campaign_name      = '(unknown)';
                 $subcampaign_name   = '(unknown)';
                 $ad_name            = '(unknown)';
-                if($ad){
+
+                if($item->ad_id == 'SALE CRM'){
+                    $source_name        = 'SALE CRM';
+                    $team_name          = 'SALE CRM';
+                    $marketer_name      = 'SALE CRM';
+                    $campaign_name      = 'SALE CRM';
+                    $subcampaign_name   = 'SALE CRM';
+                    $ad_name            = 'SALE CRM';
+                }elseif($ad){
                     $source_name        = $ad->source_name;
                     $team_name          = $ad->team_name;
                     $marketer_name      = $ad->creator_name;
@@ -389,19 +396,76 @@ class ReportController extends Controller
                 $report[$item->ad_id]->l8       += @$data_tot[$item->ad_id]->l8  ? $data_tot[$item->ad_id]->l8  : 0;
                 $report[$item->ad_id]->revenue  += $revenue;
             }
+            unset($data_tot[$item->ad_id]);
+        }
 
+        foreach ($data_tot as $key => $item) {
+
+            $report['total']->c1        += 0;
+            $report['total']->c2        += 0;
+            $report['total']->c3        += 0;
+            $report['total']->c3b       += 0;
+            $report['total']->c3bg      += 0;
+            $report['total']->spent     += 0;
+            $report['total']->l1        += @$item->l1   ? $item->l1 : 0;
+            $report['total']->l3        += @$item->l3   ? $item->l3 : 0;
+            $report['total']->l8        += @$item->l8   ? $item->l8 : 0;
+            $report['total']->revenue   += 0;
+
+            $ad = Ad::find($key);
+
+            $source_name        = '(unknown)';
+            $team_name          = '(unknown)';
+            $marketer_name      = '(unknown)';
+            $campaign_name      = '(unknown)';
+            $subcampaign_name   = '(unknown)';
+            $ad_name            = '(unknown)';
+
+            if($key == 'SALE CRM'){
+                $source_name        = 'SALE CRM';
+                $team_name          = 'SALE CRM';
+                $marketer_name      = 'SALE CRM';
+                $campaign_name      = 'SALE CRM';
+                $subcampaign_name   = 'SALE CRM';
+                $ad_name            = 'SALE CRM';
+            }elseif($ad){
+                $source_name        = $ad->source_name;
+                $team_name          = $ad->team_name;
+                $marketer_name      = $ad->creator_name;
+                $campaign_name      = $ad->campaign_name;
+                $subcampaign_name   = $ad->subcampaign_name;
+                $ad_name            = $ad->name;
+            }
+            $report[$key] = (object)[
+                'source'    => $source_name,
+                'team'      => $team_name,
+                'marketer'  => $marketer_name,
+                'campaign'  => $campaign_name,
+                'subcampaign'   => $subcampaign_name,
+                'ad'        => $ad_name,
+                'c1'        => 0,
+                'c2'        => 0,
+                'c3'        => 0,
+                'c3b'       => 0,
+                'c3bg'      => 0,
+                'spent'     => 0,
+                'l1'        => @$item->l1 ? $item->l1  : 0,
+                'l3'        => @$item->l3 ? $item->l3  : 0,
+                'l8'        => @$item->l8 ? $item->l8  : 0,
+                'revenue'   => 0,
+            ];
         }
 
         foreach ($report as $key => $item) {
             $item->c1_cost  = $item->c1     ? round($item->spent / $item->c1, 2)    : '0';
             $item->c2_cost  = $item->c2     ? round($item->spent / $item->c2, 2)    : '0';
-            $item->c2_c1    = $item->c1     ? round($item->c2 / $item->c1, 4) * 100         : '0';
+            $item->c2_c1    = $item->c1     ? round($item->c2 / $item->c1, 4) * 100 : '0';
             $item->c3_cost  = $item->c3     ? round($item->spent / $item->c3, 2)    : '0';
             $item->c3b_cost = $item->c3b    ? round($item->spent / $item->c3b, 2)   : '0';
-            $item->c3bg_cost = $item->c3bg  ? round($item->spent / $item->c3bg, 2)   : '0';
-            $item->c3_c2    = $item->c2     ? round($item->c3 / $item->c2, 4) * 100         : '0';
-            $item->l3_l1    = $item->l1     ? round($item->l3 / $item->l1, 4) * 100         : '0';
-            $item->l8_l1    = $item->l1     ? round($item->l8 / $item->l1, 4) * 100         : '0';
+            $item->c3bg_cost = $item->c3bg  ? round($item->spent / $item->c3bg, 2)  : '0';
+            $item->c3_c2    = $item->c2     ? round($item->c3 / $item->c2, 4) * 100 : '0';
+            $item->l3_l1    = $item->l1     ? round($item->l3 / $item->l1, 4) * 100 : '0';
+            $item->l8_l1    = $item->l1     ? round($item->l8 / $item->l1, 4) * 100 : '0';
             $item->me_re    = $item->revenue ? round($item->spent / $item->revenue, 4) * 100 : '0';
             $report[$key]   = $item;
         }
@@ -999,12 +1063,21 @@ class ReportController extends Controller
 
         $result = array();
         foreach ($query_l1 as $key => $item){
+            if(isset($result[$item->id]->l1)){
+                $result[$item->id]->l1 += $item->count;
+            }
             @$result[$item->id]->l1 = $item->count;
         }
         foreach ($query_l3 as $key => $item){
+            if(isset($result[$item->id]->l3)){
+                $result[$item->id]->l3 += $item->count;
+            }
             @$result[$item->id]->l3 = $item->count;
         }
         foreach ($query_l8 as $key => $item){
+            if(isset($result[$item->id]->l8)){
+                $result[$item->id]->l8 += $item->count;
+            }
             @$result[$item->id]->l8 = $item->count;
         }
 
@@ -1014,7 +1087,7 @@ class ReportController extends Controller
     private function getAds(){
         $data_where = $this->getWhereData();
         $ads    = array();
-        if (count($data_where) >= 1) {
+        if (count($data_where) > 0) {
             $ads = Ad::where($data_where)->pluck('_id')->toArray();
         }
         return $ads;
