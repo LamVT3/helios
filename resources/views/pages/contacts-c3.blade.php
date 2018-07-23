@@ -306,6 +306,7 @@
                                         <th>Campaign</th>
                                         <th>Subcampaign</th>
                                         <th class="long">Landing page</th>
+                                        <th class="long">Invalid reason</th>
                                         <th>Action</th>
                                         <th class="long">Status export</th>
                                         <th class="long">Status OLM</th>
@@ -329,6 +330,7 @@
                                         {{--<td>{{ $item->subcampaign_name or '-100' }}</td>--}}
                                         {{--<td>{{ $item->ad_name or '-100' }}</td>--}}
                                         {{--<td>{{ $item->landing_page }}</td>--}}
+                                        {{--<td>{{ $item->invalid_reason }}</td>--}}
                                         {{--<td>--}}
                                             {{--@permission('edit-review')--}}
                                             {{--<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="{{ $item->_id }}"><i--}}
