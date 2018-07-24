@@ -579,7 +579,7 @@ class ContactController extends Controller
 
         });
         //DB::connection('mongodb')->getQueryLog();
-        return redirect()->back();
+        //return redirect()->back();
     }
 
     public function importEgentic(Request $request)
@@ -587,6 +587,7 @@ class ContactController extends Controller
         $file = $request->file('import');
 
         $destinationPath = storage_path('app/upload');
+
         $file->move($destinationPath,$file->getClientOriginalName());
 
         $filePath =  $destinationPath . '/' . $file->getClientOriginalName();
@@ -704,7 +705,7 @@ class ContactController extends Controller
 
         });
         //DB::connection('mongodb')->getQueryLog();
-        return redirect()->back();
+//        return redirect()->back();
     }
 
     private function format_phone($phone)
