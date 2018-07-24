@@ -959,7 +959,8 @@ class ContactController extends Controller
         }
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
-        
+        $query->whereNotIn('olm_status', ['0','1']);
+
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
@@ -1014,7 +1015,6 @@ class ContactController extends Controller
                 $response   = json_decode($make_call, true);
                 $status     = $response['results'][0]['Status'];
                 $contact    = $this->handleHandover($contact,$status);
-
                 $contact->save();
             }
         });
