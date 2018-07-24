@@ -290,6 +290,52 @@ $(document).ready(function () {
         // updateStatusExport(id);
     });
 
+    $('button#import_contact').click(function (e) {
+        e.preventDefault();
+
+        var form = $('#form-import-contact')[0];
+        var data = new FormData(form);
+
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            url: $('#form-import-contact').attr('action'),
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            timeout: 600000
+        });
+
+        setTimeout(function(){
+            initDataTable();
+            $('input#update_all').prop('checked', false); // Unchecks checkbox all
+        }, 2000);
+    });
+
+    $('button#import_egentic').click(function (e) {
+        e.preventDefault();
+
+        var form = $('#form-import-egentic')[0];
+        var data = new FormData(form);
+
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            url: $('#form-import-egentic').attr('action'),
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            timeout: 600000
+        });
+
+        setTimeout(function(){
+            initDataTable();
+            $('input#update_all').prop('checked', false); // Unchecks checkbox all
+        }, 2000);
+    });
+
     $('button#update_contact').click(function (e) {
         e.preventDefault();
         $('.loading').show();
