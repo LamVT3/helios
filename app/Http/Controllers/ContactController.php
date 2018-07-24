@@ -701,8 +701,18 @@ class ContactController extends Controller
                 return redirect()->back()->withErrors($errors);
             }
 
+            $request = request();
+
             $startDate = strtotime("midnight")*1000;
             $endDate = strtotime("tomorrow")*1000;
+            if($request->registered_date){
+                $date_place = str_replace('-', ' ', $request->registered_date);
+                $date_arr = explode(' ', str_replace('/', '-', $date_place));
+                $startDate = strtotime($date_arr[1])*1000;
+                $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+                $import_time = strtotime($date_arr[1])*1000;
+            }
+
             $query = Contact::where('submit_time', '>=', $startDate);
             $query->where('submit_time', '<', $endDate);
             $contacts = $query->get();
@@ -722,13 +732,10 @@ class ContactController extends Controller
                     continue;
                 }
 
-                // validate submit_time
-                $submit_time = is_object($item->submit_time) ? $item->submit_time->timestamp : $import_time;
-
                 $contact = new Contact();
                 $contact->contact_source = "import_data";
                 $contact->msg_type = "submitter";
-                $contact->submit_time = $submit_time * 1000;
+                $contact->submit_time = $import_time;
                 $contact->source_name = "";
                 $contact->team_name = "";
                 $contact->marketer_name = "";

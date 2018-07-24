@@ -8,6 +8,7 @@
                     </button>
                     <h3 class="modal-title"> Import Contact</h3>
                 </div>
+                <input type="hidden" name="registered_date">
                 <div class="modal-body">
                     {{ csrf_field() }}
                     <div id="form-source-alert"></div>
