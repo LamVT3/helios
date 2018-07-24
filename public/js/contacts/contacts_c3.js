@@ -8,7 +8,7 @@ $(document).ready(function () {
     var end = moment();
 
     function reportrange_span(start, end) {
-        $('#reportrange span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
+        $('#reportrange span').html(start.format('D/M/Y') + ' - ' + end.format('D/M/Y'));
     }
 
     reportrange_span(start, end);
