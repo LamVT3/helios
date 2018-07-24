@@ -1,7 +1,7 @@
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="post" id="form-import" class="form-horizontal" action="{{ route("contacts.import") }}" enctype="multipart/form-data">
+            <form method="post" id="form-import-contact" class="form-horizontal" action="{{ route("contacts.import") }}" enctype="multipart/form-data">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                         &times;
@@ -14,7 +14,7 @@
                     <div class="form-group">
                         <label class="col-md-2 control-label">Input File</label>
                         <div class="col-md-10">
-                            <input type="file" name="import" class="btn btn-default" id="import">
+                            <input type="file" style="width: 450px; text-align: left" name="import" class="btn btn-default" id="import">
 
                         </div>
                     </div>
@@ -25,7 +25,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">
+                    <button id="import_contact" type="button" class="btn btn-primary" data-dismiss="modal">
                         <i class="fa fa-upload"></i>
                         Import
                     </button>
