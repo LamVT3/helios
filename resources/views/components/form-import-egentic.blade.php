@@ -15,7 +15,7 @@
                     <div class="form-group">
                         <label class="col-md-2 control-label">Input File</label>
                         <div class="col-md-10">
-                            <input type="file" name="import" class="btn btn-default" id="import">
+                            <input type="file" style="width: 450px; text-align: left" name="import" class="btn btn-default" id="import">
 
                         </div>
                     </div>
