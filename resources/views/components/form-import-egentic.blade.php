@@ -26,7 +26,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="import_egentic" type="button" class="btn btn-primary" data-dismiss="modal">>
+                    <button id="import_egentic" type="button" class="btn btn-primary" data-dismiss="modal">
                         <i class="fa fa-upload"></i>
                         Import
                     </button>
