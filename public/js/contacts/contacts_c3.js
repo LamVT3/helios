@@ -252,6 +252,7 @@ $(document).ready(function () {
 
     $('button#import_contact').click(function (e) {
         e.preventDefault();
+        $('div#import_success').hide();
 
         var form = $('#form-import-contact')[0];
         var data = new FormData(form);
@@ -277,6 +278,7 @@ $(document).ready(function () {
 
     $('button#import_egentic').click(function (e) {
         e.preventDefault();
+        $('div#import_success').hide();
 
         var form = $('#form-import-egentic')[0];
         var data = new FormData(form);
