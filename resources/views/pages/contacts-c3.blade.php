@@ -439,12 +439,12 @@
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/fixedcolumns/3.2.4/css/fixedColumns.dataTables.min.css"/>
 <style>
     .loader {
-        border: 10px solid #f3f3f3; /* Light grey */
-        border-top: 10px solid #3498db; /* Blue */
-        border-bottom: 10px solid #3498db; /* Blue */
+        border: 8px solid #f3f3f3; /* Light grey */
+        border-top: 8px solid #8ac38b; /* Green */
+        border-bottom: 8px solid #8ac38b; /* Green */
         border-radius: 50%;
-        width: 55px;
-        height: 55px;
+        width: 50px;
+        height: 50px;
         animation: spin 2s linear infinite;
     }
 
