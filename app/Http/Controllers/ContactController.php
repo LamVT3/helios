@@ -666,7 +666,9 @@ class ContactController extends Controller
                 $ad_result->save();
             }
 
-            session()->flash('message', $cnt.' Contact(s) have been imported successfully');
+            session()->flash('message', $cnt.' Contact(s) have been imported successfully.');
+
+            echo $cnt;
 
         });
         //DB::connection('mongodb')->getQueryLog();
@@ -751,7 +753,7 @@ class ContactController extends Controller
                 $contact->landing_page = "";
                 $contact->ad_link = "";
                 $contact->channel_name = "TK100.eGentic";
-                $contact->import_time = $import_time;
+                $contact->import_time = time();
                 $contact->clevel = "c3bg";
 
                 // match ad_id
@@ -792,11 +794,12 @@ class ContactController extends Controller
                 $ad_result->save();
             }
 
-            session()->flash('message', $cnt.' Contact(s) have been imported successfully');
+            session()->flash('message', $cnt.' Contact(s) have been imported successfully.');
 
+            echo $cnt;
         });
         //DB::connection('mongodb')->getQueryLog();
-//        return redirect()->back();
+        //return redirect()->back();
     }
 
     private function format_phone($phone)
@@ -960,7 +963,8 @@ class ContactController extends Controller
         }
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
-        
+        $query->whereNotIn('olm_status', ['0','1']);
+
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
@@ -1015,7 +1019,6 @@ class ContactController extends Controller
                 $response   = json_decode($make_call, true);
                 $status     = $response['results'][0]['Status'];
                 $contact    = $this->handleHandover($contact,$status);
-
                 $contact->save();
             }
         });
