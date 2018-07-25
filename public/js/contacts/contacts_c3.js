@@ -292,6 +292,8 @@ $(document).ready(function () {
 
     $('button#import_contact').click(function (e) {
         e.preventDefault();
+        $('div#import_success').hide();
+        $('div#loader').show();
 
         var form = $('#form-import-contact')[0];
         var data = new FormData(form);
@@ -307,6 +309,7 @@ $(document).ready(function () {
             timeout: 600000,
             success: function(result){
                 document.getElementById("import_text").innerHTML = result + ' Contact(s) have been imported successfully.';
+                $('div#loader').hide();
                 $('div#import_success').show();
                 initDataTable();
                 $('input#update_all').prop('checked', false); // Unchecks checkbox all
@@ -317,6 +320,8 @@ $(document).ready(function () {
 
     $('button#import_egentic').click(function (e) {
         e.preventDefault();
+        $('div#import_success').hide();
+        $('div#loader').show();
 
         var form = $('#form-import-egentic')[0];
         var data = new FormData(form);
@@ -332,6 +337,7 @@ $(document).ready(function () {
             timeout: 600000,
             success: function(result){
                 document.getElementById("import_text").innerHTML = result + ' Contact(s) have been imported successfully.';
+                $('div#loader').hide();
                 $('div#import_success').show();
                 initDataTable();
                 $('input#update_all').prop('checked', false); // Unchecks checkbox all
