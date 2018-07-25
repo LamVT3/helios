@@ -751,7 +751,7 @@ class ContactController extends Controller
                 $contact->landing_page = "";
                 $contact->ad_link = "";
                 $contact->channel_name = "TK100.eGentic";
-                $contact->import_time = $import_time;
+                $contact->import_time = time();
                 $contact->clevel = "c3bg";
 
                 // match ad_id
