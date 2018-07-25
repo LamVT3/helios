@@ -1189,10 +1189,6 @@ class SubReportController extends Controller
 			$table['c3_week'][$channel] = 0;
 			$table['c3b_week'][$channel] = 0;
 			$table['c3bg_week'][$channel] = 0;
-			$table['l1_week'][$channel]   = 0;
-			$table['l3_week'][$channel]   = 0;
-			$table['l6_week'][$channel]   = 0;
-			$table['l8_week'][$channel]   = 0;
 		}
 
 		$ad_id  = $this->getAds();
@@ -1297,10 +1293,6 @@ class SubReportController extends Controller
 				$table['c3_week'][ $channel ]   += intval( round($item_result->c3 / 7));
 				$table['c3b_week'][ $channel ]  += intval( round($item_result->c3b / 7));
 				$table['c3bg_week'][ $channel ] += intval( round($item_result->c3bg / 7));
-				$table['l1_week'][ $channel ]   += intval( round($item_result->l1 / 7));
-				$table['l3_week'][ $channel ]   += intval( round($item_result->l3 / 7));
-				$table['l6_week'][ $channel ]   += intval( round($item_result->l6 / 7));
-				$table['l8_week'][ $channel ]   += intval( round($item_result->l8 / 7));
 			}
 
 			arsort($table['c3']);
@@ -1429,36 +1421,155 @@ class SubReportController extends Controller
 			arsort($table['c3_week']);
 			$array_channel_new = [];
 
-			$end_date_l = date('Y-m-d', strtotime( $end_date ) + 86400);
+			$start = $start_date;
+			$end = date('Y-m-d', strtotime( $end_date ) + 86400);
 
-			if(count($ad_id) > 0){
-
-				foreach ($array_channel as $key => $channel) {
-					$table['l1'][ $channel ]   += Contact::whereIn('ad_id', $ad_id)->where('channel_name', $channel)->where( 'l1_time', '>=', $start_date )->where( 'l1_time', '<', $end_date_l )->count();
-					$table['l3'][ $channel ]   += Contact::whereIn('ad_id', $ad_id)->where('channel_name', $channel)->where( 'l3_time', '>=', $start_date )->where( 'l3_time', '<', $end_date_l )->count();
-					$table['l6'][ $channel ]   += Contact::whereIn('ad_id', $ad_id)->where('channel_name', $channel)->where( 'l6_time', '>=', $start_date )->where( 'l6_time', '<', $end_date_l )->count();
-					$table['l8'][ $channel ]   += Contact::whereIn('ad_id', $ad_id)->where('channel_name', $channel)->where( 'l8_time', '>=', $start_date )->where( 'l8_time', '<', $end_date_l )->count();
+			$query_l1 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+				if(count($ad_id) > 0){
+					$match = [
+						['$match' => ['l1_time' => ['$gte' => $start, '$lte' => $end]]],
+						['$match' => ['ad_id' => ['$in' => $ad_id]]],
+						[
+							'$group' => [
+								'_id' => '$ad_id',
+								'count' => ['$sum' => 1],
+							]
+						]
+					];
+				}else{
+					$match = [
+						['$match' => ['l1_time' => ['$gte' => $start, '$lte' => $end]]],
+						[
+							'$group' => [
+								'_id' => '$ad_id',
+								'count' => ['$sum' => 1],
+							]
+						]
+					];
 				}
+				return $collection->aggregate($match);
+			});
 
-				$table['l1'][ 'Unknown' ]   += Contact::whereIn('ad_id', $ad_id)->where('channel_name', null)->where( 'l1_time', '>=', $start_date )->where( 'l1_time', '<', $end_date_l )->count();
-				$table['l3'][ 'Unknown' ]   += Contact::whereIn('ad_id', $ad_id)->where('channel_name', null)->where( 'l3_time', '>=', $start_date )->where( 'l3_time', '<', $end_date_l )->count();
-				$table['l6'][ 'Unknown' ]   += Contact::whereIn('ad_id', $ad_id)->where('channel_name', null)->where( 'l6_time', '>=', $start_date )->where( 'l6_time', '<', $end_date_l )->count();
-				$table['l8'][ 'Unknown' ]   += Contact::whereIn('ad_id', $ad_id)->where('channel_name', null)->where( 'l8_time', '>=', $start_date )->where( 'l8_time', '<', $end_date_l )->count();
+			$query_l3 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+				if(count($ad_id) > 0){
+					$match = [
+						['$match' => ['l3_time' => ['$gte' => $start, '$lte' => $end]]],
+						['$match' => ['ad_id' => ['$in' => $ad_id]]],
+						[
+							'$group' => [
+								'_id' => '$ad_id',
+								'count' => ['$sum' => 1],
+							]
+						]
+					];
+				}else{
+					$match = [
+						['$match' => ['l3_time' => ['$gte' => $start, '$lte' => $end]]],
+						[
+							'$group' => [
+								'_id' => '$ad_id',
+								'count' => ['$sum' => 1],
+							]
+						]
+					];
+				}
+				return $collection->aggregate($match);
+			});
 
+			$query_l6 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+				if(count($ad_id) > 0){
+					$match = [
+						['$match' => ['l6_time' => ['$gte' => $start, '$lte' => $end]]],
+						['$match' => ['ad_id' => ['$in' => $ad_id]]],
+						[
+							'$group' => [
+								'_id' => '$ad_id',
+								'count' => ['$sum' => 1],
+							]
+						]
+					];
+				}else{
+					$match = [
+						['$match' => ['l6_time' => ['$gte' => $start, '$lte' => $end]]],
+						[
+							'$group' => [
+								'_id' => '$ad_id',
+								'count' => ['$sum' => 1],
+							]
+						]
+					];
+				}
+				return $collection->aggregate($match);
+			});
+
+			$query_l8 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+				if(count($ad_id) > 0){
+					$match = [
+						['$match' => ['l8_time' => ['$gte' => $start, '$lte' => $end]]],
+						['$match' => ['ad_id' => ['$in' => $ad_id]]],
+						[
+							'$group' => [
+								'_id' => '$ad_id',
+								'count' => ['$sum' => 1],
+							]
+						]
+					];
+				}else{
+					$match = [
+						['$match' => ['l8_time' => ['$gte' => $start, '$lte' => $end]]],
+						[
+							'$group' => [
+								'_id' => '$ad_id',
+								'count' => ['$sum' => 1],
+							]
+						]
+					];
+				}
+				return $collection->aggregate($match);
+			});
+
+			$result = array();
+			foreach ($query_l1 as $key => $item){
+				if(isset($result[$item->id]->l1)){
+					$result[$item->id]->l1 += $item->count;
+				}
+				@$result[$item->id]->l1 = $item->count;
 			}
-			else {
-				foreach ($array_channel as $key => $channel) {
-					$table['l1'][ $channel ]   += Contact::where('channel_name', $channel)->where('channel_name', $channel)->where( 'l1_time', '>=', $start_date )->where( 'l1_time', '<', $end_date_l )->count();
-					$table['l3'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l3_time', '>=', $start_date )->where( 'l3_time', '<', $end_date_l )->count();
-					$table['l6'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l6_time', '>=', $start_date )->where( 'l6_time', '<', $end_date_l )->count();
-					$table['l8'][ $channel ]   += Contact::where('channel_name', $channel)->where( 'l8_time', '>=', $start_date )->where( 'l8_time', '<', $end_date_l )->count();
+			foreach ($query_l3 as $key => $item){
+				if(isset($result[$item->id]->l3)){
+					$result[$item->id]->l3 += $item->count;
+				}
+				@$result[$item->id]->l3 = $item->count;
+			}
+			foreach ($query_l6 as $key => $item){
+				if(isset($result[$item->id]->l6)){
+					$result[$item->id]->l6 += $item->count;
+				}
+				@$result[$item->id]->l6 = $item->count;
+			}
+			foreach ($query_l8 as $key => $item){
+				if(isset($result[$item->id]->l8)){
+					$result[$item->id]->l8 += $item->count;
+				}
+				@$result[$item->id]->l8 = $item->count;
+			}
+
+
+			foreach ( $result as $key => $item_result ) {
+				$channel_id = @$arr_ad[$key];
+				if ( $channel_id ) {
+					$channel    = @$array_channel[ $channel_id ];
+					if ( ! $channel ) {
+						$channel = 'Unknown';
+					}
+				} else {
+					$channel = 'Unknown';
 				}
 
-				$table['l1'][ 'Unknown' ]   += Contact::where('channel_name', null)->where( 'l1_time', '>=', $start_date )->where( 'l1_time', '<', $end_date_l )->count();
-				$table['l3'][ 'Unknown' ]   += Contact::where('channel_name', null)->where( 'l3_time', '>=', $start_date )->where( 'l3_time', '<', $end_date_l )->count();
-				$table['l6'][ 'Unknown' ]   += Contact::where('channel_name', null)->where( 'l6_time', '>=', $start_date )->where( 'l6_time', '<', $end_date_l )->count();
-				$table['l8'][ 'Unknown' ]   += Contact::where('channel_name', null)->where( 'l8_time', '>=', $start_date )->where( 'l8_time', '<', $end_date_l )->count();
-
+				$table['l1'][ $channel ] += @$item_result->l1;
+				$table['l3'][ $channel ] += @$item_result->l3;
+				$table['l6'][ $channel ] += @$item_result->l6;
+				$table['l8'][ $channel ] += @$item_result->l8;
 			}
 
 			foreach ($table['c3'] as $key=>$value) {
