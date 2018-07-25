@@ -23,6 +23,7 @@
 
         <!-- widget grid -->
         <section id="widget-grid" class="">
+            <div id="loader" class="loader" style="display: none"></div>
             <div id="import_success" class="alert alert-block alert-success" style="display: none">
                 <a class="close" data-dismiss="alert" href="#">×</a>
                 <p id="import_text">
@@ -436,7 +437,22 @@
 
 <script type="text/javascript" src="//cdn.datatables.net/fixedcolumns/3.2.4/js/dataTables.fixedColumns.min.js"></script>
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/fixedcolumns/3.2.4/css/fixedColumns.dataTables.min.css"/>
+<style>
+    .loader {
+        border: 10px solid #f3f3f3; /* Light grey */
+        border-top: 10px solid #3498db; /* Blue */
+        border-bottom: 10px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 55px;
+        height: 55px;
+        animation: spin 2s linear infinite;
+    }
 
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
 
 <script type="text/javascript">
     $(document).ready(function(){
