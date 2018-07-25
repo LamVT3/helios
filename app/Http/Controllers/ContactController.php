@@ -666,7 +666,9 @@ class ContactController extends Controller
                 $ad_result->save();
             }
 
-            session()->flash('message', $cnt.' Contact(s) have been imported successfully');
+            session()->flash('message', $cnt.' Contact(s) have been imported successfully.');
+
+            echo $cnt;
 
         });
         //DB::connection('mongodb')->getQueryLog();
@@ -792,11 +794,12 @@ class ContactController extends Controller
                 $ad_result->save();
             }
 
-            session()->flash('message', $cnt.' Contact(s) have been imported successfully');
+            session()->flash('message', $cnt.' Contact(s) have been imported successfully.');
 
+            echo $cnt;
         });
         //DB::connection('mongodb')->getQueryLog();
-//        return redirect()->back();
+        //return redirect()->back();
     }
 
     private function format_phone($phone)
