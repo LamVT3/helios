@@ -304,13 +304,15 @@ $(document).ready(function () {
             processData: false,
             contentType: false,
             cache: false,
-            timeout: 600000
+            timeout: 600000,
+            success: function(result){
+                document.getElementById("import_text").innerHTML = result + ' Contact(s) have been imported successfully.';
+                $('div#import_success').show();
+                initDataTable();
+                $('input#update_all').prop('checked', false); // Unchecks checkbox all
+            }
         });
 
-        setTimeout(function(){
-            initDataTable();
-            $('input#update_all').prop('checked', false); // Unchecks checkbox all
-        }, 2000);
     });
 
     $('button#import_egentic').click(function (e) {
@@ -327,13 +329,15 @@ $(document).ready(function () {
             processData: false,
             contentType: false,
             cache: false,
-            timeout: 600000
+            timeout: 600000,
+            success: function(result){
+                document.getElementById("import_text").innerHTML = result + ' Contact(s) have been imported successfully.';
+                $('div#import_success').show();
+                initDataTable();
+                $('input#update_all').prop('checked', false); // Unchecks checkbox all
+            }
         });
 
-        setTimeout(function(){
-            initDataTable();
-            $('input#update_all').prop('checked', false); // Unchecks checkbox all
-        }, 2000);
     });
 
     $('button#update_contact').click(function (e) {

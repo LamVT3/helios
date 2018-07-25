@@ -23,6 +23,13 @@
 
         <!-- widget grid -->
         <section id="widget-grid" class="">
+            <div id="import_success" class="alert alert-block alert-success" style="display: none">
+                <a class="close" data-dismiss="alert" href="#">×</a>
+                <p id="import_text">
+                    Contacts has been imported successfully.
+                </p>
+            </div>
+
             <div id="export_success" class="alert alert-block alert-success" style="display: none">
                 <a class="close" data-dismiss="alert" href="#">×</a>
                 <p>
