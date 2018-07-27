@@ -91,7 +91,7 @@
                                     <div class="row">
                                         <section class="col col-2">
                                             <label class="label">Choose date</label>
-                                            <input type="date" name="date_time" class="form-control" value="{{$date_time}}">
+                                            <input style="padding-left: 5px" type="date" name="date_time" class="form-control" value="{{$date_time}}">
                                         </section>
                                     </div>
                                     <div class="row">
@@ -202,7 +202,7 @@
                                                         <td>{{$table_accumulated['c3'][$i]}}</td>
                                                         <td>{{$table_accumulated['c3b'][$i]}}</td>
                                                         <td>{{$table_accumulated['c3bg'][$i]}}</td>
-                                                        <td>{{round($table_accumulated['c3bg'][$i] * 100 / $table_accumulated['c3b'][$i] , 2)}}</td>
+                                                        <td>{{$table_accumulated['c3b'][$i] == 0 ? 0 : round($table_accumulated['c3bg'][$i] * 100 / $table_accumulated['c3b'][$i] , 2)}}</td>
                                                     </tr>
                                                 @endfor
                                                 </tbody>

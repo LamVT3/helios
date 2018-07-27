@@ -616,29 +616,27 @@ class SubReportController extends Controller
 			$data_c3a[ $timestamp ]  = [];
 			$data_c3b[ $timestamp ]  = [];
 			$data_c3bg[ $timestamp ] = [];
-
 			$temp['c3'][$timestamp] = 0;
 			$temp['c3a'][$timestamp] = 0;
 			$temp['c3b'][$timestamp] = 0;
 			$temp['c3bg'][$timestamp] = 0;
-
-			$data_c3a[ $timestamp ]  = [];
-			$data_c3b[ $timestamp ]  = [];
-			$data_c3bg[ $timestamp ] = [];
 		}
 
 		for ($i = 0; $i < 24; $i++){
 			$table['c3a'][$i] =  0;
 			$table['c3b'][$i] = 0;
 			$table['c3bg'][$i] = 0;
-
 			$table['c3'][$i] =  0;
 
 			$table['c3a_week'][$i] = 0;
 			$table['c3b_week'][$i] = 0;
 			$table['c3bg_week'][$i] = 0;
-
 			$table['c3_week'][$i] = 0;
+
+			$data_c3a[ $i ] = 0;
+			$data_c3b[ $i ] = 0;
+			$data_c3bg[ $i ] = 0;
+			$data_c3[ $i ] = 0;
 		}
 
 		Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
@@ -699,89 +697,122 @@ class SubReportController extends Controller
 		$chart_c3[$current_hour] = json_encode($line_c3[$current_hour]);
 
 
+		$contacts_c3 = Contact::raw( function ( $collection ) {
+			$match = [
+				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( "midnight" ) * 1000, '$lte' => strtotime( "tomorrow" ) * 1000 ] ] ],
+				[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
+				[
+					'$group' => [
+						'_id' => '$submit_hour',
+						'c3' => [ '$sum' => 1 ],
+					]
+				]
+			];
+			return $collection->aggregate( $match );
+		} );
+		$contacts_c3b = Contact::raw( function ( $collection ) {
+			$match = [
+				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( "midnight" ) * 1000, '$lte' => strtotime( "tomorrow" ) * 1000 ] ] ],
+				[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
+				[
+					'$group' => [
+						'_id' => '$submit_hour',
+						'c3b' => [ '$sum' => 1 ],
+					]
+				]
+			];
+			return $collection->aggregate( $match );
+		} );
+		$contacts_c3bg = Contact::raw( function ( $collection ) {
+			$match = [
+				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( "midnight" ) * 1000, '$lte' => strtotime( "tomorrow" ) * 1000 ] ] ],
+				[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
+				[
+					'$group' => [
+						'_id' => '$submit_hour',
+						'c3bg' => [ '$sum' => 1 ],
+					]
+				]
+			];
+			return $collection->aggregate( $match );
+		} );
+		$contacts_c3_week = Contact::raw( function ( $collection ) {
+			$match = [
+				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( "midnight" ) * 1000 - 7 * 86400000, '$lte' => strtotime( "tomorrow" ) * 1000 ] ] ],
+				[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
+				[
+					'$group' => [
+						'_id' => '$submit_hour',
+						'c3' => [ '$sum' => 1 ],
+					]
+				]
+			];
+			return $collection->aggregate( $match );
+		} );
+		$contacts_c3b_week = Contact::raw( function ( $collection ) {
+			$match = [
+				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( "midnight" ) * 1000 - 7 * 86400000, '$lte' => strtotime( "tomorrow" ) * 1000 ] ] ],
+				[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
+				[
+					'$group' => [
+						'_id' => '$submit_hour',
+						'c3b' => [ '$sum' => 1 ],
+					]
+				]
+			];
+			return $collection->aggregate( $match );
+		} );
+		$contacts_c3bg_week = Contact::raw( function ( $collection ) {
+			$match = [
+				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( "midnight" ) * 1000 - 7 * 86400000, '$lte' => strtotime( "tomorrow" ) * 1000 ] ] ],
+				[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
+				[
+					'$group' => [
+						'_id' => '$submit_hour',
+						'c3bg' => [ '$sum' => 1 ],
+					]
+				]
+			];
+			return $collection->aggregate( $match );
+		} );
 
-		$contacts = Contact::where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 )
-		                   ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
-							->chunk( 1000, function ( $contacts ) use ( &$table ) {
-								foreach ( $contacts as $contact ) {
-									if ($contact->clevel == 'c3a'){
-										$hour = (int) date( "H", $contact->submit_time / 1000 );
-										if (isset($table['c3a'][$hour]))
-											$table['c3a'][$hour] += 1;
-										else{
-											$table['c3a'][$hour] = 1;
-										}
-									}
-									else if ($contact->clevel == 'c3b'){
-										$hour = (int) date( "H", $contact->submit_time / 1000 );
-										if (isset($table['c3b'][$hour]))
-											$table['c3b'][$hour] += 1;
-										else{
-											$table['c3b'][$hour] = 1;
-										}
-									}
-									else if ($contact->clevel == 'c3bg'){
-										$hour = (int) date( "H", $contact->submit_time / 1000 );
-										if (isset($table['c3bg'][$hour]))
-											$table['c3bg'][$hour] += 1;
-										else{
-											$table['c3bg'][$hour] = 1;
-										}
-									}
-								}
-							} );
-
-		$contacts_week = Contact::where( 'submit_time', '>=', strtotime( "midnight" ) * 1000 - 7 * 86400000)
-		                   ->where( 'submit_time', '<', strtotime( "tomorrow" ) * 1000 )
-							->chunk( 1000, function ( $contacts ) use ( &$table ) {
-								foreach ( $contacts as $contact ) {
-									if ($contact->clevel == 'c3a'){
-										$hour = (int) date( "H", $contact->submit_time / 1000 );
-										if (isset($table['c3a_week'][$hour]))
-											$table['c3a_week'][$hour] += 1;
-										else{
-											$table['c3a_week'][$hour] = 1;
-										}
-									}
-									else if ($contact->clevel == 'c3b'){
-										$hour = (int) date( "H", $contact->submit_time / 1000 );
-										if (isset($table['c3b_week'][$hour]))
-											$table['c3b_week'][$hour] += 1;
-										else{
-											$table['c3b_week'][$hour] = 1;
-										}
-									}
-									else if ($contact->clevel == 'c3bg'){
-										$hour = (int) date( "H", $contact->submit_time / 1000 );
-										if (isset($table['c3bg_week'][$hour]))
-											$table['c3bg_week'][$hour] += 1;
-										else{
-											$table['c3bg_week'][$hour] = 1;
-										}
-									}
-								}
-							} );
+		foreach ( $contacts_c3 as $item_result ) {
+			$hour = (int)$item_result['_id'];
+			$table['c3'][$hour] += (int)$item_result->c3;
+		}
+		foreach ( $contacts_c3b as $item_result ) {
+				$hour = $item_result['_id'];
+				$table['c3b'][$hour] += $item_result->c3b;
+		}
+		foreach ( $contacts_c3bg as $item_result ) {
+				$hour = $item_result['_id'];
+				$table['c3bg'][$hour] += $item_result->c3bg;
+		}
+		foreach ( $contacts_c3_week as $item_result ) {
+				$hour = $item_result['_id'];
+				$table['c3_week'][$hour] += $item_result->c3;
+		}
+		foreach ( $contacts_c3b_week as $item_result ) {
+				$hour = $item_result['_id'];
+				$table['c3b_week'][$hour] += $item_result->c3b;
+		}
+		foreach ( $contacts_c3bg_week as $item_result ) {
+				$hour = $item_result['_id'];
+				$table['c3bg_week'][$hour] += $item_result->c3bg;
+		}
 
 		for ($i = 0; $i < 24; $i++){
-			$table['c3'][$i] =  $table['c3a'][$i] + $table['c3b'][$i] + $table['c3bg'][$i];
-			$table['c3b'][$i] =  $table['c3b'][$i] + $table['c3bg'][$i];
-
 			$c3_line[] =  [$i, $table['c3'][$i]];
 			$c3b_line[] =  [$i, $table['c3b'][$i]];
 			$c3bg_line[] =  [$i, $table['c3bg'][$i]];
 
-
-			$table['c3a_week'][$i] = intval( round($table['c3a_week'][$i] / 7));
+			$table['c3_week'][$i] = intval( round($table['c3_week'][$i] / 7));
 			$table['c3b_week'][$i] = intval( round($table['c3b_week'][$i] / 7));
 			$table['c3bg_week'][$i] = intval( round($table['c3bg_week'][$i] / 7));
-
-			$table['c3_week'][$i] =  $table['c3a_week'][$i] + $table['c3b_week'][$i] + $table['c3bg_week'][$i];
-			$table['c3b_week'][$i] = $table['c3b_week'][$i] + $table['c3bg_week'][$i];
 
 			$c3_week_line[] =  [$i, $table['c3_week'][$i]];
 			$c3b_week_line[] =  [$i, $table['c3b_week'][$i]];
 			$c3bg_week_line[] =  [$i, $table['c3bg_week'][$i]];
-
 
 			$table_accumulated['c3'][$i] = 0;
 			$table_accumulated['c3b'][$i] = 0;
@@ -884,18 +915,22 @@ class SubReportController extends Controller
 
 		$current_hour = (int)date('H');
 
+		$data_where = $this->getWhereData();
+		$request        = request();
+		$date_time   = $request->date_time;
+		$ad_id  = $this->getAds();
+
 		foreach ($array_month as $key => $timestamp){
 			$data_c3a[ $timestamp ]  = [];
 			$data_c3b[ $timestamp ]  = [];
 			$data_c3bg[ $timestamp ] = [];
-
 			$temp['c3'][$timestamp] = 0;
 			$temp['c3a'][$timestamp] = 0;
 			$temp['c3b'][$timestamp] = 0;
 			$temp['c3bg'][$timestamp] = 0;
 		}
 
-		Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
+		Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
 		       ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
 		       ->chunk( 1000, function ( $contacts ) use ( &$data_c3a , &$data_c3b, &$data_c3bg) {
 			       foreach ( $contacts as $contact ) {
@@ -929,7 +964,6 @@ class SubReportController extends Controller
 			       }
 		       } );
 
-
 		for ($h = 0; $h <= $current_hour; $h++){
 			foreach ($array_month as $key => $timestamp){
 				$temp['c3a'][$timestamp] += isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0;
@@ -952,116 +986,222 @@ class SubReportController extends Controller
 		$chart_c3bg[$current_hour] = json_encode($line_c3bg[$current_hour]);
 		$chart_c3[$current_hour] = json_encode($line_c3[$current_hour]);
 
-		foreach ($array_month as $key => $timestamp){
-			$data_c3a[ $timestamp ]  = [];
-			$data_c3b[ $timestamp ]  = [];
-			$data_c3bg[ $timestamp ] = [];
+		for ($i = 0; $i < 24; $i++){
+			$table['c3b'][ $i ]       = 0;
+			$table['c3bg'][ $i ]      = 0;
+			$table['c3'][ $i ]        = 0;
+			$table['c3b_week'][ $i ]  = 0;
+			$table['c3bg_week'][ $i ] = 0;
+			$table['c3_week'][ $i ]   = 0;
+		}
+
+		$contacts_c3 = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
+			if (count($ad_id) > 0){
+				$match = [
+					['$match' => ['ad_id' => ['$in' => $ad_id]]],
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => '$submit_hour',
+							'c3' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			else{
+				$match = [
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => '$submit_hour',
+							'c3' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			return $collection->aggregate( $match );
+		} );
+		$contacts_c3b = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
+			if (count($ad_id) > 0){
+				$match = [
+					['$match' => ['ad_id' => ['$in' => $ad_id]]],
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => '$submit_hour',
+							'c3b' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			else{
+				$match = [
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => '$submit_hour',
+							'c3b' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			return $collection->aggregate( $match );
+		} );
+		$contacts_c3bg = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
+			if (count($ad_id) > 0){
+				$match = [
+					['$match' => ['ad_id' => ['$in' => $ad_id]]],
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => '$submit_hour',
+							'c3bg' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			else{
+				$match = [
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => '$submit_hour',
+							'c3bg' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			return $collection->aggregate( $match );
+		} );
+		$contacts_c3_week = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
+			if (count($ad_id) > 0){
+				$match = [
+					['$match' => ['ad_id' => ['$in' => $ad_id]]],
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000  - 7 * 86400000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => '$submit_hour',
+							'c3' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			else{
+				$match = [
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000  - 7 * 86400000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => '$submit_hour',
+							'c3' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			return $collection->aggregate( $match );
+		} );
+		$contacts_c3b_week = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
+			if (count($ad_id) > 0){
+				$match = [
+					['$match' => ['ad_id' => ['$in' => $ad_id]]],
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000  - 7 * 86400000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => '$submit_hour',
+							'c3b' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			else{
+				$match = [
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000  - 7 * 86400000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => '$submit_hour',
+							'c3b' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			return $collection->aggregate( $match );
+		} );
+		$contacts_c3bg_week = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
+			if (count($ad_id) > 0){
+				$match = [
+					['$match' => ['ad_id' => ['$in' => $ad_id]]],
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000  - 7 * 86400000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => '$submit_hour',
+							'c3bg' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			else{
+				$match = [
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000  - 7 * 86400000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => '$submit_hour',
+							'c3bg' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			return $collection->aggregate( $match );
+		} );
+
+		foreach ( $contacts_c3 as $item_result ) {
+			$hour = (int)$item_result['_id'];
+			$table['c3'][$hour] += (int)$item_result->c3;
+		}
+		foreach ( $contacts_c3b as $item_result ) {
+			$hour = $item_result['_id'];
+			$table['c3b'][$hour] += $item_result->c3b;
+		}
+		foreach ( $contacts_c3bg as $item_result ) {
+			$hour = $item_result['_id'];
+			$table['c3bg'][$hour] += $item_result->c3bg;
+		}
+		foreach ( $contacts_c3_week as $item_result ) {
+			$hour = $item_result['_id'];
+			$table['c3_week'][$hour] += $item_result->c3;
+		}
+		foreach ( $contacts_c3b_week as $item_result ) {
+			$hour = $item_result['_id'];
+			$table['c3b_week'][$hour] += $item_result->c3b;
+		}
+		foreach ( $contacts_c3bg_week as $item_result ) {
+			$hour = $item_result['_id'];
+			$table['c3bg_week'][$hour] += $item_result->c3bg;
 		}
 
 		for ($i = 0; $i < 24; $i++){
-			$table['c3a'][$i] =  0;
-			$table['c3b'][$i] = 0;
-			$table['c3bg'][$i] = 0;
-
-			$table['c3'][$i] =  0;
-
-			$table['c3a_week'][$i] = 0;
-			$table['c3b_week'][$i] = 0;
-			$table['c3bg_week'][$i] = 0;
-
-			$table['c3_week'][$i] = 0;
-		}
-
-		$data_where = $this->getWhereData();
-
-		$request        = request();
-		$date_time   = $request->date_time;
-
-		$contacts = Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $date_time ) * 1000 )
-		                   ->where( 'submit_time', '<', strtotime( $date_time ) * 1000 + 86400000)
-		                   ->chunk( 1000, function ( $contacts ) use ( &$table ) {
-			                   foreach ( $contacts as $contact ) {
-				                   if ($contact->clevel == 'c3a'){
-					                   $hour = (int) date( "H", $contact->submit_time / 1000 );
-					                   if (isset($table['c3a'][$hour]))
-						                   $table['c3a'][$hour] += 1;
-					                   else{
-						                   $table['c3a'][$hour] = 1;
-					                   }
-				                   }
-				                   else if ($contact->clevel == 'c3b'){
-					                   $hour = (int) date( "H", $contact->submit_time / 1000 );
-					                   if (isset($table['c3b'][$hour]))
-						                   $table['c3b'][$hour] += 1;
-					                   else{
-						                   $table['c3b'][$hour] = 1;
-					                   }
-				                   }
-				                   else if ($contact->clevel == 'c3bg'){
-					                   $hour = (int) date( "H", $contact->submit_time / 1000 );
-					                   if (isset($table['c3bg'][$hour]))
-						                   $table['c3bg'][$hour] += 1;
-					                   else{
-						                   $table['c3bg'][$hour] = 1;
-					                   }
-				                   }
-			                   }
-		                   } );
-
-		$contacts_week = Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $date_time ) * 1000  - 7 * 86400000)
-		                        ->where( 'submit_time', '<', strtotime( $date_time ) * 1000 + 86400000)
-		                        ->chunk( 1000, function ( $contacts ) use ( &$table ) {
-			                        foreach ( $contacts as $contact ) {
-				                        if ($contact->clevel == 'c3a'){
-					                        $hour = (int) date( "H", $contact->submit_time / 1000 );
-					                        if (isset($table['c3a_week'][$hour]))
-						                        $table['c3a_week'][$hour] += 1;
-					                        else{
-						                        $table['c3a_week'][$hour] = 1;
-					                        }
-				                        }
-				                        else if ($contact->clevel == 'c3b'){
-					                        $hour = (int) date( "H", $contact->submit_time / 1000 );
-					                        if (isset($table['c3b_week'][$hour]))
-						                        $table['c3b_week'][$hour] += 1;
-					                        else{
-						                        $table['c3b_week'][$hour] = 1;
-					                        }
-				                        }
-				                        else if ($contact->clevel == 'c3bg'){
-					                        $hour = (int) date( "H", $contact->submit_time / 1000 );
-					                        if (isset($table['c3bg_week'][$hour]))
-						                        $table['c3bg_week'][$hour] += 1;
-					                        else{
-						                        $table['c3bg_week'][$hour] = 1;
-					                        }
-				                        }
-			                        }
-		                        } );
-
-		for ($i = 0; $i < 24; $i++){
-			$table['c3'][$i] =  $table['c3a'][$i] + $table['c3b'][$i] + $table['c3bg'][$i];
-			$table['c3b'][$i] =  $table['c3b'][$i] + $table['c3bg'][$i];
-
 			$c3_line[] =  [$i, $table['c3'][$i]];
 			$c3b_line[] =  [$i, $table['c3b'][$i]];
 			$c3bg_line[] =  [$i, $table['c3bg'][$i]];
-		}
 
-		for ($i = 0; $i < 24; $i++){
-			$table['c3a_week'][$i] = intval( round($table['c3a_week'][$i] / 7));
+			$table['c3_week'][$i] = intval( round($table['c3_week'][$i] / 7));
 			$table['c3b_week'][$i] = intval( round($table['c3b_week'][$i] / 7));
 			$table['c3bg_week'][$i] = intval( round($table['c3bg_week'][$i] / 7));
-
-			$table['c3_week'][$i] =  $table['c3a_week'][$i] + $table['c3b_week'][$i] + $table['c3bg_week'][$i];
-			$table['c3b_week'][$i] = $table['c3b_week'][$i] + $table['c3bg_week'][$i];
 
 			$c3_week_line[] =  [$i, $table['c3_week'][$i]];
 			$c3b_week_line[] =  [$i, $table['c3b_week'][$i]];
 			$c3bg_week_line[] =  [$i, $table['c3bg_week'][$i]];
-		}
 
-		for ($i = 0; $i < 24; $i++){
 			$table_accumulated['c3'][$i] = 0;
 			$table_accumulated['c3b'][$i] = 0;
 			$table_accumulated['c3bg'][$i] = 0;
