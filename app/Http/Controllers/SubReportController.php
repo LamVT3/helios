@@ -613,13 +613,15 @@ class SubReportController extends Controller
 		$current_hour = (int)date('H');
 
 		foreach ($array_month as $key => $timestamp){
-			$data_c3a[ $timestamp ]  = [];
-			$data_c3b[ $timestamp ]  = [];
-			$data_c3bg[ $timestamp ] = [];
 			$temp['c3'][$timestamp] = 0;
 			$temp['c3a'][$timestamp] = 0;
 			$temp['c3b'][$timestamp] = 0;
 			$temp['c3bg'][$timestamp] = 0;
+			for ($i = 0; $i < 24; $i++){
+				$data_c3[ $timestamp ][$i]  = 0;
+				$data_c3b[ $timestamp ][$i]  = 0;
+				$data_c3bg[ $timestamp ][$i]  = 0;
+			}
 		}
 
 		for ($i = 0; $i < 24; $i++){
@@ -627,63 +629,70 @@ class SubReportController extends Controller
 			$table['c3b'][$i] = 0;
 			$table['c3bg'][$i] = 0;
 			$table['c3'][$i] =  0;
-
 			$table['c3a_week'][$i] = 0;
 			$table['c3b_week'][$i] = 0;
 			$table['c3bg_week'][$i] = 0;
 			$table['c3_week'][$i] = 0;
-
-			$data_c3a[ $i ] = 0;
-			$data_c3b[ $i ] = 0;
-			$data_c3bg[ $i ] = 0;
-			$data_c3[ $i ] = 0;
 		}
 
-		Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
-		       ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
-		       ->chunk( 1000, function ( $contacts ) use ( &$data_c3a , &$data_c3b, &$data_c3bg) {
-			       foreach ( $contacts as $contact ) {
-				        if ($contact->clevel == 'c3a'){
-				        	$timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
-					        $hour = (int) date( "H", $contact->submit_time / 1000 );
-					        if (isset($data_c3a[$timestamp][$hour]))
-						        $data_c3a[$timestamp][$hour] += 1;
-					        else{
-						        $data_c3a[$timestamp][$hour] = 1;
-					        }
-				        }
-				       else if ($contact->clevel == 'c3b'){
-					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
-					       $hour = (int) date( "H", $contact->submit_time / 1000 );
-					       if (isset($data_c3b[$timestamp][$hour]))
-						       $data_c3b[$timestamp][$hour] += 1;
-					       else{
-						       $data_c3b[$timestamp][$hour] = 1;
-					       }
-				       }
-				       else if ($contact->clevel == 'c3bg'){
-					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
-					       $hour = (int) date( "H", $contact->submit_time / 1000 );
-					       if (isset($data_c3bg[$timestamp][$hour]))
-						       $data_c3bg[$timestamp][$hour] += 1;
-					       else{
-						       $data_c3bg[$timestamp][$hour] = 1;
-					       }
-				       }
-			       }
-		       } );
+		$_contacts_c3 = Contact::raw( function ( $collection ) use ($first_day_this_month, $last_day_this_month) {
+			$match = [
+				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
+				[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
+				[
+					'$group' => [
+						'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
+						'c3' => [ '$sum' => 1 ],
+					]
+				]
+			];
+			return $collection->aggregate( $match );
+		} );
+		$_contacts_c3b = Contact::raw( function ( $collection ) use ($first_day_this_month, $last_day_this_month) {
+			$match = [
+				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
+				[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
+				[
+					'$group' => [
+						'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
+						'c3b' => [ '$sum' => 1 ],
+					]
+				]
+			];
+			return $collection->aggregate( $match );
+		} );
+		$_contacts_c3bg = Contact::raw( function ( $collection ) use ($first_day_this_month, $last_day_this_month) {
+			$match = [
+				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
+				[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
+				[
+					'$group' => [
+						'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
+						'c3bg' => [ '$sum' => 1 ],
+					]
+				]
+			];
+			return $collection->aggregate( $match );
+		} );
 
+		foreach ( $_contacts_c3 as $item_result ) {
+			$timestamp = $item_result['_id'];
+			$data_c3[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3;
+		}
+		foreach ( $_contacts_c3b as $item_result ) {
+			$timestamp = $item_result['_id'];
+			$data_c3b[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3b;
+		}
+		foreach ( $_contacts_c3bg as $item_result ) {
+			$timestamp = $item_result['_id'];
+			$data_c3bg[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3bg;
+		}
 
 		for ($h = 0; $h <= $current_hour; $h++){
 			foreach ($array_month as $key => $timestamp){
-				$temp['c3a'][$timestamp] += isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0;
-				$temp['c3b'][$timestamp] += ((isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0)
-				                             + (isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0));
-				$temp['c3bg'][$timestamp] += isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0;
-				$temp['c3'][$timestamp] += ((isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0)
-										+ (isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0)
-										+ (isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0)) ;
-
+				$temp['c3'][$timestamp] += $data_c3[$timestamp][$h];
+				$temp['c3b'][$timestamp] += $data_c3b[$timestamp][$h];
+				$temp['c3bg'][$timestamp] += $data_c3bg[$timestamp][$h];
 			}
 		}
 
@@ -921,59 +930,116 @@ class SubReportController extends Controller
 		$ad_id  = $this->getAds();
 
 		foreach ($array_month as $key => $timestamp){
-			$data_c3a[ $timestamp ]  = [];
-			$data_c3b[ $timestamp ]  = [];
-			$data_c3bg[ $timestamp ] = [];
 			$temp['c3'][$timestamp] = 0;
-			$temp['c3a'][$timestamp] = 0;
 			$temp['c3b'][$timestamp] = 0;
 			$temp['c3bg'][$timestamp] = 0;
+			for ($i = 0; $i < 24; $i++){
+				$data_c3[ $timestamp ][$i]  = 0;
+				$data_c3b[ $timestamp ][$i]  = 0;
+				$data_c3bg[ $timestamp ][$i]  = 0;
+			}
 		}
 
-		Contact::where($data_where)->where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
-		       ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
-		       ->chunk( 1000, function ( $contacts ) use ( &$data_c3a , &$data_c3b, &$data_c3bg) {
-			       foreach ( $contacts as $contact ) {
-				       if ($contact->clevel == 'c3a'){
-					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
-					       $hour = (int) date( "H", $contact->submit_time / 1000 );
-					       if (isset($data_c3a[$timestamp][$hour]))
-						       $data_c3a[$timestamp][$hour] += 1;
-					       else{
-						       $data_c3a[$timestamp][$hour] = 1;
-					       }
-				       }
-				       else if ($contact->clevel == 'c3b'){
-					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
-					       $hour = (int) date( "H", $contact->submit_time / 1000 );
-					       if (isset($data_c3b[$timestamp][$hour]))
-						       $data_c3b[$timestamp][$hour] += 1;
-					       else{
-						       $data_c3b[$timestamp][$hour] = 1;
-					       }
-				       }
-				       else if ($contact->clevel == 'c3bg'){
-					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
-					       $hour = (int) date( "H", $contact->submit_time / 1000 );
-					       if (isset($data_c3bg[$timestamp][$hour]))
-						       $data_c3bg[$timestamp][$hour] += 1;
-					       else{
-						       $data_c3bg[$timestamp][$hour] = 1;
-					       }
-				       }
-			       }
-		       } );
+		$_contacts_c3 = Contact::raw( function ( $collection ) use ($ad_id, $first_day_this_month, $last_day_this_month) {
+			if (count($ad_id) > 0){
+				$match = [
+					['$match' => ['ad_id' => ['$in' => $ad_id]]],
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
+							'c3' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			} else{
+				$match = [
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
+							'c3' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			return $collection->aggregate( $match );
+		} );
+		$_contacts_c3b = Contact::raw( function ( $collection ) use ($ad_id, $first_day_this_month, $last_day_this_month) {
+			if (count($ad_id) > 0){
+				$match = [
+					['$match' => ['ad_id' => ['$in' => $ad_id]]],
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
+							'c3b' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			} else{
+				$match = [
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
+							'c3b' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			return $collection->aggregate( $match );
+		} );
+		$_contacts_c3bg = Contact::raw( function ( $collection ) use ($ad_id, $first_day_this_month, $last_day_this_month) {
+			if (count($ad_id) > 0){
+				$match = [
+					['$match' => ['ad_id' => ['$in' => $ad_id]]],
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
+							'c3bg' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			} else{
+				$match = [
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
+							'c3bg' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			return $collection->aggregate( $match );
+		} );
+
+		foreach ( $_contacts_c3 as $item_result ) {
+			$timestamp = $item_result['_id'];
+			$data_c3[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3;
+		}
+		foreach ( $_contacts_c3b as $item_result ) {
+			$timestamp = $item_result['_id'];
+			$data_c3b[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3b;
+		}
+		foreach ( $_contacts_c3bg as $item_result ) {
+			$timestamp = $item_result['_id'];
+			$data_c3bg[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3bg;
+		}
 
 		for ($h = 0; $h <= $current_hour; $h++){
 			foreach ($array_month as $key => $timestamp){
-				$temp['c3a'][$timestamp] += isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0;
-				$temp['c3b'][$timestamp] += ((isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0)
-				                             + (isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0));
-				$temp['c3bg'][$timestamp] += isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0;
-				$temp['c3'][$timestamp] += ((isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0)
-				                            + (isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0)
-				                            + (isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0)) ;
-
+				$temp['c3'][$timestamp] += $data_c3[$timestamp][$h];
+				$temp['c3b'][$timestamp] += $data_c3b[$timestamp][$h];
+				$temp['c3bg'][$timestamp] += $data_c3bg[$timestamp][$h];
 			}
 		}
 
