@@ -481,6 +481,11 @@ class ReportController extends Controller
         $usd_tbh    = $config['USD_THB'];
         $thb_vnd    = $config['THB_VND'];
 
+        $rate = config('constants.UNIT_USD');
+        if($request->unit){
+            $rate = $request->unit;
+        }
+
         if($request->unit == config('constants.UNIT_USD')){
             $revenue    = $usd_tbh ? $revenue / $usd_tbh : 0;
         }elseif ($request->unit == config('constants.UNIT_VND')){
