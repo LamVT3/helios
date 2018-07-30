@@ -179,6 +179,14 @@ $(document).ready(function () {
         filterReport();
     })
 
+    $('.nav-tabs a').click(function(){
+        var href = $(this).attr('href');
+        if(href == '#report'){
+            $('div#lst_currency').show();
+        }else{
+            $('div#lst_currency').hide();
+        }
+    })
 
 });
 
