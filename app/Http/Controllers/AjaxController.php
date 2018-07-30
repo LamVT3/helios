@@ -1195,7 +1195,8 @@ class AjaxController extends Controller
 
 		foreach ( $_contacts_c3 as $item_result ) {
 			$timestamp = $item_result['_id'];
-			$data_c3[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3;
+			if (isset($data_c3[$timestamp->submit_date]))
+				$data_c3[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3;
 		}
 
 		for ($hr = 0; $hr <= 23; $hr++){
@@ -1273,7 +1274,8 @@ class AjaxController extends Controller
 
 		foreach ( $_contacts_c3b as $item_result ) {
 			$timestamp = $item_result['_id'];
-			$data_c3b[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3b;
+			if (isset($data_c3b[$timestamp->submit_date]))
+				$data_c3b[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3b;
 		}
 
 		for ($hr = 0; $hr <= 23; $hr++){
@@ -1350,7 +1352,8 @@ class AjaxController extends Controller
 
 		foreach ( $_contacts_c3bg as $item_result ) {
 			$timestamp = $item_result['_id'];
-			$data_c3bg[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3bg;
+			if (isset($data_c3bg[$timestamp->submit_date]))
+				$data_c3bg[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3bg;
 		}
 
 
