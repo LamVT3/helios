@@ -46,6 +46,10 @@
         <td>{{ $contact->ad_name or '-100' }}</td>
     </tr>
     <tr>
+        <td>Channel</td>
+        <td>{{ $contact->channel_name or '' }}</td>
+    </tr>
+    <tr>
         <td>Landing page</td>
         <td>{{ $contact->landing_page or '' }}</td>
     </tr>
