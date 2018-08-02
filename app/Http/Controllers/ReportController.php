@@ -141,7 +141,7 @@ class ReportController extends Controller
             if(!$request->mode || $request->mode == 'TOA'){
                 $report = $this->prepare_report($results);
             }else{
-                $report = $this->prepare_report_tot($query->groupBy('ad_id')->get());
+                $report = $this->prepare_report_tot($results);
             }
         }
 
@@ -481,6 +481,11 @@ class ReportController extends Controller
         $usd_tbh    = $config['USD_THB'];
         $thb_vnd    = $config['THB_VND'];
 
+        $rate = config('constants.UNIT_USD');
+        if($request->unit){
+            $rate = $request->unit;
+        }
+
         if($request->unit == config('constants.UNIT_USD')){
             $revenue    = $usd_tbh ? $revenue / $usd_tbh : 0;
         }elseif ($request->unit == config('constants.UNIT_VND')){
@@ -490,8 +495,6 @@ class ReportController extends Controller
         return round($revenue, 2);
 
     }
-
-
 
     private function convert_spent($spent){
         $request    = request();
@@ -994,7 +997,7 @@ class ReportController extends Controller
                     ['$match' => ['l1_time' => ['$gte' => $start, '$lte' => $end]]],
                     [
                         '$group' => [
-                            '_id' => '$ad_id',
+                            '_id'   => '$ad_id',
                             'count' => ['$sum' => 1],
                         ]
                     ]
