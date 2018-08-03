@@ -257,7 +257,6 @@ $(document).ready(function () {
         });
 
         $('input[name=contact_id]').val(id);
-        console.log($('input[name=contact_id]').val());
 
         $('#export-form-c3').submit();
 
@@ -661,7 +660,6 @@ function countExported() {
     data.olm_status         = olm_status;
 
     $.get(url, data, function (data) {
-        console.log(data);
         $('input[name="exported"]').val(data.to_excel);
         $('input[name="export_to_olm"]').val(data.to_olm);
         // setTimeout(function(){
@@ -752,10 +750,7 @@ function enable_update() {
             $('button#edit_contact').show().addClass('disabled');
             $('button#edit_contact').show().prop('disabled', true);
         }, 500);
-
-
     }
-
 }
 
 function edit(item, mode){
