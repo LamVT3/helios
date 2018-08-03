@@ -257,7 +257,6 @@ $(document).ready(function () {
         });
 
         $('input[name=contact_id]').val(id);
-        console.log($('input[name=contact_id]').val());
 
         $('#export-form-c3').submit();
 
@@ -369,18 +368,18 @@ $(document).ready(function () {
         var is_checked = this.checked;
         if(is_checked){
             $('input[name="update_all"]').val(1);
+            $('button#edit_contact').hide();
+            $('button#update_contact').show();
         }else{
             $('input[name="update_all"]').val(0);
+            $('button#edit_contact').show();
+            $('button#update_contact').hide();
         }
         $('input:checkbox[id=is_update]').prop('checked', this.checked);
         enable_update();
-        if($(this).is(':unchecked')){
-            $("input:checkbox[id=is_update]").each(function () {
-                edit(this, 'all');
-            });
-        }
-        $('button#edit_contact').prop('disabled', false);
-        $('button#edit_contact').removeClass('disabled');
+        $("input:checkbox[id=is_update]").each(function () {
+            edit(this, 'all');
+        });
 
     });
 
@@ -527,7 +526,7 @@ function initDataTable() {
             { "data" : 'clevel'},
             { "data" : 'current_level',     "defaultContent": "-"},
             { "data" : 'ad_name',           "defaultContent": "-"},
-            { "data" : 'channel_name',      "defaultContent": "-"},
+            { "data" : 'channel_name',      "defaultContent": "-",  'className' : "channel"},
             { "data" : 'source_name',       "defaultContent": "-"},
             { "data" : 'team_name',         "defaultContent": "-"},
             { "data" : 'marketer_name',     "defaultContent": "-"},
@@ -569,16 +568,16 @@ function initDataTable() {
                     var status = '';
 
                     if(data == 0){
-                        status = '<span id="status">Success</span><input type="hidden" id="old_status" value="1">';
+                        status = '<span id="olm_status">Success</span><input type="hidden" id="old_status_olm" value="0">';
                     }
                     else if(data == 1){
-                        status = '<span id="status">Duplicated</span><input type="hidden" id="old_status" value="1">';
+                        status = '<span id="olm_status">Duplicated</span><input type="hidden" id="old_status_olm" value="1">';
                     }
                     else if(data == 2 || data == 3){
-                        status = '<span id="status">Error</span><input type="hidden" id="old_status" value="1">';
+                        status = '<span id="olm_status">Error</span><input type="hidden" id="old_status_olm" value="2">';
                     }
                     else{
-                        status = '<span id="status">Not Exported</span><input type="hidden" id="old_status" value="1">';
+                        status = '<span id="olm_status">Not Exported</span><input type="hidden" id="old_status_olm" value="3">';
                     }
                     return status;
                 }
@@ -588,35 +587,34 @@ function initDataTable() {
         "scrollX"       : true,
         'scrollCollapse': true,
         "createdRow": function ( row, data, index ) {
-            // var mode = $('input[name=mode]:checked').val();
-            // if(mode == '0'){
+            var mode = $('input[name=mode]:checked').val();
+            if(mode == '0'){
                 if(data['is_export'] == 1){
                     $(row).addClass('is_export');
                 }
-            // }
-            // else{
-            //     if(data['olm_status'] == 0){
-            //         $(row).addClass('olm_status_success');
-            //     }
-            //     else if(data['olm_status'] == 1){
-            //         $(row).addClass('olm_status_duplicated');
-            //     }
-            //     else if(data['olm_status'] == 2 || data['olm_status'] == 3){
-            //         $(row).addClass('olm_status_error');
-            //     }
-            // }
-        },
-        "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
-
-            if(iTotal == 0){
-                return "";
             }
-            // countExportedWhenSearch();
-            var exported    = $('input[name="exported"]').val();
-            var count_str   = '<span id="cnt_exported" class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
-
-            return sPre + count_str;
+            else{
+                if(data['olm_status'] == 0){
+                    $(row).addClass('olm_status_success');
+                }
+                else if(data['olm_status'] == 1){
+                    $(row).addClass('olm_status_duplicated');
+                }
+                else if(data['olm_status'] == 2 || data['olm_status'] == 3){
+                    $(row).addClass('olm_status_error');
+                }
+            }
         },
+        // "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
+            // if(iTotal == 0){
+            //     return "";
+            // }
+            // // countExportedWhenSearch();
+            // var exported    = $('input[name="exported"]').val();
+            // var count_str   = '<span id="cnt_exported" class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
+            //
+            // return sPre + count_str;
+        // },
     });
 
 }
@@ -662,7 +660,6 @@ function countExported() {
     data.olm_status         = olm_status;
 
     $.get(url, data, function (data) {
-        console.log(data);
         $('input[name="exported"]').val(data.to_excel);
         $('input[name="export_to_olm"]').val(data.to_olm);
         // setTimeout(function(){
@@ -753,37 +750,20 @@ function enable_update() {
             $('button#edit_contact').show().addClass('disabled');
             $('button#edit_contact').show().prop('disabled', true);
         }, 500);
-
-
     }
-
 }
 
 function edit(item, mode){
     var is_show = $('button#update_contact').is(':visible');
+    $statusCell = $(item).parents().siblings('td.status');
 
     if(is_show || mode == 'all'){
-        $statusCell = $(item).parents().siblings('td.status');
-        $status = $($statusCell).find('input#old_status').val();
-        $($statusCell).find('select#status_update').remove();
         var is_checked = $(item).is(':checked');
         if(is_checked){
-            $($statusCell).find('span#status').hide();
-            if($status == 1){
-                $($statusCell).append('' +
-                    '<select id="status_update" onchange="setAll(this);">' +
-                    '<option value="1" selected>Exported</option>' +
-                    '<option value="0">Not Export</option>' +
-                    '</select>' +
-                    '');
-            }else{
-                $($statusCell).append('' +
-                    '<select id="status_update" onchange="setAll(this);">' +
-                    '<option value="1">Exported</option>' +
-                    '<option value="0" selected>Not Export</option>' +
-                    '</select>' +
-                    '');
-            }
+            addSelectStatus(item);
+            addSelectStatusOLM(item);
+            // addSelectChannel(item);
+
             var check_all = $('input[id=update_all]').is(':checked');
             if(check_all){
                 $('select#status_update').first().focus(500);
@@ -793,7 +773,101 @@ function edit(item, mode){
         }else{
             $($statusCell).find('span#status').show();
             $($statusCell).find('select#status_update').remove();
+
+            $($statusCell).find('span#olm_status').show();
+            $($statusCell).find('select#olm_status_update').remove();
         }
+    }
+}
+
+function addSelectStatus(item){
+    $statusCell = $(item).parents().siblings('td.status');
+    $status     = $($statusCell).find('input#old_status').val();
+    $($statusCell).find('select#status_update').remove();
+
+    $($statusCell).find('span#status').hide();
+    if($status == 1){
+        $($statusCell).append('' +
+            '<select id="status_update" onchange="setAll(this);">' +
+            '<option value="1" selected>Exported</option>' +
+            '<option value="0">Not Export</option>' +
+            '</select>' +
+            '');
+    }else{
+        $($statusCell).append('' +
+            '<select id="status_update" onchange="setAll(this);">' +
+            '<option value="1">Exported</option>' +
+            '<option value="0" selected>Not Export</option>' +
+            '</select>' +
+            '');
+    }
+}
+
+function addSelectStatusOLM(item){
+    $statusCell = $(item).parents().siblings('td.olm_status');
+    $status     = $($statusCell).find('input#old_status_olm').val();
+    $($statusCell).find('select#olm_status_update').remove();
+
+    $($statusCell).find('span#olm_status').hide();
+    if($status == 0){
+        $($statusCell).append('' +
+            '<select id="olm_status_update" onchange="setAll(this);">' +
+            '<option value="0" selected>Success</option>' +
+            '<option value="1">Duplicated</option>' +
+            '<option value="2">Error</option>' +
+            '<option value="3">Not Export</option>' +
+            '</select>' +
+            '');
+    }else if ($status == 1){
+        $($statusCell).append('' +
+            '<select id="olm_status_update" onchange="setAll(this);">' +
+            '<option value="0">Success</option>' +
+            '<option value="1" selected>Duplicated</option>' +
+            '<option value="2">Error</option>' +
+            '<option value="3">Not Export</option>' +
+            '</select>' +
+            '');
+    }else if ($status == 2){
+        $($statusCell).append('' +
+            '<select id="olm_status_update" onchange="setAll(this);">' +
+            '<option value="0">Success</option>' +
+            '<option value="1">Duplicated</option>' +
+            '<option value="2" selected>Error</option>' +
+            '<option value="3">Not Export</option>' +
+            '</select>' +
+            '');
+    }else{
+        $($statusCell).append('' +
+            '<select id="olm_status_update" onchange="setAll(this);">' +
+            '<option value="0">Success</option>' +
+            '<option value="1">Duplicated</option>' +
+            '<option value="2">Error</option>' +
+            '<option value="3" selected>Not Export</option>' +
+            '</select>' +
+            '');
+    }
+}
+
+function addSelectChannel(item){
+    $statusCell = $(item).parents().siblings('td.channel');
+    $status     = $($statusCell).find('input#channel').val();
+    $($statusCell).find('select#channel_update').remove();
+
+    $($statusCell).find('span#channel').hide();
+    if($status == 1){
+        $($statusCell).append('' +
+            '<select id="channel_update" onchange="setAll(this);">' +
+            '<option value="1" selected>Exported</option>' +
+            '<option value="0">Not Export</option>' +
+            '</select>' +
+            '');
+    }else{
+        $($statusCell).append('' +
+            '<select id="channel_update" onchange="setAll(this);">' +
+            '<option value="1">Exported</option>' +
+            '<option value="0" selected>Not Export</option>' +
+            '</select>' +
+            '');
     }
 }
 
