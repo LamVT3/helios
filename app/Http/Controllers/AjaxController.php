@@ -1157,75 +1157,61 @@ class AjaxController extends Controller
 		}
 
 		foreach ($array_month as $key => $timestamp){
-			$data_c3a[ $timestamp ]  = [];
-			$data_c3b[ $timestamp ]  = [];
-			$data_c3bg[ $timestamp ] = [];
-
+			$data_c3[ $timestamp ]  = [];
 			for ($hr = 0; $hr <= 23; $hr++) {
-				$temp_c3a[ $timestamp ][ $hr ]  = 0;
-				$temp_c3b[ $timestamp ][ $hr ]  = 0;
-				$temp_c3bg[ $timestamp ][ $hr ] = 0;
+				$data_c3[ $timestamp ][ $hr ]  = 0;
 				$temp_c3[ $timestamp ][ $hr ]   = 0;
 			}
 		}
+		$ad_id  = $this->getAds();
 
-		Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
-		       ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
-		       ->whereIn( 'clevel', [ 'c3a', 'c3b', 'c3bg' ] )
-		       ->chunk( 1000, function ( $contacts ) use ( &$data_c3a , &$data_c3b, &$data_c3bg) {
-			       foreach ( $contacts as $contact ) {
-				       if ($contact->clevel == 'c3a'){
-					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
-					       $hour = (int) date( "H", $contact->submit_time / 1000 );
-					       if (isset($data_c3a[$timestamp][$hour]))
-						       $data_c3a[$timestamp][$hour] += 1;
-					       else{
-						       $data_c3a[$timestamp][$hour] = 1;
-					       }
-				       }
-				       else if ($contact->clevel == 'c3b'){
-					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
-					       $hour = (int) date( "H", $contact->submit_time / 1000 );
-					       if (isset($data_c3b[$timestamp][$hour]))
-						       $data_c3b[$timestamp][$hour] += 1;
-					       else{
-						       $data_c3b[$timestamp][$hour] = 1;
-					       }
-				       }
-				       else if ($contact->clevel == 'c3bg'){
-					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
-					       $hour = (int) date( "H", $contact->submit_time / 1000 );
-					       if (isset($data_c3bg[$timestamp][$hour]))
-						       $data_c3bg[$timestamp][$hour] += 1;
-					       else{
-						       $data_c3bg[$timestamp][$hour] = 1;
-					       }
-				       }
-			       }
-		       } );
+		$_contacts_c3 = Contact::raw( function ( $collection ) use ( $ad_id, $first_day_this_month, $last_day_this_month) {
+			if (count($ad_id) > 0){
+				$match = [
+					['$match' => ['ad_id' => ['$in' => $ad_id]]],
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
+							'c3' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			} else{
+				$match = [
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
+							'c3' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			return $collection->aggregate( $match );
+		} );
+
+		foreach ( $_contacts_c3 as $item_result ) {
+			$timestamp = $item_result['_id'];
+			if (isset($data_c3[$timestamp->submit_date]))
+				$data_c3[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3;
+		}
 
 		for ($hr = 0; $hr <= 23; $hr++){
 			for ($h = 0; $h <= $hr; $h++){
 				foreach ($array_month as $key => $timestamp){
-					$temp_c3a[$timestamp][$hr] += isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0;
-					$temp_c3b[$timestamp][$hr] += isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0;
-					$temp_c3bg[$timestamp][$hr] += isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0;
-					$temp_c3[$timestamp][$hr] += ((isset($data_c3a[$timestamp]) && isset($data_c3a[$timestamp][$h])  ? $data_c3a[$timestamp][$h] : 0)
-					                            + (isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0)
-					                            + (isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0)) ;
+					$temp_c3[$timestamp][$hr] += $data_c3[$timestamp][$h];
 
 				}
 			}
 
 			foreach ($array_month as $key => $timestamp){
-				$line_c3b[$hr][] = [$timestamp, $temp_c3b[$timestamp][$hr]];
-				$line_c3bg[$hr][] = [$timestamp, $temp_c3bg[$timestamp][$hr]];
 				$line_c3[$hr][] = [$timestamp, $temp_c3[$timestamp][$hr]];
 			}
 
 			$chart_c3[$hr] = json_encode($line_c3[$hr]);
-			$chart_c3b[$hr] = json_encode($line_c3b[$hr]);
-			$chart_c3bg[$hr] = json_encode($line_c3bg[$hr]);
 		}
 
 		return $chart_c3;
@@ -1250,45 +1236,52 @@ class AjaxController extends Controller
 
 		foreach ($array_month as $key => $timestamp){
 			$data_c3b[ $timestamp ]  = [];
-			$data_c3bg[ $timestamp ] = [];
 
 			for ($hr = 0; $hr <= 23; $hr++) {
+				$data_c3b[ $timestamp ][ $hr ]  = 0;
 				$temp_c3b[ $timestamp ][ $hr ]  = 0;
-				$temp_c3bg[ $timestamp ][ $hr ] = 0;
 			}
 		}
+		$ad_id  = $this->getAds();
 
-		Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
-		       ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
-		       ->whereIn( 'clevel', [ 'c3b', 'c3bg' ] )
-		       ->chunk( 1000, function ( $contacts ) use ( &$data_c3b, &$data_c3bg) {
-			       foreach ( $contacts as $contact ) {
-				       if ($contact->clevel == 'c3b'){
-					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
-					       $hour = (int) date( "H", $contact->submit_time / 1000 );
-					       if (isset($data_c3b[$timestamp][$hour]))
-						       $data_c3b[$timestamp][$hour] += 1;
-					       else{
-						       $data_c3b[$timestamp][$hour] = 1;
-					       }
-				       }
-				       else if ($contact->clevel == 'c3bg'){
-					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
-					       $hour = (int) date( "H", $contact->submit_time / 1000 );
-					       if (isset($data_c3bg[$timestamp][$hour]))
-						       $data_c3bg[$timestamp][$hour] += 1;
-					       else{
-						       $data_c3bg[$timestamp][$hour] = 1;
-					       }
-				       }
-			       }
-		       } );
+		$_contacts_c3b = Contact::raw( function ( $collection ) use ( $ad_id, $first_day_this_month, $last_day_this_month) {
+			if (count($ad_id) > 0){
+				$match = [
+					['$match' => ['ad_id' => ['$in' => $ad_id]]],
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
+							'c3b' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			} else{
+				$match = [
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
+							'c3b' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			return $collection->aggregate( $match );
+		} );
+
+		foreach ( $_contacts_c3b as $item_result ) {
+			$timestamp = $item_result['_id'];
+			if (isset($data_c3b[$timestamp->submit_date]))
+				$data_c3b[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3b;
+		}
 
 		for ($hr = 0; $hr <= 23; $hr++){
 			for ($h = 0; $h <= $hr; $h++){
 				foreach ($array_month as $key => $timestamp){
-					$temp_c3b[$timestamp][$hr] += ((isset($data_c3b[$timestamp]) && isset($data_c3b[$timestamp][$h])  ? $data_c3b[$timestamp][$h] : 0)
-					                              + (isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0)) ;
+					$temp_c3b[$timestamp][$hr] += $data_c3b[$timestamp][$h];
 				}
 			}
 
@@ -1322,31 +1315,52 @@ class AjaxController extends Controller
 		foreach ($array_month as $key => $timestamp){
 			$data_c3bg[ $timestamp ] = [];
 			for ($hr = 0; $hr <= 23; $hr++) {
+				$data_c3bg[ $timestamp ][ $hr ]  = 0;
 				$temp_c3bg[ $timestamp ][ $hr ]  = 0;
 			}
 		}
 
-		Contact::where( 'submit_time', '>=', strtotime( $first_day_this_month ) * 1000 )
-		       ->where( 'submit_time', '<=', strtotime( $last_day_this_month ) * 1000 )
-		       ->whereIn( 'clevel', [ 'c3bg' ] )
-		       ->chunk( 1000, function ( $contacts ) use ( &$data_c3bg) {
-			       foreach ( $contacts as $contact ) {
-				       if ($contact->clevel == 'c3bg'){
-					       $timestamp = (int) strtotime(date('Y-m-d',$contact->submit_time / 1000)) * 1000;
-					       $hour = (int) date( "H", $contact->submit_time / 1000 );
-					       if (isset($data_c3bg[$timestamp][$hour]))
-						       $data_c3bg[$timestamp][$hour] += 1;
-					       else{
-						       $data_c3bg[$timestamp][$hour] = 1;
-					       }
-				       }
-			       }
-		       } );
+		$ad_id  = $this->getAds();
+
+		$_contacts_c3bg = Contact::raw( function ( $collection ) use ( $ad_id, $first_day_this_month, $last_day_this_month) {
+			if (count($ad_id) > 0){
+				$match = [
+					['$match' => ['ad_id' => ['$in' => $ad_id]]],
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
+							'c3bg' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			} else{
+				$match = [
+					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
+					[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
+					[
+						'$group' => [
+							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
+							'c3bg' => [ '$sum' => 1 ],
+						]
+					]
+				];
+			}
+			return $collection->aggregate( $match );
+		} );
+
+		foreach ( $_contacts_c3bg as $item_result ) {
+			$timestamp = $item_result['_id'];
+			if (isset($data_c3bg[$timestamp->submit_date]))
+				$data_c3bg[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3bg;
+		}
+
 
 		for ($hr = 0; $hr <= 23; $hr++){
 			for ($h = 0; $h <= $hr; $h++){
 				foreach ($array_month as $key => $timestamp){
-					$temp_c3bg[$timestamp][$hr] += isset($data_c3bg[$timestamp]) && isset($data_c3bg[$timestamp][$h])  ? $data_c3bg[$timestamp][$h] : 0;
+					$temp_c3bg[$timestamp][$hr] += $data_c3bg[$timestamp][$h];
 
 				}
 			}
@@ -1359,6 +1373,15 @@ class AjaxController extends Controller
 		}
 
 		return $chart_c3bg;
+	}
+
+	private function getAds(){
+		$data_where = $this->getWhereData();
+		$ads    = array();
+		if (count($data_where) >= 1) {
+			$ads = Ad::where($data_where)->pluck('_id')->toArray();
+		}
+		return $ads;
 	}
 
 

@@ -91,7 +91,7 @@
                                     <div class="row">
                                         <section class="col col-2">
                                             <label class="label">Choose date</label>
-                                            <input type="date" name="date_time" class="form-control" value="{{$date_time}}">
+                                            <input style="padding-left: 5px" type="date" name="date_time" class="form-control" value="{{$date_time}}">
                                         </section>
                                     </div>
                                     <div class="row">
@@ -202,7 +202,7 @@
                                                         <td>{{$table_accumulated['c3'][$i]}}</td>
                                                         <td>{{$table_accumulated['c3b'][$i]}}</td>
                                                         <td>{{$table_accumulated['c3bg'][$i]}}</td>
-                                                        <td>{{round($table_accumulated['c3bg'][$i] * 100 / $table_accumulated['c3b'][$i] , 2)}}</td>
+                                                        <td>{{$table_accumulated['c3b'][$i] == 0 ? 0 : round($table_accumulated['c3bg'][$i] * 100 / $table_accumulated['c3b'][$i] , 2)}}</td>
                                                     </tr>
                                                 @endfor
                                                 </tbody>
@@ -491,6 +491,11 @@
             $('#c3_accumulated').click();
 
             function get_accumulated_chart(element, url, month) {
+                var source_id = $('select[name="source_id"]').val();
+                var team_id = $('select[name="team_id"]').val();
+                var marketer_id = $('select[name="marketer_id"]').val();
+                var campaign_id = $('select[name="campaign_id"]').val();
+                var subcampaign_id = $('select[name="subcampaign_id"]').val();
 
                 if(month < 10){
                     month = "0" + month.toString();
@@ -500,11 +505,11 @@
                 }
 
                 element.parent().parent().parent().parent().find('.loading').css("display", "block");
-                $.get(url, {month: month}, function (rs) {
+                $.get(url, {month: month, source_id:source_id, team_id:team_id, marketer_id:marketer_id, campaign_id:campaign_id, subcampaign_id:subcampaign_id}, function (rs) {
                     var data = [
                         {data: jQuery.parseJSON(rs[current_hour] ), label: current_hour + "h"},
                         ];
-                    initChartA(element, data, arr_color);
+                    initChartA(element, data, [arr_color[current_hour]]);
                     element.parent().parent().parent().parent().find('.loading').css("display", "none");
                     element.UseTooltip();
                 }).fail(
@@ -521,15 +526,15 @@
                 var title       = $(this).parents('div.widget-toolbar').siblings('h2');
                 var title_id    = title.attr('id');
                 if(title_id == 'c3_accumulated'){
-                    title.html('C3 in ' + dropdown.html());
+                    title.html('C3 Accumulated in ' + dropdown.html());
                     $('input[name="c3_month"]').val(month);
                     get_accumulated_chart($("#c3_chart_accumulated"), "{{route('ajax-getHourC3Chart')}}", month);
                 } else if (title_id == 'c3b_accumulated'){
-                    title.html('C3B in ' + dropdown.html());
+                    title.html('C3B Accumulated in ' + dropdown.html());
                     $('input[name="c3b_month"]').val(month);
                     get_accumulated_chart($("#c3b_chart_accumulated"), "{{route('ajax-getHourC3BChart')}}", month);
                 } else if (title_id == 'c3bg_accumulated'){
-                    title.html('C3BG in ' + dropdown.html());
+                    title.html('C3BG Accumulated in ' + dropdown.html());
                     $('input[name="c3bg_month"]').val(month);
                     get_accumulated_chart($("#c3bg_chart_accumulated"), "{{route('ajax-getHourC3BGChart')}}", month);
                 }
