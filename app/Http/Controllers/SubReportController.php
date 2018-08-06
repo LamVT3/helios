@@ -538,10 +538,32 @@ class SubReportController extends Controller
         }
 
         return $data_where;
+	}
+	
+	private function getWhereDataByCreatorID(){
+        $request    = request();
+        $data_where = array();
+        if ($request->source_id) {
+            $data_where['source_id']        = $request->source_id;
+        }
+        if ($request->team_id) {
+            $data_where['team_id']          = $request->team_id;
+        }
+        if ($request->marketer_id) {
+            $data_where['creator_id']      = $request->marketer_id;
+        }
+        if ($request->campaign_id) {
+            $data_where['campaign_id']      = $request->campaign_id;
+        }
+        if ($request->subcampaign_id) {
+            $data_where['subcampaign_id']   = $request->subcampaign_id;
+        }
+
+        return $data_where;
     }
 
     private function getAds(){
-        $data_where = $this->getWhereData();
+        $data_where = $this->getWhereDataByCreatorID();
         $ads    = array();
         if (count($data_where) >= 1) {
             $ads = Ad::where($data_where)->pluck('_id')->toArray();
