@@ -287,7 +287,17 @@ function initChartA(item, data, color) {
 
 function get_chart(checkbox, element, url, month) {
     var data = {};
+    var source_id = $('select[name="source_id"]').val();
+    var team_id = $('select[name="team_id"]').val();
+    var marketer_id = $('select[name="marketer_id"]').val();
+    var campaign_id = $('select[name="campaign_id"]').val();
+    var subcampaign_id = $('select[name="subcampaign_id"]').val();
     data.month = month;
+    data.source_id = source_id;
+    data.team_id = team_id;
+    data.marketer_id = marketer_id;
+    data.campaign_id = campaign_id;
+    data.subcampaign_id = subcampaign_id;
 
     element.parent().parent().parent().parent().find('.loading').css("display", "block");
     $.get(url, data, function (rs) {

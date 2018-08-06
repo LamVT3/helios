@@ -605,6 +605,9 @@ class ContactController extends Controller
                 $contact->contact_source = "import_data";
                 $contact->msg_type = "submitter";
                 $contact->submit_time = $submit_time * 1000;
+                $contact->submit_hour = (int) date( "H", $submit_time );
+	            $contact->submit_date = (int) strtotime(date('Y-m-d',$submit_time / 1000)) * 1000;
+                $contact->created_date = date('Y-m-d H:m:s');
                 $contact->source_name = $item->utm_source;
                 $contact->team_name = $item->utm_team;
                 $contact->marketer_name = $item->utm_agent;
@@ -736,9 +739,12 @@ class ContactController extends Controller
                 }
 
                 $contact = new Contact();
-                $contact->contact_source = "import_data";
+                $contact->contact_source = "import_egentic";
                 $contact->msg_type = "submitter";
                 $contact->submit_time = $import_time;
+                $contact->submit_hour = (int) date( "H", $import_time / 1000 );
+	            $contact->submit_date = (int) strtotime(date('Y-m-d',$import_time / 1000)) * 1000;
+                $contact->created_date = date('Y-m-d H:m:s');
                 $contact->source_name = "";
                 $contact->team_name = "";
                 $contact->marketer_name = "";
