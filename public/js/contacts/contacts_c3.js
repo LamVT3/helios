@@ -398,16 +398,6 @@ $(document).ready(function () {
         });
     });
 
-    $('input[id=is_update]').click(function () {
-        var cnt = $('input[id=is_update]:checked').length;
-        if(cnt == 0){
-            $('input[name="update_all"]').val(1);
-            $('button#edit_contact').hide();
-            $('button#update_contact').show();
-            enable_update();
-        }
-    });
-
 });
 
 function initDataTable() {
@@ -430,7 +420,6 @@ function initDataTable() {
     var search          = $('input[name="search_text"]').val();
     var channel         = $('select[name="channel_id"]').val();
     var olm_status      = $('select[name="olm_status"]').val();
-
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -802,6 +791,14 @@ function edit(item, mode){
             $(channelCell).find('select#channel_update').select2('destroy');
             $(channelCell).find('select#channel_update').remove();
         }
+    }
+
+    var cnt = $('input[id=is_update]:checked').length;
+    if(cnt <= 0){
+        $('input[name="update_all"]').val(0);
+        $('input#update_all').prop('checked', false);
+        $('button#edit_contact').show();
+        $('button#update_contact').hide();
     }
 }
 
