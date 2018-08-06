@@ -307,7 +307,7 @@
                                         <th class="long">C Level</th>
                                         <th class="long">CRM level</th>
                                         <th>Ads</th>
-                                        <th>Channel</th>
+                                        <th class="long">Channel</th>
                                         <th>Source</th>
                                         <th>Team</th>
                                         <th>Marketer</th>
@@ -473,10 +473,11 @@
 <input type="hidden" name="exported" value="{{$export_to_excel}}">
 <input type="hidden" name="export_to_olm" value="{{$export_to_olm}}">
 <input type="hidden" name="exported_url" value="{{route("contacts.countExported")}}">
-<input type="hidden" name="update_status_export" value="{{route("ajax-updateStatusExport")}}">
+<input type="hidden" name="update_status_export" value="{{route("ajax-updateContacts")}}">
 <input type="hidden" name="export_to_olm_url" value="{{route("contacts.export-to-OLM")}}">
 <input type="hidden" name="update_all" value="0">
 <input type="hidden" name="status_update_all" value="">
+<input type="hidden" name="get_all_channel_url" value="{{route("channel-get-all")}}">
 @endsection
 
 @section('script')

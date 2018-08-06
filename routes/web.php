@@ -99,7 +99,7 @@ Route::group(['prefix' => 'ajax'], function () {
     Route::get('/getL8Chart', 'AjaxController@getL8Chart')->name('ajax-getL8Chart');
     Route::get('/paginate', 'AjaxController@getContactPaginate')->name('ajax-paginate');
     Route::get('/getFilterMaketer', 'AjaxController@getFilterMaketer')->name('ajax-getFilterMaketer');
-    Route::get('updateStatusExport', 'AjaxController@updateStatusExport')->name('ajax-updateStatusExport');
+    Route::get('/updateContacts', 'AjaxController@updateContacts')->name('ajax-updateContacts');
     Route::get('/setStatisticChart', 'AjaxController@prepareStatisticChart')->name('ajax-setStatisticChart');
     Route::get('getFilterSubCampaign', 'AjaxController@getFilterSubCampaign')->name('ajax-getFilterSubCampaign');
 	Route::get('/getHourC3Chart', 'AjaxController@getHourC3Chart')->name('ajax-getHourC3Chart');
@@ -192,6 +192,8 @@ Route::group(['prefix' => 'channel'], function () {
     Route::get('/', 'ChannelController@index')->name('channel');
     Route::post('/create', 'ChannelController@store')->name('channel-create');
     Route::get('/get/{id}', 'ChannelController@get')->name('channel-get');
+    Route::get('/get-all', 'ChannelController@getAllChannel')->name('channel-get-all');
+
 });
 
 Route::group(['prefix' => 'diff-contacts'], function () {
