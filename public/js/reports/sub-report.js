@@ -428,6 +428,7 @@ $(document).ready(function () {
 function filterSubReport(){
     var tab_active = $('.nav-tabs').find('li.active a');
     var href = $(tab_active).attr("href");
+
     if (href == '#by_days'){
         loadDataByDays();
     }else if (href == '#by_weeks'){
@@ -438,7 +439,14 @@ function filterSubReport(){
 }
 
 function get_budget(month) {
-    var url = $('input[name="budget_url"]').val();
+
+    var mode = $('select[name="mode"]').val();
+    if(mode == 'TOA'){
+        var url = $('input[name="budget_url"]').val();
+    }else if (mode == 'TOT'){
+        var url = $('input[name="budget_tot_url"]').val();
+    }
+
     var source_id = $('select[name="source_id"]').val();
     var team_id = $('select[name="team_id"]').val();
     var marketer_id = $('select[name="marketer_id"]').val();
@@ -470,7 +478,13 @@ function get_budget(month) {
 }
 
 function get_quantity(month) {
-    var url = $('input[name="quantity_url"]').val();
+    var mode = $('select[name="mode"]').val();
+    if(mode == 'TOA'){
+        var url = $('input[name="quantity_url"]').val();
+    }else if (mode == 'TOT'){
+        var url = $('input[name="quantity_tot_url"]').val();
+    }
+
     var source_id = $('select[name="source_id"]').val();
     var team_id = $('select[name="team_id"]').val();
     var marketer_id = $('select[name="marketer_id"]').val();
@@ -503,7 +517,13 @@ function get_quantity(month) {
 }
 
 function get_quality(month) {
-    var url = $('input[name="quality_url"]').val();
+    var mode = $('select[name="mode"]').val();
+    if(mode == 'TOA'){
+        var url = $('input[name="quality_tot_url"]').val();
+    }else if (mode == 'TOT'){
+        var url = $('input[name="quality_tot_url"]').val();
+    }
+
     var source_id = $('select[name="source_id"]').val();
     var team_id = $('select[name="team_id"]').val();
     var marketer_id = $('select[name="marketer_id"]').val();
@@ -866,7 +886,14 @@ function initChart(item, data, arr_color, type) {
 }
 
 function loadDataByWeeks(type) {
-    var url = $('input[name="get_by_weeks"]').val();
+
+    var mode = $('select[name="mode"]').val();
+    if(mode == 'TOA'){
+        var url = $('input[name=get_by_weeks]').val();
+    }else if (mode == 'TOT'){
+        var url = $('input[name=get_tot_by_weeks]').val();
+    }
+
     var source_id = $('select[name="source_id"]').val();
     var team_id = $('select[name="team_id"]').val();
     var marketer_id = $('select[name="marketer_id"]').val();
@@ -923,7 +950,14 @@ function loadDataByWeeks(type) {
 }
 
 function loadDataByDays() {
-    var url = $('input[name=get_by_days]').val();
+
+    var mode = $('select[name="mode"]').val();
+    if(mode == 'TOA'){
+        var url = $('input[name=get_by_days]').val();
+    }else if (mode == 'TOT'){
+        var url = $('input[name=get_tot_by_days]').val();
+    }
+
     var source_id = $('select[name="source_id"]').val();
     var team_id = $('select[name="team_id"]').val();
     var marketer_id = $('select[name="marketer_id"]').val();
@@ -974,7 +1008,14 @@ function loadDataByDays() {
 }
 
 function loadDataByMonths(type) {
-    var url = $('input[name="get_by_months"]').val();
+
+    var mode = $('select[name="mode"]').val();
+    if(mode == 'TOA'){
+        var url = $('input[name=get_by_months]').val();
+    }else if (mode == 'TOT'){
+        var url = $('input[name=get_tot_by_months]').val();
+    }
+
     var source_id = $('select[name="source_id"]').val();
     var team_id = $('select[name="team_id"]').val();
     var marketer_id = $('select[name="marketer_id"]').val();

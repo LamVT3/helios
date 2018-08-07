@@ -1042,7 +1042,7 @@ class AjaxController extends Controller
         return $contacts;
     }
 
-    public function updateStatusExport(){
+    public function updateContacts(){
 
         $data_where = $this->getWhereDataUpdateExport();
 
@@ -1087,7 +1087,19 @@ class AjaxController extends Controller
         foreach ($contacts as $contact)
         {
             if(isset($id[$contact->_id])){
-                $contact->is_export = (int)$id[$contact->_id];
+                if(isset($id[$contact->_id]['status'])){
+                    $contact->is_export     = (int)$id[$contact->_id]['status'];
+                }
+                if(isset($id[$contact->_id]['olm_status'])){
+                    $contact->olm_status    = (int)$id[$contact->_id]['olm_status'];
+                }
+                if(isset($id[$contact->_id]['channel_name'])){
+                    $contact->channel_name  = $id[$contact->_id]['channel_name'];
+                }
+                if(isset($id[$contact->_id]['channel_id'])){
+                    $contact->channel_id    = $id[$contact->_id]['channel_id'];
+                }
+
                 $contact->save();
             }else{
                 if($request->new_status != '')

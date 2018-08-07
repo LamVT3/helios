@@ -99,7 +99,7 @@ Route::group(['prefix' => 'ajax'], function () {
     Route::get('/getL8Chart', 'AjaxController@getL8Chart')->name('ajax-getL8Chart');
     Route::get('/paginate', 'AjaxController@getContactPaginate')->name('ajax-paginate');
     Route::get('/getFilterMaketer', 'AjaxController@getFilterMaketer')->name('ajax-getFilterMaketer');
-    Route::get('updateStatusExport', 'AjaxController@updateStatusExport')->name('ajax-updateStatusExport');
+    Route::get('/updateContacts', 'AjaxController@updateContacts')->name('ajax-updateContacts');
     Route::get('/setStatisticChart', 'AjaxController@prepareStatisticChart')->name('ajax-setStatisticChart');
     Route::get('getFilterSubCampaign', 'AjaxController@getFilterSubCampaign')->name('ajax-getFilterSubCampaign');
 	Route::get('/getHourC3Chart', 'AjaxController@getHourC3Chart')->name('ajax-getHourC3Chart');
@@ -159,10 +159,13 @@ Route::group(['prefix' => 'notification'], function () {
 
 Route::group(['prefix' => 'sub_report'], function () {
     Route::get('/', 'SubReportController@index')->name('sub-report-line');
-    Route::get('/getReport', 'SubReportController@getBudget')->name('get-budget');
+    Route::get('/getBudget', 'SubReportController@getBudget')->name('get-budget');
     Route::get('/getQuantity', 'SubReportController@getQuantity')->name('get-quantity');
     Route::get('/getQuality', 'SubReportController@getQuality')->name('get-quality');
     Route::get('/getC3AC3B', 'SubReportController@getC3AC3B')->name('get-C3AC3B');
+    Route::get('/getBudgetTOT', 'SubReportTOTController@getBudget')->name('get-budget-tot');
+    Route::get('/getQuantityTOT', 'SubReportTOTController@getQuantity')->name('get-quantity-tot');
+    Route::get('/getQualityTOT', 'SubReportTOTController@getQuality')->name('get-quality-tot');
 
     Route::get('/line-chart-filter', 'SubReportController@getFilter')->name('line-chart.filter');
 	Route::get('/channel-report', 'SubReportController@channelReport')->name('channel-report');
@@ -173,6 +176,10 @@ Route::group(['prefix' => 'sub_report'], function () {
     Route::get('/getByDays', 'SubReportController@getDataByDays')->name('line-chart.getByDays');
     Route::get('/getByWeeks', 'SubReportController@getDataByWeeks')->name('line-chart.getByWeeks');
     Route::get('/getByMonths', 'SubReportController@getDataByMonths')->name('line-chart.getByMonths');
+
+    Route::get('/getTOTByDays', 'SubReportTOTController@getDataTOTByDays')->name('line-chart.getTOTByDays');
+    Route::get('/getTOTByWeeks', 'SubReportTOTController@getDataTOTByWeeks')->name('line-chart.getTOTByWeeks');
+    Route::get('/getTOTByMonths', 'SubReportTOTController@getDataTOTByMonths')->name('line-chart.getTOTByMonths');
 
     Route::get('/assign-kpi', 'KpiController@assign_kpi')->name('assign-kpi');
     Route::get('/get-kpi', 'KpiController@get_kpi')->name('get-kpi');
@@ -192,6 +199,8 @@ Route::group(['prefix' => 'channel'], function () {
     Route::get('/', 'ChannelController@index')->name('channel');
     Route::post('/create', 'ChannelController@store')->name('channel-create');
     Route::get('/get/{id}', 'ChannelController@get')->name('channel-get');
+    Route::get('/get-all', 'ChannelController@getAllChannel')->name('channel-get-all');
+
 });
 
 Route::group(['prefix' => 'diff-contacts'], function () {

@@ -280,7 +280,6 @@ $(document).ready(function () {
         }
         else{
             $("input:checkbox[id=is_update]:checked").each(function () {
-                $statusCell = $(this).parent().siblings('td.status');
                 id[$(this).val()] = $(this).val();
             });
         }
@@ -356,11 +355,19 @@ $(document).ready(function () {
         var id      = {};
         $("input:checkbox[id=is_update]:checked").each(function () {
 
-            $statusCell = $(this).parent().siblings('td.status');
-            var is_export = $($statusCell).find('select#status_update').val();
-            id[$(this).val()] = is_export;
+            var statusCell      = $(this).parent().siblings('td.status');
+            var statusOLMCell   = $(this).parent().siblings('td.olm_status');
+            var channelCell     = $(this).parent().siblings('td.channel');
+
+            var status          = $(statusCell).find('select#status_update').val();
+            var olm_status      = $(statusOLMCell).find('select#olm_status_update').val();
+            var channel_name    = $(channelCell).find('select#channel_update :selected').text();
+            var channel_id      = $(channelCell).find('select#channel_update').val();
+
+            id[$(this).val()] = {'status': status, 'olm_status': olm_status, 'channel_id': channel_id, 'channel_name': channel_name};
         });
-        updateStatusExport(id);
+
+        updateContacts(id);
         // }
     });
 
@@ -413,7 +420,6 @@ function initDataTable() {
     var search          = $('input[name="search_text"]').val();
     var channel         = $('select[name="channel_id"]').val();
     var olm_status      = $('select[name="olm_status"]').val();
-
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -526,7 +532,14 @@ function initDataTable() {
             { "data" : 'clevel'},
             { "data" : 'current_level',     "defaultContent": "-"},
             { "data" : 'ad_name',           "defaultContent": "-"},
-            { "data" : 'channel_name',      "defaultContent": "-",  'className' : "channel"},
+            {
+                "data"      : 'channel_name',
+                'className' : "channel",
+                "render"    : function ( data, type, row, meta ) {
+                    return '<span id="channel" >' + data + '</span><input type="hidden" id="old_channel" value="' + data + '">';
+
+                }
+            },
             { "data" : 'source_name',       "defaultContent": "-"},
             { "data" : 'team_name',         "defaultContent": "-"},
             { "data" : 'marketer_name',     "defaultContent": "-"},
@@ -573,7 +586,7 @@ function initDataTable() {
                     else if(data == 1){
                         status = '<span id="olm_status">Duplicated</span><input type="hidden" id="old_status_olm" value="1">';
                     }
-                    else if(data == 2 || data == 3){
+                    else if(data == 2){
                         status = '<span id="olm_status">Error</span><input type="hidden" id="old_status_olm" value="2">';
                     }
                     else{
@@ -600,7 +613,7 @@ function initDataTable() {
                 else if(data['olm_status'] == 1){
                     $(row).addClass('olm_status_duplicated');
                 }
-                else if(data['olm_status'] == 2 || data['olm_status'] == 3){
+                else if(data['olm_status'] == 2){
                     $(row).addClass('olm_status_error');
                 }
             }
@@ -754,135 +767,154 @@ function enable_update() {
 }
 
 function edit(item, mode){
-    var is_show = $('button#update_contact').is(':visible');
-    $statusCell = $(item).parents().siblings('td.status');
+    var is_show         = $('button#update_contact').is(':visible');
+    var statusCell      = $(item).parents().siblings('td.status');
+    var statusOLMCell   = $(item).parents().siblings('td.olm_status');
+    var channelCell     = $(item).parents().siblings('td.channel');
 
     if(is_show || mode == 'all'){
         var is_checked = $(item).is(':checked');
         if(is_checked){
             addSelectStatus(item);
             addSelectStatusOLM(item);
-            // addSelectChannel(item);
-
-            var check_all = $('input[id=update_all]').is(':checked');
-            if(check_all){
-                $('select#status_update').first().focus(500);
-            }else{
-                $($statusCell).find('select#status_update').focus(500);
-            }
+            addSelectChannel(item);
         }else{
-            $($statusCell).find('span#status').show();
-            $($statusCell).find('select#status_update').remove();
+            $(statusCell).find('span#status').show();
+            // $(statusCell).find('select#status_update').select2('destroy');
+            $(statusCell).find('select#status_update').remove();
 
-            $($statusCell).find('span#olm_status').show();
-            $($statusCell).find('select#olm_status_update').remove();
+            $(statusOLMCell).find('span#olm_status').show();
+            // $(statusOLMCell).find('select#olm_status_update').select2('destroy');
+            $(statusOLMCell).find('select#olm_status_update').remove();
+
+            $(channelCell).find('span#channel').show();
+            $(channelCell).find('select#channel_update').select2('destroy');
+            $(channelCell).find('select#channel_update').remove();
         }
+    }
+
+    var cnt = $('input[id=is_update]:checked').length;
+    if(cnt <= 0){
+        $('input[name="update_all"]').val(0);
+        $('input#update_all').prop('checked', false);
+        $('button#edit_contact').show();
+        $('button#update_contact').hide();
     }
 }
 
 function addSelectStatus(item){
-    $statusCell = $(item).parents().siblings('td.status');
-    $status     = $($statusCell).find('input#old_status').val();
-    $($statusCell).find('select#status_update').remove();
+    var statusCell = $(item).parents().siblings('td.status');
+    var status     = $(statusCell).find('input#old_status').val();
 
-    $($statusCell).find('span#status').hide();
-    if($status == 1){
-        $($statusCell).append('' +
-            '<select id="status_update" onchange="setAll(this);">' +
-            '<option value="1" selected>Exported</option>' +
-            '<option value="0">Not Export</option>' +
-            '</select>' +
-            '');
-    }else{
-        $($statusCell).append('' +
-            '<select id="status_update" onchange="setAll(this);">' +
-            '<option value="1">Exported</option>' +
-            '<option value="0" selected>Not Export</option>' +
-            '</select>' +
-            '');
-    }
+    // $(statusCell).find('select#status_update').select2('destroy');
+    $(statusCell).find('select#status_update').remove();
+    $(statusCell).find('span#status').hide();
+
+    $(statusCell).append('' +
+        '<select class="form-control" id="status_update" onchange="setAll(this);">' +
+        '<option value="1">Exported</option>' +
+        '<option value="0">Not Export</option>' +
+        '</select>' +
+        '');
+
+    $(statusCell).find('select#status_update').val(status);
+    // $(statusCell).find('select#status_update').select2();
 }
 
 function addSelectStatusOLM(item){
-    $statusCell = $(item).parents().siblings('td.olm_status');
-    $status     = $($statusCell).find('input#old_status_olm').val();
-    $($statusCell).find('select#olm_status_update').remove();
+    var statusCell = $(item).parents().siblings('td.olm_status');
+    var status     = $(statusCell).find('input#old_status_olm').val();
+    // $(statusCell).find('select#olm_status_update').select2('destroy');
+    $(statusCell).find('select#olm_status_update').remove();
+    $(statusCell).find('span#olm_status').hide();
 
-    $($statusCell).find('span#olm_status').hide();
-    if($status == 0){
-        $($statusCell).append('' +
-            '<select id="olm_status_update" onchange="setAll(this);">' +
-            '<option value="0" selected>Success</option>' +
-            '<option value="1">Duplicated</option>' +
-            '<option value="2">Error</option>' +
-            '<option value="3">Not Export</option>' +
-            '</select>' +
-            '');
-    }else if ($status == 1){
-        $($statusCell).append('' +
-            '<select id="olm_status_update" onchange="setAll(this);">' +
-            '<option value="0">Success</option>' +
-            '<option value="1" selected>Duplicated</option>' +
-            '<option value="2">Error</option>' +
-            '<option value="3">Not Export</option>' +
-            '</select>' +
-            '');
-    }else if ($status == 2){
-        $($statusCell).append('' +
-            '<select id="olm_status_update" onchange="setAll(this);">' +
-            '<option value="0">Success</option>' +
-            '<option value="1">Duplicated</option>' +
-            '<option value="2" selected>Error</option>' +
-            '<option value="3">Not Export</option>' +
-            '</select>' +
-            '');
-    }else{
-        $($statusCell).append('' +
-            '<select id="olm_status_update" onchange="setAll(this);">' +
-            '<option value="0">Success</option>' +
-            '<option value="1">Duplicated</option>' +
-            '<option value="2">Error</option>' +
-            '<option value="3" selected>Not Export</option>' +
-            '</select>' +
-            '');
-    }
+    $(statusCell).append('' +
+        '<select class="form-control" id="olm_status_update" onchange="setAllStatusOLM(this);">' +
+        '<option value="0" selected>Success</option>' +
+        '<option value="1">Duplicated</option>' +
+        '<option value="2">Error</option>' +
+        '<option value="3">Not Export</option>' +
+        '</select>' +
+        '');
+
+    $(statusCell).find('select#olm_status_update').val(status);
+    // $(statusCell).find('select#olm_status_update').select2();
 }
 
 function addSelectChannel(item){
-    $statusCell = $(item).parents().siblings('td.channel');
-    $status     = $($statusCell).find('input#channel').val();
-    $($statusCell).find('select#channel_update').remove();
+    var channelCell = $(item).parents().siblings('td.channel');
+    var channel     = $(channelCell).find('input#old_channel').val();
 
-    $($statusCell).find('span#channel').hide();
-    if($status == 1){
-        $($statusCell).append('' +
-            '<select id="channel_update" onchange="setAll(this);">' +
-            '<option value="1" selected>Exported</option>' +
-            '<option value="0">Not Export</option>' +
-            '</select>' +
-            '');
-    }else{
-        $($statusCell).append('' +
-            '<select id="channel_update" onchange="setAll(this);">' +
-            '<option value="1">Exported</option>' +
-            '<option value="0" selected>Not Export</option>' +
-            '</select>' +
-            '');
-    }
+    var url = $('input[name=get_all_channel_url]').val();
+
+    $(channelCell).find('select#channel_update').select2('destroy');
+    $(channelCell).find('select#channel_update').remove();
+    $(channelCell).find('span#channel').hide();
+
+    $.get(url, function (data) {
+        var obj = $.parseJSON(data);
+
+        var select = '<select id="channel_update" onchange="setAllChannel(this);">';
+        select += '<option value="">All</option>';
+        $.each(obj, function( index, value ) {
+            select += '<option value="'+ value._id + '">' + value.name + '</option>';
+        });
+        select += '</select>';
+        $(channelCell).append(select);
+
+        if(channel != '-'){
+            $(channelCell).find("select#channel_update option:contains(" + channel + ")").attr('selected', 'selected');
+        }
+        $(channelCell).find('select#channel_update').select2();
+
+        var check_all = $('input[id=update_all]').is(':checked');
+        if(check_all){
+            $('select#channel_update').first().focus(500);
+        }else{
+            $(channelCell).find('select#channel_update').focus(500);
+        }
+
+    }).fail(
+        function (err) {
+            alert('Cannot connect to server. Please try again later.');
+        });
 }
 
 function setAll(item){
-    $update_all = $('input[name="update_all"]').val();
-    if($update_all == 1){
-        $value = $(item).val();
+    var update_all = $('input[name="update_all"]').val();
+    if(update_all == 1){
+        var value = $(item).val();
         $("select#status_update").each(function () {
-            $(this).val($value);
+            $(this).val(value);
         });
-        $('input[name="status_update_all"]').val($value);
+        // $('input[name="status_update_all"]').val(value);
     }
 }
 
-function updateStatusExport(id) {
+function setAllStatusOLM(item){
+    var update_all = $('input[name="update_all"]').val();
+    if(update_all == 1){
+        var value = $(item).val();
+        $("select#olm_status_update").each(function () {
+            $(this).val(value);
+        });
+        // $('input[name="status_update_all"]').val(value);
+    }
+}
+
+function setAllChannel(item){
+    var update_all = $('input[name="update_all"]').val();
+    if(update_all == 1){
+        var value = $(item).val();
+        $("select#channel_update").each(function () {
+            $(this).val(value);
+        });
+        // $('input[name="status_update_all"]').val(value);
+    }
+}
+
+function updateContacts(id) {
+
     var status          = $('input[name=status_update_all]').val();
     var url             = $('input[name="update_status_export"]').val();
     var source_id       = $('input[name="source_id"]').val();
