@@ -4,61 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Ad;
 use App\AdResult;
-use App\Campaign;
-use App\Channel;
 use App\Config;
 use App\Contact;
-use App\Source;
-use App\Team;
-use App\User;
-use App\Subcampaign;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
-class SubReportController extends Controller
+class SubReportTOTController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    public function index(){
-        $page_title = "Line Report | Helios";
-        $page_css = array();
-        $no_main_header = FALSE; //set true for lock.php and login.php
-        $active = 'sub-report-line';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Line Report </span>";
+    public function getDataTOTByDays(){
+        $result = $this->prepareDataByDays();
+        return $result;
+    }
 
-        $sources        = Source::all();
-        $teams          = Team::all();
-        $marketers      = User::all();
-        $campaigns      = Campaign::where('is_active', 1)->get();
-        $page_size      = Config::getByKey('PAGE_SIZE');
-        $subcampaigns   = Subcampaign::where('is_active', 1)->get();
+    public function getDataTOTByWeeks(){
+        $result = $this->prepareDataByWeeks();
+        return $result;
+    }
 
-        $budget     = $this->getBudget();
-        $quantity   = $this->getQuantity();
-        $quality    = $this->getQuality();
-	    $C3AC3B     = $this->getC3AC3B();
-
-        return view('pages.sub-report-line', compact(
-            'page_title',
-            'page_css',
-            'no_main_header',
-            'active',
-            'breadcrumbs',
-            'sources',
-            'teams',
-            'marketers',
-            'campaigns',
-            'page_size',
-            'subcampaigns',
-            'budget',
-            'quantity',
-            'quality',
-            'C3AC3B'
-        ));
+    public function getDataTOTByMonths(){
+        $result = $this->prepareDataByMonths();
+        return $result;
     }
 
     public function getBudget($budget_month = null){
@@ -76,13 +44,8 @@ class SubReportController extends Controller
                     '$group' => [
                         '_id'   => '$date',
                         'me'    => ['$sum' => '$spent'],
-                        're'    => ['$sum' => '$revenue'],
                         'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
-                        'l1'    => ['$sum' => '$l1'],
-                        'l3'    => ['$sum' => '$l3'],
-                        'l6'    => ['$sum' => '$l6'],
-                        'l8'    => ['$sum' => '$l8'],
                     ]
                 ]
             ];
@@ -93,13 +56,8 @@ class SubReportController extends Controller
                     '$group' => [
                         '_id'   => '$date',
                         'me'    => ['$sum' => '$spent'],
-                        're'    => ['$sum' => '$revenue'],
                         'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
-                        'l1'    => ['$sum' => '$l1'],
-                        'l3'    => ['$sum' => '$l3'],
-                        'l6'    => ['$sum' => '$l6'],
-                        'l8'    => ['$sum' => '$l8'],
                     ]
                 ]
             ];
@@ -109,6 +67,26 @@ class SubReportController extends Controller
         $query_chart = AdResult::raw(function ($collection) use ($match) {
             return $collection->aggregate($match);
         });
+
+        $data_tot = $this->getDataTOT($first_day_this_month, $last_day_this_month, $ad_id);
+
+        $tot_array = array();
+        foreach ($data_tot as $key => $data){
+            $day =  date('d',strtotime($key));
+            if(isset($tot_array[$day])){
+                $tot_array[$day]->l1 += @$data->l1 ? $data->l1 : 0;
+                $tot_array[$day]->l3 += @$data->l3 ? $data->l3 : 0;
+                $tot_array[$day]->l6 += @$data->l6 ? $data->l6 : 0;
+                $tot_array[$day]->l8 += @$data->l8 ? $data->l8 : 0;
+                $tot_array[$day]->re += @$data->re ? $data->re : 0;
+            }else{
+                @$tot_array[$day]->l1 = @$data->l1 ? $data->l1 : 0;
+                @$tot_array[$day]->l3 = @$data->l3 ? $data->l3 : 0;
+                @$tot_array[$day]->l6 = @$data->l6 ? $data->l6 : 0;
+                @$tot_array[$day]->l8 = @$data->l8 ? $data->l8 : 0;
+                @$tot_array[$day]->re = @$data->re ? $data->re : 0;
+            }
+        }
 
         $array_month = array();
         for ($i = 1; $i <= $d; $i++) {
@@ -129,7 +107,6 @@ class SubReportController extends Controller
         $total_me   = 0;
         $total_re   = 0;
 
-
         foreach ($query_chart as $item_result) {
             $day = explode('-', $item_result['_id']);
             if($item_result['me'] == 0){
@@ -145,7 +122,7 @@ class SubReportController extends Controller
             else{
 
                 $me         = $item_result['me'] ? $this->convert_spent($item_result['me'])     : 0;
-                $re         = $item_result['re'] ? $this->convert_revenue($item_result['re'])   : 0;
+                $re         = @$tot_array[$day[2]]->re != 0 ? $this->convert_revenue(@$tot_array[$day[2]]->re)   : 0;
 
                 $total_me   += $me;
                 $total_re   += $re;
@@ -154,10 +131,10 @@ class SubReportController extends Controller
                 $re_array[(int)($day[2])]   = $re;
                 $c3b_array[(int)($day[2])]  = $item_result['c3b']   ? round ($me / $item_result['c3b'], 2)     : 0 ;
                 $c3bg_array[(int)($day[2])] = $item_result['c3bg']  ? round ($me / $item_result['c3bg'], 2)    : 0 ;
-                $l1_array[(int)($day[2])]   = $item_result['l1']    ? round ($me / $item_result['l1'], 2)      : 0 ;
-                $l3_array[(int)($day[2])]   = $item_result['l3']    ? round ($me / $item_result['l3'], 2)      : 0 ;
-                $l6_array[(int)($day[2])]   = $item_result['l6']    ? round ($me / $item_result['l6'], 2)      : 0 ;
-                $l8_array[(int)($day[2])]   = $item_result['l8']    ? round ($me / $item_result['l8'], 2)      : 0 ;
+                $l1_array[(int)($day[2])]   = @$tot_array[$day[2]]->l1 != 0  ? round ($me / $tot_array[$day[2]]->l1, 2)  : 0 ;
+                $l3_array[(int)($day[2])]   = @$tot_array[$day[2]]->l3 != 0  ? round ($me / $tot_array[$day[2]]->l3, 2)  : 0 ;
+                $l6_array[(int)($day[2])]   = @$tot_array[$day[2]]->l6 != 0  ? round ($me / $tot_array[$day[2]]->l6, 2)  : 0 ;
+                $l8_array[(int)($day[2])]   = @$tot_array[$day[2]]->l8 != 0  ? round ($me / $tot_array[$day[2]]->l8, 2)  : 0 ;
             }
         }
 
@@ -197,6 +174,148 @@ class SubReportController extends Controller
         return $result;
     }
 
+    private function getDataTOT($start, $end, $ad_id){
+        $query_l1 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+            if(count($ad_id) > 0){
+                $match = [
+                    ['$match' => ['l1_time' => ['$gte' => $start, '$lte' => $end]]],
+                    ['$match' => ['ad_id' => ['$in' => $ad_id]]],
+                    [
+                        '$group' => [
+                            '_id'   => '$l1_time',
+                            'l1'    => ['$sum' => 1],
+                        ]
+                    ]
+                ];
+            }else{
+                $match = [
+                    ['$match' => ['l1_time' => ['$gte' => $start, '$lte' => $end]]],
+                    [
+                        '$group' => [
+                            '_id'   => '$l1_time',
+                            'l1'    => ['$sum' => 1],
+                        ]
+                    ]
+                ];
+            }
+            return $collection->aggregate($match);
+        });
+
+        $query_l3 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+            if(count($ad_id) > 0){
+                $match = [
+                    ['$match' => ['l3_time' => ['$gte' => $start, '$lte' => $end]]],
+                    ['$match' => ['ad_id' => ['$in' => $ad_id]]],
+                    [
+                        '$group' => [
+                            '_id' => '$l3_time',
+                            'l3' => ['$sum' => 1],
+                        ]
+                    ]
+                ];
+            }else{
+                $match = [
+                    ['$match' => ['l3_time' => ['$gte' => $start, '$lte' => $end]]],
+                    [
+                        '$group' => [
+                            '_id' => '$l3_time',
+                            'l3' => ['$sum' => 1],
+                        ]
+                    ]
+                ];
+            }
+            return $collection->aggregate($match);
+        });
+
+        $query_l6 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+            if(count($ad_id) > 0){
+                $match = [
+                    ['$match' => ['l6_time' => ['$gte' => $start, '$lte' => $end]]],
+                    ['$match' => ['ad_id' => ['$in' => $ad_id]]],
+                    [
+                        '$group' => [
+                            '_id' => '$l6_time',
+                            'l6' => ['$sum' => 1],
+                        ]
+                    ]
+                ];
+            }else{
+                $match = [
+                    ['$match' => ['l6_time' => ['$gte' => $start, '$lte' => $end]]],
+                    [
+                        '$group' => [
+                            '_id' => '$l6_time',
+                            'l6' => ['$sum' => 1],
+                        ]
+                    ]
+                ];
+            }
+            return $collection->aggregate($match);
+        });
+
+        $query_l8 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+            if(count($ad_id) > 0){
+                $match = [
+                    ['$match' => ['l8_time' => ['$gte' => $start, '$lte' => $end]]],
+                    ['$match' => ['ad_id' => ['$in' => $ad_id]]],
+                    [
+                        '$group' => [
+                            '_id' => '$l8_time',
+                            'l8' => ['$sum' => 1],
+                            're' => ['$sum' => '$revenue'],
+                        ]
+                    ]
+                ];
+            }else{
+                $match = [
+                    ['$match' => ['l8_time' => ['$gte' => $start, '$lte' => $end]]],
+                    [
+                        '$group' => [
+                            '_id' => '$l8_time',
+                            'l8' => ['$sum' => 1],
+                            're' => ['$sum' => '$revenue'],
+                        ]
+                    ]
+                ];
+            }
+            return $collection->aggregate($match);
+        });
+
+        $result = array();
+        foreach ($query_l1 as $key => $item){
+            if(isset($result[$item->id]->l1)){
+                $result[$item->id]->l1 += $item->l1;
+            }else{
+                @$result[$item->id]->l1 = $item->l1;
+            }
+        }
+        foreach ($query_l3 as $key => $item){
+            if(isset($result[$item->id]->l3)){
+                $result[$item->id]->l3 += $item->l3;
+            }else {
+                @$result[$item->id]->l3 = $item->l3;
+            }
+        }
+        foreach ($query_l6 as $key => $item){
+            if(isset($result[$item->id]->l6)){
+                $result[$item->id]->l6 += $item->l6;
+            }else {
+                @$result[$item->id]->l6 = $item->l6;
+            }
+        }
+        foreach ($query_l8 as $key => $item){
+            if(isset($result[$item->id]->l8)){
+                $result[$item->id]->l8 += $item->l8;
+                $result[$item->id]->re += $item->re;
+            }else{
+                @$result[$item->id]->l8 = $item->l8;
+                @$result[$item->id]->re = $item->re;
+            }
+        }
+
+        return $result;
+    }
+
     public function getQuantity($quantity_month = null){
         // get start date and end date
         list($year, $month, $d, $first_day_this_month, $last_day_this_month) = $this->getDate($quantity_month);
@@ -213,10 +332,6 @@ class SubReportController extends Controller
                         '_id'   => '$date',
                         'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
-                        'l1'    => ['$sum' => '$l1'],
-                        'l3'    => ['$sum' => '$l3'],
-                        'l6'    => ['$sum' => '$l6'],
-                        'l8'    => ['$sum' => '$l8'],
                     ]
                 ]
                 ];
@@ -228,10 +343,6 @@ class SubReportController extends Controller
                         '_id'   => '$date',
                         'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
-                        'l1'    => ['$sum' => '$l1'],
-                        'l3'    => ['$sum' => '$l3'],
-                        'l6'    => ['$sum' => '$l6'],
-                        'l8'    => ['$sum' => '$l8'],
                     ]
                 ]
             ];
@@ -241,6 +352,24 @@ class SubReportController extends Controller
         $query_chart = AdResult::raw(function ($collection) use ($match) {
             return $collection->aggregate($match);
         });
+
+        $data_tot = $this->getDataTOT($first_day_this_month, $last_day_this_month, $ad_id);
+
+        $tot_array = array();
+        foreach ($data_tot as $key => $data){
+            $day =  date('d',strtotime($key));
+            if(isset($tot_array[$day])){
+                $tot_array[$day]->l1 += @$data->l1 ? $data->l1 : 0;
+                $tot_array[$day]->l3 += @$data->l3 ? $data->l3 : 0;
+                $tot_array[$day]->l6 += @$data->l6 ? $data->l6 : 0;
+                $tot_array[$day]->l8 += @$data->l8 ? $data->l8 : 0;
+            }else{
+                @$tot_array[$day]->l1 = @$data->l1 ? $data->l1 : 0;
+                @$tot_array[$day]->l3 = @$data->l3 ? $data->l3 : 0;
+                @$tot_array[$day]->l6 = @$data->l6 ? $data->l6 : 0;
+                @$tot_array[$day]->l8 = @$data->l8 ? $data->l8 : 0;
+            }
+        }
 
         $array_month = array();
         for ($i = 1; $i <= $d; $i++) {
@@ -260,11 +389,10 @@ class SubReportController extends Controller
             $day = explode('-', $item_result['_id']);
             $c3b_array[(int)($day[2])]  = $item_result['c3b'];
             $c3bg_array[(int)($day[2])] = $item_result['c3bg'];
-            $l1_array[(int)($day[2])]   = $item_result['l1'];
-            $l3_array[(int)($day[2])]   = $item_result['l3'];
-            $l6_array[(int)($day[2])]   = $item_result['l6'];
-            $l8_array[(int)($day[2])]   = $item_result['l8'];
-
+            $l1_array[(int)($day[2])]   = @$tot_array[$day[2]]->l1 ? $tot_array[$day[2]]->l1 : 0;
+            $l3_array[(int)($day[2])]   = @$tot_array[$day[2]]->l3 ? $tot_array[$day[2]]->l3 : 0;
+            $l6_array[(int)($day[2])]   = @$tot_array[$day[2]]->l6 ? $tot_array[$day[2]]->l6 : 0;
+            $l8_array[(int)($day[2])]   = @$tot_array[$day[2]]->l8 ? $tot_array[$day[2]]->l8 : 0;
         }
 
         $c3b_result  = array();
@@ -312,10 +440,6 @@ class SubReportController extends Controller
                         'c3a'   => ['$sum' => '$c3a'],
                         'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
-                        'l1'    => ['$sum' => '$l1'],
-                        'l3'    => ['$sum' => '$l3'],
-                        'l6'    => ['$sum' => '$l6'],
-                        'l8'    => ['$sum' => '$l8'],
                     ]
                 ]
             ];
@@ -329,10 +453,6 @@ class SubReportController extends Controller
                         'c3a'   => ['$sum' => '$c3a'],
                         'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         'c3bg'  => ['$sum' => '$c3bg'],
-                        'l1'    => ['$sum' => '$l1'],
-                        'l3'    => ['$sum' => '$l3'],
-                        'l6'    => ['$sum' => '$l6'],
-                        'l8'    => ['$sum' => '$l8'],
                     ]
                 ]
             ];
@@ -342,6 +462,24 @@ class SubReportController extends Controller
         $query_chart = AdResult::raw(function ($collection) use ($match) {
             return $collection->aggregate($match);
         });
+
+        $data_tot = $this->getDataTOT($first_day_this_month, $last_day_this_month, $ad_id);
+
+        $tot_array = array();
+        foreach ($data_tot as $key => $data){
+            $day =  date('d',strtotime($key));
+            if(isset($tot_array[$day])){
+                $tot_array[$day]->l1 += @$data->l1 ? $data->l1 : 0;
+                $tot_array[$day]->l3 += @$data->l3 ? $data->l3 : 0;
+                $tot_array[$day]->l6 += @$data->l6 ? $data->l6 : 0;
+                $tot_array[$day]->l8 += @$data->l8 ? $data->l8 : 0;
+            }else{
+                @$tot_array[$day]->l1 = @$data->l1 ? $data->l1 : 0;
+                @$tot_array[$day]->l3 = @$data->l3 ? $data->l3 : 0;
+                @$tot_array[$day]->l6 = @$data->l6 ? $data->l6 : 0;
+                @$tot_array[$day]->l8 = @$data->l8 ? $data->l8 : 0;
+            }
+        }
 
         $array_month = array();
         for ($i = 1; $i <= $d; $i++) {
@@ -363,19 +501,19 @@ class SubReportController extends Controller
             $day = explode('-', $item_result['_id']);
 
             $l3_c3b_array[(int)($day[2])]  = $item_result['c3b'] ?
-                round($item_result['l3'] / $item_result['c3b'],2) * 100 : 0;
+                round(@$tot_array[$day[2]]->l3 / $item_result['c3b'],2) * 100 : 0;
             $l3_c3bg_array[(int)($day[2])]  = $item_result['c3bg'] ?
-                round($item_result['l3'] / $item_result['c3bg'],2) * 100 : 0;
-            $l3_l1_array[(int)($day[2])]  = $item_result['l1'] ?
-                round($item_result['l3'] / $item_result['l1'],2) * 100 : 0;
+                round(@$tot_array[$day[2]]->l3 / $item_result['c3bg'],2) * 100 : 0;
+            $l3_l1_array[(int)($day[2])]  = @$tot_array[$day[2]]->l1 ?
+                round(@$tot_array[$day[2]]->l3 / @$tot_array[$day[2]]->l1,2) * 100 : 0;
             $l1_c3bg_array[(int)($day[2])]  = $item_result['c3bg'] ?
-                round($item_result['l1'] / $item_result['c3bg'],2) * 100 : 0;
+                round(@$tot_array[$day[2]]->l1 / $item_result['c3bg'],2) * 100 : 0;
             $c3bg_c3b_array[(int)($day[2])]  = $item_result['c3b'] ?
                 round($item_result['c3bg'] / $item_result['c3b'],2) * 100 : 0;
-            $l6_l3_array[(int)($day[2])]  = $item_result['l3'] ?
-                round($item_result['l6'] / $item_result['l3'],2) * 100 : 0;
-            $l8_l6_array[(int)($day[2])]  = $item_result['l6'] ?
-                round($item_result['l8'] / $item_result['l6'],2) * 100 : 0;
+            $l6_l3_array[(int)($day[2])]  = @$tot_array[$day[2]]->l3 ?
+                round(@$tot_array[$day[2]]->l6 / @$tot_array[$day[2]]->l3,2) * 100 : 0;
+            $l8_l6_array[(int)($day[2])]  = @$tot_array[$day[2]]->l6 ?
+                round(@$tot_array[$day[2]]->l8 / @$tot_array[$day[2]]->l6,2) * 100 : 0;
             $c3a_c3_array[(int)($day[2])]  = $item_result['c3'] ?
                 round($item_result['c3a'] / $item_result['c3'],2) * 100 : 0;
         }
@@ -518,28 +656,6 @@ class SubReportController extends Controller
 		return $result;
 	}
 
-    private function getWhereData(){
-        $request    = request();
-        $data_where = array();
-        if ($request->source_id) {
-            $data_where['source_id']        = $request->source_id;
-        }
-        if ($request->team_id) {
-            $data_where['team_id']          = $request->team_id;
-        }
-        if ($request->marketer_id) {
-            $data_where['marketer_id']      = $request->marketer_id;
-        }
-        if ($request->campaign_id) {
-            $data_where['campaign_id']      = $request->campaign_id;
-        }
-        if ($request->subcampaign_id) {
-            $data_where['subcampaign_id']   = $request->subcampaign_id;
-        }
-
-        return $data_where;
-	}
-	
 	private function getWhereDataByCreatorID(){
         $request    = request();
         $data_where = array();
@@ -594,1273 +710,6 @@ class SubReportController extends Controller
 
         return [$year, $month, $d, $first_day_this_month, $last_day_this_month];
     }
-
-	public function hourReport(){
-		$page_title = "Hour Report | Helios";
-		$page_css = array();
-		$no_main_header = FALSE; //set true for lock.php and login.php
-		$active = 'hour-report';
-		$breadcrumbs = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Hour Report </span>";
-
-		$sources        = Source::all();
-		$teams          = Team::all();
-		$marketers      = User::all();
-		$campaigns      = Campaign::where('is_active', 1)->get();
-		$page_size      = Config::getByKey('PAGE_SIZE');
-		$subcampaigns   = Subcampaign::where('is_active', 1)->get();
-
-		$table['c3'] = [];
-		$table['c3a'] = [];
-		$table['c3b'] = [];
-		$table['c3bg'] = [];
-		$table['c3_week'] = [];
-		$table['c3a_week'] = [];
-		$table['c3b_week'] = [];
-		$table['c3bg_week'] = [];
-
-		$table_accumulated['c3'] = [];
-		$table_accumulated['c3b'] = [];
-		$table_accumulated['c3bg'] = [];
-
-		list($year, $month, $d, $first_day_this_month, $last_day_this_month) = $this->getDate(null);
-
-		$array_month = array();
-		for ($i = 1; $i <= $d; $i++) {
-			//$array_month[date($i)] = 0;
-			$timestamp = strtotime($year . "-" . $month . "-" . $i) * 1000;
-			$array_month[$i] = $timestamp;
-		}
-
-		$date_time   = date('Y-m-d');
-		$current_hour = (int)date('H');
-
-		foreach ($array_month as $key => $timestamp){
-			$temp['c3'][$timestamp] = 0;
-			$temp['c3a'][$timestamp] = 0;
-			$temp['c3b'][$timestamp] = 0;
-			$temp['c3bg'][$timestamp] = 0;
-			for ($i = 0; $i < 24; $i++){
-				$data_c3[ $timestamp ][$i]  = 0;
-				$data_c3b[ $timestamp ][$i]  = 0;
-				$data_c3bg[ $timestamp ][$i]  = 0;
-			}
-		}
-
-		for ($i = 0; $i < 24; $i++){
-			$table['c3a'][$i] =  0;
-			$table['c3b'][$i] = 0;
-			$table['c3bg'][$i] = 0;
-			$table['c3'][$i] =  0;
-			$table['c3a_week'][$i] = 0;
-			$table['c3b_week'][$i] = 0;
-			$table['c3bg_week'][$i] = 0;
-			$table['c3_week'][$i] = 0;
-		}
-
-		$_contacts_c3 = Contact::raw( function ( $collection ) use ($first_day_this_month, $last_day_this_month) {
-			$match = [
-				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
-				[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
-				[
-					'$group' => [
-						'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
-						'c3' => [ '$sum' => 1 ],
-					]
-				]
-			];
-			return $collection->aggregate( $match );
-		} );
-		$_contacts_c3b = Contact::raw( function ( $collection ) use ($first_day_this_month, $last_day_this_month) {
-			$match = [
-				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
-				[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
-				[
-					'$group' => [
-						'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
-						'c3b' => [ '$sum' => 1 ],
-					]
-				]
-			];
-			return $collection->aggregate( $match );
-		} );
-		$_contacts_c3bg = Contact::raw( function ( $collection ) use ($first_day_this_month, $last_day_this_month) {
-			$match = [
-				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
-				[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
-				[
-					'$group' => [
-						'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
-						'c3bg' => [ '$sum' => 1 ],
-					]
-				]
-			];
-			return $collection->aggregate( $match );
-		} );
-
-		foreach ( $_contacts_c3 as $item_result ) {
-			$timestamp = $item_result['_id'];
-			if (isset($data_c3[$timestamp->submit_date]))
-				$data_c3[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3;
-		}
-		foreach ( $_contacts_c3b as $item_result ) {
-			$timestamp = $item_result['_id'];
-			if (isset($data_c3b[$timestamp->submit_date]))
-				$data_c3b[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3b;
-		}
-		foreach ( $_contacts_c3bg as $item_result ) {
-			$timestamp = $item_result['_id'];
-			if (isset($data_c3bg[$timestamp->submit_date]))
-				$data_c3bg[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3bg;
-		}
-
-		for ($h = 0; $h <= $current_hour; $h++){
-			foreach ($array_month as $key => $timestamp){
-				$temp['c3'][$timestamp] += $data_c3[$timestamp][$h];
-				$temp['c3b'][$timestamp] += $data_c3b[$timestamp][$h];
-				$temp['c3bg'][$timestamp] += $data_c3bg[$timestamp][$h];
-			}
-		}
-
-		foreach ($array_month as $key => $timestamp){
-			$line_c3b[$current_hour][] = [$timestamp, $temp['c3b'][$timestamp]];
-			$line_c3bg[$current_hour][] = [$timestamp, $temp['c3bg'][$timestamp]];
-			$line_c3[$current_hour][] = [$timestamp, $temp['c3'][$timestamp]];
-		}
-		$chart_c3b[$current_hour] = json_encode($line_c3b[$current_hour]);
-		$chart_c3bg[$current_hour] = json_encode($line_c3bg[$current_hour]);
-		$chart_c3[$current_hour] = json_encode($line_c3[$current_hour]);
-
-
-		$contacts_c3 = Contact::raw( function ( $collection ) {
-			$match = [
-				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( "midnight" ) * 1000, '$lte' => strtotime( "tomorrow" ) * 1000 ] ] ],
-				[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
-				[
-					'$group' => [
-						'_id' => '$submit_hour',
-						'c3' => [ '$sum' => 1 ],
-					]
-				]
-			];
-			return $collection->aggregate( $match );
-		} );
-		$contacts_c3b = Contact::raw( function ( $collection ) {
-			$match = [
-				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( "midnight" ) * 1000, '$lte' => strtotime( "tomorrow" ) * 1000 ] ] ],
-				[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
-				[
-					'$group' => [
-						'_id' => '$submit_hour',
-						'c3b' => [ '$sum' => 1 ],
-					]
-				]
-			];
-			return $collection->aggregate( $match );
-		} );
-		$contacts_c3bg = Contact::raw( function ( $collection ) {
-			$match = [
-				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( "midnight" ) * 1000, '$lte' => strtotime( "tomorrow" ) * 1000 ] ] ],
-				[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
-				[
-					'$group' => [
-						'_id' => '$submit_hour',
-						'c3bg' => [ '$sum' => 1 ],
-					]
-				]
-			];
-			return $collection->aggregate( $match );
-		} );
-		$contacts_c3_week = Contact::raw( function ( $collection ) {
-			$match = [
-				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( "midnight" ) * 1000 - 7 * 86400000, '$lte' => strtotime( "tomorrow" ) * 1000 ] ] ],
-				[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
-				[
-					'$group' => [
-						'_id' => '$submit_hour',
-						'c3' => [ '$sum' => 1 ],
-					]
-				]
-			];
-			return $collection->aggregate( $match );
-		} );
-		$contacts_c3b_week = Contact::raw( function ( $collection ) {
-			$match = [
-				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( "midnight" ) * 1000 - 7 * 86400000, '$lte' => strtotime( "tomorrow" ) * 1000 ] ] ],
-				[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
-				[
-					'$group' => [
-						'_id' => '$submit_hour',
-						'c3b' => [ '$sum' => 1 ],
-					]
-				]
-			];
-			return $collection->aggregate( $match );
-		} );
-		$contacts_c3bg_week = Contact::raw( function ( $collection ) {
-			$match = [
-				[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( "midnight" ) * 1000 - 7 * 86400000, '$lte' => strtotime( "tomorrow" ) * 1000 ] ] ],
-				[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
-				[
-					'$group' => [
-						'_id' => '$submit_hour',
-						'c3bg' => [ '$sum' => 1 ],
-					]
-				]
-			];
-			return $collection->aggregate( $match );
-		} );
-
-		foreach ( $contacts_c3 as $item_result ) {
-			$hour = (int)$item_result['_id'];
-			$table['c3'][$hour] += (int)$item_result->c3;
-		}
-		foreach ( $contacts_c3b as $item_result ) {
-				$hour = $item_result['_id'];
-				$table['c3b'][$hour] += $item_result->c3b;
-		}
-		foreach ( $contacts_c3bg as $item_result ) {
-				$hour = $item_result['_id'];
-				$table['c3bg'][$hour] += $item_result->c3bg;
-		}
-		foreach ( $contacts_c3_week as $item_result ) {
-				$hour = $item_result['_id'];
-				$table['c3_week'][$hour] += $item_result->c3;
-		}
-		foreach ( $contacts_c3b_week as $item_result ) {
-				$hour = $item_result['_id'];
-				$table['c3b_week'][$hour] += $item_result->c3b;
-		}
-		foreach ( $contacts_c3bg_week as $item_result ) {
-				$hour = $item_result['_id'];
-				$table['c3bg_week'][$hour] += $item_result->c3bg;
-		}
-
-		for ($i = 0; $i < 24; $i++){
-			$c3_line[] =  [$i, $table['c3'][$i]];
-			$c3b_line[] =  [$i, $table['c3b'][$i]];
-			$c3bg_line[] =  [$i, $table['c3bg'][$i]];
-
-			$table['c3_week'][$i] = intval( round($table['c3_week'][$i] / 7));
-			$table['c3b_week'][$i] = intval( round($table['c3b_week'][$i] / 7));
-			$table['c3bg_week'][$i] = intval( round($table['c3bg_week'][$i] / 7));
-
-			$c3_week_line[] =  [$i, $table['c3_week'][$i]];
-			$c3b_week_line[] =  [$i, $table['c3b_week'][$i]];
-			$c3bg_week_line[] =  [$i, $table['c3bg_week'][$i]];
-
-			$table_accumulated['c3'][$i] = 0;
-			$table_accumulated['c3b'][$i] = 0;
-			$table_accumulated['c3bg'][$i] = 0;
-			$table_accumulated['c3_week'][$i] = 0;
-			$table_accumulated['c3b_week'][$i] = 0;
-			$table_accumulated['c3bg_week'][$i] = 0;
-			for ($j = 0; $j <= $i; $j++){
-				$table_accumulated['c3'][$i] += $table['c3'][$j];
-				$table_accumulated['c3b'][$i] += $table['c3b'][$j];
-				$table_accumulated['c3bg'][$i] += $table['c3bg'][$j];
-
-				$table_accumulated['c3_week'][$i] += $table['c3_week'][$j];
-				$table_accumulated['c3b_week'][$i] += $table['c3b_week'][$j];
-				$table_accumulated['c3bg_week'][$i] += $table['c3bg_week'][$j];
-			}
-
-			$c3_line_accumulated[] =  [$i, $table_accumulated['c3'][$i]];
-			$c3b_line_accumulated[] =  [$i, $table_accumulated['c3b'][$i]];
-			$c3bg_line_accumulated[] =  [$i, $table_accumulated['c3bg'][$i]];
-
-			$c3_week_line_accumulated[] =  [$i, $table_accumulated['c3_week'][$i]];
-			$c3b_week_line_accumulated[] =  [$i, $table_accumulated['c3b_week'][$i]];
-			$c3bg_week_line_accumulated[] =  [$i, $table_accumulated['c3bg_week'][$i]];
-		}
-
-		$chart['c3']    = json_encode($c3_line);
-		$chart['c3b']     = json_encode($c3b_line);
-		$chart['c3bg']     = json_encode($c3bg_line);
-		$chart['c3_week']    = json_encode($c3_week_line);
-		$chart['c3b_week']     = json_encode($c3b_week_line);
-		$chart['c3bg_week']     = json_encode($c3bg_week_line);
-		$chart['c3_accumulated']    = json_encode($c3_line_accumulated);
-		$chart['c3b_accumulated']     = json_encode($c3b_line_accumulated);
-		$chart['c3bg_accumulated']     = json_encode($c3bg_line_accumulated);
-		$chart['c3_week_accumulated']    = json_encode($c3_week_line_accumulated);
-		$chart['c3b_week_accumulated']     = json_encode($c3b_week_line_accumulated);
-		$chart['c3bg_week_accumulated']     = json_encode($c3bg_week_line_accumulated);
-
-		return view('pages.hour-report', compact(
-			'page_title',
-			'page_css',
-			'no_main_header',
-			'active',
-			'breadcrumbs',
-			'sources',
-			'teams',
-			'marketers',
-			'campaigns',
-			'page_size',
-			'subcampaigns',
-			'table',
-			'table_accumulated',
-			'chart_c3',
-			'chart_c3b',
-			'chart_c3bg',
-			'current_hour',
-			'chart',
-			'data_where',
-			'date_time'
-		));
-	}
-
-	public function hourReportFilter(){
-		$page_title = "Hour Report | Helios";
-		$page_css = array();
-		$no_main_header = FALSE; //set true for lock.php and login.php
-		$active = 'hour-report';
-		$breadcrumbs = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Hour Report </span>";
-
-		$sources        = Source::all();
-		$teams          = Team::all();
-		$marketers      = User::all();
-		$campaigns      = Campaign::where('is_active', 1)->get();
-		$page_size      = Config::getByKey('PAGE_SIZE');
-		$subcampaigns   = Subcampaign::where('is_active', 1)->get();
-
-
-		$table['c3'] = [];
-		$table['c3a'] = [];
-		$table['c3b'] = [];
-		$table['c3bg'] = [];
-		$table['c3_week'] = [];
-		$table['c3a_week'] = [];
-		$table['c3b_week'] = [];
-		$table['c3bg_week'] = [];
-
-		$table_accumulated['c3'] = [];
-		$table_accumulated['c3b'] = [];
-		$table_accumulated['c3bg'] = [];
-
-		list($year, $month, $d, $first_day_this_month, $last_day_this_month) = $this->getDate(null);
-
-		$array_month = array();
-		for ($i = 1; $i <= $d; $i++) {
-			//$array_month[date($i)] = 0;
-			$timestamp = strtotime($year . "-" . $month . "-" . $i) * 1000;
-			$array_month[$i] = $timestamp;
-		}
-
-		$current_hour = (int)date('H');
-
-		$data_where = $this->getWhereData();
-		$request        = request();
-		$date_time   = $request->date_time;
-		$ad_id  = $this->getAds();
-
-		foreach ($array_month as $key => $timestamp){
-			$temp['c3'][$timestamp] = 0;
-			$temp['c3b'][$timestamp] = 0;
-			$temp['c3bg'][$timestamp] = 0;
-			for ($i = 0; $i < 24; $i++){
-				$data_c3[ $timestamp ][$i]  = 0;
-				$data_c3b[ $timestamp ][$i]  = 0;
-				$data_c3bg[ $timestamp ][$i]  = 0;
-			}
-		}
-
-		$_contacts_c3 = Contact::raw( function ( $collection ) use ($ad_id, $first_day_this_month, $last_day_this_month) {
-			if (count($ad_id) > 0){
-				$match = [
-					['$match' => ['ad_id' => ['$in' => $ad_id]]],
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
-							'c3' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			} else{
-				$match = [
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
-							'c3' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			}
-			return $collection->aggregate( $match );
-		} );
-		$_contacts_c3b = Contact::raw( function ( $collection ) use ($ad_id, $first_day_this_month, $last_day_this_month) {
-			if (count($ad_id) > 0){
-				$match = [
-					['$match' => ['ad_id' => ['$in' => $ad_id]]],
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
-							'c3b' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			} else{
-				$match = [
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
-							'c3b' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			}
-			return $collection->aggregate( $match );
-		} );
-		$_contacts_c3bg = Contact::raw( function ( $collection ) use ($ad_id, $first_day_this_month, $last_day_this_month) {
-			if (count($ad_id) > 0){
-				$match = [
-					['$match' => ['ad_id' => ['$in' => $ad_id]]],
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
-							'c3bg' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			} else{
-				$match = [
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => ['submit_date'=>'$submit_date', 'submit_hour'=>'$submit_hour'],
-							'c3bg' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			}
-			return $collection->aggregate( $match );
-		} );
-
-		foreach ( $_contacts_c3 as $item_result ) {
-			$timestamp = $item_result['_id'];
-			if (isset($data_c3[$timestamp->submit_date]))
-				$data_c3[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3;
-		}
-		foreach ( $_contacts_c3b as $item_result ) {
-			$timestamp = $item_result['_id'];
-			if (isset($data_c3b[$timestamp->submit_date]))
-				$data_c3b[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3b;
-		}
-		foreach ( $_contacts_c3bg as $item_result ) {
-			$timestamp = $item_result['_id'];
-			if (isset($data_c3bg[$timestamp->submit_date]))
-				$data_c3bg[$timestamp->submit_date][$timestamp->submit_hour] += (int)$item_result->c3bg;
-		}
-
-		for ($h = 0; $h <= $current_hour; $h++){
-			foreach ($array_month as $key => $timestamp){
-				$temp['c3'][$timestamp] += $data_c3[$timestamp][$h];
-				$temp['c3b'][$timestamp] += $data_c3b[$timestamp][$h];
-				$temp['c3bg'][$timestamp] += $data_c3bg[$timestamp][$h];
-			}
-		}
-
-		foreach ($array_month as $key => $timestamp){
-			$line_c3b[$current_hour][] = [$timestamp, $temp['c3b'][$timestamp]];
-			$line_c3bg[$current_hour][] = [$timestamp, $temp['c3bg'][$timestamp]];
-			$line_c3[$current_hour][] = [$timestamp, $temp['c3'][$timestamp]];
-		}
-		$chart_c3b[$current_hour] = json_encode($line_c3b[$current_hour]);
-		$chart_c3bg[$current_hour] = json_encode($line_c3bg[$current_hour]);
-		$chart_c3[$current_hour] = json_encode($line_c3[$current_hour]);
-
-		for ($i = 0; $i < 24; $i++){
-			$table['c3b'][ $i ]       = 0;
-			$table['c3bg'][ $i ]      = 0;
-			$table['c3'][ $i ]        = 0;
-			$table['c3b_week'][ $i ]  = 0;
-			$table['c3bg_week'][ $i ] = 0;
-			$table['c3_week'][ $i ]   = 0;
-		}
-
-		$contacts_c3 = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
-			if (count($ad_id) > 0){
-				$match = [
-					['$match' => ['ad_id' => ['$in' => $ad_id]]],
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => '$submit_hour',
-							'c3' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			}
-			else{
-				$match = [
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => '$submit_hour',
-							'c3' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			}
-			return $collection->aggregate( $match );
-		} );
-		$contacts_c3b = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
-			if (count($ad_id) > 0){
-				$match = [
-					['$match' => ['ad_id' => ['$in' => $ad_id]]],
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => '$submit_hour',
-							'c3b' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			}
-			else{
-				$match = [
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => '$submit_hour',
-							'c3b' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			}
-			return $collection->aggregate( $match );
-		} );
-		$contacts_c3bg = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
-			if (count($ad_id) > 0){
-				$match = [
-					['$match' => ['ad_id' => ['$in' => $ad_id]]],
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => '$submit_hour',
-							'c3bg' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			}
-			else{
-				$match = [
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => '$submit_hour',
-							'c3bg' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			}
-			return $collection->aggregate( $match );
-		} );
-		$contacts_c3_week = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
-			if (count($ad_id) > 0){
-				$match = [
-					['$match' => ['ad_id' => ['$in' => $ad_id]]],
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000  - 7 * 86400000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => '$submit_hour',
-							'c3' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			}
-			else{
-				$match = [
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000  - 7 * 86400000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3a', 'c3b','c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => '$submit_hour',
-							'c3' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			}
-			return $collection->aggregate( $match );
-		} );
-		$contacts_c3b_week = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
-			if (count($ad_id) > 0){
-				$match = [
-					['$match' => ['ad_id' => ['$in' => $ad_id]]],
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000  - 7 * 86400000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => '$submit_hour',
-							'c3b' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			}
-			else{
-				$match = [
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000  - 7 * 86400000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3b','c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => '$submit_hour',
-							'c3b' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			}
-			return $collection->aggregate( $match );
-		} );
-		$contacts_c3bg_week = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
-			if (count($ad_id) > 0){
-				$match = [
-					['$match' => ['ad_id' => ['$in' => $ad_id]]],
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000  - 7 * 86400000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => '$submit_hour',
-							'c3bg' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			}
-			else{
-				$match = [
-					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000  - 7 * 86400000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
-					[ '$match' => [ 'clevel' => ['$in' => ['c3bg']] ] ],
-					[
-						'$group' => [
-							'_id' => '$submit_hour',
-							'c3bg' => [ '$sum' => 1 ],
-						]
-					]
-				];
-			}
-			return $collection->aggregate( $match );
-		} );
-
-		foreach ( $contacts_c3 as $item_result ) {
-			$hour = (int)$item_result['_id'];
-			$table['c3'][$hour] += (int)$item_result->c3;
-		}
-		foreach ( $contacts_c3b as $item_result ) {
-			$hour = $item_result['_id'];
-			$table['c3b'][$hour] += $item_result->c3b;
-		}
-		foreach ( $contacts_c3bg as $item_result ) {
-			$hour = $item_result['_id'];
-			$table['c3bg'][$hour] += $item_result->c3bg;
-		}
-		foreach ( $contacts_c3_week as $item_result ) {
-			$hour = $item_result['_id'];
-			$table['c3_week'][$hour] += $item_result->c3;
-		}
-		foreach ( $contacts_c3b_week as $item_result ) {
-			$hour = $item_result['_id'];
-			$table['c3b_week'][$hour] += $item_result->c3b;
-		}
-		foreach ( $contacts_c3bg_week as $item_result ) {
-			$hour = $item_result['_id'];
-			$table['c3bg_week'][$hour] += $item_result->c3bg;
-		}
-
-		for ($i = 0; $i < 24; $i++){
-			$c3_line[] =  [$i, $table['c3'][$i]];
-			$c3b_line[] =  [$i, $table['c3b'][$i]];
-			$c3bg_line[] =  [$i, $table['c3bg'][$i]];
-
-			$table['c3_week'][$i] = intval( round($table['c3_week'][$i] / 7));
-			$table['c3b_week'][$i] = intval( round($table['c3b_week'][$i] / 7));
-			$table['c3bg_week'][$i] = intval( round($table['c3bg_week'][$i] / 7));
-
-			$c3_week_line[] =  [$i, $table['c3_week'][$i]];
-			$c3b_week_line[] =  [$i, $table['c3b_week'][$i]];
-			$c3bg_week_line[] =  [$i, $table['c3bg_week'][$i]];
-
-			$table_accumulated['c3'][$i] = 0;
-			$table_accumulated['c3b'][$i] = 0;
-			$table_accumulated['c3bg'][$i] = 0;
-			$table_accumulated['c3_week'][$i] = 0;
-			$table_accumulated['c3b_week'][$i] = 0;
-			$table_accumulated['c3bg_week'][$i] = 0;
-			for ($j = 0; $j <= $i; $j++){
-				$table_accumulated['c3'][$i] += $table['c3'][$j];
-				$table_accumulated['c3b'][$i] += $table['c3b'][$j];
-				$table_accumulated['c3bg'][$i] += $table['c3bg'][$j];
-
-				$table_accumulated['c3_week'][$i] += $table['c3_week'][$j];
-				$table_accumulated['c3b_week'][$i] += $table['c3b_week'][$j];
-				$table_accumulated['c3bg_week'][$i] += $table['c3bg_week'][$j];
-			}
-
-			$c3_line_accumulated[] =  [$i, $table_accumulated['c3'][$i]];
-			$c3b_line_accumulated[] =  [$i, $table_accumulated['c3b'][$i]];
-			$c3bg_line_accumulated[] =  [$i, $table_accumulated['c3bg'][$i]];
-
-			$c3_week_line_accumulated[] =  [$i, $table_accumulated['c3_week'][$i]];
-			$c3b_week_line_accumulated[] =  [$i, $table_accumulated['c3b_week'][$i]];
-			$c3bg_week_line_accumulated[] =  [$i, $table_accumulated['c3bg_week'][$i]];
-		}
-
-		$chart['c3']    = json_encode($c3_line);
-		$chart['c3b']     = json_encode($c3b_line);
-		$chart['c3bg']     = json_encode($c3bg_line);
-		$chart['c3_week']    = json_encode($c3_week_line);
-		$chart['c3b_week']     = json_encode($c3b_week_line);
-		$chart['c3bg_week']     = json_encode($c3bg_week_line);
-		$chart['c3_accumulated']    = json_encode($c3_line_accumulated);
-		$chart['c3b_accumulated']     = json_encode($c3b_line_accumulated);
-		$chart['c3bg_accumulated']     = json_encode($c3bg_line_accumulated);
-		$chart['c3_week_accumulated']    = json_encode($c3_week_line_accumulated);
-		$chart['c3b_week_accumulated']     = json_encode($c3b_week_line_accumulated);
-		$chart['c3bg_week_accumulated']     = json_encode($c3bg_week_line_accumulated);
-
-
-		return view('pages.hour-report', compact(
-			'page_title',
-			'page_css',
-			'no_main_header',
-			'active',
-			'breadcrumbs',
-			'sources',
-			'teams',
-			'marketers',
-			'campaigns',
-			'page_size',
-			'subcampaigns',
-			'table',
-			'table_accumulated',
-			'chart_c3',
-			'chart_c3b',
-			'chart_c3bg',
-			'current_hour',
-			'chart',
-			'data_where',
-			'date_time'
-		));
-	}
-
-	public function channelReport(){
-		$page_title = "Channel Report | Helios";
-		$page_css = array();
-		$no_main_header = FALSE; //set true for lock.php and login.php
-		$active = 'channel-report';
-		$breadcrumbs = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Channel Report </span>";
-
-		$sources        = Source::all();
-		$teams          = Team::all();
-		$marketers      = User::all();
-		$campaigns      = Campaign::where('is_active', 1)->get();
-		$page_size      = Config::getByKey('PAGE_SIZE');
-		$subcampaigns   = Subcampaign::where('is_active', 1)->get();
-
-		$date_time = $start_date = $end_date = date('Y-m-d');
-
-		$data = $this->getChannel($start_date, $start_date);
-
-		$table = $data['table'];
-		$array_channel = $data['array_channel'];
-
-
-		return view('pages.channel-report', compact(
-			'page_title',
-			'page_css',
-			'no_main_header',
-			'active',
-			'breadcrumbs',
-			'sources',
-			'teams',
-			'marketers',
-			'campaigns',
-			'page_size',
-			'subcampaigns',
-			'table',
-			'data_where',
-			'date_time',
-			'array_channel'
-		));
-	}
-
-	private function getChannel($start_date, $end_date, $type = 'TOA'){
-		$channels      = Channel::all();
-
-		$array_channel = array();
-		foreach ($channels as $key => $channel) {
-			$array_channel[$channel->_id] = $channel->name;
-		}
-
-		$array_channel['unknown'] = 'Unknown';
-		$array_channel[""] = 'Unknown';
-
-		foreach ($array_channel as $channel) {
-			$table['c3'][$channel] = 0;
-			$table['c3b'][$channel] = 0;
-			$table['c3bg'][$channel] = 0;
-			$table['l1'][$channel]   = 0;
-			$table['l3'][$channel]   = 0;
-			$table['l6'][$channel]   = 0;
-			$table['l8'][$channel]   = 0;
-
-			$table['c3_week'][$channel] = 0;
-			$table['c3b_week'][$channel] = 0;
-			$table['c3bg_week'][$channel] = 0;
-		}
-
-		$ad_id  = $this->getAds();
-		$arr_ad = Ad::pluck('channel_id','_id')->all();
-
-		if ($type === 'TOA'){
-			if(count($ad_id) > 0){
-				$match = [
-					['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
-					['$match' => ['ad_id' => ['$in' => $ad_id]]],
-					[
-						'$group' => [
-							'_id'   => '$ad_id',
-							'c3'    => ['$sum' => '$c3'],
-							'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
-							'c3bg'  => ['$sum' => '$c3bg'],
-							'l1'    => ['$sum' => '$l1'],
-							'l3'    => ['$sum' => '$l3'],
-							'l6'    => ['$sum' => '$l6'],
-							'l8'    => ['$sum' => '$l8'],
-						]
-					]
-				];
-				$match_week = [
-					['$match' => ['date' => ['$gte' => date('Y-m-d', strtotime( $start_date ) - 7 * 86400), '$lte' => $end_date]]],
-					['$match' => ['ad_id' => ['$in' => $ad_id]]],
-					[
-						'$group' => [
-							'_id'   => '$ad_id',
-							'c3'    => ['$sum' => '$c3'],
-							'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
-							'c3bg'  => ['$sum' => '$c3bg'],
-						]
-					]
-				];
-			}else{
-				$match = [
-					['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
-					[
-						'$group' => [
-							'_id'   => '$ad_id',
-							'c3'    => ['$sum' => '$c3'],
-							'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
-							'c3bg'  => ['$sum' => '$c3bg'],
-							'l1'    => ['$sum' => '$l1'],
-							'l3'    => ['$sum' => '$l3'],
-							'l6'    => ['$sum' => '$l6'],
-							'l8'    => ['$sum' => '$l8'],
-						]
-					]
-				];
-				$match_week = [
-					['$match' => ['date' => ['$gte' => date('Y-m-d', strtotime( $start_date ) - 7 * 86400), '$lte' => $end_date]]],
-					[
-						'$group' => [
-							'_id'   => '$ad_id',
-							'c3'    => ['$sum' => '$c3'],
-							'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
-							'c3bg'  => ['$sum' => '$c3bg'],
-						]
-					]
-				];
-			}
-
-			$query_chart = AdResult::raw(function ($collection) use ($match) {
-				return $collection->aggregate($match);
-			});
-			$query_chart_week = AdResult::raw(function ($collection) use ($match_week) {
-				return $collection->aggregate($match_week);
-			});
-
-			foreach ( $query_chart as $item_result ) {
-				$channel_id = @$arr_ad[$item_result['_id']];
-				if ( $channel_id ) {
-					$channel    = @$array_channel[ $channel_id ];
-					if ( ! $channel ) {
-						$channel = 'Unknown';
-					}
-				} else {
-					$channel = 'Unknown';
-				}
-
-				$table['c3'][ $channel ]   += $item_result->c3;
-				$table['c3b'][ $channel ]  += $item_result->c3b;
-				$table['c3bg'][ $channel ] += $item_result->c3bg;
-				$table['l1'][ $channel ]   += $item_result->l1;
-				$table['l3'][ $channel ]   += $item_result->l3;
-				$table['l6'][ $channel ]   += $item_result->l6;
-				$table['l8'][ $channel ]   += $item_result->l8;
-			}
-			foreach ( $query_chart_week as $item_result ) {
-				$channel_id = @$arr_ad[$item_result['_id']];
-				if ( $channel_id ) {
-					$channel    = @$array_channel[ $channel_id ];
-					if ( ! $channel ) {
-						$channel = 'Unknown';
-					}
-				} else {
-					$channel = 'Unknown';
-				}
-
-				$table['c3_week'][ $channel ]   += intval( round($item_result->c3 / 7));
-				$table['c3b_week'][ $channel ]  += intval( round($item_result->c3b / 7));
-				$table['c3bg_week'][ $channel ] += intval( round($item_result->c3bg / 7));
-			}
-
-			arsort($table['c3']);
-			arsort($table['c3_week']);
-			$array_channel_new = [];
-			foreach ($table['c3'] as $key=>$value) {
-				if ($value != 0){
-					$array_channel_new[] = $key;
-				}
-			}
-			foreach ($table['l1'] as $key=>$value) {
-				if ($value != 0 && !in_array($key,$array_channel_new)){
-					$array_channel_new[] = $key;
-				}
-			}
-			foreach ($table['l3'] as $key=>$value) {
-				if ($value != 0 && !in_array($key,$array_channel_new)){
-					$array_channel_new[] = $key;
-				}
-			}
-			foreach ($table['l6'] as $key=>$value) {
-				if ($value != 0 && !in_array($key,$array_channel_new)){
-					$array_channel_new[] = $key;
-				}
-			}
-			foreach ($table['l8'] as $key=>$value) {
-				if ($value != 0 && !in_array($key,$array_channel_new)){
-					$array_channel_new[] = $key;
-				}
-			}
-
-			$array_channel = $array_channel_new;
-
-			return ['table'=>$table,'array_channel' => $array_channel];
-		}
-		else if($type === 'TOT'){
-			if(count($ad_id) > 0){
-				$match = [
-					['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
-					['$match' => ['ad_id' => ['$in' => $ad_id]]],
-					[
-						'$group' => [
-							'_id'   => '$ad_id',
-							'c3'    => ['$sum' => '$c3'],
-							'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
-							'c3bg'  => ['$sum' => '$c3bg'],
-						]
-					]
-				];
-				$match_week = [
-					['$match' => ['date' => ['$gte' => date('Y-m-d', strtotime( $start_date ) - 7 * 86400), '$lte' => $end_date]]],
-					['$match' => ['ad_id' => ['$in' => $ad_id]]],
-					[
-						'$group' => [
-							'_id'   => '$ad_id',
-							'c3'    => ['$sum' => '$c3'],
-							'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
-							'c3bg'  => ['$sum' => '$c3bg'],
-						]
-					]
-				];
-			}else{
-				$match = [
-					['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
-					[
-						'$group' => [
-							'_id'   => '$ad_id',
-							'c3'    => ['$sum' => '$c3'],
-							'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
-							'c3bg'  => ['$sum' => '$c3bg'],
-						]
-					]
-				];
-				$match_week = [
-					['$match' => ['date' => ['$gte' => date('Y-m-d', strtotime( $start_date ) - 7 * 86400), '$lte' => $end_date]]],
-					[
-						'$group' => [
-							'_id'   => '$ad_id',
-							'c3'    => ['$sum' => '$c3'],
-							'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
-							'c3bg'  => ['$sum' => '$c3bg'],
-						]
-					]
-				];
-			}
-
-			$query_chart = AdResult::raw(function ($collection) use ($match) {
-				return $collection->aggregate($match);
-			});
-			$query_chart_week = AdResult::raw(function ($collection) use ($match_week) {
-				return $collection->aggregate($match_week);
-			});
-
-			foreach ( $query_chart as $item_result ) {
-				$channel_id = @$arr_ad[$item_result['_id']];
-				if ( $channel_id ) {
-					$channel    = @$array_channel[ $channel_id ];
-					if ( ! $channel ) {
-						$channel = 'Unknown';
-					}
-				} else {
-					$channel = 'Unknown';
-				}
-
-				$table['c3'][ $channel ]   += $item_result->c3;
-				$table['c3b'][ $channel ]  += $item_result->c3b;
-				$table['c3bg'][ $channel ] += $item_result->c3bg;
-			}
-			foreach ( $query_chart_week as $item_result ) {
-				$channel_id = @$arr_ad[$item_result['_id']];
-				if ( $channel_id ) {
-					$channel    = @$array_channel[ $channel_id ];
-					if ( ! $channel ) {
-						$channel = 'Unknown';
-					}
-				} else {
-					$channel = 'Unknown';
-				}
-
-				$table['c3_week'][ $channel ]   += intval( round($item_result->c3 / 7));
-				$table['c3b_week'][ $channel ]  += intval( round($item_result->c3b / 7));
-				$table['c3bg_week'][ $channel ] += intval( round($item_result->c3bg / 7));
-			}
-
-			arsort($table['c3']);
-			arsort($table['c3_week']);
-			$array_channel_new = [];
-
-			$start = $start_date;
-			$end = date('Y-m-d', strtotime( $end_date ) + 86400);
-
-			$query_l1 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
-				if(count($ad_id) > 0){
-					$match = [
-						['$match' => ['l1_time' => ['$gte' => $start, '$lte' => $end]]],
-						['$match' => ['ad_id' => ['$in' => $ad_id]]],
-						[
-							'$group' => [
-								'_id' => '$ad_id',
-								'count' => ['$sum' => 1],
-							]
-						]
-					];
-				}else{
-					$match = [
-						['$match' => ['l1_time' => ['$gte' => $start, '$lte' => $end]]],
-						[
-							'$group' => [
-								'_id' => '$ad_id',
-								'count' => ['$sum' => 1],
-							]
-						]
-					];
-				}
-				return $collection->aggregate($match);
-			});
-
-			$query_l3 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
-				if(count($ad_id) > 0){
-					$match = [
-						['$match' => ['l3_time' => ['$gte' => $start, '$lte' => $end]]],
-						['$match' => ['ad_id' => ['$in' => $ad_id]]],
-						[
-							'$group' => [
-								'_id' => '$ad_id',
-								'count' => ['$sum' => 1],
-							]
-						]
-					];
-				}else{
-					$match = [
-						['$match' => ['l3_time' => ['$gte' => $start, '$lte' => $end]]],
-						[
-							'$group' => [
-								'_id' => '$ad_id',
-								'count' => ['$sum' => 1],
-							]
-						]
-					];
-				}
-				return $collection->aggregate($match);
-			});
-
-			$query_l6 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
-				if(count($ad_id) > 0){
-					$match = [
-						['$match' => ['l6_time' => ['$gte' => $start, '$lte' => $end]]],
-						['$match' => ['ad_id' => ['$in' => $ad_id]]],
-						[
-							'$group' => [
-								'_id' => '$ad_id',
-								'count' => ['$sum' => 1],
-							]
-						]
-					];
-				}else{
-					$match = [
-						['$match' => ['l6_time' => ['$gte' => $start, '$lte' => $end]]],
-						[
-							'$group' => [
-								'_id' => '$ad_id',
-								'count' => ['$sum' => 1],
-							]
-						]
-					];
-				}
-				return $collection->aggregate($match);
-			});
-
-			$query_l8 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
-				if(count($ad_id) > 0){
-					$match = [
-						['$match' => ['l8_time' => ['$gte' => $start, '$lte' => $end]]],
-						['$match' => ['ad_id' => ['$in' => $ad_id]]],
-						[
-							'$group' => [
-								'_id' => '$ad_id',
-								'count' => ['$sum' => 1],
-							]
-						]
-					];
-				}else{
-					$match = [
-						['$match' => ['l8_time' => ['$gte' => $start, '$lte' => $end]]],
-						[
-							'$group' => [
-								'_id' => '$ad_id',
-								'count' => ['$sum' => 1],
-							]
-						]
-					];
-				}
-				return $collection->aggregate($match);
-			});
-
-			$result = array();
-			foreach ($query_l1 as $key => $item){
-				if(isset($result[$item->id]->l1)){
-					$result[$item->id]->l1 += $item->count;
-				}
-				@$result[$item->id]->l1 = $item->count;
-			}
-			foreach ($query_l3 as $key => $item){
-				if(isset($result[$item->id]->l3)){
-					$result[$item->id]->l3 += $item->count;
-				}
-				@$result[$item->id]->l3 = $item->count;
-			}
-			foreach ($query_l6 as $key => $item){
-				if(isset($result[$item->id]->l6)){
-					$result[$item->id]->l6 += $item->count;
-				}
-				@$result[$item->id]->l6 = $item->count;
-			}
-			foreach ($query_l8 as $key => $item){
-				if(isset($result[$item->id]->l8)){
-					$result[$item->id]->l8 += $item->count;
-				}
-				@$result[$item->id]->l8 = $item->count;
-			}
-
-
-			foreach ( $result as $key => $item_result ) {
-				$channel_id = @$arr_ad[$key];
-				if ( $channel_id ) {
-					$channel    = @$array_channel[ $channel_id ];
-					if ( ! $channel ) {
-						$channel = 'Unknown';
-					}
-				} else {
-					$channel = 'Unknown';
-				}
-
-				$table['l1'][ $channel ] += @$item_result->l1;
-				$table['l3'][ $channel ] += @$item_result->l3;
-				$table['l6'][ $channel ] += @$item_result->l6;
-				$table['l8'][ $channel ] += @$item_result->l8;
-			}
-
-			foreach ($table['c3'] as $key=>$value) {
-				if ($value != 0){
-					$array_channel_new[] = $key;
-				}
-
-			}
-			foreach ($table['l1'] as $key=>$value) {
-				if ($value != 0 && !in_array($key,$array_channel_new)){
-					$array_channel_new[] = $key;
-				}
-			}
-			foreach ($table['l3'] as $key=>$value) {
-				if ($value != 0 && !in_array($key,$array_channel_new)){
-					$array_channel_new[] = $key;
-				}
-			}
-			foreach ($table['l6'] as $key=>$value) {
-				if ($value != 0 && !in_array($key,$array_channel_new)){
-					$array_channel_new[] = $key;
-				}
-			}
-			foreach ($table['l8'] as $key=>$value) {
-				if ($value != 0 && !in_array($key,$array_channel_new)){
-					$array_channel_new[] = $key;
-				}
-			}
-
-			$array_channel = $array_channel_new;
-
-			return ['table'=>$table,'array_channel' => $array_channel];
-		}
-	}
-
-	public function channelReportFilter(){
-		$startDate = Date('Y-m-d');
-		$endDate = Date('Y-m-d');
-		$request = request();
-		if($request->registered_date){
-			$date_place = str_replace('-', ' ', $request->registered_date);
-			$date_arr = explode(' ', str_replace('/', '-', $date_place));
-			$startDate = Date('Y-m-d', strtotime($date_arr[0]));
-			$endDate = Date('Y-m-d', strtotime($date_arr[1]));
-		}
-
-		$data = $this->getChannel($startDate, $endDate, $request->type);
-
-		if ($startDate != $endDate){
-			$data['week'] = false;
-		}
-		else{
-			$data['week'] = true;
-		}
-
-		return view('pages.table_sub-report-channel', $data);
-	}
 
     public function prepareDataByWeeks(){
         // get start date and end date
@@ -2360,7 +1209,7 @@ class SubReportController extends Controller
         return (int)$month;
     }
 
-    public function getDataByDays(){
+    private function prepareDataByDays(){
         $request        = request();
         $budget_month   = $request->budget_month;
         $quantity_month = $request->quantity_month;
@@ -2377,16 +1226,6 @@ class SubReportController extends Controller
         $result['quality']  = $quality;
         $result['C3AC3B']  = $C3AC3B;
 
-        return $result;
-    }
-
-    public function getDataByWeeks(){
-        $result = $this->prepareDataByWeeks();
-        return $result;
-    }
-
-    public function getDataByMonths(){
-        $result = $this->prepareDataByMonths();
         return $result;
     }
 

@@ -1068,20 +1068,23 @@ class ReportController extends Controller
         foreach ($query_l1 as $key => $item){
             if(isset($result[$item->id]->l1)){
                 $result[$item->id]->l1 += $item->count;
+            }else{
+                @$result[$item->id]->l1 = $item->count;
             }
-            @$result[$item->id]->l1 = $item->count;
         }
         foreach ($query_l3 as $key => $item){
             if(isset($result[$item->id]->l3)){
                 $result[$item->id]->l3 += $item->count;
+            }else {
+                @$result[$item->id]->l3 = $item->count;
             }
-            @$result[$item->id]->l3 = $item->count;
         }
         foreach ($query_l8 as $key => $item){
             if(isset($result[$item->id]->l8)){
                 $result[$item->id]->l8 += $item->count;
+            }else{
+                @$result[$item->id]->l8 = $item->count;
             }
-            @$result[$item->id]->l8 = $item->count;
         }
 
         return $result;

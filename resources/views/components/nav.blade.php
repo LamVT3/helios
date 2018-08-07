@@ -86,7 +86,7 @@
                     </li>
 
                     <li class="{{ $active == 'sub-report-line' ? 'active' : '' }}">
-                        <a href="{{ route('sub-report-line') }}"><i class="fa fa-lg fa-fw fa-line-chart"></i> Line Chart</a>
+                        <a href="{{ route('sub-report-line') }}"><i class="fa fa-lg fa-fw fa-line-chart"></i> Line Report</a>
                     </li>
 
                     <li class="{{ $active == 'hour-report' ? 'active' : '' }}">
