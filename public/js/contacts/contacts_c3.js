@@ -865,14 +865,17 @@ function addSelectChannel(item){
         if(channel != '-'){
             $(channelCell).find("select#channel_update option:contains(" + channel + ")").attr('selected', 'selected');
         }
-        $(channelCell).find('select#channel_update').select2();
 
         var check_all = $('input[id=update_all]').is(':checked');
         if(check_all){
-            $('select#channel_update').first().focus(500);
+            $('select#channel_update').first().focus();
         }else{
-            $(channelCell).find('select#channel_update').focus(500);
+            $(channelCell).find('select#channel_update').focus();
         }
+
+        $(channelCell).find('select#channel_update').select2();
+
+
 
     }).fail(
         function (err) {

@@ -768,28 +768,48 @@ class SubReportTOTController extends Controller
 
         $type = \request('type');
 
+        $data_tot = $this->getDataTOT($start_date, $end_date, $ad_id);
+
+        $tot_array = array();
+        foreach ($data_tot as $key => $data){
+            $week = $this->getWeek($key);
+            if(isset($tot_array[$week])){
+                $tot_array[$week]->l1 += @$data->l1 ? $data->l1 : 0;
+                $tot_array[$week]->l3 += @$data->l3 ? $data->l3 : 0;
+                $tot_array[$week]->l6 += @$data->l6 ? $data->l6 : 0;
+                $tot_array[$week]->l8 += @$data->l8 ? $data->l8 : 0;
+                $tot_array[$week]->re += @$data->re ? $data->re : 0;
+            }else{
+                @$tot_array[$week]->l1 = @$data->l1 ? $data->l1 : 0;
+                @$tot_array[$week]->l3 = @$data->l3 ? $data->l3 : 0;
+                @$tot_array[$week]->l6 = @$data->l6 ? $data->l6 : 0;
+                @$tot_array[$week]->l8 = @$data->l8 ? $data->l8 : 0;
+                @$tot_array[$week]->re = @$data->re ? $data->re : 0;
+            }
+        }
+
         if ($type == 'budget') {
-            $result['budget']   = $this->getBudgetByWeeks($query_chart, $w);
+            $result['budget']   = $this->getBudgetByWeeks($query_chart, $tot_array, $w);
         }
         else if ($type == 'quantity') {
-            $result['quantity'] = $this->getQuantityByWeeks($query_chart, $w);
+            $result['quantity'] = $this->getQuantityByWeeks($query_chart, $tot_array, $w);
         }
         else if ($type == 'quality') {
-            $result['quality']  = $this->getQualityByWeeks($query_chart, $w);
+            $result['quality']  = $this->getQualityByWeeks($query_chart, $tot_array, $w);
         }
         else if ($type == 'C3AC3B') {
 	        $result['C3AC3B']  = $this->getC3AC3BByWeeks($start_date, $end_date, $w);
         } else {
-            $result['budget']   = $this->getBudgetByWeeks($query_chart, $w);
-            $result['quantity'] = $this->getQuantityByWeeks($query_chart, $w);
-            $result['quality']  = $this->getQualityByWeeks($query_chart, $w);
+            $result['budget']   = $this->getBudgetByWeeks($query_chart, $tot_array, $w);
+            $result['quantity'] = $this->getQuantityByWeeks($query_chart, $tot_array, $w);
+            $result['quality']  = $this->getQualityByWeeks($query_chart, $tot_array, $w);
 	        $result['C3AC3B']   = $this->getC3AC3BByWeeks($start_date, $end_date, $w);
         }
 
         return $result;
     }
 
-    private function getBudgetByWeeks($query_chart, $w){
+    private function getBudgetByWeeks($query_chart, $tot_array, $w){
 
         $me_array   = array();
         $re_array   = array();
@@ -806,21 +826,20 @@ class SubReportTOTController extends Controller
         foreach ($query_chart as $item_result) {
             $week = $this->getWeek($item_result['_id']);
 
-            $me         = $item_result['me'] ? $this->convert_spent($item_result['me'])     : 0;
-            $re         = $item_result['re'] ? $this->convert_revenue($item_result['re'])   : 0;
+            $me         = $item_result['me']    ? $this->convert_spent($item_result['me'])      : 0;
+            $re         = @$tot_array[$week]->re ? $this->convert_revenue($tot_array[$week]->re)  : 0;
 
             $total_me   += $me;
             $total_re   += $re;
 
             @$me_array[$week]   += $me;
             @$re_array[$week]   += $re;
-            @$c3b_array[$week]  += $item_result['c3b']   ? round($me / $item_result['c3b'], 2)     : 0 ;
-            @$c3bg_array[$week] += $item_result['c3bg']  ? round($me / $item_result['c3bg'], 2)    : 0 ;
-            @$l1_array[$week]   += $item_result['l1']    ? round($me / $item_result['l1'], 2)      : 0 ;
-            @$l3_array[$week]   += $item_result['l3']    ? round($me / $item_result['l3'], 2)      : 0 ;
-            @$l6_array[$week]   += $item_result['l6']    ? round($me / $item_result['l6'], 2)      : 0 ;
-            @$l8_array[$week]   += $item_result['l8']    ? round($me / $item_result['l8'], 2)      : 0 ;
-
+            @$c3b_array[$week]  += $item_result['c3b']  ? round($me / $item_result['c3b'], 2)   : 0 ;
+            @$c3bg_array[$week] += $item_result['c3bg'] ? round($me / $item_result['c3bg'], 2)  : 0 ;
+            @$l1_array[$week]   += @$tot_array[$week]->l1 ? round($me / $tot_array[$week]->l1, 2)  : 0 ;
+            @$l3_array[$week]   += @$tot_array[$week]->l3 ? round($me / $tot_array[$week]->l3, 2)  : 0 ;
+            @$l6_array[$week]   += @$tot_array[$week]->l6 ? round($me / $tot_array[$week]->l6, 2)  : 0 ;
+            @$l8_array[$week]   += @$tot_array[$week]->l8 ? round($me / $tot_array[$week]->l8, 2)  : 0 ;
         }
 
         $me_result   = array();
@@ -833,7 +852,6 @@ class SubReportTOTController extends Controller
         $l8_result   = array();
 
         for ($i = 1; $i <= $w; $i++) {
-
             $me_result[]    = [$i, isset($me_array[$i])   ? $me_array[$i]   : 0];
             $re_result[]    = [$i, isset($re_array[$i])   ? $re_array[$i]   : 0];
             $c3b_result[]   = [$i, isset($c3b_array[$i])  ? $c3b_array[$i]  : 0];
@@ -860,7 +878,7 @@ class SubReportTOTController extends Controller
         return $result;
     }
 
-    private function getQuantityByWeeks($query_chart, $w){
+    private function getQuantityByWeeks($query_chart, $tot_array, $w){
 
         $c3b_array  = array();
         $c3bg_array = array();
@@ -872,13 +890,12 @@ class SubReportTOTController extends Controller
         foreach ($query_chart as $item_result) {
             $week = $this->getWeek($item_result['_id']);
 
-            @$c3b_array[$week]  += $item_result['c3b']   ? $item_result['c3b']     : 0 ;
-            @$c3bg_array[$week] += $item_result['c3bg']  ? $item_result['c3bg']    : 0 ;
-            @$l1_array[$week]   += $item_result['l1']    ? $item_result['l1']      : 0 ;
-            @$l3_array[$week]   += $item_result['l3']    ? $item_result['l3']      : 0 ;
-            @$l6_array[$week]   += $item_result['l6']    ? $item_result['l6']      : 0 ;
-            @$l8_array[$week]   += $item_result['l8']    ? $item_result['l8']      : 0 ;
-
+            @$c3b_array[$week]  += $item_result['c3b']      ? $item_result['c3b']   : 0 ;
+            @$c3bg_array[$week] += $item_result['c3bg']     ? $item_result['c3bg']  : 0 ;
+            @$l1_array[$week]   += @$tot_array[$week]->l1   ? $tot_array[$week]->l1 : 0 ;
+            @$l3_array[$week]   += @$tot_array[$week]->l3   ? $tot_array[$week]->l3 : 0 ;
+            @$l6_array[$week]   += @$tot_array[$week]->l6   ? $tot_array[$week]->l6 : 0 ;
+            @$l8_array[$week]   += @$tot_array[$week]->l8   ? $tot_array[$week]->l8 : 0 ;
         }
 
         $c3b_result  = array();
@@ -908,7 +925,7 @@ class SubReportTOTController extends Controller
         return $result;
     }
 
-    private function getTotalDataByWeeks($query_chart, $w){
+    private function getTotalDataByWeeks($query_chart, $tot_array, $w){
         $c3b_array  = array();
         $c3bg_array = array();
         $l1_array   = array();
@@ -921,15 +938,14 @@ class SubReportTOTController extends Controller
         foreach ($query_chart as $item_result) {
             $week = $this->getWeek($item_result['_id']);
 
-            @$c3b_array[$week]  += $item_result['c3b']   ? $item_result['c3b']     : 0 ;
-            @$c3bg_array[$week] += $item_result['c3bg']  ? $item_result['c3bg']    : 0 ;
-            @$l1_array[$week]   += $item_result['l1']    ? $item_result['l1']      : 0 ;
-            @$l3_array[$week]   += $item_result['l3']    ? $item_result['l3']      : 0 ;
-            @$l6_array[$week]   += $item_result['l6']    ? $item_result['l6']      : 0 ;
-            @$l8_array[$week]   += $item_result['l8']    ? $item_result['l8']      : 0 ;
-            @$c3_array[$week]   += $item_result['c3']    ? $item_result['c3']      : 0 ;
-            @$c3a_array[$week]  += $item_result['c3a']   ? $item_result['c3a']      : 0 ;
-
+            @$c3b_array[$week]  += $item_result['c3b']      ? $item_result['c3b']   : 0 ;
+            @$c3bg_array[$week] += $item_result['c3bg']     ? $item_result['c3bg']  : 0 ;
+            @$l1_array[$week]   += @$tot_array[$week]->l1   ? $tot_array[$week]->l1 : 0 ;
+            @$l3_array[$week]   += @$tot_array[$week]->l3   ? $tot_array[$week]->l3 : 0 ;
+            @$l6_array[$week]   += @$tot_array[$week]->l6   ? $tot_array[$week]->l6 : 0 ;
+            @$l8_array[$week]   += @$tot_array[$week]->l8   ? $tot_array[$week]->l8 : 0 ;
+            @$c3_array[$week]   += $item_result['c3']       ? $item_result['c3']    : 0 ;
+            @$c3a_array[$week]  += $item_result['c3a']      ? $item_result['c3a']   : 0 ;
         }
 
         $c3b_result  = array();
@@ -965,9 +981,9 @@ class SubReportTOTController extends Controller
         return $result;
     }
 
-    private function getQualityByWeeks($query_chart, $w){
+    private function getQualityByWeeks($query_chart, $tot_array, $w){
 
-        $total = $this->getTotalDataByWeeks($query_chart, $w);
+        $total = $this->getTotalDataByWeeks($query_chart, $tot_array, $w);
 
         $l3_c3b_array   = array();
         $l3_c3bg_array  = array();
@@ -1283,30 +1299,50 @@ class SubReportTOTController extends Controller
             return $collection->aggregate($match);
         });
 
+        $data_tot = $this->getDataTOT($start_date, $end_date, $ad_id);
+
+        $tot_array = array();
+        foreach ($data_tot as $key => $data){
+            $month = $this->getMonths($key);
+            if(isset($tot_array[$month])){
+                $tot_array[$month]->l1 += @$data->l1 ? $data->l1 : 0;
+                $tot_array[$month]->l3 += @$data->l3 ? $data->l3 : 0;
+                $tot_array[$month]->l6 += @$data->l6 ? $data->l6 : 0;
+                $tot_array[$month]->l8 += @$data->l8 ? $data->l8 : 0;
+                $tot_array[$month]->re += @$data->re ? $data->re : 0;
+            }else{
+                @$tot_array[$month]->l1 = @$data->l1 ? $data->l1 : 0;
+                @$tot_array[$month]->l3 = @$data->l3 ? $data->l3 : 0;
+                @$tot_array[$month]->l6 = @$data->l6 ? $data->l6 : 0;
+                @$tot_array[$month]->l8 = @$data->l8 ? $data->l8 : 0;
+                @$tot_array[$month]->re = @$data->re ? $data->re : 0;
+            }
+        }
+
         $type = \request('type');
 
         if ($type == 'budget') {
-            $result['budget']   = $this->getBudgetByMonths($query_chart);
+            $result['budget']   = $this->getBudgetByMonths($query_chart, $tot_array);
         }
         else if ($type == 'quantity') {
-            $result['quantity'] = $this->getQuantityByMonths($query_chart);
+            $result['quantity'] = $this->getQuantityByMonths($query_chart, $tot_array);
         }
         else if ($type == 'quality') {
-            $result['quality']  = $this->getQualityByMonths($query_chart);
+            $result['quality']  = $this->getQualityByMonths($query_chart, $tot_array);
         }
         else if ($type == 'C3AC3B') {
 	        $result['C3AC3B']  = $this->getC3AC3BByMonths($start_date, $end_date);
         } else {
-	        $result['budget']   = $this->getBudgetByMonths($query_chart);
-            $result['quantity'] = $this->getQuantityByMonths($query_chart);
-            $result['quality']  = $this->getQualityByMonths($query_chart);
+	        $result['budget']   = $this->getBudgetByMonths($query_chart, $tot_array);
+            $result['quantity'] = $this->getQuantityByMonths($query_chart, $tot_array);
+            $result['quality']  = $this->getQualityByMonths($query_chart, $tot_array);
             $result['C3AC3B']  = $this->getC3AC3BByMonths($start_date, $end_date);
         }
 
         return $result;
     }
 
-    private function getBudgetByMonths($query_chart){
+    private function getBudgetByMonths($query_chart, $tot_array){
 
         $me_array   = array();
         $re_array   = array();
@@ -1323,21 +1359,20 @@ class SubReportTOTController extends Controller
         foreach ($query_chart as $item_result) {
             $month = $this->getMonths($item_result['_id']);
 
-            $me         = $item_result['me'] ? $this->convert_spent($item_result['me'])     : 0;
-            $re         = $item_result['re'] ? $this->convert_revenue($item_result['re'])   : 0;
+            $me         = $item_result['me']        ? $this->convert_spent($item_result['me'])          : 0;
+            $re         = @$tot_array[$month]->re   ? $this->convert_revenue($tot_array[$month]->re)    : 0;
 
             $total_me   += $me;
             $total_re   += $re;
 
             @$me_array[$month]   += $me;
             @$re_array[$month]   += $re;
-            @$c3b_array[$month]  += $item_result['c3b']   ? round($me / $item_result['c3b'], 2)     : 0 ;
-            @$c3bg_array[$month] += $item_result['c3bg']  ? round($me / $item_result['c3bg'], 2)    : 0 ;
-            @$l1_array[$month]   += $item_result['l1']    ? round($me / $item_result['l1'], 2)      : 0 ;
-            @$l3_array[$month]   += $item_result['l3']    ? round($me / $item_result['l3'], 2)      : 0 ;
-            @$l6_array[$month]   += $item_result['l6']    ? round($me / $item_result['l6'], 2)      : 0 ;
-            @$l8_array[$month]   += $item_result['l8']    ? round($me / $item_result['l8'], 2)      : 0 ;
-
+            @$c3b_array[$month]  += $item_result['c3b']     ? round($me / $item_result['c3b'], 2)       : 0 ;
+            @$c3bg_array[$month] += $item_result['c3bg']    ? round($me / $item_result['c3bg'], 2)      : 0 ;
+            @$l1_array[$month]   += @$tot_array[$month]->l1 ? round($me / $tot_array[$month]->l1, 2)    : 0 ;
+            @$l3_array[$month]   += @$tot_array[$month]->l3 ? round($me / $tot_array[$month]->l3, 2)    : 0 ;
+            @$l6_array[$month]   += @$tot_array[$month]->l6 ? round($me / $tot_array[$month]->l6, 2)    : 0 ;
+            @$l8_array[$month]   += @$tot_array[$month]->l8 ? round($me / $tot_array[$month]->l8, 2)    : 0 ;
         }
 
         $me_result   = array();
@@ -1377,7 +1412,7 @@ class SubReportTOTController extends Controller
         return $result;
     }
 
-    private function getQuantityByMonths($query_chart){
+    private function getQuantityByMonths($query_chart, $tot_array){
 
         $c3b_array  = array();
         $c3bg_array = array();
@@ -1389,13 +1424,12 @@ class SubReportTOTController extends Controller
         foreach ($query_chart as $item_result) {
             $month = $this->getMonths($item_result['_id']);
 
-            @$c3b_array[$month]  += $item_result['c3b']   ? $item_result['c3b']     : 0 ;
-            @$c3bg_array[$month] += $item_result['c3bg']  ? $item_result['c3bg']    : 0 ;
-            @$l1_array[$month]   += $item_result['l1']    ? $item_result['l1']      : 0 ;
-            @$l3_array[$month]   += $item_result['l3']    ? $item_result['l3']      : 0 ;
-            @$l6_array[$month]   += $item_result['l6']    ? $item_result['l6']      : 0 ;
-            @$l8_array[$month]   += $item_result['l8']    ? $item_result['l8']      : 0 ;
-
+            @$c3b_array[$month]  += $item_result['c3b']     ? $item_result['c3b']       : 0 ;
+            @$c3bg_array[$month] += $item_result['c3bg']    ? $item_result['c3bg']      : 0 ;
+            @$l1_array[$month]   += @$tot_array[$month]->l1 ? $tot_array[$month]->l1    : 0 ;
+            @$l3_array[$month]   += @$tot_array[$month]->l3 ? $tot_array[$month]->l3    : 0 ;
+            @$l6_array[$month]   += @$tot_array[$month]->l6 ? $tot_array[$month]->l6    : 0 ;
+            @$l8_array[$month]   += @$tot_array[$month]->l8 ? $tot_array[$month]->l8    : 0 ;
         }
 
         $c3b_result  = array();
@@ -1425,7 +1459,7 @@ class SubReportTOTController extends Controller
         return $result;
     }
 
-    private function getTotalDataByMonths($query_chart){
+    private function getTotalDataByMonths($query_chart, $tot_array){
         $c3b_array  = array();
         $c3bg_array = array();
         $l1_array   = array();
@@ -1438,14 +1472,14 @@ class SubReportTOTController extends Controller
         foreach ($query_chart as $item_result) {
             $month = $this->getMonths($item_result['_id']);
 
-            @$c3b_array[$month]  += $item_result['c3b']   ? $item_result['c3b']     : 0 ;
-            @$c3bg_array[$month] += $item_result['c3bg']  ? $item_result['c3bg']    : 0 ;
-            @$l1_array[$month]   += $item_result['l1']    ? $item_result['l1']      : 0 ;
-            @$l3_array[$month]   += $item_result['l3']    ? $item_result['l3']      : 0 ;
-            @$l6_array[$month]   += $item_result['l6']    ? $item_result['l6']      : 0 ;
-            @$l8_array[$month]   += $item_result['l8']    ? $item_result['l8']      : 0 ;
-            @$c3a_array[$month]  += $item_result['c3a']   ? $item_result['c3a']     : 0 ;
-            @$c3_array[$month]   += $item_result['c3']    ? $item_result['c3']      : 0 ;
+            @$c3b_array[$month]  += $item_result['c3b']     ? $item_result['c3b']       : 0 ;
+            @$c3bg_array[$month] += $item_result['c3bg']    ? $item_result['c3bg']      : 0 ;
+            @$l1_array[$month]   += @$tot_array[$month]->l1 ? $tot_array[$month]->l1    : 0 ;
+            @$l3_array[$month]   += @$tot_array[$month]->l3 ? $tot_array[$month]->l3    : 0 ;
+            @$l6_array[$month]   += @$tot_array[$month]->l6 ? $tot_array[$month]->l6    : 0 ;
+            @$l8_array[$month]   += @$tot_array[$month]->l8 ? $tot_array[$month]->l8    : 0 ;
+            @$c3a_array[$month]  += $item_result['c3a']     ? $item_result['c3a']       : 0 ;
+            @$c3_array[$month]   += $item_result['c3']      ? $item_result['c3']        : 0 ;
         }
 
         $c3b_result  = array();
@@ -1481,9 +1515,9 @@ class SubReportTOTController extends Controller
         return $result;
     }
 
-    private function getQualityByMonths($query_chart){
+    private function getQualityByMonths($query_chart, $tot_array){
 
-        $total = $this->getTotalDataByMonths($query_chart);
+        $total = $this->getTotalDataByMonths($query_chart, $tot_array);
 
         $l3_c3b_array   = array();
         $l3_c3bg_array  = array();

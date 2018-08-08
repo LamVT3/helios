@@ -1000,7 +1000,6 @@ function loadDataByDays() {
         set_budget_chart(response.budget);
         set_quantity_chart(response.quantity);
         set_quality_chart(response.quality);
-        console.log('abc');
         set_C3AC3B(response.C3AC3B, $("#C3A-C3B_by_days_chart"), $('#C3A-C3B_by_days_chk'), 'by_days');
         $('.loading').hide();
     });
