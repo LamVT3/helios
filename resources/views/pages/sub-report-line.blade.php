@@ -89,6 +89,15 @@
                                             </select>
                                             <i></i>
                                         </section>
+                                        <section class="col col-2">
+                                            <label class="label">Mode</label>
+                                            <select name="mode" id="mode" class="select2" style="width: 280px"
+                                                    data-url="">
+                                                <option value="TOA" selected>TOA</option>
+                                                <option value="TOT">TOT</option>
+                                            </select>
+                                            <i></i>
+                                        </section>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12 text-right">
@@ -315,6 +324,9 @@
     <input type="hidden" name="quantity_url" value="{{route('get-quantity')}}">
     <input type="hidden" name="quality_url" value="{{route('get-quality')}}">
     <input type="hidden" name="C3AC3B_url" value="{{route('get-C3AC3B')}}">
+    <input type="hidden" name="budget_tot_url" value="{{route('get-budget-tot')}}">
+    <input type="hidden" name="quantity_tot_url" value="{{route('get-quantity-tot')}}">
+    <input type="hidden" name="quality_tot_url" value="{{route('get-quality-tot')}}">
     <input type="hidden" name="budget_month">
     <input type="hidden" name="quantity_month">
     <input type="hidden" name="quality_month">
@@ -322,6 +334,9 @@
     <input type="hidden" name="get_by_days" value="{{route('line-chart.getByDays')}}">
     <input type="hidden" name="get_by_weeks" value="{{route('line-chart.getByWeeks')}}">
     <input type="hidden" name="get_by_months" value="{{route('line-chart.getByMonths')}}">
+    <input type="hidden" name="get_tot_by_days" value="{{route('line-chart.getTOTByDays')}}">
+    <input type="hidden" name="get_tot_by_weeks" value="{{route('line-chart.getTOTByWeeks')}}">
+    <input type="hidden" name="get_tot_by_months" value="{{route('line-chart.getTOTByMonths')}}">
     <input type="hidden" name="get_by_months">
     <input type="hidden" id="c3_total" value="{{ $C3AC3B["c3"] }}">
     <!-- END MAIN PANEL -->

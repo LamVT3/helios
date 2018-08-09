@@ -25,6 +25,7 @@ class ChannelController extends Controller
         $channel        = Channel::all();
         $page_size      = Config::getByKey('PAGE_SIZE');
         $thankyou_page  = ThankYouPage::where('is_active', 1)->get();
+
         return view('pages.channel', compact(
             'page_title',
             'page_css',
@@ -87,6 +88,12 @@ class ChannelController extends Controller
         } else {
             return response()->json(['type' => 'error', 'message' => "Channel not found"]);
         }
+    }
+
+    public function getAllChannel(){
+        $channels = Channel::select('id', 'name')->get();
+
+        return json_encode($channels);
     }
 
 }

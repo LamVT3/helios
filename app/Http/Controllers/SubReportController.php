@@ -24,11 +24,11 @@ class SubReportController extends Controller
     }
 
     public function index(){
-        $page_title = "Line Chart | Helios";
+        $page_title = "Line Report | Helios";
         $page_css = array();
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active = 'sub-report-line';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Line Chart </span>";
+        $breadcrumbs = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Line Report </span>";
 
         $sources        = Source::all();
         $teams          = Team::all();
@@ -538,13 +538,35 @@ class SubReportController extends Controller
         }
 
         return $data_where;
+	}
+	
+	private function getWhereDataByCreatorID(){
+		$request    = request();
+        $data_where = array();
+        if ($request->source_id) {
+            $data_where['source_id']        = $request->source_id;
+        }
+        if ($request->team_id) {
+            $data_where['team_id']          = $request->team_id;
+        }
+        if ($request->marketer_id) {
+            $data_where['creator_id']      = $request->marketer_id;
+        }
+        if ($request->campaign_id) {
+            $data_where['campaign_id']      = $request->campaign_id;
+        }
+        if ($request->subcampaign_id) {
+            $data_where['subcampaign_id']   = $request->subcampaign_id;
+        }
+
+        return $data_where;
     }
 
     private function getAds(){
-        $data_where = $this->getWhereData();
+		$data_where = $this->getWhereDataByCreatorID();
         $ads    = array();
-        if (count($data_where) >= 1) {
-            $ads = Ad::where($data_where)->pluck('_id')->toArray();
+		if (count($data_where) >= 1) {
+			$ads = Ad::where($data_where)->pluck('_id')->toArray();
         }
         return $ads;
     }
@@ -1403,11 +1425,21 @@ class SubReportController extends Controller
 			$table['c3bg_week'][$channel] = 0;
 		}
 
+		$source_id = request()->source_id;
+		$marketer_id = request()->marketer_id;
+		$team_id = request()->team_id;
+		$campaign_id = request()->campaign_id;
+		$subcampaign_id = request()->subcampaign_id;
+
+		$isEmpy = false;
+		if($source_id != "" || $marketer_id != "" ||$team_id != "" ||$campaign_id != "" ||$subcampaign_id != ""){
+			$isEmpy =true;
+		}
+		
 		$ad_id  = $this->getAds();
 		$arr_ad = Ad::pluck('channel_id','_id')->all();
-
 		if ($type === 'TOA'){
-			if(count($ad_id) > 0){
+			if(count($ad_id) >= 0 && $isEmpy){
 				$match = [
 					['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
 					['$match' => ['ad_id' => ['$in' => $ad_id]]],
@@ -1539,9 +1571,8 @@ class SubReportController extends Controller
 			$array_channel = $array_channel_new;
 
 			return ['table'=>$table,'array_channel' => $array_channel];
-		}
-		else if($type === 'TOT'){
-			if(count($ad_id) > 0){
+		}else if($type === 'TOT'){
+			if(count($ad_id) >= 0 && $isEmpy){
 				$match = [
 					['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
 					['$match' => ['ad_id' => ['$in' => $ad_id]]],
@@ -1637,7 +1668,7 @@ class SubReportController extends Controller
 			$end = date('Y-m-d', strtotime( $end_date ) + 86400);
 
 			$query_l1 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
-				if(count($ad_id) > 0){
+				if(count($ad_id) >= 0 && $isEmpy){
 					$match = [
 						['$match' => ['l1_time' => ['$gte' => $start, '$lte' => $end]]],
 						['$match' => ['ad_id' => ['$in' => $ad_id]]],
@@ -1663,7 +1694,7 @@ class SubReportController extends Controller
 			});
 
 			$query_l3 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
-				if(count($ad_id) > 0){
+				if(count($ad_id) >= 0 && $isEmpy){
 					$match = [
 						['$match' => ['l3_time' => ['$gte' => $start, '$lte' => $end]]],
 						['$match' => ['ad_id' => ['$in' => $ad_id]]],
@@ -1689,7 +1720,7 @@ class SubReportController extends Controller
 			});
 
 			$query_l6 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
-				if(count($ad_id) > 0){
+				if(count($ad_id) >= 0 && $isEmpy){
 					$match = [
 						['$match' => ['l6_time' => ['$gte' => $start, '$lte' => $end]]],
 						['$match' => ['ad_id' => ['$in' => $ad_id]]],
@@ -1715,7 +1746,7 @@ class SubReportController extends Controller
 			});
 
 			$query_l8 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
-				if(count($ad_id) > 0){
+				if(count($ad_id) >= 0 && $isEmpy){
 					$match = [
 						['$match' => ['l8_time' => ['$gte' => $start, '$lte' => $end]]],
 						['$match' => ['ad_id' => ['$in' => $ad_id]]],

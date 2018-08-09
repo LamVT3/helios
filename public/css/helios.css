@@ -329,6 +329,10 @@ input#limit
 #table_contacts th:first-child{
     width: 40px!important;
 }
+#table_contacts th.channel_long{
+    min-width: 150px;
+}
+
 .rectangle {
     height: 10px;
     min-width: 30px;
