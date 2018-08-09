@@ -1039,6 +1039,7 @@ class ContactController extends Controller
             $contact->handover_date = date("Y-m-d");
             $contact->current_level = "l1";
             $contact->olm_status    = "0";
+            $contact->l1_time = date("Y-m-d");
 
             // Update ad_results
             // Get data base on date contact submited
