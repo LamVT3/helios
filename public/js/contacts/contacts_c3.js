@@ -283,7 +283,6 @@ $(document).ready(function () {
                 id[$(this).val()] = $(this).val();
             });
         }
-
         exportToOLM(id);
         // updateStatusExport(id);
     });
@@ -1014,6 +1013,7 @@ function exportToOLM(id) {
 
     $.get(url, data, function (data) {
         countExported();
+        showModalExportToOLM();
         setTimeout(function(){
             initDataTable();
             $('input#update_all').prop('checked', false); // Unchecks checkbox all
@@ -1021,6 +1021,7 @@ function exportToOLM(id) {
             $('div#update_success').hide();
             $('div#export_success').show();
             $('.loading').hide();
+
         }, 1000);
     }).fail(
         function (err) {
@@ -1028,4 +1029,49 @@ function exportToOLM(id) {
             alert('Cannot connect to server. Please try again later.');
         });
 
+}
+
+function showModalExportToOLM(){
+
+    var url             = $('input[name="count-export-to-olm"]').val();
+    var source_id       = $('select[name="source_id"]').val();
+    var team_id         = $('select[name="team_id"]').val();
+    var marketer_id     = $('select[name="marketer_id"]').val();
+    var campaign_id     = $('select[name="campaign_id"]').val();
+    var clevel          = $('select[name="clevel"]').val();
+    var current_level   = $('select[name="current_level"]').val();
+    var registered_date = $('.registered_date').text();
+    var subcampaign_id  = $('select[name="subcampaign_id"]').val();
+    var landing_page    = $('select[name="landing_page"]').val();
+    var is_export       = $('select[name="is_export"]').val();
+    var search          = $('input[type="search"]').val();
+    var channel         = $('select[name="channel_id"]').val();
+    var olm_status      = $('select[name="olm_status"]').val();
+
+    var data = {};
+    data.source_id          = source_id;
+    data.team_id            = team_id;
+    data.marketer_id        = marketer_id;
+    data.campaign_id        = campaign_id;
+    data.clevel             = clevel;
+    data.current_level      = current_level;
+    data.subcampaign_id     = subcampaign_id;
+    data.registered_date    = registered_date;
+    data.landing_page       = landing_page;
+    data.is_export          = is_export;
+    data.search_text        = search;
+    data.channel            = channel;
+    data.olm_status         = olm_status;
+
+    $.get(url, data, function (data) {
+        $('#contact_success').html('- ' + data.cnt_success + ' contacts success');
+        $('#contact_duplicate').html('- ' + data.cnt_duplicate + ' contacts duplicated');
+        $('#contact_error').html('- ' + data.cnt_error + ' contacts error');
+
+        $('#myCountExportToOLMModal').modal('show');
+
+    }).fail(
+        function (err) {
+            alert('Cannot connect to server. Please try again later.');
+        });
 }

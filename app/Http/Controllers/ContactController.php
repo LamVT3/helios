@@ -1095,4 +1095,115 @@ class ContactController extends Controller
         return $result;
     }
 
+    public function countContactOLM(){
+        $columns     = $this->setColumns();
+        $data_where  = $this->getWhereData();
+        $data_search = $this->getSeachData();
+        $request     = request();
+
+        $startDate  = strtotime("midnight")*1000;
+        $endDate    = strtotime("tomorrow")*1000;
+        if($request->registered_date){
+            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            // $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
+
+        $cnt_success    =  $this->countContactSucess($columns, $data_where, $data_search, $startDate, $endDate);
+        $cnt_duplicate  =  $this->countContactDuplicate($columns, $data_where, $data_search, $startDate, $endDate);
+        $cnt_error      =  $this->countContactError($columns, $data_where, $data_search, $startDate, $endDate);
+
+        $result['cnt_success']      = $cnt_success;
+        $result['cnt_duplicate']    = $cnt_duplicate;
+        $result['cnt_error']        = $cnt_error;
+
+        return $result;
+    }
+
+    private function countContactSucess($columns, $data_where, $data_search, $startDate, $endDate){
+        $query = Contact::where('submit_time', '>=', $startDate);
+        $query->where('submit_time', '<', $endDate);
+
+        if(count($data_where) > 0){
+            if(@$data_where['clevel'] == 'c3b'){
+                $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }elseif (@$data_where['clevel'] == 'c3b_only'){
+                $query->where('clevel', 'c3b');
+                unset($data_where['clevel']);
+            }
+            if(@$data_where['current_level'] == 'l0'){
+                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+                unset($data_where['current_level']);
+            }
+            $query->where($data_where);
+        }
+
+        if($data_search != ''){
+            foreach ($columns as $key => $value){
+                $query->orWhere($value, 'like', "%{$data_search}%");
+            }
+        }
+
+        return $query->where('olm_status', 0)->count();
+    }
+
+    private function countContactDuplicate($columns, $data_where, $data_search, $startDate, $endDate){
+        $query = Contact::where('submit_time', '>=', $startDate);
+        $query->where('submit_time', '<', $endDate);
+
+        if(count($data_where) > 0){
+            if(@$data_where['clevel'] == 'c3b'){
+                $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }elseif (@$data_where['clevel'] == 'c3b_only'){
+                $query->where('clevel', 'c3b');
+                unset($data_where['clevel']);
+            }
+            if(@$data_where['current_level'] == 'l0'){
+                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+                unset($data_where['current_level']);
+            }
+            $query->where($data_where);
+        }
+
+        if($data_search != ''){
+            foreach ($columns as $key => $value){
+                $query->orWhere($value, 'like', "%{$data_search}%");
+            }
+        }
+
+        return $query->where('olm_status', 1)->count();
+    }
+
+    private function countContactError($columns, $data_where, $data_search, $startDate, $endDate){
+        $query = Contact::where('submit_time', '>=', $startDate);
+        $query->where('submit_time', '<', $endDate);
+
+        if(count($data_where) > 0){
+            if(@$data_where['clevel'] == 'c3b'){
+                $query->where('clevel', 'like', '%c3b%');
+                unset($data_where['clevel']);
+            }elseif (@$data_where['clevel'] == 'c3b_only'){
+                $query->where('clevel', 'c3b');
+                unset($data_where['clevel']);
+            }
+            if(@$data_where['current_level'] == 'l0'){
+                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+                unset($data_where['current_level']);
+            }
+            $query->where($data_where);
+        }
+
+        if($data_search != ''){
+            foreach ($columns as $key => $value){
+                $query->orWhere($value, 'like', "%{$data_search}%");
+            }
+        }
+
+        return $query->whereIn('olm_status', [2, 3])->count();
+    }
+
 }

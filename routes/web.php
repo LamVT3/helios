@@ -65,6 +65,7 @@ Route::group(['prefix' => 'contacts'], function () {
     Route::post('importEgentic', 'ContactController@importEgentic')->name('contacts.import-egentic');
     Route::get('countExported', 'ContactController@countExported')->name('contacts.countExported');
     Route::get('export-to-OLM', 'ContactController@exportToOLM')->name('contacts.export-to-OLM');
+    Route::get('count-export-to-OLM', 'ContactController@countContactOLM')->name('contacts.count-export-to-OLM');
 });
 
 Route::get('/report', 'ReportController@index')->name('report');

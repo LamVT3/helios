@@ -281,7 +281,7 @@
                                 <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
                             </div>
                         </div>
-                        <hr>
+                        <hr style="padding: 10px">
                         <div style="padding-left: 20px">
                             <div class="radio">
                                 <input style="float: left; margin-top: 2px;" type="radio" id="mode" name="mode" value="0" checked>
@@ -469,6 +469,29 @@
     </div>
 </div>
 
+<!-- Count Export To OLM Modal -->
+<div class="modal fade" id="myCountExportToOLMModal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title">Contacts has been exported successfully !!!</h3>
+            </div>
+            <div class="modal-body">
+                <p class="text-primary" style="font-size: 25px" id="contact_success">...</p>
+                <p class="text-warning" style="font-size: 25px" id="contact_duplicate">...</p>
+                <p class="text-danger" style="font-size: 25px" id="contact_error">...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 <input type="hidden" name="page_size" value="{{$page_size}}">
 <input type="hidden" name="exported" value="{{$export_to_excel}}">
 <input type="hidden" name="export_to_olm" value="{{$export_to_olm}}">
@@ -478,6 +501,7 @@
 <input type="hidden" name="update_all" value="0">
 <input type="hidden" name="status_update_all" value="">
 <input type="hidden" name="get_all_channel_url" value="{{route("channel-get-all")}}">
+<input type="hidden" name="count-export-to-olm" value="{{route("contacts.count-export-to-OLM")}}">
 @endsection
 
 @section('script')
