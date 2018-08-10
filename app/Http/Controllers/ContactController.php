@@ -998,7 +998,7 @@ class ContactController extends Controller
         $result['cnt_error']        = 0;
 
         $query->orderBy('submit_time', 'desc');
-        $query->chunk( 1000, function ( $contacts ) use ( $url , $result) {
+        $query->chunk( 1000, function ( $contacts ) use ( $url , &$result) {
             foreach ($contacts as $contact)
             {
                 if (!$contact->ad_id){
