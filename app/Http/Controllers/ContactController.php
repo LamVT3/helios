@@ -992,8 +992,13 @@ class ContactController extends Controller
             }
         }
 
+        $result = array();
+        $result['cnt_success']      = 0;
+        $result['cnt_duplicate']    = 0;
+        $result['cnt_error']        = 0;
+
         $query->orderBy('submit_time', 'desc');
-        $query->chunk( 1000, function ( $contacts ) use ( $url ) {
+        $query->chunk( 1000, function ( $contacts ) use ( $url , $result) {
             foreach ($contacts as $contact)
             {
                 if (!$contact->ad_id){
@@ -1026,8 +1031,19 @@ class ContactController extends Controller
                 $status     = $response['results'][0]['Status'];
                 $contact    = $this->handleHandover($contact,$status);
                 $contact->save();
+
+                if (strtolower($status) == "ok"){
+                    $result['cnt_success']  += 1;
+                } else if (strtolower($status) == "duplicated"){
+                    $result['cnt_duplicate'] += 1;
+                } else if (strtolower($status) == "error"){
+                    $result['cnt_error']    += 1;
+                } else {
+                    $result['cnt_error']    += 1;
+                }
             }
         });
+        return $result;
     }
 
     private function handleHandover($contact, $apiStatus){
