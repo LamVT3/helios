@@ -184,7 +184,7 @@
                                         <i></i>
                                     </section>
                                     <section class="col col-2">
-                                        <label class="label">Status OLM</label>
+                                        <label class="label">Status Sale</label>
                                         <select name="olm_status" id="olm_status" class="select2"
                                                 style="width: 280px" data-url="">
                                             <option value="">All</option>
@@ -234,7 +234,7 @@
                                         <button id="export_to_olm" class="btn btn-danger btn-sm" type="button"
                                                 style="margin-left: 10px" data-toggle="modal" data-target="#myExportToOLMModal">
                                             <i class="fa fa-edit"></i>
-                                            Export to OLM
+                                            Export to Sales
                                         </button>
                                         <button id="update_contact" class="btn btn-warning btn-sm" type="button"
                                                 style="margin-left: 10px; display: none" data-toggle="modal" data-target="#myUpdateModal">
@@ -317,7 +317,7 @@
                                         <th class="long">Invalid reason</th>
                                         <th>Action</th>
                                         <th class="long">Status export</th>
-                                        <th class="long">Status OLM</th>
+                                        <th class="long">Status Sale</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -455,7 +455,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h3 class="modal-title">Confirm Export To OLM</h3>
+                <h3 class="modal-title">Confirm Export To Sales</h3>
             </div>
             <div class="modal-body">
                 <h4>{{config('constants.CONFIRM_EXPORT')}}</h4>

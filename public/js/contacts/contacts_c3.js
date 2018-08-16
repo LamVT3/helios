@@ -478,7 +478,7 @@ function initDataTable() {
             $('p#cnt_exported').html(cnt_exported);
 
             var exported_olm            = $('input[name="export_to_olm"]').val();
-            var cnt_exported_to_olm     = '<strong>'+ exported_olm + ' contact(s) export to OLM'+'</strong>';
+            var cnt_exported_to_olm     = '<strong>'+ exported_olm + ' contact(s) export to Sales'+'</strong>';
             $('p#cnt_export_to_olm').html(cnt_exported_to_olm);
 
             responsiveHelper_table_campaign.respond();

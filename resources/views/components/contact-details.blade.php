@@ -134,7 +134,7 @@
         <td>{{ $contact->is_export ? 'Exported' : 'Not Exported' }}</td>
     </tr>
     <tr>
-        <td>Exported to OLM</td>
+        <td>Exported to Sales</td>
         @if($contact->olm_status == '0')
             <td>Success</td>
         @elseif($contact->olm_status == '1')
