@@ -198,6 +198,9 @@ class ContactController extends Controller
             if(@$data_where['clevel'] == 'c3bg'){
                 $query->where('clevel','c3bg');
                 unset($data_where['clevel']);
+            }else if (@$data_where['clevel'] == 'c3b' || @$data_where['clevel'] == 'c3a' || @$data_where['clevel'] == 'c3b_only'){
+                $query->where('clevel','c3bg');
+                unset($data_where['clevel']);
             }
             if(@$data_where['current_level'] == 'l0'){
                 $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
@@ -970,7 +973,10 @@ class ContactController extends Controller
 
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3bg'){
-                $query->where('clevel', 'c3bg');
+                $query->where('clevel','c3bg');
+                unset($data_where['clevel']);
+            }else if (@$data_where['clevel'] == 'c3b' || @$data_where['clevel'] == 'c3a' || @$data_where['clevel'] == 'c3b_only'){
+                $query->where('clevel','c3bg');
                 unset($data_where['clevel']);
             }
             if(@$data_where['current_level'] == 'l0'){
