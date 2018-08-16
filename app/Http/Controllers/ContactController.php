@@ -195,11 +195,8 @@ class ContactController extends Controller
         $query->where('submit_time', '<', $endDate);
 
         if(count($data_where) > 0){
-            if(@$data_where['clevel'] == 'c3b'){
-                $query->where('clevel', 'like', '%c3b%');
-                unset($data_where['clevel']);
-            }elseif (@$data_where['clevel'] == 'c3b_only'){
-                $query->where('clevel', 'c3b');
+            if(@$data_where['clevel'] == 'c3bg'){
+                $query->where('clevel','c3bg');
                 unset($data_where['clevel']);
             }
             if(@$data_where['current_level'] == 'l0'){
@@ -972,11 +969,8 @@ class ContactController extends Controller
         $query->whereNotIn('olm_status', ['0','1']);
 
         if(count($data_where) > 0){
-            if(@$data_where['clevel'] == 'c3b'){
-                $query->where('clevel', 'like', '%c3b%');
-                unset($data_where['clevel']);
-            }elseif (@$data_where['clevel'] == 'c3b_only'){
-                $query->where('clevel', 'c3b');
+            if(@$data_where['clevel'] == 'c3bg'){
+                $query->where('clevel', 'c3bg');
                 unset($data_where['clevel']);
             }
             if(@$data_where['current_level'] == 'l0'){
