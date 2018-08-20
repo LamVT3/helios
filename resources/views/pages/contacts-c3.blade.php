@@ -455,13 +455,23 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h3 class="modal-title">Confirm Export To Sales</h3>
+                <h3 class="modal-title">Export To Sales</h3>
             </div>
             <div class="modal-body">
-                <h4>{{config('constants.CONFIRM_EXPORT')}}</h4>
+                <form class="smart-form" id="form-export-to-sale">
+                    <div class="form-group">
+                        <label for="export_sale_date" class="label">Export date</label>
+                        <input type="text" class="form-control" id="export_sale_date" style="padding-left: 5px">
+                    </div>
+                    <div class="form-group" style="padding-top: 10px">
+                        <label for="export_sale_limit" class="label require_field">Export number</label>
+                        <input type="number" class="form-control" id="export_sale_limit" style="padding-left: 5px">
+                        <em id="export_sale_limit-error" class="error_require_field" style="display: none;">This field is required.</em>
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
-                <button id="confirm_export_to_olm" type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
+                <button id="confirm_export_to_olm" type="button" class="btn btn-primary">Yes</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
             </div>
         </div>
@@ -502,6 +512,7 @@
 <input type="hidden" name="status_update_all" value="">
 <input type="hidden" name="get_all_channel_url" value="{{route("channel-get-all")}}">
 <input type="hidden" name="count-export-to-olm" value="{{route("contacts.count-export-to-OLM")}}">
+<input type="hidden" name="total_contacts" value="">
 @endsection
 
 @section('script')

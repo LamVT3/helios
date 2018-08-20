@@ -952,7 +952,6 @@ class ContactController extends Controller
     }
 
     public function exportToOLM(){
-        set_time_limit ( 5000 );
         $url = 'http://58.187.9.138/api/OlmInsert/InsertContactOLM';
 
         $data_where = $this->getWhereData();
@@ -998,7 +997,16 @@ class ContactController extends Controller
         $result['cnt_error']        = 0;
 
         $query->orderBy('submit_time', 'desc');
-        $query->chunk( 1000, function ( $contacts ) use ( $url , &$result) {
+        if($request->limit){
+            $query->limit((int)$request->limit);
+        }
+        $export_sale_date = '';
+        if($request->export_sale_date){
+            $export_sale_date = $request->export_sale_date;
+        }
+
+        $query->chunk( 1000, function ( $contacts ) use ( $url , &$result, $export_sale_date) {
+
             foreach ($contacts as $contact)
             {
                 if (!$contact->ad_id){
@@ -1030,6 +1038,7 @@ class ContactController extends Controller
                 $response   = json_decode($make_call, true);
                 $status     = $response['results'][0]['Status'];
                 $contact    = $this->handleHandover($contact,$status);
+                $contact->export_sale_date = $export_sale_date;
                 $contact->save();
 
                 if (strtolower($status) == "ok"){

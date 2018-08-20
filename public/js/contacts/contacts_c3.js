@@ -214,6 +214,16 @@ $(document).ready(function () {
         },1000);
     });
 
+    $('input#export_sale_limit').change(function (e) {
+        if($(this).val() > 0){
+            $('input#export_sale_limit').removeClass('input_error');
+            $('em#export_sale_limit-error').hide();
+        }else{
+            $('input#export_sale_limit').addClass('input_error');
+            $('em#export_sale_limit-error').show();
+        }
+    });
+
 });
 
 $(document).ready(function () {
@@ -271,20 +281,27 @@ $(document).ready(function () {
 
     $('button#confirm_export_to_olm').click(function (e) {
         e.preventDefault();
-        $('.loading').show();
-        var is_update_all   = $('input[id=update_all]').is(':checked');
-        var id      = {};
+        var limit = $('input#export_sale_limit').val();
+        if(limit > 0){
+            $('#myExportToOLMModal').modal('hide');
+            $('.loading').show();
+            var is_update_all   = $('input[id=update_all]').is(':checked');
+            var id      = {};
 
-        if(is_update_all){
-            id = 'All';
+            if(is_update_all){
+                id = 'All';
+            }
+            else{
+                $("input:checkbox[id=is_update]:checked").each(function () {
+                    id[$(this).val()] = $(this).val();
+                });
+            }
+            exportToOLM(id);
+            // updateStatusExport(id);
+        }else{
+            $('input#export_sale_limit').addClass('input_error');
+            $('em#export_sale_limit-error').show();
         }
-        else{
-            $("input:checkbox[id=is_update]:checked").each(function () {
-                id[$(this).val()] = $(this).val();
-            });
-        }
-        exportToOLM(id);
-        // updateStatusExport(id);
     });
 
     $('button#import_contact').click(function (e) {
@@ -361,6 +378,10 @@ $(document).ready(function () {
             var status          = $(statusCell).find('select#status_update').val();
             var olm_status      = $(statusOLMCell).find('select#olm_status_update').val();
             var channel_name    = $(channelCell).find('select#channel_update :selected').text();
+            if(channel_name == '--Select Channel--'){
+                channel_name = '';
+            }
+
             var channel_id      = $(channelCell).find('select#channel_update').val();
 
             id[$(this).val()] = {'status': status, 'olm_status': olm_status, 'channel_id': channel_id, 'channel_name': channel_name};
@@ -372,21 +393,29 @@ $(document).ready(function () {
 
     $('input[id=update_all]').click(function () {
         var is_checked = this.checked;
+        $('input:checkbox[id=is_update]').prop('checked', this.checked);
         if(is_checked){
             $('input[name="update_all"]').val(1);
-            $('button#edit_contact').hide();
-            $('button#update_contact').show();
+            $('button#edit_contact').show().removeClass('disabled');
+            $('button#edit_contact').show().prop('disabled', false);
+            if( $('button#update_contact').is(':visible')){
+                $('button#edit_contact').addClass('disabled');
+                $('button#edit_contact').prop('disabled', true);
+                $('button#edit_contact').hide();
+                $("input:checkbox[id=is_update]").each(function () {
+                    edit(this, 'all');
+                });
+            }
         }else{
+            $("input:checkbox[id=is_update]").each(function () {
+                edit(this, 'all');
+            });
             $('input[name="update_all"]').val(0);
             $('button#edit_contact').show();
             $('button#update_contact').hide();
         }
-        $('input:checkbox[id=is_update]').prop('checked', this.checked);
-        enable_update();
-        $("input:checkbox[id=is_update]").each(function () {
-            edit(this, 'all');
-        });
 
+        enable_update();
     });
 
     $('button#edit_contact').click(function () {
@@ -617,7 +646,11 @@ function initDataTable() {
                 }
             }
         },
-        // "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
+        "fnInfoCallback": function( oSettings, iStart, iEnd, iMax, iTotal, sPre ) {
+            var exported        = $('input[name=export_to_olm]').val();
+            var total_contacts  = iTotal - exported;
+
+            $('input[name=total_contacts]').val(total_contacts);
             // if(iTotal == 0){
             //     return "";
             // }
@@ -625,8 +658,8 @@ function initDataTable() {
             // var exported    = $('input[name="exported"]').val();
             // var count_str   = '<span id="cnt_exported" class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
             //
-            // return sPre + count_str;
-        // },
+            return sPre;
+        },
     });
 
 }
@@ -854,7 +887,7 @@ function addSelectChannel(item){
         var obj = $.parseJSON(data);
 
         var select = '<select id="channel_update" onchange="setAllChannel(this);">';
-        select += '<option value="">All</option>';
+        select += '<option value="">--Select Channel--</option>';
         $.each(obj, function( index, value ) {
             select += '<option value="'+ value._id + '">' + value.name + '</option>';
         });
@@ -873,8 +906,6 @@ function addSelectChannel(item){
         }
 
         $(channelCell).find('select#channel_update').select2();
-
-
 
     }).fail(
         function (err) {
@@ -994,6 +1025,8 @@ function exportToOLM(id) {
     var landing_page    = $('select[name="landing_page"]').val();
     var channel         = $('select[name="channel_id"]').val();
     var olm_status      = $('select[name="olm_status"]').val();
+    var limit           = $('input#export_sale_limit').val();
+    var export_sale_date = $('input#export_sale_date').val();
 
     var data = {};
     data.id                 = id;
@@ -1010,6 +1043,8 @@ function exportToOLM(id) {
     data.landing_page       = landing_page;
     data.channel            = channel;
     data.olm_status         = olm_status;
+    data.limit              = limit;
+    data.export_sale_date   = export_sale_date;
 
     $.get(url, data, function (data) {
         countExported();
@@ -1038,3 +1073,28 @@ function showModalExportToOLM(data){
 
         $('#myCountExportToOLMModal').modal('show');
 }
+
+$(function() {
+    $('#export_sale_date').daterangepicker({
+        "singleDatePicker": true,
+        "timePicker24Hour": true,
+        "alwaysShowCalendars": true,
+        "startDate": start,
+        "endDate": end,
+        locale: {
+            format: 'DD/MM/YYYY'
+        }
+    }, function(start, end, label) {
+
+    });
+
+    $('#myExportToOLMModal').on('shown.bs.modal', function () {
+        var checked = $("input:checkbox[id=is_update]:checked").length;
+        if(checked > 0){
+            $('input#export_sale_limit').val(checked);
+        }else{
+            var total =  $('input[name=total_contacts]').val();
+            $('input#export_sale_limit').val(total);
+        }
+    })
+});
