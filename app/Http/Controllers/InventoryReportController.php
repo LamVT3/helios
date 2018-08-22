@@ -110,7 +110,7 @@ class InventoryReportController extends Controller
 
             $match = [
                 ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['clevel' => 'c3b']],
+//                ['$match' => ['clevel' => 'c3b']],
                 [
                     '$group' => [
                         '_id' => ['submit_time' => '$submit_time', 'channel_name' => '$channel_name', 'source_name' => '$source_name'],
@@ -126,16 +126,15 @@ class InventoryReportController extends Controller
 
             return $collection->aggregate($match);
         });
-var_dump($query);die;
+        var_dump($query);die;
         $result = array();
         foreach ($query as $item){
-            $date       = date('d/m/Y', $item['_id']['submit_time'] / 1000);
-            $channel    = $item['_id']['channel_name'];
-//            $source     = $item['_id']['source_name'];
-            @$result[$date]['channel'] = $channel;
-            @$result[$date]['c3b_produce']  = $item['c3b_produce'];
+            $date       = date('d/m/Y', @$item['_id']['submit_time'] / 1000);
+            $channel    = @$item['_id']['channel_name'];
+            $source     = $item['_id']['source_name'] ? $item['_id']['source_name'] : 'N/A';
             @$result[$date]['channel_name'] = $channel;
-//            @$result[$date]['source_name']  = $source;
+            @$result[$date]['c3b_produce']  = @$item['c3b_produce'];
+            @$result[$date]['source_name']  = $source;
         }
 
         return $query;
@@ -180,16 +179,14 @@ var_dump($query);die;
 
             return $collection->aggregate($match);
         });
-
         $result = array();
         foreach ($query as $item){
-            $date       = date('d/m/Y', $item['_id']['submit_time'] / 1000);
-            $channel    = $item['_id']['channel_name'];
-//            $source     = $item['_id']['source_name'];
-            @$result[$date]['channel'] = $channel;
-            @$result[$date]['c3b_transfer'] = $item['c3b_transfer'];
+            $date       = date('d/m/Y', @$item['_id']['submit_time'] / 1000);
+            $channel    = @$item['_id']['channel_name'];
+            $source     = $item['_id']['source_name'] ? $item['_id']['source_name'] : 'N/A';
             @$result[$date]['channel_name'] = $channel;
-//            @$result[$date]['source_name']  = $source;
+            @$result[$date]['c3b_transfer'] = @$item['c3b_transfer'];
+            @$result[$date]['source_name']  = $source;
         }
 
         return $result;
