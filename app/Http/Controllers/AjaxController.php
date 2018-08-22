@@ -1396,5 +1396,19 @@ class AjaxController extends Controller
 		return $ads;
 	}
 
+    public function get_channel(){
+        $request = request();
+
+        if($request->source_id){
+
+            $source_id = $request->source_id;
+            $channel =  Channel::where('source_id', $source_id)->get();
+        }else{
+            $channel =  Channel::all();
+        }
+
+        return json_encode($channel);
+    }
+
 
 }

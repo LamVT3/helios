@@ -33,11 +33,11 @@ class KpiController extends Controller
     }
 
     public function assign_kpi(){
-        $page_title     = "Assign KPI | Helios";
+        $page_title     = " KPI Report | Helios";
         $page_css       = array('selectize.default.css');
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active         = 'assign_kpi';
-        $breadcrumbs    = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Assign KPI </span>";
+        $breadcrumbs    = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> KPI Report </span>";
 
         $users  = User::all();
         $teams  = Team::all();

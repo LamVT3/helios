@@ -88,6 +88,9 @@
                     alert("Could not get subcampaigns. Please try again.")
                 }
             })
+
+            get_channel();
+
         })
 
         // Choose create a new campaign or choose from existing ones
@@ -311,5 +314,24 @@
             $('#select-ad').parent('label.state-success').removeClass('state-success');
         }
 
+        $('#addModal').on('show.bs.modal', function (event) {
+            get_channel();
+        })
+
+        function get_channel(){
+            var source  = $('select[name=source]').val();
+            var url     = $('input[name=get-channel-url]').val();
+            var data    = {source_id: source};
+            $.get(url, data, function (data) {
+                var obj = JSON.parse(data);
+                $('#channel').html();
+                $.each(obj, function( index, value ) {
+                    $('#channel').append($('<option>', {value:value._id, text:value.name}));
+                });
+            }).fail(
+                function (err) {
+                    alert('Cannot connect to server. Please try again later.');
+                });
+        }
     })
 </script>

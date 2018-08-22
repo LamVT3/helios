@@ -129,6 +129,7 @@
 
     </div>
     <input type="hidden" name="page_size" value="{{$page_size}}">
+    <input type="hidden" name="get-channel-url" value="{{route('get-channel')}}">
     <!-- END MAIN PANEL -->
 
 @endsection

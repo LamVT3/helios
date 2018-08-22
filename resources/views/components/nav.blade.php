@@ -98,7 +98,11 @@
                     </li>
 
                     <li class="{{ $active == 'assign_kpi' ? 'active' : '' }}">
-                        <a href="{{ route('assign-kpi') }}"><i class="fa fa-lg fa-fw fa-map-signs"></i> Assign KPI</a>
+                        <a href="{{ route('assign-kpi') }}"><i class="fa fa-lg fa-fw fa-map-signs"></i> KPI Report</a>
+                    </li>
+
+                    <li class="{{ $active == 'inventory-report' ? 'active' : '' }}">
+                        <a href="{{ route('inventory-report') }}"><i class="fa fa-lg fa-fw fa-empire"></i> Inventory Report</a>
                     </li>
                 </ul>
             </li>
