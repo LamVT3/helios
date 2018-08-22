@@ -76,6 +76,7 @@ $(document).ready(function () {
             $("#subcampaign_id").select2();
             $('#landing_page').html(response.content_landingpage);
             $("#landing_page").select2();
+            
             $('#channel_id').html(response.content_channel);
             $("#channel_id").select2();
         });
@@ -374,6 +375,7 @@ $(document).ready(function () {
             var statusCell      = $(this).parent().siblings('td.status');
             var statusOLMCell   = $(this).parent().siblings('td.olm_status');
             var channelCell     = $(this).parent().siblings('td.channel');
+            var invalidReasonCell     = $(this).parent().siblings('td.invalid_reason');
 
             var status          = $(statusCell).find('select#status_update').val();
             var olm_status      = $(statusOLMCell).find('select#olm_status_update').val();
@@ -384,7 +386,20 @@ $(document).ready(function () {
 
             var channel_id      = $(channelCell).find('select#channel_update').val();
 
-            id[$(this).val()] = {'status': status, 'olm_status': olm_status, 'channel_id': channel_id, 'channel_name': channel_name};
+            var invalid_reason_mode      = $(invalidReasonCell).find('select#invalid_reason').val();
+            var invalid_reason = "";
+            if(invalid_reason_mode == "C3B_Under18"){
+                invalid_reason = "invalid age";
+            }else if(invalid_reason_mode == "C3B_Duplicated15Days"){
+                invalid_reason = "duplicated";
+            }else if(invalid_reason_mode == "C3B_SMS_Error"){
+                invalid_reason = "SMS error";
+            }else{
+                invalid_reason_mode= "";
+            }
+
+            id[$(this).val()] = {'status': status, 'olm_status': olm_status, 'channel_id': channel_id, 'channel_name': channel_name
+                                    ,'invalid_reason_mode':invalid_reason_mode,'invalid_reason':invalid_reason};
         });
 
         updateContacts(id);
@@ -446,7 +461,9 @@ function initDataTable() {
     var limit           = $('input#limit').val();
     var landing_page    = $('select[name="landing_page"]').val();
     var search          = $('input[name="search_text"]').val();
-    var channel         = $('select[name="channel_id"]').val();
+    // HoaTV fix change to multi select dropdown
+    // var channel         = $('select[name="channel_id"]').val();
+    var channel         = $('input[name="channel_id"]').val();
     var olm_status      = $('select[name="olm_status"]').val();
 
     $('input[name="source_id"]').val(source_id);
@@ -574,7 +591,17 @@ function initDataTable() {
             { "data" : 'campaign_name',     "defaultContent": "-"},
             { "data" : 'subcampaign_name',  "defaultContent": "-"},
             { "data" : 'landing_page',      "defaultContent": "-"},
-            { "data" : 'invalid_reason',    "defaultContent": "-"},
+            { 
+                "data" : 'invalid_reason', 
+                'className' : "invalid_reason",   
+                "render"    : function ( data, type, row, meta ) {
+                    if(data){
+                        return '<span id="invalid_reason" >' + data + '</span>';
+                    }else{
+                        return '<span id="invalid_reason" >-</span>';
+                    }
+                }
+            },
             // {
             //     "data" : 'name',
             //     "render": function ( data, type, row, meta ) {
@@ -679,7 +706,9 @@ function countExported() {
     var landing_page    = $('select[name="landing_page"]').val();
     var is_export       = $('select[name="is_export"]').val();
     var search          = $('input[type="search"]').val();
-    var channel         = $('select[name="channel_id"]').val();
+     // HoaTV fix change to multiple select channel
+    // var channel         = $('select[name="channel_id"]').val();
+    var channel         = $('input[name="channel_id"]').val();
     var olm_status      = $('select[name="olm_status"]').val();
 
     if(is_export === '0'){
@@ -736,7 +765,8 @@ function countExportedWhenSearch() {
     var landing_page    = $('select[name="landing_page"]').val();
     var is_export       = $('select[name="is_export"]').val();
     var search          = $('input[type="search"]').val();
-    var channel         = $('select[name="channel_id"]').val();
+    // HoaTV fix change to multiple select channel
+    // var channel         = $('select[name="channel_id"]').val();
 
     if(is_export === '0'){
         $('input[name="exported"]').val(0);
@@ -803,6 +833,8 @@ function edit(item, mode){
     var statusCell      = $(item).parents().siblings('td.status');
     var statusOLMCell   = $(item).parents().siblings('td.olm_status');
     var channelCell     = $(item).parents().siblings('td.channel');
+    // HoaTV change c3bg
+    var invalidReasonCell     = $(item).parents().siblings('td.invalid_reason');
 
     if(is_show || mode == 'all'){
         var is_checked = $(item).is(':checked');
@@ -810,6 +842,7 @@ function edit(item, mode){
             addSelectStatus(item);
             addSelectStatusOLM(item);
             addSelectChannel(item);
+            addSelectInvalidReason(item);
         }else{
             $(statusCell).find('span#status').show();
             // $(statusCell).find('select#status_update').select2('destroy');
@@ -822,6 +855,9 @@ function edit(item, mode){
             $(channelCell).find('span#channel').show();
             $(channelCell).find('select#channel_update').select2('destroy');
             $(channelCell).find('select#channel_update').remove();
+
+            $(invalidReasonCell).find('span#invalid_reason').show();
+            $(invalidReasonCell).find('select#invalid_reason').remove();
         }
     }
 
@@ -832,6 +868,25 @@ function edit(item, mode){
         $('button#edit_contact').show();
         $('button#update_contact').hide();
     }
+}
+
+//HoaTV
+function addSelectInvalidReason(item){
+    var statusCell = $(item).parents().siblings('td.invalid_reason');
+    var invalidReasonCell = $(statusCell).parents().siblings('td.invalid_reason');
+    // console.log(statusCell);
+    $(statusCell).find('span#invalid_reason').hide();
+    // $(statusCell).text("");
+    $(statusCell).append('' +
+        '<select class="form-control" id="invalid_reason" onchange="setAllInvalidReason(this);">' +
+        '<option value="all">All</option>' +
+        '<option value="C3B_SMS_Error">SMS Error</option>' +
+        '<option value="C3B_Under18">Under 18</option>' +
+        '<option value="C3B_Duplicated15Days">Duplicate in 15 days</option>' +
+        '</select>' +
+        '');
+
+    $(invalidReasonCell).find('select#invalid_reason').val(statusCell);
 }
 
 function addSelectStatus(item){
@@ -913,6 +968,21 @@ function addSelectChannel(item){
         });
 }
 
+// HoaTV select invalid reason
+function setAllInvalidReason(item){
+    var update_all = $('input[name="update_all"]').val();
+    if(update_all == 1){
+        var value = $(item).val();
+        $("select#invalid_reason").each(function () {
+            $(this).val(value);
+        });
+        // $('input[name="status_update_all"]').val(value);
+    } else {
+        var value = $(item).val();
+        $("#invalid_reason").val(value);
+    }
+}
+
 function setAll(item){
     var update_all = $('input[name="update_all"]').val();
     if(update_all == 1){
@@ -960,7 +1030,9 @@ function updateContacts(id) {
     var subcampaign_id  = $('input[name="subcampaign_id"]').val();
     var old_status      = $('input[name="status"]').val();
     var landing_page    = $('select[name="landing_page"]').val();
-    var channel         = $('select[name="channel_id"]').val();
+    // HoaTV fix change to multiple select channel
+    // var channel         = $('select[name="channel_id"]').val();
+    var channel         = $('input[name="channel_id"]').val();
 
     // if(id == '' && status == ''){
     //     countExported();
@@ -1023,7 +1095,8 @@ function exportToOLM(id) {
     var subcampaign_id  = $('input[name="subcampaign_id"]').val();
     var old_status      = $('input[name="status"]').val();
     var landing_page    = $('select[name="landing_page"]').val();
-    var channel         = $('select[name="channel_id"]').val();
+    // HoaTV fix change to multiple select channel
+    // var channel         = $('select[name="channel_id"]').val();
     var olm_status      = $('select[name="olm_status"]').val();
     var limit           = $('input#export_sale_limit').val();
     var export_sale_date = $('input#export_sale_date').val();

@@ -30,7 +30,9 @@ class ContactController extends Controller
     public function index()
     {
         $page_title     = "Contacts | Helios";
-        $page_css       = array();
+        // HoaTV multiple select
+        // $page_css       = array();
+        $page_css       = array('selectize.default.css');
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active         = 'contacts';
         $breadcrumbs    = "<i class=\"fa-fw fa fa-child\"></i> Contacts <span>> C3</span>";
@@ -124,6 +126,13 @@ class ContactController extends Controller
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
 
+        // HoaTV fix multiple select channel
+        $arrChannelName = array();
+        if ($request->channel) {
+            $arrChannelName    = explode(',',$request->channel);
+            $query->whereIn('channel_name',$arrChannelName);
+        }
+
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
@@ -194,6 +203,13 @@ class ContactController extends Controller
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
 
+        // HoaTV fix multiple select channel
+        $arrChannelName = array();
+        if ($request->channel) {
+            $arrChannelName    = explode(',',$request->channel);
+            $query->whereIn('channel_name',$arrChannelName);
+        }
+
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3bg'){
                 $query->where('clevel','c3bg');
@@ -244,6 +260,13 @@ class ContactController extends Controller
 
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
+
+        // HoaTV fix multiple select channel
+        $arrChannelName = array();
+        if ($request->channel) {
+            $arrChannelName    = explode(',',$request->channel);
+            $query->whereIn('channel_name',$arrChannelName);
+        }
 
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3b'){
@@ -374,6 +397,13 @@ class ContactController extends Controller
                 $query = Contact::where('submit_time', '>=', $startDate);
                 $query->where('submit_time', '<', $endDate);
 
+                // HoaTV fix multiple select channel
+                $arrChannelName = array();
+                if ($request->channel) {
+                    $arrChannelName    = explode(',',$request->channel);
+                    $query->whereIn('channel_name',$arrChannelName);
+                }
+
                 if(count($data_where) > 0){
                     if(@$data_where['clevel'] == 'c3b'){
                         $query->where('clevel', 'like', '%c3b%');
@@ -495,12 +525,13 @@ class ContactController extends Controller
         if ($request->landing_page) {
             $data_where['landing_page']     = $request->landing_page;
         }
-        if ($request->channel) {
-            $data_where['channel_name']     = $request->channel;
-        }
-        if ($request->channel) {
-            $data_where['channel_name']     = $request->channel;
-        }
+        // HoaTV remove for multiple select 
+        // if ($request->channel) {
+        //     $data_where['channel_name']     = $request->channel;
+        // }
+        // if ($request->channel) {
+        //     $data_where['channel_name']     = $request->channel;
+        // }
         if (isset($request->olm_status)) {
             $data_where['olm_status']       = $request->olm_status;
         }
@@ -526,6 +557,13 @@ class ContactController extends Controller
         }
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
+
+        // HoaTV fix multiple select channel
+        $arrChannelName = array();
+        if ($request->channel) {
+            $arrChannelName    = explode(',',$request->channel);
+            $query->whereIn('channel_name',$arrChannelName);
+        }
 
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3b'){
@@ -969,6 +1007,13 @@ class ContactController extends Controller
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
         $query->whereNotIn('olm_status', ['0','1']);
+
+        // HoaTV fix multiple select channel
+        $arrChannelName = array();
+        if ($request->channel) {
+            $arrChannelName    = explode(',',$request->channel);
+            $query->whereIn('channel_name',$arrChannelName);
+        }
 
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3bg'){

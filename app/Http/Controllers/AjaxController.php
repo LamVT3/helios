@@ -866,6 +866,13 @@ class AjaxController extends Controller
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
 
+        // HoaTV fix multiple select channel
+        $arrChannelName = array();
+        if ($request->channel) {
+            $arrChannelName    = explode(',',$request->channel);
+            $query->whereIn('channel_name',$arrChannelName);
+        }
+
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
@@ -998,9 +1005,10 @@ class AjaxController extends Controller
         if ($request->landing_page) {
             $data_where['landing_page']     = $request->landing_page;
         }
-        if ($request->channel) {
-            $data_where['channel_name']     = $request->channel;
-        }
+        // HoaTV remove
+        // if ($request->channel) {
+        //     $data_where['channel_name']     = $request->channel;
+        // }
         if (isset($request->olm_status)) {
             $data_where['olm_status']       = $request->olm_status;
         }
@@ -1060,6 +1068,13 @@ class AjaxController extends Controller
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
 
+        // HoaTV fix multiple select channel
+        $arrChannelName = array();
+        if ($request->channel) {
+            $arrChannelName    = explode(',',$request->channel);
+            $query->whereIn('channel_name',$arrChannelName);
+        }
+
         if(count($data_where) > 0){
             if(@$data_where['clevel'] == 'c3b'){
                 $query->where('clevel', 'like', '%c3b%');
@@ -1100,6 +1115,16 @@ class AjaxController extends Controller
                     $contact->channel_id    = $id[$contact->_id]['channel_id'];
                 }
 
+                // HoaTV for change level from c3bg to c3b
+                if(isset($id[$contact->_id]['invalid_reason'])){
+                    $contact->invalid_reason    = $id[$contact->_id]['invalid_reason'];
+                    $contact->invalid_reason_mode    = $id[$contact->_id]['invalid_reason_mode'];
+                    $contact->is_update_manual    = true;
+                    $contact->clevel = "c3b";
+                    // handle count ad_result only from from c3bg down to c3b
+                    $this->handleCountAdResult($contact->ad_id, $contact->submit_time);
+                }
+
                 $contact->save();
             }else{
                 if($request->new_status != '')
@@ -1109,6 +1134,14 @@ class AjaxController extends Controller
                 }
             }
         }
+    }
+
+    // HoaTV handle ad_result when changes level from c3bg down to c3b
+    private function handleCountAdResult($adID,$submitTime){
+        $adResult = AdResult::where('ad_id', $adID)->where('date',date('Y-m-d',$submitTime/1000))->first();
+        $adResult->c3bg = (int)$adResult->c3bg - 1;
+        $adResult->c3b = (int)$adResult->c3b + 1;
+        $adResult->save();
     }
 
     private function getWhereDataUpdateExport(){
@@ -1141,9 +1174,9 @@ class AjaxController extends Controller
         if ($request->landing_page) {
             $data_where['landing_page']     = $request->landing_page;
         }
-        if ($request->channel) {
-            $data_where['channel_name']     = $request->channel;
-        }
+        // if ($request->channel) {
+        //     $data_where['channel_name']     = $request->channel;
+        // }
         if (isset($request->olm_status)) {
             $data_where['olm_status']       = $request->olm_status;
         }

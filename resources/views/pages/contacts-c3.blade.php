@@ -122,13 +122,14 @@
                                     </section>
                                     <section class="col col-2">
                                         <label class="label">Channel</label>
-                                        <select name="channel_id" id="channel_id" class="select2" style="width: 280px"
+                                        <input style="190px !impotant" type="text" value="" name="channel_id" id="channel_id" placeholder="Select channel">
+                                        <!-- <select name="channel_id" id="channel_id" class="select2" style="width: 280px"
                                                 data-url="">
                                             <option value="">All</option>
                                             @foreach($channel as $item)
                                                 <option value="{{ $item->name }}">{{ $item->name }}</option>
                                             @endforeach
-                                        </select>
+                                        </select> -->
                                         <i></i>
                                     </section>
                                 </div>
@@ -518,6 +519,7 @@
 @section('script')
 
 <!-- PAGE RELATED PLUGIN(S) -->
+<script src="{{ asset('js/plugin/selectize/js/standalone/selectize.min.js')}}"></script>
 <script src="{{ asset('js/contacts/contacts_c3.js') }}"></script>
 <script src="{{ asset('js/plugin/datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('js/plugin/datatables/dataTables.colVis.min.js') }}"></script>
@@ -571,6 +573,17 @@
         $('.loading').show();
         initDataTable();
         setTimeout("$('.loading').hide();", 1000);
+
+        // HoaTV multiple select
+        $('input[name=channel_id]').selectize({
+            delimiter: ',',
+            persist: false,
+            valueField: 'name',
+            labelField: 'name',
+            searchField: ['name'],
+            options: {!! $channel !!}
+            
+        });
     });
 
 </script>
