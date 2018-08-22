@@ -55,6 +55,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
     $('#source_id').change(function (e) {
+        resetChannel();
         var url = $('#source_id').attr('data-url');
         var source_id = $('select[name="source_id"]').val();
         $.ajax({
@@ -77,12 +78,13 @@ $(document).ready(function () {
             $('#landing_page').html(response.content_landingpage);
             $("#landing_page").select2();
             
-            $('#channel_id').html(response.content_channel);
-            $("#channel_id").select2();
+            // $('#channel_id').html(response.content_channel);
+            // $("#channel_id").select2();
         });
     })
 
     $('#team_id').change(function (e) {
+        resetChannel();
         var url = $('#team_id').attr('data-url');
         var team_id = $('select[name="team_id"]').val();
 
@@ -103,12 +105,13 @@ $(document).ready(function () {
             $("#subcampaign_id").select2();
             $('#landing_page').html(response.content_landingpage);
             $("#landing_page").select2();
-            $('#channel_id').html(response.content_channel);
-            $("#channel_id").select2();
+            // $('#channel_id').html(response.content_channel);
+            // $("#channel_id").select2();
         });
     })
 
     $('#marketer_id').change(function (e) {
+        resetChannel();
         var url = $('#marketer_id').attr('data-url');
         var creator_id = $('select[name="marketer_id"]').val();
 
@@ -127,12 +130,13 @@ $(document).ready(function () {
             $("#subcampaign_id").select2();
             $('#landing_page').html(response.content_landingpage);
             $("#landing_page").select2();
-            $('#channel_id').html(response.content_channel);
-            $("#channel_id").select2();
+            // $('#channel_id').html(response.content_channel);
+            // $("#channel_id").select2();
         });
     })
 
     $('#campaign_id').change(function (e) {
+        resetChannel();
         var url = $('#campaign_id').attr('data-url');
         var campaign_id = $('select[name="campaign_id"]').val();
         $.ajax({
@@ -148,12 +152,13 @@ $(document).ready(function () {
             $("#subcampaign_id").select2();
             $('#landing_page').html(response.content_landingpage);
             $("#landing_page").select2();
-            $('#channel_id').html(response.content_channel);
-            $("#channel_id").select2();
+            // $('#channel_id').html(response.content_channel);
+            // $("#channel_id").select2();
         });
     })
 
     $('#subcampaign_id').change(function (e) {
+        resetChannel();
         var url = $('#subcampaign_id').attr('data-url');
         var subcampaign_id = $('select[name="subcampaign_id"]').val();
         $.ajax({
@@ -167,10 +172,17 @@ $(document).ready(function () {
         }).done(function (response) {
             $('#landing_page').html(response.content_landingpage);
             $("#landing_page").select2();
-            $('#channel_id').html(response.content_channel);
-            $("#channel_id").select2();
+            // $('#channel_id').html(response.content_channel);
+            // $("#channel_id").select2();
         });
     })
+
+    // HoaTV: reset channel when change another dropdown
+    function resetChannel(){
+        var $select = $('#channel_id').selectize();
+        var control = $select[0].selectize;
+        control.clear();
+    }
 
     $('input#limit').change(function (e) {
         var limit = $('input#limit').val();
