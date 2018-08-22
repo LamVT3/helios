@@ -173,9 +173,6 @@
                                         <label class="select col col-8">
                                             <select name="channel" id="channel">
                                                 <option value="" selected>Select Channel</option>
-                                                @foreach ($channel as $item)
-                                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                                @endforeach
                                             </select>
                                             <i></i>
                                         </label>

@@ -106,7 +106,7 @@ Route::group(['prefix' => 'ajax'], function () {
 	Route::get('/getHourC3Chart', 'AjaxController@getHourC3Chart')->name('ajax-getHourC3Chart');
 	Route::get('/getHourC3BChart', 'AjaxController@getHourC3BChart')->name('ajax-getHourC3BChart');
 	Route::get('/getHourC3BGChart', 'AjaxController@getHourC3BGChart')->name('ajax-getHourC3BGChart');
-
+    Route::get('/get-channel', 'AjaxController@get_channel')->name('get-channel');
 });
 
 Route::get('/test', 'Test@index')->name('test');
@@ -201,11 +201,13 @@ Route::group(['prefix' => 'channel'], function () {
     Route::post('/create', 'ChannelController@store')->name('channel-create');
     Route::get('/get/{id}', 'ChannelController@get')->name('channel-get');
     Route::get('/get-all', 'ChannelController@getAllChannel')->name('channel-get-all');
-
 });
 
 Route::group(['prefix' => 'diff-contacts'], function () {
     Route::get('/', 'DiffContactsController@index')->name('diff-contacts');
     Route::get('/filter', 'DiffContactsController@filter')->name('diff-contacts.filter');
+});
 
+Route::group(['prefix' => 'inventory-report'], function () {
+    Route::get('/', 'InventoryReportController@index')->name('inventory-report');
 });

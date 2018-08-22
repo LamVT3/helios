@@ -41,7 +41,6 @@ class CampaignController extends Controller
         $team = Team::find($user->team_id);
 
         $landing_pages  = LandingPage::where('is_active', 1)->get();
-        $channel        = Channel::where('is_active', 1)->get();
         $page_size      = Config::getByKey('PAGE_SIZE');
 
         return view('pages.campaigns', compact(
@@ -54,8 +53,7 @@ class CampaignController extends Controller
             'team',
             'landing_pages',
             'user',
-            'page_size',
-            'channel'
+            'page_size'
         ));
     }
 
@@ -276,5 +274,4 @@ class CampaignController extends Controller
 
         return response()->json(['type' => 'success', 'url' => $url, 'message' => 'Campaign has been created!']);
     }
-
 }
