@@ -656,8 +656,11 @@ function initDataTable() {
                     else if(data == 2){
                         status = '<span id="olm_status">Error</span><input type="hidden" id="old_status_olm" value="2">';
                     }
+                    else if(data == 3){
+                        status = '<span id="olm_status">Error</span><input type="hidden" id="old_status_olm" value="3">';
+                    }
                     else{
-                        status = '<span id="olm_status">Not Exported</span><input type="hidden" id="old_status_olm" value="3">';
+                        status = '<span id="olm_status">Not Exported</span><input type="hidden" id="old_status_olm" value="-1">';
                     }
                     return status;
                 }
@@ -932,7 +935,7 @@ function addSelectStatusOLM(item){
         '<option value="0" selected>Success</option>' +
         '<option value="1">Duplicated</option>' +
         '<option value="2">Error</option>' +
-        '<option value="3">Not Export</option>' +
+        '<option value="-1">Not Export</option>' +
         '</select>' +
         '');
 

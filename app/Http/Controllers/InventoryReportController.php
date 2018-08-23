@@ -26,10 +26,8 @@ class InventoryReportController extends Controller
         $year   = date('Y');
         $channel = Channel::all();
 
-        $c3_produce     = $this->get_c3_produce();
-        $c3_transfer    = $this->get_c3_transfer();
-
-
+        $c3_produce     = $this->get_c3_produce_by_channel();
+        $c3_transfer    = $this->get_c3_transfer_by_channel();
 
         return view('pages.inventory_report', compact(
             'page_title',
@@ -89,28 +87,27 @@ class InventoryReportController extends Controller
         ));
     }
 
-    private function get_c3_produce(){
+    private function get_c3_produce_by_channel(){
 
-        /*  phan date*/
-        $month = date('m'); /* thang hien tai */
-        $year = date('Y'); /* nam hien tai*/
-        $request = request();
+        $month      = date('m'); /* thang hien tai */
+        $year       = date('Y'); /* nam hien tai*/
+        $request    = request();
         if($request->month){
             $month = $request->month;
         }
 
-        $d = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-        $start = '01-'.$month.'-'.$year; /* ngày đàu tiên của tháng */
-        $end = $d.'-'.$month.'-'.$year; /* ngày cuối cùng của tháng */
+        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+        $start  = '01-'.$month.'-'.$year; /* ngày đàu tiên của tháng */
+        $end    = $d.'-'.$month.'-'.$year; /* ngày cuối cùng của tháng */
 
-        $startDate = strtotime($start)*1000;
-        $endDate = strtotime("+1 day", strtotime($end))*1000;
+        $startDate  = strtotime($start)*1000;
+        $endDate    = strtotime("+1 day", strtotime($end))*1000;
 
         $query = Contact::raw(function ($collection) use ($startDate, $endDate) {
 
             $match = [
                 ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
-//                ['$match' => ['clevel' => 'c3b']],
+                ['$match' => ['clevel' => 'c3b']],
                 [
                     '$group' => [
                         '_id' => ['submit_time' => '$submit_time', 'channel_name' => '$channel_name', 'source_name' => '$source_name'],
@@ -126,12 +123,12 @@ class InventoryReportController extends Controller
 
             return $collection->aggregate($match);
         });
-        var_dump($query);die;
+
         $result = array();
         foreach ($query as $item){
             $date       = date('d/m/Y', @$item['_id']['submit_time'] / 1000);
             $channel    = @$item['_id']['channel_name'];
-            $source     = $item['_id']['source_name'] ? $item['_id']['source_name'] : 'N/A';
+            $source     = @$item['_id']['source_name'] ? $item['_id']['source_name'] : 'N/A';
             @$result[$date]['channel_name'] = $channel;
             @$result[$date]['c3b_produce']  = @$item['c3b_produce'];
             @$result[$date]['source_name']  = $source;
@@ -141,32 +138,31 @@ class InventoryReportController extends Controller
 
     }
 
-    private function get_c3_transfer(){
+    private function get_c3_transfer_by_channel(){
 
-        /*  phan date*/
-        $month = date('m'); /* thang hien tai */
-        $year = date('Y'); /* nam hien tai*/
-        $request = request();
+        $month      = date('m'); /* thang hien tai */
+        $year       = date('Y'); /* nam hien tai*/
+        $request    = request();
         if($request->month){
             $month = $request->month;
         }
 
-        $d = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-        $start = '01-'.$month.'-'.$year; /* ngày đàu tiên của tháng */
-        $end = $d.'-'.$month.'-'.$year; /* ngày cuối cùng của tháng */
+        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+        $start  = '01/'.$month.'/'.$year; /* ngày đàu tiên của tháng */
+        $end    = $d.'/'.$month.'/'.$year; /* ngày cuối cùng của tháng */
 
-        $startDate = strtotime($start)*1000;
-        $endDate = strtotime("+1 day", strtotime($end))*1000;
+//        $startDate  = strtotime($start)*1000;
+//        $endDate    = strtotime("+1 day", strtotime($end))*1000;
 
-        $query = Contact::raw(function ($collection) use ($startDate, $endDate) {
+        $query = Contact::raw(function ($collection) use ($start, $end) {
 
             $match = [
-                ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
+                ['$match' => ['export_sale_date' => ['$gte' => $start, '$lte' => $end]]],
                 ['$match' => ['clevel' => 'c3b']],
                 ['$match' => ['olm_status' => ['$in' => ['0', '1']]]],
                 [
                     '$group' => [
-                        '_id' => ['submit_time' => '$submit_time', 'channel_name' => '$channel_name', 'source_name' => '$source_name'],
+                        '_id' => ['export_sale_date' => '$export_sale_date', 'channel_name' => '$channel_name', 'source_name' => '$source_name'],
                         'c3b_transfer' => ['$sum' => 1],
                     ]
                 ],
@@ -179,11 +175,115 @@ class InventoryReportController extends Controller
 
             return $collection->aggregate($match);
         });
+
         $result = array();
         foreach ($query as $item){
             $date       = date('d/m/Y', @$item['_id']['submit_time'] / 1000);
             $channel    = @$item['_id']['channel_name'];
-            $source     = $item['_id']['source_name'] ? $item['_id']['source_name'] : 'N/A';
+            $source     = @$item['_id']['source_name'] ? $item['_id']['source_name'] : 'N/A';
+            @$result[$date]['channel_name'] = $channel;
+            @$result[$date]['c3b_transfer'] = @$item['c3b_transfer'];
+            @$result[$date]['source_name']  = $source;
+        }
+
+        return $result;
+
+    }
+
+    private function get_c3_produce_by_source(){
+
+        $month      = date('m'); /* thang hien tai */
+        $year       = date('Y'); /* nam hien tai*/
+        $request    = request();
+        if($request->month){
+            $month = $request->month;
+        }
+
+        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+        $start  = '01-'.$month.'-'.$year; /* ngày đàu tiên của tháng */
+        $end    = $d.'-'.$month.'-'.$year; /* ngày cuối cùng của tháng */
+
+        $startDate  = strtotime($start)*1000;
+        $endDate    = strtotime("+1 day", strtotime($end))*1000;
+
+        $query = Contact::raw(function ($collection) use ($startDate, $endDate) {
+
+            $match = [
+                ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
+                ['$match' => ['clevel' => 'c3b']],
+                [
+                    '$group' => [
+                        '_id' => ['submit_time' => '$submit_time', 'channel_name' => '$channel_name', 'source_name' => '$source_name'],
+                        'c3b_produce' => ['$sum' => 1],
+                    ]
+                ],
+                [
+                    '$sort' => [
+                        'c3b_produce' => -1,
+                    ]
+                ]
+            ];
+
+            return $collection->aggregate($match);
+        });
+
+        $result = array();
+        foreach ($query as $item){
+            $date       = date('d/m/Y', @$item['_id']['submit_time'] / 1000);
+            $channel    = @$item['_id']['channel_name'];
+            $source     = @$item['_id']['source_name'] ? $item['_id']['source_name'] : 'N/A';
+            @$result[$date]['channel_name'] = $channel;
+            @$result[$date]['c3b_produce']  = @$item['c3b_produce'];
+            @$result[$date]['source_name']  = $source;
+        }
+
+        return $query;
+
+    }
+
+    private function get_c3_transfer_by_source(){
+
+        $month      = date('m'); /* thang hien tai */
+        $year       = date('Y'); /* nam hien tai*/
+        $request    = request();
+        if($request->month){
+            $month = $request->month;
+        }
+
+        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+        $start  = '01/'.$month.'/'.$year; /* ngày đàu tiên của tháng */
+        $end    = $d.'/'.$month.'/'.$year; /* ngày cuối cùng của tháng */
+
+//        $startDate  = strtotime($start)*1000;
+//        $endDate    = strtotime("+1 day", strtotime($end))*1000;
+
+        $query = Contact::raw(function ($collection) use ($start, $end) {
+
+            $match = [
+                ['$match' => ['export_sale_date' => ['$gte' => $start, '$lte' => $end]]],
+                ['$match' => ['clevel' => 'c3b']],
+                ['$match' => ['olm_status' => ['$in' => ['0', '1']]]],
+                [
+                    '$group' => [
+                        '_id' => ['export_sale_date' => '$export_sale_date', 'channel_name' => '$channel_name', 'source_name' => '$source_name'],
+                        'c3b_transfer' => ['$sum' => 1],
+                    ]
+                ],
+                [
+                    '$sort' => [
+                        'c3b_transfer' => -1,
+                    ]
+                ]
+            ];
+
+            return $collection->aggregate($match);
+        });
+
+        $result = array();
+        foreach ($query as $item){
+            $date       = date('d/m/Y', @$item['_id']['submit_time'] / 1000);
+            $channel    = @$item['_id']['channel_name'];
+            $source     = @$item['_id']['source_name'] ? $item['_id']['source_name'] : 'N/A';
             @$result[$date]['channel_name'] = $channel;
             @$result[$date]['c3b_transfer'] = @$item['c3b_transfer'];
             @$result[$date]['source_name']  = $source;

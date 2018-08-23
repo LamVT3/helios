@@ -1042,9 +1042,8 @@ class ContactController extends Controller
         $result['cnt_error']        = 0;
 
         $query->orderBy('submit_time', 'desc');
-        if($request->limit){
-            $query->limit((int)$request->limit);
-        }
+        $limit = (int)$request->limit;
+        $query->skip(0)->take($limit);var_dump($query->get());die;
         $export_sale_date = '';
         if($request->export_sale_date){
             $export_sale_date = $request->export_sale_date;

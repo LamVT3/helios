@@ -18,6 +18,18 @@
         @endfor
 
     </tr>
+
+    <tr>
+        <td class="border-bold-right" style="min-width: 200px">00000</td>
+
+        @for ($i = 1; $i <= $days; $i++)
+            <td style="min-width: 80px;">111</td>
+            <td style="min-width: 80px;">2222</td>
+            <td class="border-bold-right">333</td>
+        @endfor
+
+    </tr>
+
     </thead>
     <tbody>
     </tbody>
