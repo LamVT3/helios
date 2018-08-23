@@ -222,11 +222,11 @@ class ContactController extends Controller
                 $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
                 unset($data_where['current_level']);
             }
-            if(@$data_where['olm_status'] == 0){
+            if(@$data_where['olm_status'] === 0){
                 $query->where('olm_status', 0);
                 unset($data_where['olm_status']);
             }
-            if(@$data_where['olm_status'] == 1){
+            if(@$data_where['olm_status'] === 1){
                 $query->where('olm_status', 0);
                 unset($data_where['olm_status']);
             }
@@ -292,11 +292,11 @@ class ContactController extends Controller
                 $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
                 unset($data_where['current_level']);
             }
-            if(@$data_where['olm_status'] == 0){
+            if(@$data_where['olm_status'] === 0){
                 $query->where('olm_status', 0);
                 unset($data_where['olm_status']);
             }
-            if(@$data_where['olm_status'] == 1){
+            if(@$data_where['olm_status'] === 1){
                 $query->where('olm_status', 0);
                 unset($data_where['olm_status']);
             }
@@ -440,11 +440,11 @@ class ContactController extends Controller
                         $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
                         unset($data_where['current_level']);
                     }
-                    if(@$data_where['olm_status'] == 0){
+                    if(@$data_where['olm_status'] === 0){
                         $query->where('olm_status', 0);
                         unset($data_where['olm_status']);
                     }
-                    if(@$data_where['olm_status'] == 1){
+                    if(@$data_where['olm_status'] === 1){
                         $query->where('olm_status', 0);
                         unset($data_where['olm_status']);
                     }
@@ -613,11 +613,11 @@ class ContactController extends Controller
                 $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
                 unset($data_where['current_level']);
             }
-            if(@$data_where['olm_status'] == 0){
+            if(@$data_where['olm_status'] === 0){
                 $query->where('olm_status', 0);
                 unset($data_where['olm_status']);
             }
-            if(@$data_where['olm_status'] == 1){
+            if(@$data_where['olm_status'] === 1){
                 $query->where('olm_status', 0);
                 unset($data_where['olm_status']);
             }
@@ -1075,11 +1075,11 @@ class ContactController extends Controller
                 $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
                 unset($data_where['current_level']);
             }
-            if(@$data_where['olm_status'] == 0){
+            if(@$data_where['olm_status'] === 0){
                 $query->where('olm_status', 0);
                 unset($data_where['olm_status']);
             }
-            if(@$data_where['olm_status'] == 1){
+            if(@$data_where['olm_status'] === 1){
                 $query->where('olm_status', 0);
                 unset($data_where['olm_status']);
             }
