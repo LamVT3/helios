@@ -519,7 +519,7 @@ function get_quantity(month) {
 function get_quality(month) {
     var mode = $('select[name="mode"]').val();
     if(mode == 'TOA'){
-        var url = $('input[name="quality_tot_url"]').val();
+        var url = $('input[name="quality_url"]').val();
     }else if (mode == 'TOT'){
         var url = $('input[name="quality_tot_url"]').val();
     }
