@@ -1116,13 +1116,21 @@ class AjaxController extends Controller
                 }
 
                 // HoaTV for change level from c3bg to c3b
-                if(isset($id[$contact->_id]['invalid_reason'])){
+                if(isset($id[$contact->_id]['invalid_reason']) && $contact->clevel == "c3bg"){
                     $contact->invalid_reason    = $id[$contact->_id]['invalid_reason'];
                     $contact->invalid_reason_mode    = $id[$contact->_id]['invalid_reason_mode'];
                     $contact->is_update_manual    = true;
                     $contact->clevel = "c3b";
                     // handle count ad_result only from from c3bg down to c3b
-                    $this->handleCountAdResult($contact->ad_id, $contact->submit_time);
+                    $this->handleCountAdResult(true,$contact->ad_id, $contact->submit_time);
+                }else if(!isset($id[$contact->_id]['invalid_reason']) && $contact->clevel == "c3b" && $contact->is_update_manual){
+                    // only contact is  already update is allow to update 
+                    $contact->invalid_reason    = "";
+                    $contact->invalid_reason_mode    = "";
+                    $contact->is_update_manual    = true;
+                    $contact->clevel = "c3bg";
+                    // handle count ad_result only from from c3b down to c3bg
+                    $this->handleCountAdResult(false, $contact->ad_id, $contact->submit_time);
                 }
 
                 $contact->save();
@@ -1136,11 +1144,16 @@ class AjaxController extends Controller
         }
     }
 
-    // HoaTV handle ad_result when changes level from c3bg down to c3b
-    private function handleCountAdResult($adID,$submitTime){
+    // HoaTV handle ad_result when changes level from c3bg down to c3b and vice versa
+    private function handleCountAdResult($isDown, $adID, $submitTime){
         $adResult = AdResult::where('ad_id', $adID)->where('date',date('Y-m-d',$submitTime/1000))->first();
-        $adResult->c3bg = (int)$adResult->c3bg - 1;
-        $adResult->c3b = (int)$adResult->c3b + 1;
+        if($isDown){
+            $adResult->c3bg = (int)$adResult->c3bg - 1;
+            $adResult->c3b = (int)$adResult->c3b + 1;
+        }else{
+            $adResult->c3bg = (int)$adResult->c3bg + 1;
+            $adResult->c3b = (int)$adResult->c3b - 1;
+        }
         $adResult->save();
     }
 
