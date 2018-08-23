@@ -26,8 +26,10 @@ class InventoryReportController extends Controller
         $year   = date('Y');
         $channel = Channel::all();
 
-        $c3_produce     = $this->get_c3_produce_by_channel();
-        $c3_transfer    = $this->get_c3_transfer_by_channel();
+        $c3_produce_channel     = $this->get_c3_produce_by_channel();
+        $c3_transfer_channel    = $this->get_c3_transfer_by_channel();
+        $c3_produce_source      = $this->get_c3_produce_by_source();
+        $c3_transfer_source     = $this->get_c3_transfer_by_source();
 
         return view('pages.inventory_report', compact(
             'page_title',
@@ -35,8 +37,10 @@ class InventoryReportController extends Controller
             'no_main_header',
             'active',
             'breadcrumbs',
-            'c3_produce',
-            'c3_transfer',
+            'c3_produce_channel',
+            'c3_transfer_channel',
+            'c3_produce_source',
+            'c3_transfer_source',
             'days',
             'month',
             'year',
@@ -213,7 +217,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['clevel' => 'c3b']],
                 [
                     '$group' => [
-                        '_id' => ['submit_time' => '$submit_time', 'channel_name' => '$channel_name', 'source_name' => '$source_name'],
+                        '_id' => ['submit_time' => '$submit_time', 'source_name' => '$source_name'],
                         'c3b_produce' => ['$sum' => 1],
                     ]
                 ],
@@ -230,9 +234,7 @@ class InventoryReportController extends Controller
         $result = array();
         foreach ($query as $item){
             $date       = date('d/m/Y', @$item['_id']['submit_time'] / 1000);
-            $channel    = @$item['_id']['channel_name'];
             $source     = @$item['_id']['source_name'] ? $item['_id']['source_name'] : 'N/A';
-            @$result[$date]['channel_name'] = $channel;
             @$result[$date]['c3b_produce']  = @$item['c3b_produce'];
             @$result[$date]['source_name']  = $source;
         }
@@ -265,7 +267,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['olm_status' => ['$in' => ['0', '1']]]],
                 [
                     '$group' => [
-                        '_id' => ['export_sale_date' => '$export_sale_date', 'channel_name' => '$channel_name', 'source_name' => '$source_name'],
+                        '_id' => ['export_sale_date' => '$export_sale_date', 'source_name' => '$source_name'],
                         'c3b_transfer' => ['$sum' => 1],
                     ]
                 ],
@@ -281,10 +283,8 @@ class InventoryReportController extends Controller
 
         $result = array();
         foreach ($query as $item){
-            $date       = date('d/m/Y', @$item['_id']['submit_time'] / 1000);
-            $channel    = @$item['_id']['channel_name'];
+            $date       = @$item['_id']['export_sale_date'];
             $source     = @$item['_id']['source_name'] ? $item['_id']['source_name'] : 'N/A';
-            @$result[$date]['channel_name'] = $channel;
             @$result[$date]['c3b_transfer'] = @$item['c3b_transfer'];
             @$result[$date]['source_name']  = $source;
         }

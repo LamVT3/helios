@@ -192,7 +192,7 @@
                                             <option value="0">Success</option>
                                             <option value="1">Duplicated</option>
                                             <option value="2">Error</option>
-                                            <option value="3">Not Export</option>
+                                            <option value="-1">Not Export</option>
                                         </select>
                                         <i></i>
                                     </section>

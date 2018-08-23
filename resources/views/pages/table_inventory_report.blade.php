@@ -19,6 +19,7 @@
 
     </tr>
 
+    @foreach()
     <tr>
         <td class="border-bold-right" style="min-width: 200px">00000</td>
 
