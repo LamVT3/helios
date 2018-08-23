@@ -1043,7 +1043,7 @@ class ContactController extends Controller
 
         $query->orderBy('submit_time', 'desc');
         $limit = (int)$request->limit;
-        $query->skip(0)->take($limit);var_dump($query->get());die;
+        $query->skip(0)->take($limit);
         $export_sale_date = '';
         if($request->export_sale_date){
             $export_sale_date = $request->export_sale_date;
