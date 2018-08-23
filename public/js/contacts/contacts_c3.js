@@ -1109,6 +1109,7 @@ function exportToOLM(id) {
     var landing_page    = $('select[name="landing_page"]').val();
     // HoaTV fix change to multiple select channel
     // var channel         = $('select[name="channel_id"]').val();
+    var channel         = $('input[name="channel_id"]').val();
     var olm_status      = $('select[name="olm_status"]').val();
     var limit           = $('input#export_sale_limit').val();
     var export_sale_date = $('input#export_sale_date').val();
