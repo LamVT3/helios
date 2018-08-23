@@ -885,6 +885,18 @@ class AjaxController extends Controller
                 $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
                 unset($data_where['current_level']);
             }
+            if(@$data_where['olm_status'] == 0){
+                $query->where('olm_status', 0);
+                unset($data_where['olm_status']);
+            }
+            if(@$data_where['olm_status'] == 1){
+                $query->where('olm_status', 0);
+                unset($data_where['olm_status']);
+            }
+            if(@$data_where['olm_status'] == -1){
+                $query->whereNotIn('olm_status', [0, 1, 2]);
+                unset($data_where['olm_status']);
+            }
             $query->where($data_where);
         }
         if($status == '1'){
