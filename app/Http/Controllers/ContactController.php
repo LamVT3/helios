@@ -1103,20 +1103,22 @@ class ContactController extends Controller
 
         $query->orderBy('submit_time', 'desc');
         $limit = (int)$request->limit;
-        $query->skip(0)->take($limit);
         $export_sale_date = '';
         if($request->export_sale_date){
             $export_sale_date = $request->export_sale_date;
         }
-
-        $query->chunk( 1000, function ( $contacts ) use ( $url , &$result, $export_sale_date) {
-
+            
+        $query->chunk( 1000, function ( $contacts ) use ( $url , &$result, $export_sale_date, $limit) {
+            $count = 0;
             foreach ($contacts as $contact)
             {
+                if($count >= $limit){
+                    break;
+                }
+                
                 if (!$contact->ad_id){
                     $contact->ad_id = "unknown";
                 }
-
                 $data_array =  array(
                     "ads_link"          => $contact->ad_link,
                     "email"             => $contact->email,
@@ -1128,22 +1130,13 @@ class ContactController extends Controller
                     "submit_time"       => $contact->submit_time,
                 );
 
-//                 $data_array =  array(
-//                     "ads_link"          => 'http://fastenglishforyou.topicanative.co.th/?id_landingpage=401&code_chanel=FABR11_Mike_Conversions_E-Book.M.TI.007_All Gender_30-65_Int.Motivation.Coaching&id_campaign=16&id=26492',
-//                     "email"             => 'C9ballkung1979@gmail.com',
-//                     "fullname"          => 'Meemi',
-//                     "phone"             => '993198657',
-//                     "contact_channel"   => 'FABR11_Mike_Conversions_E-Book.M.TI.007_All Gender_30-65_Int.Motivation.Coaching',
-//                     "source_type"       => 'helios',
-//                     "registereddate"    => 1522861083375,
-//                     "submit_time"       => 1530637707420,
-//                 );
                 $make_call  = $this->callAPI('POST', $url, json_encode($data_array));
                 $response   = json_decode($make_call, true);
                 $status     = $response['results'][0]['Status'];
-                $contact    = $this->handleHandover($contact,$status);
-                $contact->export_sale_date = $export_sale_date;
-                $contact->save();
+                $contactUpdate    = new Contact();
+                $contactUpdate    = $this->handleHandover($contact,$status);
+                $contactUpdate->export_sale_date = $export_sale_date;
+                $contactUpdate->save();
 
                 if (strtolower($status) == "ok"){
                     $result['cnt_success']  += 1;
@@ -1154,6 +1147,7 @@ class ContactController extends Controller
                 } else {
                     $result['cnt_error']    += 1;
                 }
+                $count++;
             }
         });
         return $result;
@@ -1177,9 +1171,9 @@ class ContactController extends Controller
             foreach($ad_result as $item){
                 $countL1 = $countL1 + $item["l1"];
             }
-            $AdResult = AdResult::where("ad_id",$contact->ad_id)->where("date",$dateFromContactID)->first();
-            $AdResult->l1 = $countL1;
-            $AdResult->save();
+            $ad_result = AdResult::where("ad_id",$contact->ad_id)->where("date",$dateFromContactID)->first();
+            $ad_result->l1 = $countL1;
+            $ad_result->save();
         } else if (strtolower($apiStatus) == "duplicated"){
             $contact->olm_status = "1";
         } else if (strtolower($apiStatus) == "error"){
