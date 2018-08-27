@@ -21,17 +21,35 @@
     </tr>
     </thead>
     <tbody>
-    @foreach($data['data'] as $channel => $item)
+    @foreach($data['lable'] as $source => $channel)
         <tr>
-            <td class="border-bold-right" style="min-width: 200px">{{$channel}}</td>
-            <td class="border-bold-right" style="font-weight: bold">{{$data['total_channel'][$channel]}}</td>
-            @for ($i = 1; $i <= $days; $i++)
-                <td style="font-size: 15px">{{$item[$i]['produce']}}</td>
-                <td style="font-size: 15px">{{$item[$i]['transfer']}}</td>
-                <td class="border-bold-right" style="font-size: 15px">{{$item[$i]['inventory']}}</td>
-            @endfor
+            <td class="border-bold-right" style="min-width: 200px">{{$source}}</td>
 
+            <td class="border-bold-right" style="font-weight: bold">{{@$data['total_source'][$source] ? $data['total_source'][$source] : 0}}</td>
+            @for ($i = 1; $i <= $days; $i++)
+            <td style="font-size: 15px">{{@$data['data'][$source][$i]['produce']?:0}}</td>
+            <td style="font-size: 15px">{{@$data['data'][$source][$i]['transfer']?:0}}</td>
+            <td class="border-bold-right" style="font-size: 15px">{{@$data['data'][$source][$i]['inventory']?:0}}</td>
+            @endfor
         </tr>
+
+        @foreach($channel as $item)
+        <tr>
+            <td class="border-bold-right" style="min-width: 200px; text-align: right">{{$item}}</td>
+
+            <td class="border-bold-right" style="font-weight: bold">{{@$data['total_channel'][$item] ? $data['total_channel'][$item] : 0}}</td>
+            @for ($i = 1; $i <= $days; $i++)
+            <td style="font-size: 15px">{{$data['data'][$item][$i]['produce']?:0}}</td>
+            <td style="font-size: 15px">{{$data['data'][$item][$i]['transfer']?:0}}</td>
+            <td class="border-bold-right" style="font-size: 15px">{{$data['data'][$item][$i]['inventory']?:0}}</td>
+            @endfor
+        </tr>
+        @endforeach
+
+
+
+
+
     @endforeach
     </tbody>
     <tfoot>
