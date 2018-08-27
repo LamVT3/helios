@@ -210,4 +210,5 @@ Route::group(['prefix' => 'diff-contacts'], function () {
 
 Route::group(['prefix' => 'inventory-report'], function () {
     Route::get('/', 'InventoryReportController@index')->name('inventory-report');
+    Route::get('/filter-inventory-report', 'InventoryReportController@filter')->name('filter-inventory-report');
 });

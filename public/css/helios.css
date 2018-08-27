@@ -514,7 +514,43 @@ div#wrapper_kpi, div#wrapper_kpi_by_team{
     background: #fff0f0;
     border-color: #A90329;
 }
-
+#inventory-filter
+{
+    padding: 0px 15px 0px 15px;
+}
+.border-bold-top{
+    border-top: 3px solid #ccc!important;
+}
+.border-bold-bot{
+    border-bottom: 3px solid #ccc!important;
+}
+.border-bold-top-bot-right{
+    border-top: 3px solid #ccc!important;
+    border-right: 3px solid #ccc!important;
+    border-bottom: 3px solid #ccc!important;
+}
+.border-bold-top-bot{
+    border-top: 3px solid #ccc!important;
+    border-bottom: 3px solid #ccc!important;
+}
+.border-bold-bot-right{
+    border-right: 3px solid #ccc!important;
+    border-bottom: 3px solid #ccc!important;
+}
+div#wrapper_inventory{
+    overflow-x:auto;
+    width: 100%;
+    padding: auto;
+    max-height: 840px;
+}
+#table_inventory_report{
+    border-collapse: separate;
+    border-left: none!important;
+    border-top: none!important;
+    text-align: center;
+    border-bottom: none!important;
+    margin: 0;
+}
 
 
 

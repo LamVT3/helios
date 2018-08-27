@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Contact;
 use App\Channel;
+use App\Source;
 use Illuminate\Http\Request;
 
 class InventoryReportController extends Controller
@@ -26,10 +27,7 @@ class InventoryReportController extends Controller
         $year   = date('Y');
         $channel = Channel::all();
 
-        $c3_produce_channel     = $this->get_c3_produce_by_channel();
-        $c3_transfer_channel    = $this->get_c3_transfer_by_channel();
-        $c3_produce_source      = $this->get_c3_produce_by_source();
-        $c3_transfer_source     = $this->get_c3_transfer_by_source();
+        $data = $this->prepare_data();
 
         return view('pages.inventory_report', compact(
             'page_title',
@@ -37,10 +35,7 @@ class InventoryReportController extends Controller
             'no_main_header',
             'active',
             'breadcrumbs',
-            'c3_produce_channel',
-            'c3_transfer_channel',
-            'c3_produce_source',
-            'c3_transfer_source',
+            'data',
             'days',
             'month',
             'year',
@@ -64,27 +59,18 @@ class InventoryReportController extends Controller
     public function filter(){
         $request = request();
 
-        $result = $this->get_data();
-        $data_maketer   = $this->get_data_by_maketer($result);
         $days   = $this->get_days_in_month();
-        $month  = date('M');
+        $month  = date('m');
         $year   = date('Y');
 
         if($request->month){
-            $month  = date('M', strtotime($year.'-'.$request->month));
+            $month = $request->month;
         }
 
-        if($request->maketer){
-            $arr_maketer = explode(',',$request->maketer);
-            foreach ($data_maketer as $key => $item ){
-                if(!in_array($item['user_id'], $arr_maketer)){
-                    unset($data_maketer[$key]);
-                }
-            }
-        }
+        $data = $this->prepare_data();
 
-        return view('pages.table_report_kpi', compact(
-            'data_maketer',
+        return view('pages.table_inventory_report', compact(
+            'data',
             'days',
             'month',
             'year'
@@ -114,7 +100,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['clevel' => 'c3b']],
                 [
                     '$group' => [
-                        '_id' => ['submit_time' => '$submit_time', 'channel_name' => '$channel_name', 'source_name' => '$source_name'],
+                        '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_name' => '$source_name'],
                         'c3b_produce' => ['$sum' => 1],
                     ]
                 ],
@@ -128,17 +114,74 @@ class InventoryReportController extends Controller
             return $collection->aggregate($match);
         });
 
+
         $result = array();
         foreach ($query as $item){
-            $date       = date('d/m/Y', @$item['_id']['submit_time'] / 1000);
+            $date       = date('d', @$item['_id']['submit_time'] / 1000);
             $channel    = @$item['_id']['channel_name'];
-            $source     = @$item['_id']['source_name'] ? $item['_id']['source_name'] : 'N/A';
-            @$result[$date]['channel_name'] = $channel;
-            @$result[$date]['c3b_produce']  = @$item['c3b_produce'];
-            @$result[$date]['source_name']  = $source;
+            if(isset($result[$date][$channel])){
+                @$result[$date][$channel]['c3b_produce'] += @$item['c3b_produce'];
+            }else{
+                @$result[$date][$channel]['c3b_produce'] = @$item['c3b_produce'];
+            }
+
         }
 
-        return $query;
+        return $result;
+
+    }
+
+    private function get_c3_inventory_by_channel(){
+
+        $month      = date('m'); /* thang hien tai */
+        $year       = date('Y'); /* nam hien tai*/
+        $request    = request();
+        if($request->month){
+            $month = $request->month;
+        }
+
+        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+        $start  = '01-'.$month.'-'.$year; /* ngày đàu tiên của tháng */
+        $end    = $d.'-'.$month.'-'.$year; /* ngày cuối cùng của tháng */
+
+        $startDate  = strtotime($start)*1000;
+        $endDate    = strtotime("+1 day", strtotime($end))*1000;
+
+        $query = Contact::raw(function ($collection) use ($startDate, $endDate) {
+
+            $match = [
+                ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
+                ['$match' => ['clevel' => 'c3b']],
+                ['$match' => ['olm_status' => ['$nin' => [0, 1]]]],
+                [
+                    '$group' => [
+                        '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_name' => '$source_name'],
+                        'c3b_inventory' => ['$sum' => 1],
+                    ]
+                ],
+                [
+                    '$sort' => [
+                        'c3b_inventory' => -1,
+                    ]
+                ]
+            ];
+
+            return $collection->aggregate($match);
+        });
+
+        $result = array();
+        foreach ($query as $item){
+            $date       = date('d', @$item['_id']['submit_time'] / 1000);
+            $channel    = @$item['_id']['channel_name'];
+            if(isset($result[$date][$channel])){
+                @$result[$date][$channel]['c3b_inventory'] += @$item['c3b_inventory'];
+            }else{
+                @$result[$date][$channel]['c3b_inventory'] = @$item['c3b_inventory'];
+            }
+
+        }
+
+        return $result;
 
     }
 
@@ -163,7 +206,7 @@ class InventoryReportController extends Controller
             $match = [
                 ['$match' => ['export_sale_date' => ['$gte' => $start, '$lte' => $end]]],
                 ['$match' => ['clevel' => 'c3b']],
-                ['$match' => ['olm_status' => ['$in' => ['0', '1']]]],
+                ['$match' => ['olm_status' => ['$in' => [0, 1]]]],
                 [
                     '$group' => [
                         '_id' => ['export_sale_date' => '$export_sale_date', 'channel_name' => '$channel_name', 'source_name' => '$source_name'],
@@ -182,12 +225,18 @@ class InventoryReportController extends Controller
 
         $result = array();
         foreach ($query as $item){
-            $date       = date('d/m/Y', @$item['_id']['submit_time'] / 1000);
+            $date = 0;
+            if(@$item['_id']['export_sale_date']){
+                $date = explode('/', $item['_id']['export_sale_date']);
+            }
+
             $channel    = @$item['_id']['channel_name'];
-            $source     = @$item['_id']['source_name'] ? $item['_id']['source_name'] : 'N/A';
-            @$result[$date]['channel_name'] = $channel;
-            @$result[$date]['c3b_transfer'] = @$item['c3b_transfer'];
-            @$result[$date]['source_name']  = $source;
+            if(isset($result[$date[0]][$channel])){
+                @$result[$date[0]][$channel]['c3b_transfer'] += @$item['c3b_transfer'];
+            }else{
+                @$result[$date[0]][$channel]['c3b_transfer'] = @$item['c3b_transfer'];
+            }
+
         }
 
         return $result;
@@ -217,7 +266,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['clevel' => 'c3b']],
                 [
                     '$group' => [
-                        '_id' => ['submit_time' => '$submit_time', 'source_name' => '$source_name'],
+                        '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_name' => '$source_name'],
                         'c3b_produce' => ['$sum' => 1],
                     ]
                 ],
@@ -231,15 +280,74 @@ class InventoryReportController extends Controller
             return $collection->aggregate($match);
         });
 
+
         $result = array();
         foreach ($query as $item){
-            $date       = date('d/m/Y', @$item['_id']['submit_time'] / 1000);
-            $source     = @$item['_id']['source_name'] ? $item['_id']['source_name'] : 'N/A';
-            @$result[$date]['c3b_produce']  = @$item['c3b_produce'];
-            @$result[$date]['source_name']  = $source;
+            $date       = date('d', @$item['_id']['submit_time'] / 1000);
+            $channel    = @$item['_id']['channel_name'];
+            if(isset($result[$date][$channel])){
+                @$result[$date][$channel]['c3b_produce'] += @$item['c3b_produce'];
+            }else{
+                @$result[$date][$channel]['c3b_produce'] = @$item['c3b_produce'];
+            }
+
         }
 
-        return $query;
+        return $result;
+
+    }
+
+    private function get_c3_inventory_by_source(){
+
+        $month      = date('m'); /* thang hien tai */
+        $year       = date('Y'); /* nam hien tai*/
+        $request    = request();
+        if($request->month){
+            $month = $request->month;
+        }
+
+        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+        $start  = '01-'.$month.'-'.$year; /* ngày đàu tiên của tháng */
+        $end    = $d.'-'.$month.'-'.$year; /* ngày cuối cùng của tháng */
+
+        $startDate  = strtotime($start)*1000;
+        $endDate    = strtotime("+1 day", strtotime($end))*1000;
+
+        $query = Contact::raw(function ($collection) use ($startDate, $endDate) {
+
+            $match = [
+                ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
+                ['$match' => ['clevel' => 'c3b']],
+                ['$match' => ['olm_status' => ['$nin' => [0, 1]]]],
+                [
+                    '$group' => [
+                        '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_name' => '$source_name'],
+                        'c3b_inventory' => ['$sum' => 1],
+                    ]
+                ],
+                [
+                    '$sort' => [
+                        'c3b_inventory' => -1,
+                    ]
+                ]
+            ];
+
+            return $collection->aggregate($match);
+        });
+
+        $result = array();
+        foreach ($query as $item){
+            $date       = date('d', @$item['_id']['submit_time'] / 1000);
+            $channel    = @$item['_id']['channel_name'];
+            if(isset($result[$date][$channel])){
+                @$result[$date][$channel]['c3b_inventory'] += @$item['c3b_inventory'];
+            }else{
+                @$result[$date][$channel]['c3b_inventory'] = @$item['c3b_inventory'];
+            }
+
+        }
+
+        return $result;
 
     }
 
@@ -264,10 +372,10 @@ class InventoryReportController extends Controller
             $match = [
                 ['$match' => ['export_sale_date' => ['$gte' => $start, '$lte' => $end]]],
                 ['$match' => ['clevel' => 'c3b']],
-                ['$match' => ['olm_status' => ['$in' => ['0', '1']]]],
+                ['$match' => ['olm_status' => ['$in' => [0, 1]]]],
                 [
                     '$group' => [
-                        '_id' => ['export_sale_date' => '$export_sale_date', 'source_name' => '$source_name'],
+                        '_id' => ['export_sale_date' => '$export_sale_date', 'channel_name' => '$channel_name', 'source_name' => '$source_name'],
                         'c3b_transfer' => ['$sum' => 1],
                     ]
                 ],
@@ -283,14 +391,67 @@ class InventoryReportController extends Controller
 
         $result = array();
         foreach ($query as $item){
-            $date       = @$item['_id']['export_sale_date'];
-            $source     = @$item['_id']['source_name'] ? $item['_id']['source_name'] : 'N/A';
-            @$result[$date]['c3b_transfer'] = @$item['c3b_transfer'];
-            @$result[$date]['source_name']  = $source;
+            $date = 0;
+            if(@$item['_id']['export_sale_date']){
+                $date = explode('/', $item['_id']['export_sale_date']);
+            }
+
+            $channel    = @$item['_id']['channel_name'];
+            if(isset($result[$date[0]][$channel])){
+                @$result[$date[0]][$channel]['c3b_transfer'] += @$item['c3b_transfer'];
+            }else{
+                @$result[$date[0]][$channel]['c3b_transfer'] = @$item['c3b_transfer'];
+            }
+
         }
 
         return $result;
 
+    }
+
+    public function prepare_data(){
+        $request = request();
+        $days   = $this->get_days_in_month();
+
+        $c3_produce_channel     = $this->get_c3_produce_by_channel();
+        $c3_transfer_channel    = $this->get_c3_transfer_by_channel();
+        $c3_inventory_channel   = $this->get_c3_inventory_by_channel();
+        $c3_produce_source     = $this->get_c3_produce_by_source();
+        $c3_transfer_source    = $this->get_c3_transfer_by_source();
+        $c3_inventory_source   = $this->get_c3_inventory_by_source();
+
+        if($request->channel){
+            $channels = Channel::whereIn('_id', explode(',', $request->channel))->get();
+        }else{
+            $channels = Channel::all();
+        }
+
+        $sources = Source::all();
+        $result = array();
+        foreach ($channels as $channel){
+            $channel_name = $channel->name;
+
+            for($i = 1; $i <= $days; $i++){
+                @$result['data'][$channel_name][$i]['produce']      = @$c3_produce_channel[$i][$channel_name]['c3b_produce']        ? @$c3_produce_channel[$i][$channel_name]['c3b_produce']        : 0;
+                @$result['data'][$channel_name][$i]['transfer']     = @$c3_transfer_channel[$i][$channel_name]['c3b_transfer']      ? @$c3_transfer_channel[$i][$channel_name]['c3b_transfer']      : 0;
+                @$result['data'][$channel_name][$i]['inventory']    = @$c3_inventory_channel[$i][$channel_name]['c3b_inventory']    ? @$c3_inventory_channel[$i][$channel_name]['c3b_inventory']    : 0;
+
+                @$result['total_channel'][$channel_name]    +=  @$result['data'][$channel_name][$i]['inventory'];
+
+                @$result['total'][$i]['produce']    +=  @$result['data'][$channel_name][$i]['produce'];
+                @$result['total'][$i]['transfer']   +=  @$result['data'][$channel_name][$i]['transfer'];
+                @$result['total'][$i]['inventory']  +=  @$result['data'][$channel_name][$i]['inventory'];
+
+                @$result['grand_total']['produce']      +=  @$result['data'][$channel_name][$i]['produce'];
+                @$result['grand_total']['transfer']     +=  @$result['data'][$channel_name][$i]['transfer'];
+                @$result['grand_total']['inventory']    +=  @$result['data'][$channel_name][$i]['inventory'];
+            }
+
+        }
+
+
+
+        return $result;
     }
 
 }
