@@ -116,7 +116,7 @@
             $('input[name=channel]').selectize({
                 delimiter: ',',
                 persist: false,
-                valueField: '_id',
+                valueField: 'name',
                 labelField: 'name',
                 searchField: ['name'],
                 options: {!! $channel !!}

@@ -22,14 +22,14 @@
     </thead>
     <tbody>
     @foreach($data['lable'] as $source => $channel)
-        <tr>
+        <tr style="background-color: #F5F5F5; font-weight: bold">
             <td class="border-bold-right" style="min-width: 200px">{{$source}}</td>
 
-            <td class="border-bold-right" style="font-weight: bold">{{@$data['total_source'][$source] ? $data['total_source'][$source] : 0}}</td>
+            <td class="border-bold-right" style="">{{@$data['total_source'][$source] ? $data['total_source'][$source] : 0}}</td>
             @for ($i = 1; $i <= $days; $i++)
-            <td style="font-size: 15px">{{@$data['data'][$source][$i]['produce']?:0}}</td>
-            <td style="font-size: 15px">{{@$data['data'][$source][$i]['transfer']?:0}}</td>
-            <td class="border-bold-right" style="font-size: 15px">{{@$data['data'][$source][$i]['inventory']?:0}}</td>
+            <td style="font-size: 15px">{{@$data[$source][$i]['produce']?:0}}</td>
+            <td style="font-size: 15px">{{@$data[$source][$i]['transfer']?:0}}</td>
+            <td class="border-bold-right" style="font-size: 15px">{{@$data[$source][$i]['inventory']?:0}}</td>
             @endfor
         </tr>
 
@@ -39,16 +39,12 @@
 
             <td class="border-bold-right" style="font-weight: bold">{{@$data['total_channel'][$item] ? $data['total_channel'][$item] : 0}}</td>
             @for ($i = 1; $i <= $days; $i++)
-            <td style="font-size: 15px">{{$data['data'][$item][$i]['produce']?:0}}</td>
-            <td style="font-size: 15px">{{$data['data'][$item][$i]['transfer']?:0}}</td>
-            <td class="border-bold-right" style="font-size: 15px">{{$data['data'][$item][$i]['inventory']?:0}}</td>
+            <td style="font-size: 15px">{{$data[$item][$i]['produce']?:0}}</td>
+            <td style="font-size: 15px">{{$data[$item][$i]['transfer']?:0}}</td>
+            <td class="border-bold-right" style="font-size: 15px">{{$data[$item][$i]['inventory']?:0}}</td>
             @endfor
         </tr>
         @endforeach
-
-
-
-
 
     @endforeach
     </tbody>

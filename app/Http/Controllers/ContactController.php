@@ -1106,7 +1106,7 @@ class ContactController extends Controller
         $query->skip(0)->take($limit);
         $export_sale_date = '';
         if($request->export_sale_date){
-            $export_sale_date = $request->export_sale_date;
+            $export_sale_date = str_replace('/', '-', $request->export_sale_date);
         }
 
         $query->chunk( 1000, function ( $contacts ) use ( $url , &$result, $export_sale_date) {
@@ -1142,9 +1142,8 @@ class ContactController extends Controller
                 $response   = json_decode($make_call, true);
                 $status     = $response['results'][0]['Status'];
                 $contact    = $this->handleHandover($contact,$status);
-                $contact->export_sale_date = $export_sale_date;
+                $contact->export_sale_date = strtotime($export_sale_date) * 1000;
                 $contact->save();
-
                 if (strtolower($status) == "ok"){
                     $result['cnt_success']  += 1;
                 } else if (strtolower($status) == "duplicated"){
