@@ -1105,7 +1105,7 @@ class ContactController extends Controller
         $limit = (int)$request->limit;
         $export_sale_date = '';
         if($request->export_sale_date){
-            $export_sale_date = $request->export_sale_date;
+            $export_sale_date = str_replace('/', '-', $request->export_sale_date);
         }
             
         $query->chunk( 1000, function ( $contacts ) use ( $url , &$result, $export_sale_date, $limit) {
@@ -1133,9 +1133,9 @@ class ContactController extends Controller
                 $make_call  = $this->callAPI('POST', $url, json_encode($data_array));
                 $response   = json_decode($make_call, true);
                 $status     = $response['results'][0]['Status'];
-                $contactUpdate    = new Contact();
+
                 $contactUpdate    = $this->handleHandover($contact,$status);
-                $contactUpdate->export_sale_date = $export_sale_date;
+                $contactUpdate->export_sale_date = strtotime($export_sale_date) * 1000;
                 $contactUpdate->save();
 
                 if (strtolower($status) == "ok"){
