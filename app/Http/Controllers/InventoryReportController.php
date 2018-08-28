@@ -273,7 +273,7 @@ class InventoryReportController extends Controller
             ];
         }else{
             $match = [
-                ['$match' => ['export_sale_date' => ['$gte' => $start, '$lte' => $end]]],
+                ['$match' => ['export_sale_date' => ['$gte' => $startDate, '$lte' => $endDate]]],
                 ['$match' => ['clevel' => 'c3b']],
                 ['$match' => ['olm_status' => ['$in' => [0, 1]]]],
                 [
@@ -297,6 +297,7 @@ class InventoryReportController extends Controller
         $result = array();
         foreach ($query as $item){
             $date       = (int)date('d', @$item['_id']['export_sale_date'] / 1000);
+
             $channel    = @$item['_id']['channel_name'];
             if(isset($result['channel'][$date][$channel])){
                 @$result['channel'][$date][$channel]['c3b_transfer'] += @$item['c3b_transfer'];
