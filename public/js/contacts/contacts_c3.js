@@ -893,7 +893,7 @@ function addSelectInvalidReason(item){
     $(statusCell).find('span#invalid_reason').hide();
     // $(statusCell).text("");
     $(statusCell).append('' +
-        '<select class="form-control" id="invalid_reason" onchange="setAllInvalidReason(this);">' +
+        '<select class="form-control" id="invalid_reason" onchange="setAllInvalidReason(this);" style="width:100px">' +
         '<option value="all">All</option>' +
         '<option value="C3B_SMS_Error">SMS Error</option>' +
         '<option value="C3B_Under18">Under 18</option>' +
