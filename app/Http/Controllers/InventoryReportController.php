@@ -102,7 +102,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['channel_name' => ['$in' => $channel]]],
                 [
                     '$group' => [
-                        '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_name' => '$source_name'],
+                        '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_id' => '$source_id'],
                         'c3b_produce' => ['$sum' => 1],
                     ]
                 ],
@@ -118,7 +118,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['clevel' => 'c3b']],
                 [
                     '$group' => [
-                        '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_name' => '$source_name'],
+                        '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_id' => '$source_id'],
                         'c3b_produce' => ['$sum' => 1],
                     ]
                 ],
@@ -144,14 +144,16 @@ class InventoryReportController extends Controller
                 @$result['channel'][$date][$channel]['c3b_produce'] = @$item['c3b_produce'];
             }
 
-            $source     = @$item['_id']['source_name'];
-            if (isset($result['source'][$date][$source])) {
-                @$result['source'][$date][$source]['c3b_produce'] += @$item['c3b_produce'];
-            } else {
-                @$result['source'][$date][$source]['c3b_produce'] = @$item['c3b_produce'];
+            $source_id    = @$item['_id']['source_id'];
+            $source = Source::find($source_id);
+            if($source) {
+                if (isset($result['source'][$date][$source->name])) {
+                    @$result['source'][$date][$source->name]['c3b_produce'] += @$item['c3b_produce'];
+                } else {
+                    @$result['source'][$date][$source->name]['c3b_produce'] = @$item['c3b_produce'];
+                }
             }
         }
-
         return $result;
 
     }
@@ -181,7 +183,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['channel_name' => ['$in' => $channel]]],
                 [
                     '$group' => [
-                        '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_name' => '$source_name'],
+                        '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_id' => '$source_id'],
                         'c3b_inventory' => ['$sum' => 1],
                     ]
                 ],
@@ -198,7 +200,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['olm_status' => ['$nin' => [0, 1]]]],
                 [
                     '$group' => [
-                        '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_name' => '$source_name'],
+                        '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_id' => '$source_id'],
                         'c3b_inventory' => ['$sum' => 1],
                     ]
                 ],
@@ -224,11 +226,14 @@ class InventoryReportController extends Controller
                 @$result['channel'][$date][$channel]['c3b_inventory'] = @$item['c3b_inventory'];
             }
 
-            $source    = @$item['_id']['source_name'];
-            if(isset($result['source'][$date][$source])){
-                @$result['source'][$date][$source]['c3b_inventory'] += @$item['c3b_inventory'];
-            }else{
-                @$result['source'][$date][$source]['c3b_inventory'] = @$item['c3b_inventory'];
+            $source_id    = @$item['_id']['source_id'];
+            $source = Source::find($source_id);
+            if($source) {
+                if (isset($result['source'][$date][$source->name])) {
+                    @$result['source'][$date][$source->name]['c3b_inventory'] += @$item['c3b_inventory'];
+                } else {
+                    @$result['source'][$date][$source->name]['c3b_inventory'] = @$item['c3b_inventory'];
+                }
             }
         }
 
@@ -261,7 +266,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['channel_name' => ['$in' => $channel]]],
                 [
                     '$group' => [
-                        '_id' => ['export_sale_date' => '$export_sale_date', 'channel_name' => '$channel_name', 'source_name' => '$source_name'],
+                        '_id' => ['export_sale_date' => '$export_sale_date', 'channel_name' => '$channel_name', 'source_id' => '$source_id'],
                         'c3b_transfer' => ['$sum' => 1],
                     ]
                 ],
@@ -278,7 +283,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['olm_status' => ['$in' => [0, 1]]]],
                 [
                     '$group' => [
-                        '_id' => ['export_sale_date' => '$export_sale_date', 'channel_name' => '$channel_name', 'source_name' => '$source_name'],
+                        '_id' => ['export_sale_date' => '$export_sale_date', 'channel_name' => '$channel_name', 'source_id' => '$source_id'],
                         'c3b_transfer' => ['$sum' => 1],
                     ]
                 ],
@@ -305,11 +310,15 @@ class InventoryReportController extends Controller
                 @$result['channel'][$date][$channel]['c3b_transfer'] = @$item['c3b_transfer'];
             }
 
-            $source    = @$item['_id']['source_name'];
-            if(isset($result['source'][$date][$source])){
-                @$result['source'][$date][$source]['c3b_transfer'] += @$item['c3b_transfer'];
-            }else{
-                @$result['source'][$date][$source]['c3b_transfer'] = @$item['c3b_transfer'];
+            $source_id    = @$item['_id']['source_id'];
+            $source = Source::find($source_id);
+            if($source){
+
+                if(isset($result['source'][$date][$source->name])){
+                    @$result['source'][$date][$source->name]['c3b_transfer'] += @$item['c3b_transfer'];
+                }else{
+                    @$result['source'][$date][$source->name]['c3b_transfer'] = @$item['c3b_transfer'];
+                }
             }
         }
 
@@ -383,7 +392,8 @@ class InventoryReportController extends Controller
             $channel_name   = $channel->name;
             $source_id      = $channel->source_id;
             $source         = Source::find($source_id);
-            $source_name    = 'Other';
+            $source_name    = 'Unknown';
+
             if($source){
                 $source_name = $source->name;
             }
