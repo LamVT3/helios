@@ -34,6 +34,7 @@
                                     <tr>
                                         <th>Name</th>
                                         <th>Facebook Account ID</th>
+                                        <th>Source</th>
                                         <th>Thank You page</th>
                                         <th>Creator</th>
                                         <th>Created at</th>
@@ -46,6 +47,7 @@
                                         <tr id="channel-{{ $item->id }}">
                                             <td>{{ $item->name }}</td>
                                             <td>{{ $item->fb_id }}</td>
+                                            <td>{{ $item->source_name }}</td>
                                             <td><a href="{{ $item->thankyou_page_url }}" target="_blank">{{ $item->thankyou_page_url }}</a></td>
                                             <td>{{ $item->creator_name }}</td>
                                             <td>{{ $item->created_at->toDateTimeString() }}</td>
@@ -127,7 +129,7 @@
             "drawCallback": function (oSettings) {
                 responsiveHelper_table_channel.respond();
             },
-            "order": [[0, "desc"]],
+            "order": [[5, "desc"]],
             "iDisplayLength": parseInt(page_size),
             'scrollY'       : '55vh',
             "scrollX"       : true,

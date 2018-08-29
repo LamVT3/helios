@@ -68,11 +68,9 @@
                                     </div>
                                 </div>
 
-
                                 <div id="wrapper_inventory">
                                     {{--@include('pages.table_inventory_report')--}}
                                 </div>
-
 
                             </div>
                         @endcomponent
