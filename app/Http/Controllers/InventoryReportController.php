@@ -22,12 +22,12 @@ class InventoryReportController extends Controller
         $active         = 'inventory-report';
         $breadcrumbs    = "<i class=\"fa-fw fa fa-empire\"></i> Report <span>> Inventory Report </span>";
 
-        $days   = $this->get_days_in_month();
-        $month  = date('m');
-        $year   = date('Y');
+//        $days   = $this->get_days_in_month();
+//        $month  = date('m');
+//        $year   = date('Y');
         $channel = Channel::all();
 
-        $data = $this->prepare_data();
+//        $data = $this->prepare_data();
 
         return view('pages.inventory_report', compact(
             'page_title',
@@ -35,10 +35,10 @@ class InventoryReportController extends Controller
             'no_main_header',
             'active',
             'breadcrumbs',
-            'data',
-            'days',
-            'month',
-            'year',
+//            'data',
+//            'days',
+//            'month',
+//            'year',
             'channel'
         ));
     }

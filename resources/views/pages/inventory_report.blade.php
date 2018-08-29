@@ -60,16 +60,17 @@
                                     </div>
                                 </form>
 
+                                <hr style="padding: 10px">
                                 <div class="loading" style="display: none">
                                     <div class="col-md-12 text-center">
                                         <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""
                                              style="width: 2%;"/>
                                     </div>
                                 </div>
-                                <hr>
+
 
                                 <div id="wrapper_inventory">
-                                    @include('pages.table_inventory_report')
+                                    {{--@include('pages.table_inventory_report')--}}
                                 </div>
 
 
@@ -122,7 +123,14 @@
                 options: {!! $channel !!}
             });
 
+            filter();
+
             $('button#filter-inventory').click(function() {
+                filter();
+            });
+
+            function filter() {
+                $('div.loading').show();
                 var url = $('input[name=filter-inventory-report]').val();
                 var month = $('select[name=month]').val();
                 var channel = $('input[name=channel]').val();
@@ -136,8 +144,11 @@
                 }).done(function (response) {
                     $('#wrapper_inventory').html(response);
                     $("#table_inventory_report").tableHeadFixer({"left" : 2, 'foot': true, 'z-index': 1});
+                    $('div.loading').hide();
+                }).error(function (response) {
+                    $('div.loading').hide();
                 });
-            });
+            }
 
         })
 
