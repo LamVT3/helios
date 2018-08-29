@@ -234,6 +234,12 @@ class InventoryReportController extends Controller
                 } else {
                     @$result['source'][$date][$source->name]['c3b_inventory'] = @$item['c3b_inventory'];
                 }
+            }else{
+                if (isset($result['source'][$date]['Unknown'])) {
+                    @$result['source'][$date]['Unknown']['c3b_inventory'] += @$item['c3b_inventory'];
+                } else {
+                    @$result['source'][$date]['Unknown']['c3b_inventory'] = @$item['c3b_inventory'];
+                }
             }
         }
 
@@ -344,16 +350,11 @@ class InventoryReportController extends Controller
         $c3_inventory_source    = @$c3_inventory['source'];
 
         if($request->channel){
-            $channels = Channel::whereIn('name', explode(',', $request->channel))->get();
-            $id = array();
-            foreach ($channels as $channel){
-                array_push($id, $channel->source_id);
-            }
-            $sources = Source::whereIn('_id', $id)->get();
+            $channels   = Channel::whereIn('name', explode(',', $request->channel))->get();
         }else{
             $channels   = Channel::all();
-            $sources    = Source::all();
         }
+        $sources    = Source::all();
 
         $result = array();
         $label  = array();
