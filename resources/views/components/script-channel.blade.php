@@ -17,6 +17,7 @@
                         modal.find('input[name=fb_id]').val(channel.fb_id);
                         modal.find('select[name=thankyou_page]').val(channel.thankyou_page_id);
                         modal.find('select[name=is_active]').val(channel.is_active);
+                        modal.find('select[name=source]').val(channel.source_id);
                         modal.find('[type=submit]').html('Save');
                     } else {
                         modal.close();
@@ -60,6 +61,10 @@
                     // required: true,
                     // alphanumeric: true
                 },
+                source: {
+                    required: true,
+                    // alphanumeric: true
+                },
                 fb_id: {
                     required: true,
                     // alphanumeric: true
@@ -82,6 +87,8 @@
             data.thankyou_page = $(this).find('[name=thankyou_page]').val();
             data.is_active = $(this).find('[name=is_active]').val();
             data._token = $(this).find('[name=_token]').val();
+            data.source_name = $(this).find('[name=source] :selected').text();
+            data.source_id = $(this).find('[name=source]').val();
 
             if(!$(this).valid()) return false;
 

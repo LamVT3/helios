@@ -26,6 +26,18 @@
                             </label>
                         </section>
                         <section>
+                            <label class="label require_field" for="source">Source</label>
+                            <label class="select">
+                                <select name="source">
+                                    <option value="" selected>Select Source</option>
+                                    @foreach ($sources as $item)
+                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                    @endforeach
+                                </select>
+                                <i></i>
+                            </label>
+                        </section>
+                        <section>
                             <label class="label" for="thankyou_page">Thank You Page</label>
                             <label class="select">
                                 <select name="thankyou_page">

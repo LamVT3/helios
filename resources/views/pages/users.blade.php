@@ -181,7 +181,7 @@
                 "drawCallback": function (oSettings) {
                     responsiveHelper_dt_basic.respond();
                 },
-                "order": [[0, "desc"]],
+                "order": [[4, "desc"]],
                 "iDisplayLength": parseInt(page_size),
                 'scrollY'       : '55vh',
                 "scrollX"       : true,

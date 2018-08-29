@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Channel;
 use App\Config;
+use App\Source;
 use App\ThankYouPage;
 use Illuminate\Http\Request;
 
@@ -23,6 +24,7 @@ class ChannelController extends Controller
         $breadcrumbs    = "<i class=\"fa-fw fa fa-gift\"></i> MKT Manager <span>> Channel</span>";
 
         $channel        = Channel::all();
+        $sources        = Source::all();
         $page_size      = Config::getByKey('PAGE_SIZE');
         $thankyou_page  = ThankYouPage::where('is_active', 1)->get();
 
@@ -34,7 +36,8 @@ class ChannelController extends Controller
             'breadcrumbs',
             'channel',
             'page_size',
-            'thankyou_page'
+            'thankyou_page',
+            'sources'
         ));
     }
 
@@ -69,6 +72,9 @@ class ChannelController extends Controller
             $channel->thankyou_page_name    = $thankyou_page->name;
             $channel->thankyou_page_url     = $thankyou_page->url;
         }
+
+        $channel->source_name   = request('source_name');
+        $channel->source_id     = request('source_id');
 
         $channel->save();
 
