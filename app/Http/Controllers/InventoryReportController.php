@@ -388,20 +388,19 @@ class InventoryReportController extends Controller
             }
         }
 
-        foreach ($channels as $channel){
+        foreach ($channels as $key => $channel){
             $channel_name   = $channel->name;
             $source_id      = $channel->source_id;
             $source         = Source::find($source_id);
-            $source_name    = 'Unknown';
 
             if($source){
                 $source_name = $source->name;
-            }
-
-            if(isset($label[$source_name])){
-                array_push($label[$source_name], $channel_name);
-            }else{
-                $label[$source_name] = [$channel_name];
+                if(isset($label[$source_name])){
+                    array_push($label[$source_name], $channel_name);
+                }else{
+                    $label[$source_name] = [$channel_name];
+                }
+                unset($channels[$key]);
             }
         }
 
@@ -409,6 +408,16 @@ class InventoryReportController extends Controller
             if ($item1 == $item2) return 0;
             return $item2 < $item1 ? -1 : 1;
         });
+
+
+        foreach ($channels  as $channel){
+            $channel_name   = $channel->name;
+            if(isset($label['Unknown'])){
+                array_push($label['Unknown'], $channel_name);
+            }else{
+                $label['Unknown'] = [$channel_name];
+            }
+        }
 
         $result['lable'] = $label;
 
