@@ -61,7 +61,7 @@
                                 </form>
 
                                 <hr style="padding: 10px">
-                                <div class="loading" style="display: none">
+                                <div class="loading" style="display: none; padding-bottom: 50px">
                                     <div class="col-md-12 text-center">
                                         <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""
                                              style="width: 2%;"/>
