@@ -1122,10 +1122,12 @@ class ContactController extends Controller
 
                 if($contact->source_name){
                     $source_type = $contact->source_name;
-                }else{
+                }else if($contact->source_id){
                     $source_id      = $contact->source_id;
                     $source         = Source::find($source_id);
                     $source_type    = $source->name;
+                }else{
+                    $source_type    = '';
                 }
 
                 $data_array =  array(
