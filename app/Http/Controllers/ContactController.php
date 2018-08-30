@@ -1119,13 +1119,22 @@ class ContactController extends Controller
                 if (!$contact->ad_id){
                     $contact->ad_id = "unknown";
                 }
+
+                if($contact->source_name){
+                    $source_type = $contact->source_name;
+                }else{
+                    $source_id      = $contact->source_id;
+                    $source         = Source::find($source_id);
+                    $source_type    = $source->name;
+                }
+
                 $data_array =  array(
                     "ads_link"          => $contact->ad_link,
                     "email"             => $contact->email,
                     "fullname"          => $contact->name,
                     "phone"             => $contact->phone,
                     "contact_channel"   => $contact->channel_name,
-                    "source_type"       => 'helios',
+                    "source_type"       => $source_type,
                     "registereddate"    => $contact->submit_time,
                     "submit_time"       => $contact->submit_time,
                 );
