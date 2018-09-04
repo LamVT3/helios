@@ -243,7 +243,7 @@ class ContactController extends Controller
             }
         }
 
-        $query->whereIn('olm_status', ['0', '1', '2', '3']);
+        $query->whereIn('olm_status', [0, 1, 2, 3]);
 
         $count = $query->count();
 
@@ -1172,7 +1172,7 @@ class ContactController extends Controller
 
             $contact->handover_date = date("Y-m-d");
             $contact->current_level = "l1";
-            $contact->olm_status    = "0";
+            $contact->olm_status    = 0;
             $contact->l1_time = date("Y-m-d");
 
             // Update ad_results
@@ -1186,11 +1186,11 @@ class ContactController extends Controller
             $ad_result->l1 = $countL1;
             $ad_result->save();
         } else if (strtolower($apiStatus) == "duplicated"){
-            $contact->olm_status = "1";
+            $contact->olm_status = 1;
         } else if (strtolower($apiStatus) == "error"){
-            $contact->olm_status = "2";
+            $contact->olm_status = 2;
         } else {
-            $contact->olm_status = "3";
+            $contact->olm_status = 3;
         }
 
         return $contact;
