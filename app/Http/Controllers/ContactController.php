@@ -702,7 +702,7 @@ class ContactController extends Controller
                 $contact->subcampaign_name = $item->utm_subcampaign;
                 $contact->ad_name = $item->utm_ad;
                 $contact->name = $item->fullname;
-                $contact->phone = $item->phone;
+                $contact->phone = $this->format_phone($item->phone);
                 $contact->email = $item->email;
                 $contact->age = $item->age;
                 $contact->landing_page = $item->landing_page;
@@ -730,7 +730,7 @@ class ContactController extends Controller
                     $contact->campaign_id = $ad->campaign_id;
                     $contact-> subcampaign_id = $ad->subcampaign_id;
                 }
-                $contact->contact_id = $this->gen_contact_id($contact);
+                $contact->contact_id = $this->gen_contact_id();
 
                 $cnt++;
                 $contact->save();
@@ -839,7 +839,7 @@ class ContactController extends Controller
                 $contact->subcampaign_name = "";
                 $contact->ad_name = "";
                 $contact->name = $item->firstname." ".$item->lastname;
-                $contact->phone = $item->tel_number_complete;
+                $contact->phone = $this->format_phone($item->tel_number_complete);
                 $contact->email = $item->email;
                 $contact->age = $item->age;
                 $contact->landing_page = "";
@@ -861,7 +861,7 @@ class ContactController extends Controller
                     $contact->campaign_id = $ad->campaign_id;
                     $contact->subcampaign_id = $ad->subcampaign_id;
                 }
-                $contact->contact_id = $this->gen_contact_id($contact);
+                $contact->contact_id = $this->gen_contact_id();
 
                 $cnt++;
                 $contact->save();
@@ -912,11 +912,19 @@ class ContactController extends Controller
         return false;
     }
 
-    private function gen_contact_id($contact)
+    private function gen_contact_id()
     {
-        $submit_time = date('Ymd', $contact->submit_time/1000);
-        $phone = substr($contact->phone, -6);
-        return $submit_time.$phone.'TL';
+        $uuid = $this->uuid();
+        $contact_id = (string)$uuid + 'TL';
+
+        return $contact_id;
+    }
+
+    private function uuid(){
+        $data = random_bytes(16);
+        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+        $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
 
     private function validate_c3a($contact){
