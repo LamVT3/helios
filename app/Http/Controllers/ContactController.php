@@ -722,6 +722,7 @@ class ContactController extends Controller
                 $ad = Ad::where('uri_query', $uri_query)->first();
                 if($ad === null){
                     $contact->ad_id = 'unknown';
+                    $contact->marketer_id = auth()->user()->_id;
                 }else{
                     $contact->ad_id = $ad->_id;
                     $contact->source_id = $ad->source_id;
@@ -745,7 +746,7 @@ class ContactController extends Controller
                     $ad_result->c3a     = ($contact->clevel === "c3a")  ? 1 : 0;
                     $ad_result->c3b     = ($contact->clevel === "c3b")  ? 1 : 0;
                     $ad_result->c3bg    = ($contact->clevel === "c3bg") ? 1 : 0;
-                    if($contact->ad_id !== 'unknown') $ad_result->creator_id = $ad->creator_id;
+                    if($contact->ad_id !== 'unknown') $ad_result->creator_id = auth()->user()->_id;
                 }else{
                     $ad_result->c3++;
                     $ad_result->c3a     += ($contact->clevel === "c3a")     ? 1 : 0;
@@ -853,6 +854,7 @@ class ContactController extends Controller
                 $ad = Ad::where('uri_query', $uri_query)->first();
                 if($ad === null){
                     $contact->ad_id = 'unknown';
+                    $contact->marketer_id = auth()->user()->_id;
                 }else{
                     $contact->ad_id = $ad->_id;
                     $contact->source_id = $ad->source_id;
@@ -876,7 +878,7 @@ class ContactController extends Controller
                     $ad_result->c3a     = ($contact->clevel === "c3a")  ? 1 : 0;
                     $ad_result->c3b     = ($contact->clevel === "c3b")  ? 1 : 0;
                     $ad_result->c3bg    = ($contact->clevel === "c3bg") ? 1 : 0;
-                    if($contact->ad_id !== 'unknown') $ad_result->creator_id = $ad->creator_id;
+                    if($contact->ad_id !== 'unknown') $ad_result->creator_id = auth()->user()->_id;
                 }else{
                     $ad_result->c3++;
                     $ad_result->c3a     += ($contact->clevel === "c3a")     ? 1 : 0;

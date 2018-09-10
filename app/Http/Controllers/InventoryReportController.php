@@ -98,7 +98,7 @@ class InventoryReportController extends Controller
 
             $match = [
                 ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['clevel' => 'c3b']],
+                ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
                 ['$match' => ['channel_name' => ['$in' => $channel]]],
                 [
                     '$group' => [
@@ -115,7 +115,7 @@ class InventoryReportController extends Controller
         }else{
             $match = [
                 ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['clevel' => 'c3b']],
+                ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
                 [
                     '$group' => [
                         '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_id' => '$source_id'],
@@ -178,7 +178,7 @@ class InventoryReportController extends Controller
             $channel = explode(',', $request->channel);
             $match = [
                 ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['clevel' => 'c3b']],
+                ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
                 ['$match' => ['olm_status' => ['$nin' => [0, 1]]]],
                 ['$match' => ['channel_name' => ['$in' => $channel]]],
                 [
@@ -196,7 +196,7 @@ class InventoryReportController extends Controller
         }else{
             $match = [
                 ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['clevel' => 'c3b']],
+                ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
                 ['$match' => ['olm_status' => ['$nin' => [0, 1]]]],
                 [
                     '$group' => [
@@ -267,7 +267,7 @@ class InventoryReportController extends Controller
             $channel = explode(',', $request->channel);
             $match = [
                 ['$match' => ['export_sale_date' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['clevel' => 'c3b']],
+                ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
                 ['$match' => ['olm_status' => ['$in' => [0, 1]]]],
                 ['$match' => ['channel_name' => ['$in' => $channel]]],
                 [
@@ -285,7 +285,7 @@ class InventoryReportController extends Controller
         }else{
             $match = [
                 ['$match' => ['export_sale_date' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['clevel' => 'c3b']],
+                ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
                 ['$match' => ['olm_status' => ['$in' => [0, 1]]]],
                 [
                     '$group' => [
