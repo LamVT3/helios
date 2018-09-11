@@ -140,6 +140,8 @@
                                                     <th>L8</th>
                                                     <th>L3/C3BG (%)</th>
                                                     <th>L8/L1 (%)</th>
+                                                    <th>Revenue</th>
+                                                    <th>Spent</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -157,6 +159,8 @@
                                                         <td>{{$table['l8'][$i]}}</td>
                                                         <td>{{($table['c3bg'][$i] != 0) ? round($table['l3'][$i] * 100 / $table['c3bg'][$i] , 2) : 0}}</td>
                                                         <td>{{($table['l1'][$i] != 0) ? round($table['l8'][$i] * 100 / $table['l1'][$i] , 2) : 0}}</td>
+                                                        <td></td>
+                                                        <td></td>
                                                     </tr>
                                                 @endforeach
                                                     <tr>
@@ -171,6 +175,8 @@
                                                         <th>{{array_sum($table['l8'])}}</th>
                                                         <th>{{(array_sum($table['c3bg']) != 0) ? round(array_sum($table['l3']) * 100 / array_sum($table['c3bg']) , 2) : 0}}</th>
                                                         <th>{{(array_sum($table['l1']) != 0) ? round(array_sum($table['l8']) * 100 / array_sum($table['l1']) , 2) : 0}}</th>
+                                                        <td></td>
+                                                        <td></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
