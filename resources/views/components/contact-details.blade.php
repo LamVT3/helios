@@ -157,6 +157,7 @@
         <th>Time</th>
         <th>Old Level</th>
         <th>New Level</th>
+        <th>Period Days</th>
         <th>Comment</th>
         <th>Status</th>
         <th>Audio</th>
@@ -169,6 +170,7 @@
                 <td>{{ $item["date"] }}</td>
                 <td>{{ $item["level_old"] }}</td>
                 <td>{{ $item["level_new"] }}</td>
+                <td></td>
                 <td>{{ $item["comment"] }}</td>
                 <td>{{ $item["call_status_new_desc"] }}</td>
                 <td>
