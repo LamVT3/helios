@@ -133,18 +133,18 @@
                                     </div>
 
                                     <div class="col-sm-12">
-                                        {{--<article class="col-sm-12 col-md-12">--}}
-                                        {{--@component('components.jarviswidget',--}}
-                                        {{--['id' => 'c3bg', 'icon' => 'fa-line-chart', 'title' => "C3BG ", 'dropdown' => 'false'])--}}
-                                            {{--<!-- widget content -->--}}
-                                                {{--<div class="widget-body no-padding">--}}
-                                                    {{--<div id="c3bg_chart" class="chart has-legend"></div>--}}
-                                                {{--</div>--}}
-                                            {{--@endcomponent--}}
-                                        {{--</article>--}}
                                         <article class="col-sm-12 col-md-12">
                                         @component('components.jarviswidget',
-                                        ['id' => 'c3b', 'icon' => 'fa-line-chart', 'title' => "C3B ", 'dropdown' => 'false'])
+                                        ['id' => 'c3bg', 'icon' => 'fa-line-chart', 'title' => "C3B", 'dropdown' => 'false'])
+                                            <!-- widget content -->
+                                                <div class="widget-body no-padding">
+                                                    <div id="c3bg_chart" class="chart has-legend"></div>
+                                                </div>
+                                            @endcomponent
+                                        </article>
+                                        <article class="col-sm-12 col-md-12">
+                                        @component('components.jarviswidget',
+                                        ['id' => 'c3b', 'icon' => 'fa-line-chart', 'title' => "C3B Price ", 'dropdown' => 'false'])
                                             <!-- widget content -->
                                                 <div class="widget-body no-padding">
                                                     <div id="c3b_chart" class="chart has-legend"></div>
@@ -152,15 +152,15 @@
                                             @endcomponent
                                         </article>
 
-                                        {{--<article class="col-sm-12 col-md-12">--}}
-                                        {{--@component('components.jarviswidget',--}}
-                                        {{--['id' => 'c3', 'icon' => 'fa-line-chart', 'title' => "C3", 'dropdown' => 'false'])--}}
-                                            {{--<!-- widget content -->--}}
-                                                {{--<div class="widget-body no-padding">--}}
-                                                    {{--<div id="c3_chart" class="chart has-legend"></div>--}}
-                                                {{--</div>--}}
-                                            {{--@endcomponent--}}
-                                        {{--</article>--}}
+                                        <article class="col-sm-12 col-md-12">
+                                        @component('components.jarviswidget',
+                                        ['id' => 'c3', 'icon' => 'fa-line-chart', 'title' => "C3B Quality", 'dropdown' => 'false'])
+                                            <!-- widget content -->
+                                                <div class="widget-body no-padding">
+                                                    <div id="c3_chart" class="chart has-legend"></div>
+                                                </div>
+                                            @endcomponent
+                                        </article>
 
                                     </div>
 
