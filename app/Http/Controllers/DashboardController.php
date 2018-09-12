@@ -13,6 +13,7 @@ use App\HotelBooking;
 use App\TourBooking;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Ad;
 
@@ -35,6 +36,9 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
+    	if (Auth::user()->role == "Marketer")
+    		return redirect(route('my-dashboard'));
+
         /*  phan date*/
         $month = date('m'); /* thang hien tai */
         $year = date('Y'); /* nam hien tai*/

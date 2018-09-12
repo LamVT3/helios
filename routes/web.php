@@ -212,3 +212,7 @@ Route::group(['prefix' => 'inventory-report'], function () {
     Route::get('/', 'InventoryReportController@index')->name('inventory-report');
     Route::get('/filter-inventory-report', 'InventoryReportController@filter')->name('filter-inventory-report');
 });
+
+Route::group(['prefix' => 'my-dashboard'], function () {
+	Route::get('/', 'MyDashBoardController@index')->name('my-dashboard');
+});

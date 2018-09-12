@@ -52,7 +52,7 @@
                 </a>
                 <ul class="dropdown-menu pull-right">
                     <li>
-                        <a href="{{ route('profile') }}" class="padding-10 padding-top-0 padding-bottom-0"> <i
+                        <a href="{{ route('my-dashboard') }}" class="padding-10 padding-top-0 padding-bottom-0"> <i
                                     class="fa fa-dashboard"></i> My <u>D</u>ashboard</a>
                     </li>
 
