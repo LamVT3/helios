@@ -94,11 +94,23 @@
         {
             padding: 0px 15px 0px 15px;
         }
-
-
+        #table_performance_report th, #table_performance_report td
+        {
+            text-align: center;
+        }
+        #table_performance_report th
+        {
+            border: 1px solid #ccc!important;
+        }
+        div#wrapper_performance
+        {
+            overflow-x:auto;
+            width: 100%;
+            padding: auto;
+            max-height: 500px;
+        }
 
     </style>
-
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -158,6 +170,8 @@
                 searchField: ['username'],
                 options: {!! $users !!}
             });
+
+            $("#table_performance_report").tableHeadFixer({'z-index': 0});
 
         });
 

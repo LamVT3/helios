@@ -1,7 +1,7 @@
 <table id="table_performance_report" class="table table-hover table-bordered">
     <thead>
     <tr>
-        <th width="13%">Makerter</th>
+        <th width="15%">Makerter</th>
         <th width="10%">C3 Produce</th>
         <th width="10%">C3 Transfer</th>
         <th width="10%">C3 Inventory</th>
