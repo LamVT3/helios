@@ -44,8 +44,7 @@ class  PerformanceReportController extends Controller
         $c3_produce     = $this->get_c3_produce();
         $c3_transfer    = $this->get_c3_transfer();
         $c3_inventory   = $this->get_c3_inventory();
-
-//        $cts_data = $this->get_cts_data();
+        $cts_data       = $this->get_cts_data();
 
         $users = User::all();
 
@@ -55,9 +54,23 @@ class  PerformanceReportController extends Controller
             $id     = $user->_id;
             $name   = $user->username;
 
-            @$result[$name]['c3b_produce']      = @$c3_produce[$id]['c3b_produce'] ? $c3_produce[$id]['c3b_produce'] : 0;
-            @$result[$name]['c3b_transfer']     = @$c3_transfer[$id]['c3b_transfer'] ? $c3_transfer[$id]['c3b_transfer'] : 0;
-            @$result[$name]['c3b_inventory']    = @$c3_inventory[$id]['c3b_inventory'] ? $c3_inventory[$id]['c3b_inventory'] : 0;
+            @$result[$name]['c3b_produce']      = @$c3_produce[$id]['c3b_produce']      ? $c3_produce[$id]['c3b_produce']       : 0;
+            @$result[$name]['c3b_transfer']     = @$c3_transfer[$id]['c3b_transfer']    ? $c3_transfer[$id]['c3b_transfer']     : 0;
+            @$result[$name]['c3b_inventory']    = @$c3_inventory[$id]['c3b_inventory']  ? $c3_inventory[$id]['c3b_inventory']   : 0;
+
+            $c3b    =  @$cts_data[$id]['c3b'];
+            $l1     =  @$cts_data[$id]['l1'];
+            $l3     =  @$cts_data[$id]['l3'];
+            $l6     =  @$cts_data[$id]['l6'];
+            $l8     =  @$cts_data[$id]['l8'];
+            $spent  =  @$cts_data[$id]['spent'];
+
+            @$result[$name]['c3_l1']    = $l1   ? round($c3b / $l1, 4) * 100    : 0;
+            @$result[$name]['c3_l3']    = $l3   ? round($c3b / $l3, 4) * 100    : 0;
+            @$result[$name]['c3_l6']    = $l6   ? round($c3b / $l6, 4) * 100    : 0;
+            @$result[$name]['c3_l8']    = $l8   ? round($c3b / $l8, 4) * 100    : 0;
+            @$result[$name]['spent']    = $spent    ? round($spent, 2)    : 0;
+            @$result[$name]['c3_cost']  = $spent    ? round($c3b / $spent, 2)    : 0;
 
         }
         return $result;
@@ -294,10 +307,8 @@ class  PerformanceReportController extends Controller
                 [
                     '$group' => [
                         '_id'   => '$creator_id',
-                        'me'    => ['$sum' => '$spent'],
-                        're'    => ['$sum' => '$revenue'],
+                        'spent' => ['$sum' => '$spent'],
                         'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
-                        'c3bg'  => ['$sum' => '$c3bg'],
                         'l1'    => ['$sum' => '$l1'],
                         'l3'    => ['$sum' => '$l3'],
                         'l6'    => ['$sum' => '$l6'],
@@ -311,10 +322,8 @@ class  PerformanceReportController extends Controller
                 [
                     '$group' => [
                         '_id'   => '$creator_id',
-                        'me'    => ['$sum' => '$spent'],
-                        're'    => ['$sum' => '$revenue'],
+                        'spent' => ['$sum' => '$spent'],
                         'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
-                        'c3bg'  => ['$sum' => '$c3bg'],
                         'l1'    => ['$sum' => '$l1'],
                         'l3'    => ['$sum' => '$l3'],
                         'l6'    => ['$sum' => '$l6'],
@@ -328,13 +337,22 @@ class  PerformanceReportController extends Controller
             return $collection->aggregate($match);
         });
 
-//        var_dump($query);die;
         $result = array();
         foreach ($query as $item) {
             if (isset($result[$item['_id']])) {
-                @$result[$item['_id']]['c3b'] += @$item['c3b'];
+                @$result[$item['_id']]['c3b']   += @$item['c3b'];
+                @$result[$item['_id']]['spent'] += @$item['spent'];
+                @$result[$item['_id']]['l1']    += @$item['l1'];
+                @$result[$item['_id']]['l3']    += @$item['l3'];
+                @$result[$item['_id']]['l6']    += @$item['l6'];
+                @$result[$item['_id']]['l8']    += @$item['l8'];
             } else {
-                @$result[$item['_id']]['c3b'] = @$item['c3b'];
+                @$result[$item['_id']]['c3b']   = @$item['c3b'];
+                @$result[$item['_id']]['spent'] = @$item['spent'];
+                @$result[$item['_id']]['l1']    = @$item['l1'];
+                @$result[$item['_id']]['l3']    = @$item['l3'];
+                @$result[$item['_id']]['l6']    = @$item['l6'];
+                @$result[$item['_id']]['l8']    = @$item['l8'];
             }
         }
         return $result;
