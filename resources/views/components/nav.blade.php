@@ -37,9 +37,7 @@
                             class="menu-item-parent">MKT Manager</span></a>
                 <ul>
                     <li class="{{ $active == 'mktmanager' ? 'active' : '' }}">
-                    <!-- 2018-04-04 lamvt update icon -->
                         <a href="{{ route('source') }}"><i class="fa fa-lg fa-fw fa-list-alt"></i> Sources</a>
-                    <!-- end 2018-04-04 -->
                     </li>
                     <li class="{{ $active == 'mktmanager-teams' ? 'active' : '' }}">
                         <a href="{{ route('team') }}"><i class="fa fa-lg fa-fw fa-group"></i> Teams</a>
@@ -50,9 +48,6 @@
                     <li class="{{ $active == 'mktmanager-tksPage' ? 'active' : '' }}">
                         <a href="{{ route('thankyou-page') }}"><i class="fa fa-lg fa-fw fa-gift"></i> Thank You Page</a>
                     </li>
-                    {{--<li class="{{ $active == 'kpis' ? 'active' : '' }}">
-                        <a href="{{ route('kpis') }}"><i class="fa fa-lg fa-fw fa-bullseye"></i> Kpis</a>
-                    </li>--}}
                 </ul>
             </li>
             <li class="{{ $active == 'adsmanager' ? 'active' : '' }}">
@@ -62,12 +57,6 @@
                     <li class="{{ $active == 'campaigns' ? 'active' : '' }}">
                         <a href="{{ route('campaigns') }}"><i class="fa fa-lg fa-fw fa-table"></i> Campaigns</a>
                     </li>
-                   {{-- <li class="{{ $active == 'subcampaigns' ? 'active' : '' }}">
-                        <a href="--}}{{--{{ //route('subcampaigns') }}--}}{{--"><i class="fa fa-lg fa-fw fa-table"></i> Subcampaigns</a>
-                    </li>
-                    <li class="{{ $active == 'ads' ? 'active' : '' }}">
-                        <a href="--}}{{--{{ //route('ads') }}--}}{{--"><i class="fa fa-lg fa-fw fa-table"></i> Ads</a>
-                    </li>--}}
                     <li class="{{ $active == 'adsmanager-lp' ? 'active' : '' }}">
                         <a href="{{ route('landing-page') }}"><i class="fa fa-lg fa-fw fa-book"></i> Landing Pages</a>
                     </li>
@@ -104,6 +93,10 @@
                     <li class="{{ $active == 'inventory-report' ? 'active' : '' }}">
                         <a href="{{ route('inventory-report') }}"><i class="fa fa-lg fa-fw fa-empire"></i> Inventory Report</a>
                     </li>
+
+                    <li class="{{ $active == 'performance-report' ? 'active' : '' }}">
+                        <a href="{{ route('performance-report') }}"><i class="fa fa-universal-access"></i> Performance Report</a>
+                    </li>
                 </ul>
             </li>
 
@@ -117,27 +110,10 @@
                             class="menu-item-parent">Notification</span></a>
             </li>
 
-            {{--@permission('view-user')--}}
             <li class="{{ $active == 'users' ? 'active' : '' }}">
-                <!-- 2018-04-04 lamvt update icon -->
                 <a href="{{ route('users') }}"><i class="fa fa-lg fa-fw fa-user"></i> <span
                             class="menu-item-parent">Users</span></a>
-                <!-- end 2018-04-04 -->
-                {{--<ul>--}}
-                    {{--<li class="{{ $active == 'users' ? 'active' : '' }}">--}}
-                        {{--<a href="{{ route('users') }}">List</a>--}}
-                    {{--</li>--}}
-                    {{--@if(auth()->user()->role == "Manager")--}}
-                    {{--<li class="{{ $active == 'users-create' ? 'active' : '' }}">--}}
-                        {{--<a href="{{ route('users-create') }}">Add user</a>--}}
-                    {{--</li>--}}
-                    {{--@endif--}}
-                    {{--<li class="{{ $active == 'users-roles' ? 'active' : '' }}">--}}
-                        {{--<a href="{{ route('users-roles') }}">User roles</a>--}}
-                    {{--</li>--}}
-                {{--</ul>--}}
             </li>
-            {{--2018-04-18 LamVT [HEL_9] Add more setting for VND/USD conversion--}}
             @if(auth()->user()->role == "Manager" || auth()->user()->role == "Admin")
             <li class="{{ $active == 'config' ? 'active' : '' }}">
                 <a href="{{ route('config') }}"><i class="fa fa-lg fa-fw fa-cog"></i> <span
@@ -151,51 +127,6 @@
                                 class="menu-item-parent">Diff Contacts</span></a>
                 </li>
             @endif
-            {{-- end 2018-04-18 LamVT [HEL_9] Add more setting for VND/USD conversion--}}
-            {{--@endpermission
-
-            @permission('view-report')
-            <li class="{{ $active == 'reports' ? 'active' : '' }}">
-                <a href="javascript:void(0)"><i class="fa fa-lg fa-fw fa-bar-chart"></i> <span
-                            class="menu-item-parent">Reports</span></a>
-                <ul>
-                    <li>
-                        <a href="javascript:void(0)">Sản phẩm</a>
-                        <ul>
-                            <li class="{{ $active == 'reports-product' ? 'active' : '' }}">
-                                <a href="{{ route('reports-product') }}">Số lượt xem</a>
-                            </li>
-                            <li class="{{ $active == 'reports-product-booking' ? 'active' : '' }}">
-                                <a href="{{ route('reports-product-booking') }}">Thông tin booking</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="{{ $active == 'reports-coupon' ? 'active' : '' }}">
-                        <a href="{{ route('reports-sale-coupon') }}">Coupons</a>
-                    </li>
-                    <li>
-                        <a href="javascript:void(0)">Customers</a>
-                        <ul>
-                            <li class="{{ $active == 'reports-customer-booking' ? 'active' : '' }}">
-                                <a href="{{ route('reports-customer-booking') }}">Bookings</a>
-                            </li>
-                            <li class="{{ $active == 'reports-customer-activity' ? 'active' : '' }}">
-                                <a href="{{ route('reports-customer-activity') }}">Activities</a>
-                            </li>
-                        </ul>
-                    </li>
-                    --}}{{--<li class="{{ $active == 'reports-subscriptions' ? 'active' : '' }}">
-                        <a href="{{ route('reports-subscriptions') }}">Subscriptions</a>
-                    </li>--}}{{--
-                </ul>
-            </li>
-            @endpermission
-
-            @permission('view-setting')--}}
-            {{--<li class="{{ $active == 'settings' ? 'active' : '' }}">
-                <a href="{{ route('dashboard') }}"><i class="fa fa-lg fa-fw fa-gear"></i> <span class="menu-item-parent">General settings</span></a>
-            </li>--}}
-            {{--@endpermission--}}
         </ul>
     </nav>
 
