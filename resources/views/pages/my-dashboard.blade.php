@@ -65,8 +65,8 @@
                                                    width="100%">
                                                 <thead>
                                                 <tr>
-                                                    <th>Time</th>
-                                                    <th>C3</th>
+                                                    <th>Channel</th>
+                                                    <th>KPI</th>
                                                     <th>C3B</th>
                                                     <th>C3BG</th>
                                                     <th>C3BG/C3B (%)</th>
@@ -113,6 +113,7 @@
                                                     {{--<th>{{(array_sum($table['l1']) != 0) ? round(array_sum($table['l8']) * 100 / array_sum($table['l1']) , 2) : 0}}</th>--}}
                                                     {{--<td></td>--}}
                                                     {{--<td></td>--}}
+                                                    <td></td>
                                                     <td></td>
                                                     <td></td>
                                                     <td></td>
