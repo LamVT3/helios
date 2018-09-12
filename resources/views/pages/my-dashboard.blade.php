@@ -67,6 +67,7 @@
                                                 <tr>
                                                     <th>Channel</th>
                                                     <th>KPI</th>
+                                                    <th>C3</th>
                                                     <th>C3B</th>
                                                     <th>C3BG</th>
                                                     <th>C3BG/C3B (%)</th>
