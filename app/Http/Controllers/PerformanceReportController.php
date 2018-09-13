@@ -39,14 +39,40 @@ class  PerformanceReportController extends Controller
         ));
     }
 
-    public function prepare_data(){
+    public function filter(){
+        $request = request();
 
-        $c3_produce     = $this->get_c3_produce();
-        $c3_transfer    = $this->get_c3_transfer();
-        $c3_inventory   = $this->get_c3_inventory();
+        $data = $this->prepare_data();
+
+        return view('pages.table_performance_report', compact(
+            'data'
+        ));
+
+    }
+
+    private function prepare_data(){
+        $request = request();
+
+        $startDate  = strtotime("midnight")*1000;
+        $endDate    = strtotime("tomorrow")*1000;
+        if($request->date){
+            $date_place = str_replace('-', ' ', $request->date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
+
+        $c3_produce     = $this->get_c3_produce($startDate, $endDate);
+        $c3_transfer    = $this->get_c3_transfer($startDate, $endDate);
+        $c3_inventory   = $this->get_c3_inventory($startDate, $endDate);
         $cts_data       = $this->get_cts_data();
 
-        $users = User::all();
+        if($request->marketer){
+            $users   = User::whereIn('_id', explode(',', $request->marketer))->get();
+        }
+        else{
+            $users = User::all();
+        }
 
         $result = array();
         foreach ($users as $user){
@@ -76,22 +102,8 @@ class  PerformanceReportController extends Controller
         return $result;
     }
 
-    private function get_c3_produce(){
-
-        $month      = date('m'); /* thang hien tai */
-        $year       = date('Y'); /* nam hien tai*/
-        $request    = request();
-        if($request->month){
-            $month = $request->month;
-        }
-
-        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-        $start  = '01-'.$month.'-'.$year; /* ngày đàu tiên của tháng */
-        $end    = $d.'-'.$month.'-'.$year; /* ngày cuối cùng của tháng */
-
-        $startDate  = strtotime($start)*1000;
-        $endDate    = strtotime("+1 day", strtotime($end))*1000;
-
+    private function get_c3_produce($startDate, $endDate){
+        $request = request();
         if($request->marketer){
             $marketer = explode(',', $request->marketer);
 
@@ -146,21 +158,8 @@ class  PerformanceReportController extends Controller
 
     }
 
-    private function get_c3_inventory(){
-
-        $month      = date('m'); /* thang hien tai */
-        $year       = date('Y'); /* nam hien tai*/
+    private function get_c3_inventory($startDate, $endDate){
         $request    = request();
-        if($request->month){
-            $month = $request->month;
-        }
-
-        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-        $start  = '01-'.$month.'-'.$year; /* ngày đàu tiên của tháng */
-        $end    = $d.'-'.$month.'-'.$year; /* ngày cuối cùng của tháng */
-
-        $startDate  = strtotime($start)*1000;
-        $endDate    = strtotime("+1 day", strtotime($end))*1000;
 
         if($request->marketer){
             $marketer = explode(',', $request->marketer);
@@ -216,22 +215,8 @@ class  PerformanceReportController extends Controller
 
     }
 
-    private function get_c3_transfer(){
-
-        $month      = date('m'); /* thang hien tai */
-        $year       = date('Y'); /* nam hien tai*/
-        $request    = request();
-        if($request->month){
-            $month = $request->month;
-        }
-
-        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-        $start  = '01-'.$month.'-'.$year; /* ngày đàu tiên của tháng */
-        $end    = $d.'-'.$month.'-'.$year; /* ngày cuối cùng của tháng */
-
-        $startDate  = strtotime($start)*1000;
-        $endDate    = strtotime("+1 day", strtotime($end))*1000;
-
+    private function get_c3_transfer($startDate, $endDate){
+        $request = request();
         if($request->marketer){
             $marketer = explode(',', $request->marketer);
             $match = [
@@ -287,17 +272,30 @@ class  PerformanceReportController extends Controller
 
     private function get_cts_data(){
 
-        $month      = date('m'); /* thang hien tai */
-        $year       = date('Y'); /* nam hien tai*/
+//        $month      = date('Y-m-d');
+//        $year       = date('Y');
+//        $request    = request();
+//        if($request->month){
+//            $month = $request->month;
+//        }
+//
+//        $d  = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+//
+//        $startDate  = $year.'-'.$month.'-01';
+//        $endDate    = $year.'-'.$month.'-'.$d;
+
         $request    = request();
-        if($request->month){
-            $month = $request->month;
+
+        $startDate  = date('Y-m-d');
+        $endDate    = date('Y-m-d');
+        if($request->date){
+            $date_place = str_replace('-', ' ', $request->date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $start      = strtotime($date_arr[0]);
+            $startDate  = date('Y-m-d',$start);
+            $end        = strtotime($date_arr[1]);
+            $endDate    = date('Y-m-d',$end);
         }
-
-        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-
-        $startDate  = $year.'-'.$month.'-01';
-        $endDate    = $year.'-'.$month.'-'.$d;
 
         if($request->marketer){
             $marketer = explode(',', $request->marketer);

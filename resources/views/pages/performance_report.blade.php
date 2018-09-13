@@ -71,6 +71,7 @@
     </div>
     <!-- END MAIN PANEL -->
     <input type="hidden" name="filter-performance-report" value="{{route('filter-performance-report')}}">
+    <input type="hidden" name="registered_date">
 
 @endsection
 
@@ -98,16 +99,20 @@
         {
             text-align: center;
         }
-        #table_performance_report th
-        {
-            border: 1px solid #ccc!important;
-        }
         div#wrapper_performance
         {
             overflow-x:auto;
             width: 100%;
             padding: auto;
-            max-height: 500px;
+            max-height: 450px;
+        }
+        #table_performance_report{
+            border-collapse: separate;
+            border-left: none!important;
+            border-top: none!important;
+            text-align: center;
+            border-bottom: none!important;
+            margin: 0;
         }
 
     </style>
@@ -140,28 +145,6 @@
                 }
             }, reportrange_span);
 
-            function date_range_span(start, end) {
-                $('#c3range span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
-            }
-
-            date_range_span(start, end);
-
-            $('#c3range').daterangepicker({
-                startDate: start,
-                endDate: end,
-                opens: 'right',
-                ranges: {
-                    'Today': [moment(), moment()],
-                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                    "This Week":[moment().startOf("isoWeek"),moment().endOf("isoWeek")],
-                    "Last Week": [moment().subtract(1, "week").startOf("isoWeek"), moment().subtract(1, "week").endOf("isoWeek")],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-                }
-            }, date_range_span);
-
             $('input[name=marketer]').selectize({
                 delimiter: ',',
                 persist: false,
@@ -171,7 +154,7 @@
                 options: {!! $users !!}
             });
 
-            $("#table_performance_report").tableHeadFixer({'z-index': 0});
+            $("#table_performance_report").tableHeadFixer({'z-index': 1});
 
         });
 
@@ -182,49 +165,31 @@
                 $('input[name="registered_date"]').val(registered_date);
             });
 
-            {{--$("#table_inventory_report").tableHeadFixer({"left" : 2, 'foot': true, 'z-index': 1});--}}
-            {{--var d = new Date();--}}
-            {{--var current_month = d.getMonth() + 1;--}}
-            {{--if(current_month < 10){--}}
-                {{--current_month = '0' + current_month;--}}
-            {{--}--}}
-            {{--$('select[name=month]').val(current_month).trigger('change');;--}}
+            $('button#filter-performance').click(function() {
+                filter();
+            });
 
-            {{--$('input[name=channel]').selectize({--}}
-                {{--delimiter: ',',--}}
-                {{--persist: false,--}}
-                {{--valueField: 'name',--}}
-                {{--labelField: 'name',--}}
-                {{--searchField: ['name'],--}}
-                {{--options: {!! $channel !!}--}}
-            {{--});--}}
-
-            {{--//filter();--}}
-
-            {{--$('button#filter-inventory').click(function() {--}}
-                {{--filter();--}}
-            {{--});--}}
-
-            {{--function filter() {--}}
-                {{--$('div.loading').show();--}}
-                {{--var url = $('input[name=filter-inventory-report]').val();--}}
-                {{--var month = $('select[name=month]').val();--}}
-                {{--var channel = $('input[name=channel]').val();--}}
-                {{--$.ajax({--}}
-                    {{--url: url,--}}
-                    {{--type: 'GET',--}}
-                    {{--data: {--}}
-                        {{--month   : month,--}}
-                        {{--channel : channel,--}}
-                    {{--}--}}
-                {{--}).done(function (response) {--}}
-                    {{--$('#wrapper_inventory').html(response);--}}
-                    {{--$("#table_inventory_report").tableHeadFixer({"left" : 2, 'foot': true, 'z-index': 1});--}}
-                    {{--$('div.loading').hide();--}}
-                {{--}).error(function (response) {--}}
-                    {{--$('div.loading').hide();--}}
-                {{--});--}}
-            {{--}--}}
+            function filter() {
+                $('div.loading').show();
+                var url         = $('input[name=filter-performance-report]').val();
+                var date        = $('input[name="registered_date"]').val();
+                var marketer    = $('input[name=marketer]').val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: {
+                        date     : date,
+                        marketer : marketer,
+                    }
+                }).done(function (response) {
+                    $('#wrapper_performance').html('');
+                    $('#wrapper_performance').html(response);
+                    $("#table_performance_report").tableHeadFixer({'z-index': 1});
+                    $('div.loading').hide();
+                }).error(function (response) {
+                    $('div.loading').hide();
+                });
+            }
 
         })
 

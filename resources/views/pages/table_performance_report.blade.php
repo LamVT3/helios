@@ -1,22 +1,22 @@
 <table id="table_performance_report" class="table table-hover table-bordered">
     <thead>
     <tr>
-        <th width="15%">Makerter</th>
-        <th width="10%">C3 Produce</th>
-        <th width="10%">C3 Transfer</th>
-        <th width="10%">C3 Inventory</th>
-        <th>C3/L1(%)</th>
-        <th>C3/L3(%)</th>
-        <th>C3/L6(%)</th>
-        <th>C3/L8(%)</th>
-        <th>Spent(USD)</th>
-        <th>C3 Cost(USD)</th>
+        <th class="border-bold-bot-right" width="15%">Makerter</th>
+        <th class="border-bold-bot" width="10%">C3 Produce</th>
+        <th class="border-bold-bot" width="10%">C3 Transfer</th>
+        <th class="border-bold-bot" width="10%">C3 Inventory</th>
+        <th class="border-bold-bot">C3/L1(%)</th>
+        <th class="border-bold-bot">C3/L3(%)</th>
+        <th class="border-bold-bot">C3/L6(%)</th>
+        <th class="border-bold-bot">C3/L8(%)</th>
+        <th class="border-bold-bot">Spent(USD)</th>
+        <th class="border-bold-bot">C3 Cost(USD)</th>
     </tr>
     </thead>
     <tbody>
     @foreach($data as $key => $item)
     <tr>
-        <td>{{$key}}</td>
+        <td class="border-bold-right" style="font-weight: bold">{{$key}}</td>
         <td>{{$item['c3b_produce']}}</td>
         <td>{{$item['c3b_transfer']}}</td>
         <td>{{$item['c3b_inventory']}}</td>
