@@ -70,7 +70,7 @@ class  PerformanceReportController extends Controller
             @$result[$name]['c3_l6']    = $l6   ? round($c3b / $l6, 4) * 100    : 0;
             @$result[$name]['c3_l8']    = $l8   ? round($c3b / $l8, 4) * 100    : 0;
             @$result[$name]['spent']    = $spent    ? round($spent, 2)    : 0;
-            @$result[$name]['c3_cost']  = $spent    ? round($c3b / $spent, 2)    : 0;
+            @$result[$name]['c3_cost']  = $spent    ? round($spent / $c3b, 2)    : 0;
 
         }
         return $result;
