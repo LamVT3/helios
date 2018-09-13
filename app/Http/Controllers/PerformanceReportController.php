@@ -271,19 +271,6 @@ class  PerformanceReportController extends Controller
     }
 
     private function get_cts_data(){
-
-//        $month      = date('Y-m-d');
-//        $year       = date('Y');
-//        $request    = request();
-//        if($request->month){
-//            $month = $request->month;
-//        }
-//
-//        $d  = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-//
-//        $startDate  = $year.'-'.$month.'-01';
-//        $endDate    = $year.'-'.$month.'-'.$d;
-
         $request    = request();
 
         $startDate  = date('Y-m-d');
