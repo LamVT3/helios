@@ -493,9 +493,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h3 class="modal-title">Contacts has been exported successfully !!!</h3>
+                <h3 class="modal-title">Export result</h3>
             </div>
             <div class="modal-body">
+                <!-- HoaTV - Add total contact -->
+                <p style="font-size: 25px" id="total_contact">...</p>
                 <p class="text-primary" style="font-size: 25px" id="contact_success">...</p>
                 <p class="text-warning" style="font-size: 25px" id="contact_duplicate">...</p>
                 <p class="text-danger" style="font-size: 25px" id="contact_error">...</p>
