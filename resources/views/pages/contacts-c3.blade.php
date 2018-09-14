@@ -469,6 +469,11 @@
                         <input type="number" class="form-control" id="export_sale_limit" style="padding-left: 5px">
                         <em id="export_sale_limit-error" class="error_require_field" style="display: none;">This field is required.</em>
                     </div>
+                    <div class="form-group" style="padding-top: 10px">
+                        <label for="export_sale_limit" class="label require_field">Sort</label>
+                        <input type="radio" class="form-check-input" id="export_sale_sort" name="export_sale_sort" value="desc" checked><span style="padding: 5px 15px 5px 5px">Descending</span>
+                        <input type="radio" class="form-check-input" id="export_sale_sort" name="export_sale_sort" value="asc" style="padding-left: 5px"><span style="padding: 5px">Ascending</span>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">

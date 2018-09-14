@@ -1104,7 +1104,12 @@ class ContactController extends Controller
         $result['cnt_duplicate']    = 0;
         $result['cnt_error']        = 0;
 
-        $query->orderBy('submit_time', 'desc');
+        if($request->export_sale_sort){
+            $query->orderBy('submit_time', $request->export_sale_sort);
+        }else{
+            $query->orderBy('submit_time', 'desc');
+        }
+
         $limit = (int)$request->limit;
         $export_sale_date = '';
         if($request->export_sale_date){

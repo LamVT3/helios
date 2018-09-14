@@ -215,15 +215,12 @@ $(document).ready(function () {
     });
 
     $('input#mode').change(function (e) {
-        $('.loading').show();
-
         countExported();
 
         setTimeout(function(){
             // initDataTable();
             // countExported();
             initDataTable();
-            $('.loading').hide();
         },1000);
     });
 
@@ -260,15 +257,12 @@ $(document).ready(function () {
 
     $('#search-form-c3').submit(function (e) {
         e.preventDefault();
-        $('.loading').show();
-
         countExported();
 
         setTimeout(function(){
             // initDataTable();
             // countExported();
             initDataTable();
-            $('.loading').hide();
         },1000);
     });
 
@@ -456,7 +450,6 @@ $(document).ready(function () {
 });
 
 function initDataTable() {
-
     var url             = $('#search-form-c3').attr('url');
     var source_id       = $('select[name="source_id"]').val();
     var team_id         = $('select[name="team_id"]').val();
@@ -508,6 +501,7 @@ function initDataTable() {
         "<'dt-toolbar-footer'<'col-sm-6 col-xs-12'i><'col-sm-6 col-xs-12'p>>",
         "autoWidth": true,
         "preDrawCallback": function () {
+            $('.loading').show();
             // Initialize the responsive datatables helper once.
             if (!responsiveHelper_table_campaign) {
                 responsiveHelper_table_campaign = new ResponsiveDatatablesHelper($('#table_contacts'), breakpointDefinition);
@@ -540,6 +534,7 @@ function initDataTable() {
             $('p#cnt_export_to_olm').html(cnt_exported_to_olm);
 
             responsiveHelper_table_campaign.respond();
+            $('.loading').hide();
         },
         "order": [],
         "destroy": true,
@@ -1049,19 +1044,6 @@ function updateContacts(id) {
     // var channel         = $('select[name="channel_id"]').val();
     var channel         = $('input[name="channel_id"]').val();
 
-    // if(id == '' && status == ''){
-    //     countExported();
-    //     setTimeout(function(){
-    //         // if(old_status == '0'){
-    //         //     $('input[name="exported"]').val(0);
-    //         // }
-    //         $('input#update_all').prop('checked', false); // Unchecks checkbox all
-    //         initDataTable();
-    //         $('.loading').hide();
-    //         $('div#update_success').show();
-    //     }, 1000);
-    // }
-
     var data = {};
     data.id                = id;
     data.source_id         = source_id;
@@ -1086,13 +1068,11 @@ function updateContacts(id) {
             initDataTable();
             $('input#update_all').prop('checked', false); // Unchecks checkbox all
 
-            $('.loading').hide();
             $('div#update_success').show();
             $('div#export_success').hide();
         }, 1000);
     }).fail(
         function (err) {
-            $('.loading').hide();
             alert('Cannot connect to server. Please try again later.');
         });
 
@@ -1116,6 +1096,8 @@ function exportToOLM(id) {
     var olm_status      = $('select[name="olm_status"]').val();
     var limit           = $('input#export_sale_limit').val();
     var export_sale_date = $('input#export_sale_date').val();
+    var export_sale_sort = $("input[name='export_sale_sort']:checked"). val();
+
 
     var data = {};
     data.id                 = id;
@@ -1134,6 +1116,7 @@ function exportToOLM(id) {
     data.olm_status         = olm_status;
     data.limit              = limit;
     data.export_sale_date   = export_sale_date;
+    data.export_sale_sort   = export_sale_sort;
 
     $.get(url, data, function (data) {
         countExported();
@@ -1144,12 +1127,10 @@ function exportToOLM(id) {
 
             $('div#update_success').hide();
             $('div#export_success').show();
-            $('.loading').hide();
 
         }, 1000);
     }).fail(
         function (err) {
-            $('.loading').hide();
             alert('Cannot connect to server. Please try again later.');
         });
 
