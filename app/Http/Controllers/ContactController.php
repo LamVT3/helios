@@ -19,6 +19,7 @@ use App\Source;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Whoops\Util\TemplateHelper;
+use App\LogExportToSale;
 
 class ContactController extends Controller
 {
@@ -1078,18 +1079,23 @@ class ContactController extends Controller
                 $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
                 unset($data_where['current_level']);
             }
-            if(@$data_where['olm_status'] === 0){
-                $query->where('olm_status', 0);
-                unset($data_where['olm_status']);
-            }
-            if(@$data_where['olm_status'] === 1){
-                $query->where('olm_status', 0);
-                unset($data_where['olm_status']);
-            }
-            if(@$data_where['olm_status'] == -1){
-                $query->whereNotIn('olm_status', [0, 1, 2]);
-                unset($data_where['olm_status']);
-            }
+
+            // HoaTV - Only get contact not export and error
+            // if(@$data_where['olm_status'] === 0){
+            //     $query->where('olm_status', 0);
+            //     unset($data_where['olm_status']);
+            // }
+            // if(@$data_where['olm_status'] === 1){
+            //     $query->where('olm_status', 0);
+            //     unset($data_where['olm_status']);
+            // }
+            // if(@$data_where['olm_status'] == -1){
+            //     $query->whereNotIn('olm_status', [0, 1, 2]);
+            //     unset($data_where['olm_status']);
+            // }
+            $query->whereNotIn('olm_status', [0, 1]);
+            unset($data_where['olm_status']);
+
             $query->where($data_where);
         }
 
@@ -1103,6 +1109,7 @@ class ContactController extends Controller
         $result['cnt_success']      = 0;
         $result['cnt_duplicate']    = 0;
         $result['cnt_error']        = 0;
+        $result['cnt_total']        = 0;
 
         $query->orderBy('submit_time', 'desc');
         $limit = (int)$request->limit;
@@ -1123,18 +1130,17 @@ class ContactController extends Controller
                     $contact->ad_id = "unknown";
                 }
 
+                $source_type = '';
                 if($contact->source_name){
                     $source_type = $contact->source_name;
                 }else if($contact->source_id){
                     $source_id      = $contact->source_id;
                     $source         = Source::find($source_id);
                     $source_type    = $source->name;
-                }else{
-                    $source_type    = '';
                 }
 
                 $data_array =  array(
-                    "ads_link"          => $contact->ad_link,
+                    "ads_link"          => $contact->ads_link,
                     "email"             => $contact->email,
                     "fullname"          => $contact->name,
                     "phone"             => $contact->phone,
@@ -1162,8 +1168,24 @@ class ContactController extends Controller
                 } else {
                     $result['cnt_error']    += 1;
                 }
+                
+                $LogExportToSale = new LogExportToSale();
+                $LogExportToSale->ads_link =  $contact->ads_link;
+                $LogExportToSale->email =  $contact->email;
+                $LogExportToSale->name =  $contact->name;
+                $LogExportToSale->phone =  $contact->phone;
+                $LogExportToSale->channel_name =  $contact->channel_name;
+                $LogExportToSale->source_type =  $source_type;
+                $LogExportToSale->submit_time =  $contact->submit_time;
+                $LogExportToSale->submit_time =  $contact->submit_time;
+                $LogExportToSale->contact_id =  $contact->contact_id;
+                $LogExportToSale->status =  $status;
+                $LogExportToSale->response =  $response;
+                $LogExportToSale->save();
+                
                 $count++;
             }
+            $result['cnt_total'] = $count;
         });
         return $result;
     }
@@ -1171,8 +1193,7 @@ class ContactController extends Controller
     private function handleHandover($contact, $apiStatus){
 
         if (strtolower($apiStatus) == "ok"){
-            $dateFromContactID = strtotime(substr($contact->contact_id,0,8));
-            $dateFromContactID = date('Y-m-d',$dateFromContactID);
+            $dateFromContactID = date('Y-m-d', $contact->submit_time/1000);
 
             $contact->handover_date = date("Y-m-d");
             $contact->current_level = "l1";
@@ -1256,6 +1277,7 @@ class ContactController extends Controller
         $result['cnt_success']      = $cnt_success;
         $result['cnt_duplicate']    = $cnt_duplicate;
         $result['cnt_error']        = $cnt_error;
+        $result['cnt_total']        = (int)$cnt_success + (int)$cnt_duplicate + (int)$cnt_error;
 
         return $result;
     }

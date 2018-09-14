@@ -1156,6 +1156,7 @@ function exportToOLM(id) {
 }
 
 function showModalExportToOLM(data){
+        $('#total_contact').html('<h2 style="font-weight:800">Total:' + data.cnt_total +'</h2' );
         $('#contact_success').html('- ' + data.cnt_success + ' contacts success');
         $('#contact_duplicate').html('- ' + data.cnt_duplicate + ' contacts duplicated');
         $('#contact_error').html('- ' + data.cnt_error + ' contacts error');
