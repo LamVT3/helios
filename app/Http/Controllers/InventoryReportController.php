@@ -22,12 +22,7 @@ class InventoryReportController extends Controller
         $active         = 'inventory-report';
         $breadcrumbs    = "<i class=\"fa-fw fa fa-empire\"></i> Report <span>> Inventory Report </span>";
 
-//        $days   = $this->get_days_in_month();
-//        $month  = date('m');
-//        $year   = date('Y');
         $channel = Channel::all();
-
-//        $data = $this->prepare_data();
 
         return view('pages.inventory_report', compact(
             'page_title',
@@ -35,10 +30,6 @@ class InventoryReportController extends Controller
             'no_main_header',
             'active',
             'breadcrumbs',
-//            'data',
-//            'days',
-//            'month',
-//            'year',
             'channel'
         ));
     }
@@ -77,21 +68,8 @@ class InventoryReportController extends Controller
         ));
     }
 
-    private function get_c3_produce(){
-
-        $month      = date('m'); /* thang hien tai */
-        $year       = date('Y'); /* nam hien tai*/
+    private function get_c3_produce($startDate, $endDate){
         $request    = request();
-        if($request->month){
-            $month = $request->month;
-        }
-
-        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-        $start  = '01-'.$month.'-'.$year; /* ngày đàu tiên của tháng */
-        $end    = $d.'-'.$month.'-'.$year; /* ngày cuối cùng của tháng */
-
-        $startDate  = strtotime($start)*1000;
-        $endDate    = strtotime("+1 day", strtotime($end))*1000;
 
         if($request->channel){
             $channel = explode(',', $request->channel);
@@ -158,21 +136,8 @@ class InventoryReportController extends Controller
 
     }
 
-    private function get_c3_inventory(){
-
-        $month      = date('m'); /* thang hien tai */
-        $year       = date('Y'); /* nam hien tai*/
+    private function get_c3_inventory($startDate, $endDate){
         $request    = request();
-        if($request->month){
-            $month = $request->month;
-        }
-
-        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-        $start  = '01-'.$month.'-'.$year; /* ngày đàu tiên của tháng */
-        $end    = $d.'-'.$month.'-'.$year; /* ngày cuối cùng của tháng */
-
-        $startDate  = strtotime($start)*1000;
-        $endDate    = strtotime("+1 day", strtotime($end))*1000;
 
         if($request->channel){
             $channel = explode(',', $request->channel);
@@ -196,7 +161,7 @@ class InventoryReportController extends Controller
         }else{
             $match = [
                 ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
+                ['$match' => ['clevel' => ['$in' => ['c3bg']]]],
                 ['$match' => ['olm_status' => ['$nin' => [0, 1]]]],
                 [
                     '$group' => [
@@ -247,21 +212,8 @@ class InventoryReportController extends Controller
 
     }
 
-    private function get_c3_transfer(){
-
-        $month      = date('m'); /* thang hien tai */
-        $year       = date('Y'); /* nam hien tai*/
+    private function get_c3_transfer($startDate, $endDate){
         $request    = request();
-        if($request->month){
-            $month = $request->month;
-        }
-
-        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-        $start  = '01-'.$month.'-'.$year; /* ngày đàu tiên của tháng */
-        $end    = $d.'-'.$month.'-'.$year; /* ngày cuối cùng của tháng */
-
-        $startDate  = strtotime($start)*1000;
-        $endDate    = strtotime("+1 day", strtotime($end))*1000;
 
         if($request->channel) {
             $channel = explode(',', $request->channel);
@@ -333,12 +285,24 @@ class InventoryReportController extends Controller
     }
 
     public function prepare_data(){
-        $request = request();
-        $days   = $this->get_days_in_month();
+        $request    = request();
+        $month  = date('m'); /* thang hien tai */
+        $year   = date('Y'); /* nam hien tai*/
 
-        $c3_produce     = $this->get_c3_produce();
-        $c3_transfer    = $this->get_c3_transfer();
-        $c3_inventory   = $this->get_c3_inventory();
+        if($request->month){
+            $month = $request->month;
+        }
+
+        $days   = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+        $start  = '01-'.$month.'-'.$year; /* ngày đàu tiên của tháng */
+        $end    = $days.'-'.$month.'-'.$year; /* ngày cuối cùng của tháng */
+
+        $startDate  = strtotime($start)*1000;
+        $endDate    = strtotime("+1 day", strtotime($end))*1000;
+
+        $c3_produce     = $this->get_c3_produce($startDate, $endDate);
+        $c3_transfer    = $this->get_c3_transfer($startDate, $endDate);
+        $c3_inventory   = $this->get_c3_inventory($startDate, $endDate);
 
         $c3_produce_channel     = @$c3_produce['channel'];
         $c3_produce_source      = @$c3_produce['source'];
@@ -401,23 +365,24 @@ class InventoryReportController extends Controller
                 }else{
                     $label[$source_name] = [$channel_name];
                 }
-                unset($channels[$key]);
+            }else{
+                if(isset($label['Unknown'])){
+                    array_push($label['Unknown'], $channel_name);
+                }else{
+                    $label['Unknown'] = [$channel_name];
+                }
             }
         }
 
-        uasort($label, function ($item1, $item2) {
-            if ($item1 == $item2) return 0;
-            return $item2 < $item1 ? -1 : 1;
-        });
+//        uasort($label, function ($item1, $item2) {
+//            if ($item1 == $item2) return 0;
+//            return $item2 < $item1 ? -1 : 1;
+//        });
 
-
-        foreach ($channels  as $channel){
-            $channel_name   = $channel->name;
-            if(isset($label['Unknown'])){
-                array_push($label['Unknown'], $channel_name);
-            }else{
-                $label['Unknown'] = [$channel_name];
-            }
+        if(isset($label['Unknown'])){
+            $temp = $label['Unknown'];
+            unset($label['Unknown']);
+            $label['Unknown'] = $temp;
         }
 
         $result['lable'] = $label;
