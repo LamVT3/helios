@@ -52,7 +52,7 @@
                     @component('components.jarviswidget',
                     ['id' => 1, 'icon' => 'fa-table', 'title' => 'C3 Produced'])
                     <div class="widget-body">
-                        <form id="search-form-c3" class="smart-form" action="#" url="{!! route('ajax-paginate') !!}">
+                        <form id="search-form-c3" class="smart-form" action="#" url="{!! route('contacts-paginate') !!}">
                             <div class="row">
                                 <div id="reportrange" class="pull-left"
                                      style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; margin: 10px 15px">
@@ -215,16 +215,6 @@
                                             <label class="export_label" for="limit"> entries</label>
                                         </div>
                                     </section>
-                                    {{--<section class="col col-3">--}}
-                                        {{--<label class="checkbox">--}}
-                                            {{--<input type="checkbox" id="c3bg" name="c3bg"/>--}}
-                                            {{--<i></i>C3BG</label>--}}
-                                        {{--<div id="c3range" class="pull-left"--}}
-                                             {{--style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; /*margin: 10px 15px*/">--}}
-                                            {{--<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;--}}
-                                            {{--<span class="checked_date"></span> <b class="caret"></b>--}}
-                                        {{--</div>--}}
-                                    {{--</section>--}}
                                 </div>
                                 <div class="row" id="filter">
                                     <section class="col col-12 pull-right text-right">
@@ -322,39 +312,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {{--@foreach ($contacts as $item)--}}
-                                    {{--<tr id="contact-{{ $item->_id }}">--}}
-                                        {{--<td><a href="javascript:void(0)" class="name" data-id="{{ $item->_id }}">{{ $item->name }}</a>--}}
-                                        {{--</td>--}}
-                                        {{--<td>{{ $item->email }}</td>--}}
-                                        {{--<td>{{ $item->phone }}</td>--}}
-                                        {{--<td>{{ $item->age }}</td>--}}
-                                        {{--<td>{{ Date('d-m-Y H:i:s', $item->submit_time/1000) }}</td>--}}
-                                        {{--<td>{{ $item->clevel }}</td>--}}
-                                        {{--<td>{{ $item->current_level }}</td>--}}
-                                        {{--<td>{{ $item->source_name or '-100' }}</td>--}}
-                                        {{--<td>{{ $item->team_name or '-100' }}</td>--}}
-                                        {{--<td>{{ $item->marketer_name or '-100' }}</td>--}}
-                                        {{--<td>{{ $item->campaign_name or '-100' }}</td>--}}
-                                        {{--<td>{{ $item->subcampaign_name or '-100' }}</td>--}}
-                                        {{--<td>{{ $item->ad_name or '-100' }}</td>--}}
-                                        {{--<td>{{ $item->landing_page }}</td>--}}
-                                        {{--<td>{{ $item->invalid_reason }}</td>--}}
-                                        {{--<td>--}}
-                                            {{--@permission('edit-review')--}}
-                                            {{--<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="{{ $item->_id }}"><i--}}
-                                                        {{--class='fa fa-eye'></i></a>--}}
-                                            {{--<a data-toggle="modal" class='btn btn-xs btn-default'--}}
-                                                   {{--data-target="#deleteModal"--}}
-                                                   {{--data-item-id="{{ $item->_id }}"--}}
-                                                   {{--data-item-name="{{ $item->name }}"--}}
-                                                   {{--data-original-title='Delete Row'><i--}}
-                                                        {{--class='fa fa-times'></i></a>--}}
-                                            {{--@endpermission--}}
-                                        {{--</td>--}}
-                                    {{--</tr>--}}
-                                    {{--@endforeach--}}
-
                                 </tbody>
                             </table>
                         </div>
@@ -373,36 +330,6 @@
 
         @include('components.form-import-contact', ['type' => null])
         @include('components.form-import-egentic', ['type' => null])
-
-        {{--
-        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                            &times;
-                        </button>
-                        <h3 class="modal-title"> Are you sure you want to delete this campaign?</h3>
-                    </div>
-                    <div class="modal-footer">
-                        <form method="post" action="">
-                            {{ csrf_field() }}
-                            <input type="hidden" name="id" value=""/>
-                            <button type="submit" class="btn btn-danger">
-                                Delete
-                            </button>
-                            <button type="button" class="btn btn-default" data-dismiss="modal">
-                                Cancel
-                            </button>
-
-                        </form>
-                    </div>
-
-                </div><!-- /.modal-content -->
-
-            </div><!-- /.modal-dialog -->
-        </div>
-        --}}
 
     </div>
     <!-- END MAIN CONTENT -->
@@ -514,7 +441,7 @@
 <input type="hidden" name="exported" value="{{$export_to_excel}}">
 <input type="hidden" name="export_to_olm" value="{{$export_to_olm}}">
 <input type="hidden" name="exported_url" value="{{route("contacts.countExported")}}">
-<input type="hidden" name="update_status_export" value="{{route("ajax-updateContacts")}}">
+<input type="hidden" name="update_status_export" value="{{route("contacts-updateContacts")}}">
 <input type="hidden" name="export_to_olm_url" value="{{route("contacts.export-to-OLM")}}">
 <input type="hidden" name="update_all" value="0">
 <input type="hidden" name="status_update_all" value="">

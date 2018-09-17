@@ -66,6 +66,8 @@ Route::group(['prefix' => 'contacts'], function () {
     Route::get('countExported', 'ContactController@countExported')->name('contacts.countExported');
     Route::get('export-to-OLM', 'ContactController@exportToOLM')->name('contacts.export-to-OLM');
     Route::get('count-export-to-OLM', 'ContactController@countContactOLM')->name('contacts.count-export-to-OLM');
+    Route::get('/paginate', 'ContactController@getContactPaginate')->name('contacts-paginate');
+    Route::get('/updateContacts', 'ContactController@updateContacts')->name('contacts-updateContacts');
 });
 
 Route::get('/report', 'ReportController@index')->name('report');
@@ -98,9 +100,7 @@ Route::group(['prefix' => 'ajax'], function () {
     Route::get('getFilterCampaign', 'AjaxController@getFilterCampaign')->name('ajax-getFilterCampaign');
     Route::get('/getC3Chart', 'AjaxController@getC3Chart')->name('ajax-getC3Chart');
     Route::get('/getL8Chart', 'AjaxController@getL8Chart')->name('ajax-getL8Chart');
-    Route::get('/paginate', 'AjaxController@getContactPaginate')->name('ajax-paginate');
     Route::get('/getFilterMaketer', 'AjaxController@getFilterMaketer')->name('ajax-getFilterMaketer');
-    Route::get('/updateContacts', 'AjaxController@updateContacts')->name('ajax-updateContacts');
     Route::get('/setStatisticChart', 'AjaxController@prepareStatisticChart')->name('ajax-setStatisticChart');
     Route::get('getFilterSubCampaign', 'AjaxController@getFilterSubCampaign')->name('ajax-getFilterSubCampaign');
 	Route::get('/getHourC3Chart', 'AjaxController@getHourC3Chart')->name('ajax-getHourC3Chart');

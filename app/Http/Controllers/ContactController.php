@@ -73,57 +73,24 @@ class ContactController extends Controller
         ));
     }
 
-    /*public function details($id)
-    {
-        $page_css = array();
-        $no_main_header = FALSE; //set true for lock.php and login.php
-        $active = 'adsmanager';
-
-        $contact = Contact::findOrFail($id);
-
-        $page_title = "Contact: " . $contact->name . " | Helios";
-        $breadcrumbs = "<i class=\"fa-fw fa fa-child\"></i> Contacts > <span>> " . $contact->name . "</span>";
-        $landing_pages = LandingPage::where('is_active', 1)->get();
-
-        return view('pages.contacts-details', compact(
-            'page_title',
-            'page_css',
-            'no_main_header',
-            'active',
-            'breadcrumbs',
-            'contact',
-            'landing_pages'
-        ));
-    }*/
-
-    public function getC3()
-    {
-        
-        $data = $this->getC3Data();
-        return view('pages.table_contact_c3', $data);
-
-    }
-
     public function getC3Data()
     {
+        $request     = request();
+        $status      = \request('is_export');
         $columns     = $this->setColumns();
         $data_where  = $this->getWhereData();
         $data_search = $this->getSeachData();
         $order       = $this->getOrderData();
+        $startDate   = strtotime("midnight")*1000;
+        $endDate     = strtotime("tomorrow")*1000;
 
-        $request = request();
-
-        // DB::connection( 'mongodb' )->enableQueryLog();
-
-        $startDate = strtotime("midnight")*1000;
-        $endDate = strtotime("tomorrow")*1000;
         if($request->registered_date){
             $date_place = str_replace('-', ' ', $request->registered_date);
-            $date_arr = explode(' ', str_replace('/', '-', $date_place));
-            $startDate = strtotime($date_arr[0])*1000;
-            // $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
-            $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
+
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
 
@@ -134,24 +101,52 @@ class ContactController extends Controller
             $query->whereIn('channel_name',$arrChannelName);
         }
 
-        if(count($data_where) > 0){
-            if(@$data_where['clevel'] == 'c3b'){
-                $query->where('clevel', 'like', '%c3b%');
-                unset($data_where['clevel']);
-            }elseif (@$data_where['clevel'] == 'c3b_only'){
-                $query->where('clevel', 'c3b');
-                unset($data_where['clevel']);
-            }
-            if(@$data_where['current_level'] == 'l0'){
-                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
-                unset($data_where['current_level']);
-            }
-            $query->where($data_where);
+        if(@$data_where['clevel'] == 'c3b'){
+            $query->where('clevel', 'like', '%c3b%');
+            unset($data_where['clevel']);
+        }elseif (@$data_where['clevel'] == 'c3b_only'){
+            $query->where('clevel', 'c3b');
+            unset($data_where['clevel']);
         }
-//        if($request->limit)
-//        {
-//            $query->limit((int)$request->limit);
-//        }
+        if(@$data_where['current_level'] == 'l0'){
+            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+            unset($data_where['current_level']);
+        }
+        if(@$data_where['olm_status'] === 0){
+            $query->whereIn('olm_status', [0, '0']);
+            unset($data_where['olm_status']);
+        }else if(@$data_where['olm_status'] === 1){
+            $query->whereIn('olm_status', [1, '1']);
+            unset($data_where['olm_status']);
+        }else if(@$data_where['olm_status'] == -1){
+            $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
+            unset($data_where['olm_status']);
+        }
+        $query->where($data_where);
+
+        if($status == '1'){
+            $query->where('is_export', 1);
+        }
+        if($status == '0'){
+            $query->where('is_export', '<>', 1);
+        }
+
+        if($request->c3bg_checkbox == "true") {
+            if($request->checked_date){
+                $date_place = str_replace('-', ' ', $request->checked_date);
+                $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+                $startDate  = strtotime($date_arr[0])*1000;
+                $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+            }
+            $queryC3bg = Contact::where('submit_time', '>=', $startDate);
+            $queryC3bg->where('submit_time', '<', $endDate);
+            $checkedContacts = $queryC3bg->get();
+            $phoneArr = array();
+            foreach($checkedContacts as $contact) {
+                array_push($phoneArr, $contact['phone']);
+            }
+            $query->whereNotIn('phone', $phoneArr);
+        }
 
         if($data_search != ''){
             foreach ($columns as $key => $value){
@@ -163,11 +158,13 @@ class ContactController extends Controller
         } else {
             $query->orderBy('submit_time', 'desc');
         }
-        $contacts = $query->get();
+        $total    = $query->count();
+        $limit    = intval($request->length);
+        $offset   = intval($request->start);
+        $contacts = $query->skip($offset)->take($limit)->get();
 
-        // DB::connection('mongodb')->getQueryLog();
-        $data = $data_where;
-        $data['contacts'] = $contacts;
+        $data['contacts']   = $this->formatRecord($contacts);
+        $data['total']      = $total;
 
         return $data;
     }
@@ -189,8 +186,6 @@ class ContactController extends Controller
         $data_search = $this->getSeachData();
         $request = request();
 
-        // DB::connection( 'mongodb' )->enableQueryLog();
-
         $startDate = strtotime("midnight")*1000;
         $endDate = strtotime("tomorrow")*1000;
         if($request->registered_date){
@@ -211,40 +206,38 @@ class ContactController extends Controller
             $query->whereIn('channel_name',$arrChannelName);
         }
 
-        if(count($data_where) > 0){
-            if(@$data_where['clevel'] == 'c3bg'){
-                $query->where('clevel','c3bg');
-                unset($data_where['clevel']);
-            }else if (@$data_where['clevel'] == 'c3b' || @$data_where['clevel'] == 'c3a' || @$data_where['clevel'] == 'c3b_only'){
-                $query->where('clevel','c3bg');
-                unset($data_where['clevel']);
-            }
-            if(@$data_where['current_level'] == 'l0'){
-                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
-                unset($data_where['current_level']);
-            }
-            if(@$data_where['olm_status'] === 0){
-                $query->where('olm_status', 0);
-                unset($data_where['olm_status']);
-            }
-            if(@$data_where['olm_status'] === 1){
-                $query->where('olm_status', 0);
-                unset($data_where['olm_status']);
-            }
-            if(@$data_where['olm_status'] == -1){
-                $query->whereNotIn('olm_status', [0, 1, 2]);
-                unset($data_where['olm_status']);
-            }
-            $query->where($data_where);
+        if(@$data_where['olm_status'] === 0){
+            $query->whereIn('olm_status', [0, '0']);
+            unset($data_where['olm_status']);
+        }else if(@$data_where['olm_status'] === 1){
+            $query->whereIn('olm_status', [1, '1']);
+            unset($data_where['olm_status']);
+        }else if(@$data_where['olm_status'] == -1){
+            return 0;
+            unset($data_where['olm_status']);
+        }else{
+            $query->whereIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
+            unset($data_where['olm_status']);
         }
+
+        if(@$data_where['clevel'] == 'c3bg'){
+            $query->where('clevel','c3bg');
+            unset($data_where['clevel']);
+        }else if (@$data_where['clevel'] == 'c3b' || @$data_where['clevel'] == 'c3a' || @$data_where['clevel'] == 'c3b_only'){
+            $query->where('clevel','c3bg');
+            unset($data_where['clevel']);
+        }
+        if(@$data_where['current_level'] == 'l0'){
+            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+            unset($data_where['current_level']);
+        }
+        $query->where($data_where);
 
         if($data_search != ''){
             foreach ($columns as $key => $value){
                 $query->orWhere($value, 'like', "%{$data_search}%");
             }
         }
-
-        $query->whereIn('olm_status', [0, 1, 2, 3]);
 
         $count = $query->count();
 
@@ -257,8 +250,6 @@ class ContactController extends Controller
         $data_where  = $this->getWhereData();
         $data_search = $this->getSeachData();
         $request = request();
-
-        // DB::connection( 'mongodb' )->enableQueryLog();
 
         $startDate = strtotime("midnight")*1000;
         $endDate = strtotime("tomorrow")*1000;
@@ -281,32 +272,28 @@ class ContactController extends Controller
             $query->whereIn('channel_name',$arrChannelName);
         }
 
-        if(count($data_where) > 0){
-            if(@$data_where['clevel'] == 'c3b'){
-                $query->where('clevel', 'like', '%c3b%');
-                unset($data_where['clevel']);
-            }elseif (@$data_where['clevel'] == 'c3b_only'){
-                $query->where('clevel', 'c3b');
-                unset($data_where['clevel']);
-            }
-            if(@$data_where['current_level'] == 'l0'){
-                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
-                unset($data_where['current_level']);
-            }
-            if(@$data_where['olm_status'] === 0){
-                $query->where('olm_status', 0);
-                unset($data_where['olm_status']);
-            }
-            if(@$data_where['olm_status'] === 1){
-                $query->where('olm_status', 0);
-                unset($data_where['olm_status']);
-            }
-            if(@$data_where['olm_status'] == -1){
-                $query->whereNotIn('olm_status', [0, 1, 2]);
-                unset($data_where['olm_status']);
-            }
-            $query->where($data_where);
+        if(@$data_where['clevel'] == 'c3b'){
+            $query->where('clevel', 'like', '%c3b%');
+            unset($data_where['clevel']);
+        }elseif (@$data_where['clevel'] == 'c3b_only'){
+            $query->where('clevel', 'c3b');
+            unset($data_where['clevel']);
         }
+        if(@$data_where['current_level'] == 'l0'){
+            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+            unset($data_where['current_level']);
+        }
+        if(@$data_where['olm_status'] === 0){
+            $query->whereIn('olm_status', [0, '0']);
+            unset($data_where['olm_status']);
+        }else if(@$data_where['olm_status'] === 1){
+            $query->whereIn('olm_status', [1, '1']);
+            unset($data_where['olm_status']);
+        }else if(@$data_where['olm_status'] == -1){
+            $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
+            unset($data_where['olm_status']);
+        }
+        $query->where($data_where);
 
         if($data_search != ''){
             foreach ($columns as $key => $value){
@@ -319,80 +306,8 @@ class ContactController extends Controller
         return $count;
     }
 
-    public function export_old()
-    {
-//        $contacts = $data['contacts'];
-//        if (count($contacts) >= 1) {
-        $date = \request('registered_date');
-        $date = str_replace('/','',$date);
-        $file_name = 'Contact_C3_' . $date;
-        Excel::create($file_name, function ($excel) {
-            header('Content-Encoding: UTF-8');
-            header('Content-type: text/csv; charset=UTF-8');
-            $excel->sheet('contacts_c3', function ($sheet) {
-                $data = $this->getC3Data();
-                $count = 1;
-                $contacts = $data['contacts'];
-                $datas = array();
-                $limit = 0;
-                $updateCnt = 0;
-                if(\request('limit')){
-                    $limit = \request('limit');
-                }
-                foreach ($contacts as $item) {
-                    $updateCnt++;
-                    if($item->is_export){
-                        continue;
-                    }
-                    $datas[] = array(
-                        $count++,
-//                        $this->checkSpecialSymbols($item->name),
-                        $item->name,
-                        $item->email,
-                        $item->phone,
-                        Date('Y-m-d H:i:s', (int)$item->submit_time/1000),
-                        $item->landing_page,
-                        $item->channel_name,
-                        $item->contact_id,
-                        $item->age,
-                        $item->current_level,
-                        $item->marketer_name,
-                        $item->campaign_name,
-                        $item->subcampaign_name,
-                        $item->ad_name,
-                        $item->ads_link,
-                        $item->clevel
-                    );
-                    if(\request('limit') && $count > $limit){
-                        break;
-                    }
-                }
-                $sheet->fromArray($datas, NULL, 'A1', FALSE, FALSE);
-                $headings = \config('constants.TEMPLATE_EXPORT');
-                $sheet->prependRow(1, $headings);
-                $sheet->cells('A1:P1', function ($cells) {
-                    $cells->setBackground('#191919');
-                    $cells->setFontColor('#DBAC69');
-                    $cells->setFontSize(12);
-                    $cells->setFontWeight('bold');
-                });
-                $is_update = \request('mark_exported');
-                if($is_update){
-                    $this->updateStatusExport($updateCnt);
-                }
-            });
-
-        })->export('xlsx');
-
-//        } else {
-//            return back();
-//        }
-    }
-
     public function export()
     {
-//        $contacts = $data['contacts'];
-//        if (count($contacts) >= 1) {
         $date = \request('registered_date');
         $date = str_replace('/','',$date);
         $file_name = 'Contact_C3_' . $date;
@@ -407,8 +322,6 @@ class ContactController extends Controller
                 $data_where  = $this->getWhereData();
                 $data_search = $this->getSeachData();
                 $order       = $this->getOrderData();
-
-                // DB::connection( 'mongodb' )->enableQueryLog();
 
                 $startDate = strtotime("midnight")*1000;
                 $endDate = strtotime("tomorrow")*1000;
@@ -429,32 +342,29 @@ class ContactController extends Controller
                     $query->whereIn('channel_name',$arrChannelName);
                 }
 
-                if(count($data_where) > 0){
-                    if(@$data_where['clevel'] == 'c3b'){
-                        $query->where('clevel', 'like', '%c3b%');
-                        unset($data_where['clevel']);
-                    }elseif (@$data_where['clevel'] == 'c3b_only'){
-                        $query->where('clevel', 'c3b');
-                        unset($data_where['clevel']);
-                    }
-                    if(@$data_where['current_level'] == 'l0'){
-                        $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
-                        unset($data_where['current_level']);
-                    }
-                    if(@$data_where['olm_status'] === 0){
-                        $query->where('olm_status', 0);
-                        unset($data_where['olm_status']);
-                    }
-                    if(@$data_where['olm_status'] === 1){
-                        $query->where('olm_status', 0);
-                        unset($data_where['olm_status']);
-                    }
-                    if(@$data_where['olm_status'] == -1){
-                        $query->whereNotIn('olm_status', [0, 1, 2]);
-                        unset($data_where['olm_status']);
-                    }
-                    $query->where($data_where);
+                if(@$data_where['clevel'] == 'c3b'){
+                    $query->where('clevel', 'like', '%c3b%');
+                    unset($data_where['clevel']);
+                }elseif (@$data_where['clevel'] == 'c3b_only'){
+                    $query->where('clevel', 'c3b');
+                    unset($data_where['clevel']);
                 }
+                if(@$data_where['current_level'] == 'l0'){
+                    $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+                    unset($data_where['current_level']);
+                }
+                if(@$data_where['olm_status'] === 0){
+                    $query->whereIn('olm_status', [0, '0']);
+                    unset($data_where['olm_status']);
+                }else if(@$data_where['olm_status'] === 1){
+                    $query->whereIn('olm_status', [1, '1']);
+                    unset($data_where['olm_status']);
+                }else if(@$data_where['olm_status'] == -1){
+                    $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
+                    unset($data_where['olm_status']);
+                }
+                $query->where($data_where);
+
                 if($data_search != ''){
                     foreach ($columns as $key => $value){
                         $query->orWhere($value, 'like', "%{$data_search}%");
@@ -466,28 +376,30 @@ class ContactController extends Controller
                     $query->whereIn('_id', $id);
                 }
 
+                $query->where('is_export', '<>', 1);
+
                 if($order){
                     $query->orderBy($columns[$order['column']], $order['type']);
                 } else {
                     $query->orderBy('submit_time', 'desc');
                 }
 
-                $count = 0;
-                $limit = 0;
+                $limit = 5000;
                 $updateCnt = 0;
-                if(\request('limit')){
+                if(!$request->contact_id && $request->limit){
                     $limit = \request('limit');
                 }
-                $query->chunk( 1000, function ( $contacts ) use ( &$updateCnt, &$limit, &$count, &$sheet ) {
+
+//                $query->limit($limit);
+                $query->chunk( 5000, function ( $contacts ) use ( &$updateCnt, &$limit, &$sheet ) {
+                    $count = 1;
                     foreach ( $contacts as $item ) {
-                        if($item->is_export){
-                            continue;
+                        if($count > $limit){
+                            break;
                         }
-                        $updateCnt++;
-                        $count++;
+
                         $row = array(
                             $count,
-//                        $this->checkSpecialSymbols($item->name),
                             $item->name,
                             $item->email,
                             $item->phone,
@@ -504,12 +416,12 @@ class ContactController extends Controller
                             $item->ads_link,
                             $item->clevel
                         );
-                        if($limit > 0 && $count > $limit){
-                            break;
-                        }
                         $sheet->appendRow($row);
+                        $count++;
+                        $updateCnt++;
+
                     }
-//                    $sheet->fromArray($datas, NULL, 'A1', FALSE, FALSE);
+                    return false;
                 });
 
                 $headings = \config('constants.TEMPLATE_EXPORT');
@@ -570,7 +482,7 @@ class ContactController extends Controller
         //     $data_where['channel_name']     = $request->channel;
         // }
         if (isset($request->olm_status)) {
-            $data_where['olm_status']       = $request->olm_status;
+            $data_where['olm_status']       = (int)$request->olm_status;
         }
 
         return $data_where;
@@ -602,32 +514,29 @@ class ContactController extends Controller
             $query->whereIn('channel_name',$arrChannelName);
         }
 
-        if(count($data_where) > 0){
-            if(@$data_where['clevel'] == 'c3b'){
-                $query->where('clevel', 'like', '%c3b%');
-                unset($data_where['clevel']);
-            }elseif (@$data_where['clevel'] == 'c3b_only'){
-                $query->where('clevel', 'c3b');
-                unset($data_where['clevel']);
-            }
-            if(@$data_where['current_level'] == 'l0'){
-                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
-                unset($data_where['current_level']);
-            }
-            if(@$data_where['olm_status'] === 0){
-                $query->where('olm_status', 0);
-                unset($data_where['olm_status']);
-            }
-            if(@$data_where['olm_status'] === 1){
-                $query->where('olm_status', 0);
-                unset($data_where['olm_status']);
-            }
-            if(@$data_where['olm_status'] == -1){
-                $query->whereNotIn('olm_status', [0, 1, 2]);
-                unset($data_where['olm_status']);
-            }
-            $query->where($data_where);
+        if(@$data_where['clevel'] == 'c3b'){
+            $query->where('clevel', 'like', '%c3b%');
+            unset($data_where['clevel']);
+        }elseif (@$data_where['clevel'] == 'c3b_only'){
+            $query->where('clevel', 'c3b');
+            unset($data_where['clevel']);
         }
+        if(@$data_where['current_level'] == 'l0'){
+            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+            unset($data_where['current_level']);
+        }
+        if(@$data_where['olm_status'] === 0){
+            $query->whereIn('olm_status', [0, '0']);
+            unset($data_where['olm_status']);
+        }else if(@$data_where['olm_status'] === 1){
+            $query->whereIn('olm_status', [1, '1']);
+            unset($data_where['olm_status']);
+        }else if(@$data_where['olm_status'] == -1){
+            $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
+            unset($data_where['olm_status']);
+        }
+        $query->where('is_export', '<>', 1);
+        $query->where($data_where);
 
         if($request->contact_id){
             $id = explode(',', $request->contact_id);
@@ -982,20 +891,6 @@ class ContactController extends Controller
         return array('c3bg', '');
     }
 
-    private function getSeachData(){
-        $request        = request();
-
-        if($request['search']['value']){
-            return $request['search']['value'];
-        }
-
-        if($request->search_text){
-            return $request->search_text;
-        }
-
-        return '';
-    }
-
     private function getOrderData(){
         $request    = request();
         $order      = array();
@@ -1006,39 +901,6 @@ class ContactController extends Controller
         }
 
         return $order;
-    }
-
-    private function setColumns(){
-        //define index of column
-        $columns = array(
-            0   =>'name',
-            1   =>'email',
-            2   =>'phone',
-            3   =>'age',
-            4   =>'submit_time',
-            5   =>'clevel',
-            6   =>'current_level',
-            7   =>'source_name',
-            8   =>'team_name',
-            9   =>'marketer_name',
-            10  =>'campaign_name',
-            11  =>'subcampaign_name',
-            12  =>'ad_name',
-            13  =>'landing_page',
-            14  =>'channel_name',
-            15  =>'olm_status'
-        );
-
-        return $columns;
-    }
-
-    private function checkSpecialSymbols($str){
-        $pattern        = get_html_translation_table( HTML_ENTITIES );
-        $pattern['💝']   = '💝';
-
-        $newStr = str_replace($pattern, "", $str);
-
-        return $newStr;
     }
 
     public function exportToOLM(){
@@ -1067,37 +929,35 @@ class ContactController extends Controller
             $query->whereIn('channel_name',$arrChannelName);
         }
 
-        if(count($data_where) > 0){
-            if(@$data_where['clevel'] == 'c3bg'){
-                $query->where('clevel','c3bg');
-                unset($data_where['clevel']);
-            }else if (@$data_where['clevel'] == 'c3b' || @$data_where['clevel'] == 'c3a' || @$data_where['clevel'] == 'c3b_only'){
-                $query->where('clevel','c3bg');
-                unset($data_where['clevel']);
-            }
-            if(@$data_where['current_level'] == 'l0'){
-                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
-                unset($data_where['current_level']);
-            }
-
-            // HoaTV - Only get contact not export and error
-            // if(@$data_where['olm_status'] === 0){
-            //     $query->where('olm_status', 0);
-            //     unset($data_where['olm_status']);
-            // }
-            // if(@$data_where['olm_status'] === 1){
-            //     $query->where('olm_status', 0);
-            //     unset($data_where['olm_status']);
-            // }
-            // if(@$data_where['olm_status'] == -1){
-            //     $query->whereNotIn('olm_status', [0, 1, 2]);
-            //     unset($data_where['olm_status']);
-            // }
-            $query->whereNotIn('olm_status', [0, 1]);
-            unset($data_where['olm_status']);
-
-            $query->where($data_where);
+        if(@$data_where['clevel'] == 'c3bg'){
+            $query->where('clevel','c3bg');
+            unset($data_where['clevel']);
+        }else if (@$data_where['clevel'] == 'c3b' || @$data_where['clevel'] == 'c3a' || @$data_where['clevel'] == 'c3b_only'){
+            $query->where('clevel','c3bg');
+            unset($data_where['clevel']);
         }
+        if(@$data_where['current_level'] == 'l0'){
+            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+            unset($data_where['current_level']);
+        }
+
+        // HoaTV - Only get contact not export and error
+        // if(@$data_where['olm_status'] === 0){
+        //     $query->where('olm_status', 0);
+        //     unset($data_where['olm_status']);
+        // }
+        // if(@$data_where['olm_status'] === 1){
+        //     $query->where('olm_status', 0);
+        //     unset($data_where['olm_status']);
+        // }
+        // if(@$data_where['olm_status'] == -1){
+        //     $query->whereNotIn('olm_status', [0, 1, 2]);
+        //     unset($data_where['olm_status']);
+        // }
+        $query->whereNotIn('olm_status', [0, 1, '0', '1']);
+        unset($data_where['olm_status']);
+
+        $query->where($data_where);
 
         if($request->id){
             if($request->id != 'All' && count($request->id) > 0){
@@ -1226,7 +1086,6 @@ class ContactController extends Controller
         return $contact;
     }
 
-
     private function callAPI($method, $url, $data){
         $curl = curl_init();
         switch ($method){
@@ -1259,116 +1118,229 @@ class ContactController extends Controller
         return $result;
     }
 
-    public function countContactOLM(){
-        $columns     = $this->setColumns();
-        $data_where  = $this->getWhereData();
-        $data_search = $this->getSeachData();
-        $request     = request();
+    public function getContactPaginate(){
+        $params = \request();
+        $data   = $this->getC3Data();
 
-        $startDate  = strtotime("midnight")*1000;
-        $endDate    = strtotime("tomorrow")*1000;
+        $json_data = array(
+            "draw"            => intval( $params['draw'] ),
+            "recordsTotal"    => intval( $data['total'] ),
+            "recordsFiltered" => intval( $data['total']),
+            "data"            => $data['contacts'],
+        );
+
+        echo json_encode($json_data);  // send data as json format
+    }
+
+    private function getSeachData(){
+        $request        = request();
+
+        if($request['search']['value']){
+            return $request['search']['value'];
+        }
+
+        return '';
+    }
+
+    private function setColumns(){
+        //define index of column
+        $columns = array(
+            0   =>'name',
+            1   =>'email',
+            2   =>'phone',
+            3   =>'age',
+            4   =>'submit_time',
+            5   =>'clevel',
+            6   =>'current_level',
+            7   =>'source_name',
+            8   =>'team_name',
+            9   =>'marketer_name',
+            10  =>'campaign_name',
+            11  =>'subcampaign_name',
+            12  =>'ad_name',
+            13  =>'landing_page',
+            14  =>'channel_name',
+            15  =>'olm_status'
+        );
+
+        return $columns;
+    }
+
+    private function formatRecord($contacts){
+
+        foreach ($contacts as $contact){
+            $arr[0] = $contact['_id'];
+            $arr[1] = $contact['name'];
+            $duplicatedNumbers = Contact::where('_id', '<>', $contact['_id'])
+                ->where('phone', $contact['phone'])->count();
+            $arr[2] = $duplicatedNumbers;
+
+            $contact['name']                = $contact['name'] ? $arr : "-";
+            $contact['email']               = $contact['email'] ? $contact['email'] : "-";
+            $contact['phone']               = $contact['phone'] ? $contact['phone'] : "-";
+            $contact['age']                 = $contact['age'] ? $contact['age'] : "-";
+            $contact['submit_time']         = $contact['submit_time'] ?
+                date('d-m-Y H:i:s',$contact['submit_time']/1000) : "-";
+            $contact['clevel']              = $contact['clevel']? $contact['clevel'] : "-";
+            $contact['current_level']       = $contact['current_level'] ? $contact['current_level'] : "-";
+            $contact['source_name']         = $contact['source_name'] ? $contact['source_name'] : "-";
+            $contact['team_name']           = $contact['team_name'] ? $contact['team_name'] : "-";
+            $contact['marketer_name']       = $contact['marketer_name'] ? $contact['marketer_name'] : "-";
+            $contact['campaign_name']       = $contact['campaign_name'] ? $contact['campaign_name'] : "-";
+            $contact['subcampaign_name']    = $contact['subcampaign_name'] ? $contact['subcampaign_name'] : "-";
+            $contact['ad_name']             = $contact['ad_name'] ? $contact['ad_name'] : "-";
+            $contact['landing_page']        = $contact['landing_page'] ? $contact['landing_page'] : "-";
+            $contact['channel_name']        = $contact['channel_name'] ? $contact['channel_name'] : "-";
+        }
+
+        return $contacts;
+    }
+
+    public function updateContacts(){
+
+        $data_where = $this->getWhereDataUpdateExport();
+
+        $request = request();
+
+        $startDate = strtotime("midnight")*1000;
+        $endDate = strtotime("tomorrow")*1000;
         if($request->registered_date){
             $date_place = str_replace('-', ' ', $request->registered_date);
-            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
-            $startDate  = strtotime($date_arr[0])*1000;
+            $date_arr = explode(' ', str_replace('/', '-', $date_place));
+            $startDate = strtotime($date_arr[0])*1000;
             // $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
-            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+            $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
-
-        $cnt_success    =  $this->countContactSucess($columns, $data_where, $data_search, $startDate, $endDate);
-        $cnt_duplicate  =  $this->countContactDuplicate($columns, $data_where, $data_search, $startDate, $endDate);
-        $cnt_error      =  $this->countContactError($columns, $data_where, $data_search, $startDate, $endDate);
-
-        $result['cnt_success']      = $cnt_success;
-        $result['cnt_duplicate']    = $cnt_duplicate;
-        $result['cnt_error']        = $cnt_error;
-        $result['cnt_total']        = (int)$cnt_success + (int)$cnt_duplicate + (int)$cnt_error;
-
-        return $result;
-    }
-
-    private function countContactSucess($columns, $data_where, $data_search, $startDate, $endDate){
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
 
-        if(count($data_where) > 0){
-            if(@$data_where['clevel'] == 'c3b'){
-                $query->where('clevel', 'like', '%c3b%');
-                unset($data_where['clevel']);
-            }elseif (@$data_where['clevel'] == 'c3b_only'){
-                $query->where('clevel', 'c3b');
-                unset($data_where['clevel']);
-            }
-            if(@$data_where['current_level'] == 'l0'){
-                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
-                unset($data_where['current_level']);
-            }
-            $query->where($data_where);
+        // HoaTV fix multiple select channel
+        $arrChannelName = array();
+        if ($request->channel) {
+            $arrChannelName    = explode(',',$request->channel);
+            $query->whereIn('channel_name',$arrChannelName);
         }
 
-        if($data_search != ''){
-            foreach ($columns as $key => $value){
-                $query->orWhere($value, 'like', "%{$data_search}%");
+        if(@$data_where['clevel'] == 'c3b'){
+            $query->where('clevel', 'like', '%c3b%');
+            unset($data_where['clevel']);
+        }
+        if(@$data_where['current_level'] == 'l0'){
+            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+            unset($data_where['current_level']);
+        }
+        $query->where($data_where);
+
+        $id = [];
+
+        if($request->id){
+            $id = $request->id;
+            $query->whereIn('_id', array_keys($request->id));
+        }
+        // only current page
+        $page_size  = Config::getByKey('PAGE_SIZE');
+        $query->limit((int)$page_size);
+
+        $query->orderBy('submit_time', 'desc');
+
+        $contacts = $query->get();
+        foreach ($contacts as $contact)
+        {
+            if(isset($id[$contact->_id])){
+                if(isset($id[$contact->_id]['status'])){
+                    $contact->is_export     = (int)$id[$contact->_id]['status'];
+                }
+                if(isset($id[$contact->_id]['olm_status'])){
+                    $contact->olm_status    = (int)$id[$contact->_id]['olm_status'];
+                }
+                if(isset($id[$contact->_id]['channel_name'])){
+                    $contact->channel_name  = $id[$contact->_id]['channel_name'];
+                }
+                if(isset($id[$contact->_id]['channel_id'])){
+                    $contact->channel_id    = $id[$contact->_id]['channel_id'];
+                }
+
+                // HoaTV for change level from c3bg to c3b
+                if(isset($id[$contact->_id]['invalid_reason']) && $contact->clevel == "c3bg"){
+                    $contact->invalid_reason    = $id[$contact->_id]['invalid_reason'];
+                    $contact->invalid_reason_mode    = $id[$contact->_id]['invalid_reason_mode'];
+                    $contact->is_update_manual    = true;
+                    $contact->clevel = "c3b";
+                    // handle count ad_result only from from c3bg down to c3b
+                    $this->handleCountAdResult(true,$contact->ad_id, $contact->submit_time);
+                }else if(!isset($id[$contact->_id]['invalid_reason']) && $contact->clevel == "c3b" && $contact->is_update_manual){
+                    // only contact is  already update is allow to update
+                    $contact->invalid_reason    = "";
+                    $contact->invalid_reason_mode    = "";
+                    $contact->is_update_manual    = true;
+                    $contact->clevel = "c3bg";
+                    // handle count ad_result only from from c3b down to c3bg
+                    $this->handleCountAdResult(false, $contact->ad_id, $contact->submit_time);
+                }
+
+                $contact->save();
+            }else{
+                if($request->new_status != '')
+                {
+                    $contact->is_export = (int)$request->new_status;
+                    $contact->save();
+                }
             }
         }
-
-        return $query->where('olm_status', 0)->count();
     }
 
-    private function countContactDuplicate($columns, $data_where, $data_search, $startDate, $endDate){
-        $query = Contact::where('submit_time', '>=', $startDate);
-        $query->where('submit_time', '<', $endDate);
-
-        if(count($data_where) > 0){
-            if(@$data_where['clevel'] == 'c3b'){
-                $query->where('clevel', 'like', '%c3b%');
-                unset($data_where['clevel']);
-            }elseif (@$data_where['clevel'] == 'c3b_only'){
-                $query->where('clevel', 'c3b');
-                unset($data_where['clevel']);
-            }
-            if(@$data_where['current_level'] == 'l0'){
-                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
-                unset($data_where['current_level']);
-            }
-            $query->where($data_where);
+    private function getWhereDataUpdateExport(){
+        $request    = request();
+        $data_where = array();
+        if ($request->source_id) {
+            $data_where['source_id']        = $request->source_id;
+        }
+        if ($request->team_id) {
+            $data_where['team_id']          = $request->team_id;
+        }
+        if ($request->marketer_id) {
+            $data_where['marketer_id']      = $request->marketer_id;
+        }
+        if ($request->campaign_id) {
+            $data_where['campaign_id']      = $request->campaign_id;
+        }
+        if ($request->subcampaign_id) {
+            $data_where['subcampaign_id']   = $request->subcampaign_id;
+        }
+        if ($request->current_level) {
+            $data_where['current_level']    = $request->current_level;
+        }
+        if ($request->clevel) {
+            $data_where['clevel']           = $request->clevel;
+        }
+        if ($request->old_status) {
+            $data_where['is_export']        = (int)$request->old_status;
+        }
+        if ($request->landing_page) {
+            $data_where['landing_page']     = $request->landing_page;
+        }
+        // if ($request->channel) {
+        //     $data_where['channel_name']     = $request->channel;
+        // }
+        if (isset($request->olm_status)) {
+            $data_where['olm_status']       = $request->olm_status;
         }
 
-        if($data_search != ''){
-            foreach ($columns as $key => $value){
-                $query->orWhere($value, 'like', "%{$data_search}%");
-            }
-        }
-
-        return $query->where('olm_status', 1)->count();
+        return $data_where;
     }
 
-    private function countContactError($columns, $data_where, $data_search, $startDate, $endDate){
-        $query = Contact::where('submit_time', '>=', $startDate);
-        $query->where('submit_time', '<', $endDate);
 
-        if(count($data_where) > 0){
-            if(@$data_where['clevel'] == 'c3b'){
-                $query->where('clevel', 'like', '%c3b%');
-                unset($data_where['clevel']);
-            }elseif (@$data_where['clevel'] == 'c3b_only'){
-                $query->where('clevel', 'c3b');
-                unset($data_where['clevel']);
-            }
-            if(@$data_where['current_level'] == 'l0'){
-                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
-                unset($data_where['current_level']);
-            }
-            $query->where($data_where);
+    // HoaTV handle ad_result when changes level from c3bg down to c3b and vice versa
+    private function handleCountAdResult($isDown, $adID, $submitTime){
+        $adResult = AdResult::where('ad_id', $adID)->where('date',date('Y-m-d',$submitTime/1000))->first();
+        if($isDown){
+            $adResult->c3bg = (int)$adResult->c3bg - 1;
+            $adResult->c3b = (int)$adResult->c3b + 1;
+        }else{
+            $adResult->c3bg = (int)$adResult->c3bg + 1;
+            $adResult->c3b = (int)$adResult->c3b - 1;
         }
-
-        if($data_search != ''){
-            foreach ($columns as $key => $value){
-                $query->orWhere($value, 'like', "%{$data_search}%");
-            }
-        }
-
-        return $query->whereIn('olm_status', [2, 3])->count();
+        $adResult->save();
     }
 
 }

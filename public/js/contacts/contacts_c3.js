@@ -560,7 +560,7 @@ function initDataTable() {
                     d.landing_page      = landing_page,
                     d.channel           = channel,
                     d.search_text       = search,
-                    d.olm_status    = olm_status
+                    d.olm_status        = olm_status ? parseInt(olm_status) : '';
             }
         },
         "columns": [
@@ -741,7 +741,7 @@ function countExported() {
     data.is_export          = is_export;
     data.search_text        = search;
     data.channel            = channel;
-    data.olm_status         = olm_status;
+    data.olm_status         = olm_status ? parseInt(olm_status) : '';
 
     $.get(url, data, function (data) {
         $('input[name="exported"]').val(data.to_excel);
@@ -1113,7 +1113,7 @@ function exportToOLM(id) {
     data.new_status         = status;
     data.landing_page       = landing_page;
     data.channel            = channel;
-    data.olm_status         = olm_status;
+    data.olm_status         = olm_status ? parseInt(olm_status) : '';
     data.limit              = limit;
     data.export_sale_date   = export_sale_date;
     data.export_sale_sort   = export_sale_sort;
