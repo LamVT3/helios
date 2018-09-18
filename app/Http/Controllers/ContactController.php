@@ -308,6 +308,8 @@ class ContactController extends Controller
 
     public function export()
     {
+        ini_set('memory_limit', '512M');
+
         $date = \request('registered_date');
         $date = str_replace('/','',$date);
         $file_name = 'Contact_C3_' . $date;
