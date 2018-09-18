@@ -313,8 +313,8 @@ class ContactController extends Controller
         $file_name = 'Contact_C3_' . $date;
 
         Excel::create($file_name, function ($excel) {
-            header('Content-Encoding: UTF-8');
-            header('Content-type: text/csv; charset=UTF-8');
+//            header('Content-Encoding: UTF-8');
+//            header('Content-type: application/ms-excel; charset=UTF-8');
             $excel->sheet('contacts_c3', function ($sheet) {
 
                 $request = request();
