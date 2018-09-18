@@ -1419,6 +1419,7 @@ class SubReportController extends Controller
 			$table['l3'][$channel]   = 0;
 			$table['l6'][$channel]   = 0;
 			$table['l8'][$channel]   = 0;
+			$table['spent'][$channel]   = 0;
 
 			$table['c3_week'][$channel] = 0;
 			$table['c3b_week'][$channel] = 0;
@@ -1453,6 +1454,7 @@ class SubReportController extends Controller
 							'l3'    => ['$sum' => '$l3'],
 							'l6'    => ['$sum' => '$l6'],
 							'l8'    => ['$sum' => '$l8'],
+							'spent'    => ['$sum' => '$spent'],
 						]
 					]
 				];
@@ -1481,6 +1483,7 @@ class SubReportController extends Controller
 							'l3'    => ['$sum' => '$l3'],
 							'l6'    => ['$sum' => '$l6'],
 							'l8'    => ['$sum' => '$l8'],
+							'spent'    => ['$sum' => '$spent'],
 						]
 					]
 				];
@@ -1522,6 +1525,7 @@ class SubReportController extends Controller
 				$table['l3'][ $channel ]   += $item_result->l3;
 				$table['l6'][ $channel ]   += $item_result->l6;
 				$table['l8'][ $channel ]   += $item_result->l8;
+				$table['spent'][ $channel ]   += $item_result->spent;
 			}
 			foreach ( $query_chart_week as $item_result ) {
 				$channel_id = @$arr_ad[$item_result['_id']];
@@ -1582,6 +1586,7 @@ class SubReportController extends Controller
 							'c3'    => ['$sum' => '$c3'],
 							'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
 							'c3bg'  => ['$sum' => '$c3bg'],
+							'spent'  => ['$sum' => '$spent'],
 						]
 					]
 				];
@@ -1606,6 +1611,7 @@ class SubReportController extends Controller
 							'c3'    => ['$sum' => '$c3'],
 							'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
 							'c3bg'  => ['$sum' => '$c3bg'],
+							'spent'  => ['$sum' => '$spent'],
 						]
 					]
 				];
@@ -1643,6 +1649,7 @@ class SubReportController extends Controller
 				$table['c3'][ $channel ]   += $item_result->c3;
 				$table['c3b'][ $channel ]  += $item_result->c3b;
 				$table['c3bg'][ $channel ] += $item_result->c3bg;
+				$table['spent'][ $channel ] += $item_result->spent;
 			}
 			foreach ( $query_chart_week as $item_result ) {
 				$channel_id = @$arr_ad[$item_result['_id']];
@@ -1667,7 +1674,7 @@ class SubReportController extends Controller
 			$start = $start_date;
 			$end = date('Y-m-d', strtotime( $end_date ) + 86400);
 
-			$query_l1 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+			$query_l1 = Contact::raw(function ($collection) use ($start, $end, $ad_id, $isEmpy) {
 				if(count($ad_id) >= 0 && $isEmpy){
 					$match = [
 						['$match' => ['l1_time' => ['$gte' => $start, '$lte' => $end]]],
@@ -1693,7 +1700,7 @@ class SubReportController extends Controller
 				return $collection->aggregate($match);
 			});
 
-			$query_l3 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+			$query_l3 = Contact::raw(function ($collection) use ($start, $end, $ad_id, $isEmpy) {
 				if(count($ad_id) >= 0 && $isEmpy){
 					$match = [
 						['$match' => ['l3_time' => ['$gte' => $start, '$lte' => $end]]],
@@ -1719,7 +1726,7 @@ class SubReportController extends Controller
 				return $collection->aggregate($match);
 			});
 
-			$query_l6 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+			$query_l6 = Contact::raw(function ($collection) use ($start, $end, $ad_id, $isEmpy) {
 				if(count($ad_id) >= 0 && $isEmpy){
 					$match = [
 						['$match' => ['l6_time' => ['$gte' => $start, '$lte' => $end]]],
@@ -1745,7 +1752,7 @@ class SubReportController extends Controller
 				return $collection->aggregate($match);
 			});
 
-			$query_l8 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+			$query_l8 = Contact::raw(function ($collection) use ($start, $end, $ad_id, $isEmpy) {
 				if(count($ad_id) >= 0 && $isEmpy){
 					$match = [
 						['$match' => ['l8_time' => ['$gte' => $start, '$lte' => $end]]],

@@ -129,7 +129,7 @@
                                                    width="100%">
                                                 <thead>
                                                 <tr>
-                                                    <th>Time</th>
+                                                    <th>Channel</th>
                                                     <th>C3</th>
                                                     <th>C3B</th>
                                                     <th>C3BG</th>
@@ -140,8 +140,8 @@
                                                     <th>L8</th>
                                                     <th>L3/C3BG (%)</th>
                                                     <th>L8/L1 (%)</th>
-                                                    <th>Revenue</th>
-                                                    <th>Spent</th>
+                                                    <th>Price of contact</th>
+                                                    <th>Budget Spent</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>

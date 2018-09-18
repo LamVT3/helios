@@ -23,6 +23,119 @@
 
         <!-- widget grid -->
             <section id="widget-grid" class="">
+
+                <div class="row">
+                    <div class="col-sm-6 col-lg-3">
+
+                        <div class="panel panel-default widget-c3">
+                            <div class="panel-body status">
+                                <div class="who clearfix widget-title">
+                                    <h4><i class="fa fa-lg fa-fw fa-child"></i><strong>C3 Total</strong></h4>
+                                </div>
+                                <div class="text text-align-left font-xs widget-caption">
+                                    Actual / KPI
+                                    <span class="widget-unit">C3</span>
+                                </div>
+                                <div class="text text-align-right font-xl widget-actual">
+                                    ...
+                                </div>
+                                {{--<div class="text text-align-right font-sm widget-kpi">
+                                    12,000
+                                </div>
+                                <ul class="links widget-progress">
+                                    <div class="progress progress-sm">
+                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 56%;vertical-align: top;line-height: unset;">56%</div>
+                                    </div>
+                                </ul>--}}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+
+                        <div class="panel panel-default widget-c3-cost">
+                            <div class="panel-body status">
+                                <div class="who clearfix widget-title">
+                                    <h4><i class="fa fa-lg fa-fw fa-money"></i><strong>C3 Cost</strong></h4>
+                                </div>
+                                <div class="text text-align-left font-xs widget-caption">
+                                    Actual / KPI
+                                    <span class="widget-unit">USD</span>
+                                </div>
+                                <div class="text text-align-right font-xl widget-actual">
+                                    ...
+                                </div>
+                                {{--<div class="text text-align-right font-sm widget-kpi">
+                                    2.3
+                                </div>
+                                <ul class="links widget-progress">
+                                    <div class="progress progress-sm">
+                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 90%;vertical-align: top;line-height: unset;">90%</div>
+                                    </div>
+                                </ul>--}}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+
+                        <div class="panel panel-default widget-budget">
+                            <div class="panel-body status">
+
+                                <div class="who clearfix widget-title">
+                                    <h4><i class="fa fa-lg fa-fw fa-credit-card"></i><strong>Budget</strong></h4>
+                                </div>
+                                <div class="text text-align-left font-xs widget-caption">
+                                    Actual / KPI
+                                    <span class="widget-unit">USD</span>
+                                </div>
+                                <div class="text text-align-right font-xl widget-actual">
+                                    ...
+                                </div>
+                                {{--<div class="text text-align-right font-sm widget-kpi">
+                                    2,000
+                                </div>
+                                <ul class="links widget-progress">
+                                    <div class="progress progress-sm">
+                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 60%;vertical-align: top;line-height: unset;">60%</div>
+                                    </div>
+                                </ul>--}}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+
+                        <div class="panel panel-default widget-revenue">
+                            <div class="panel-body status">
+
+                                <div class="who clearfix widget-title">
+                                    <h4><i class="fa fa-lg fa-fw fa-usd"></i><strong>Revenue</strong></h4>
+                                </div>
+                                <div class="text text-align-left font-xs widget-caption">
+                                    Actual / KPI
+                                    <span class="widget-unit">USD</span>
+                                </div>
+                                <div class="text text-align-right font-xl widget-actual">
+                                    ...
+                                </div>
+                                {{--<div class="text text-align-right font-sm widget-kpi">
+                                    2,000,000,000
+                                </div>
+                                <ul class="links widget-progress">
+                                    <div class="progress progress-sm">
+                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 60%;vertical-align: top;line-height: unset;">60%</div>
+                                    </div>
+                                </ul>--}}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
                 <!-- row -->
                 <div class="row">
 
@@ -65,7 +178,7 @@
                                                    width="100%">
                                                 <thead>
                                                 <tr>
-                                                    <th>Time</th>
+                                                    <th>Channel</th>
                                                     <th>C3</th>
                                                     <th>C3B</th>
                                                     <th>C3BG</th>
@@ -76,7 +189,7 @@
                                                     <th>L8</th>
                                                     <th>L3/C3BG (%)</th>
                                                     <th>L8/L1 (%)</th>
-                                                    <th>Revenue</th>
+                                                    <th>Price</th>
                                                     <th>Spent</th>
                                                 </tr>
                                                 </thead>
