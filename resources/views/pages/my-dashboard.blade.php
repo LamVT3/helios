@@ -32,21 +32,42 @@
                                 <div class="who clearfix widget-title">
                                     <h4><i class="fa fa-lg fa-fw fa-child"></i><strong>C3 Total</strong></h4>
                                 </div>
+
+
+
                                 <div class="text text-align-left font-xs widget-caption">
-                                    Actual / KPI
-                                    <span class="widget-unit">C3</span>
+                                    <table class="table" style="padding-top: 5px; width: 30%; float: right" >
+                                        <tbody>
+                                        <tr class="no-boder-top">
+                                            <td style="text-align: right; border-right: 1px solid #ddd;">KPI</td>
+                                            <td>Actual</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right; border-right: 1px solid #ddd;">
+                                                <div class="text text-align-right font-xl widget-actual">
+                                                    ...
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="text text-align-right font-xl widget-actual">
+                                                    ...
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <div class="text text-align-right font-xl widget-actual">
-                                    ...
-                                </div>
-                                {{--<div class="text text-align-right font-sm widget-kpi">
-                                    12,000
-                                </div>
-                                <ul class="links widget-progress">
-                                    <div class="progress progress-sm">
-                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 56%;vertical-align: top;line-height: unset;">56%</div>
-                                    </div>
-                                </ul>--}}
+                                {{--<div class="text text-align-right font-xl widget-actual">--}}
+                                    {{--...--}}
+                                {{--</div>--}}
+                                {{--<div class="text text-align-right font-sm widget-kpi">--}}
+                                    {{--12,000--}}
+                                {{--</div>--}}
+                                {{--<ul class="links widget-progress">--}}
+                                    {{--<div class="progress progress-sm">--}}
+                                        {{--<div class="progress-bar bg-color-red" role="progressbar" style="width: 56%;vertical-align: top;line-height: unset;">56%</div>--}}
+                                    {{--</div>--}}
+                                {{--</ul>--}}
                             </div>
                         </div>
 
@@ -141,146 +162,127 @@
 
                     <article class="col-sm-12 col-md-12">
 
-                        @component('components.jarviswidget',
-                        ['id' => 1, 'icon' => 'fa-table', 'title' => 'Report'])
-                            <div class="widget-body">
+                        <div class="widget-body">
 
-                                <form id="search-form-channel-report" class="smart-form" action="#" url="{!! route('channel-report.filter') !!}">
-                                    <div class="row">
-                                        <div id="reportrange" class="pull-left"
-                                             style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; margin: 10px 15px">
-                                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
-                                            <span class="registered_date"></span> <b class="caret"></b>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12 text-right">
-                                            <button class="btn btn-primary btn-sm" type="submit"
-                                                    style="margin-right: 15px">
-                                                <i class="fa fa-filter"></i>
-                                                Filter
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                                <div class="loading" style="display: none">
-                                    <div class="col-md-12 text-center">
-                                        <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""
-                                             style="width: 2%;"/>
-                                    </div>
+                            <div class="loading" style="display: none">
+                                <div class="col-md-12 text-center">
+                                    <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""
+                                         style="width: 2%;"/>
                                 </div>
-                                <hr>
+                            </div>
+                            <hr>
 
-                                <div class="row" id="wrapper_report">
-                                    <div class="col-sm-12">
-                                        <article class="col-sm-12 col-md-12">
-                                            <table class="table table-bordered table-hover"
-                                                   width="100%">
-                                                <thead>
-                                                <tr>
-                                                    <th>Channel</th>
-                                                    <th>C3</th>
-                                                    <th>C3B</th>
-                                                    <th>C3BG</th>
-                                                    <th>C3BG/C3B (%)</th>
-                                                    <th>L1</th>
-                                                    <th>L3</th>
-                                                    <th>L6</th>
-                                                    <th>L8</th>
-                                                    <th>L3/C3BG (%)</th>
-                                                    <th>L8/L1 (%)</th>
-                                                    <th>Price</th>
-                                                    <th>Spent</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-
-                                                {{--@foreach ($array_channel as $i)--}}
-                                                    {{--<tr>--}}
-                                                        {{--<td>{{$i}}</td>--}}
-                                                        {{--<td style="color:{{($table['c3'][$i]) >= ($table['c3_week'][$i]) ? 'green' : 'red'}}">{{$table['c3'][$i]}}</td>--}}
-                                                        {{--<td style="color:{{$table['c3b'][$i] >= $table['c3b_week'][$i] ? 'green' : 'red'}}">{{$table['c3b'][$i]}}</td>--}}
-                                                        {{--<td style="color:{{$table['c3bg'][$i] >= $table['c3bg_week'][$i] ? 'green' : 'red'}}">{{$table['c3bg'][$i]}}</td>--}}
-                                                        {{--<td>{{($table['c3b'][$i] != 0) ? round($table['c3bg'][$i] * 100 / $table['c3b'][$i] , 2) : 0}}</td>--}}
-                                                        {{--<td>{{$table['l1'][$i]}}</td>--}}
-                                                        {{--<td>{{$table['l3'][$i]}}</td>--}}
-                                                        {{--<td>{{$table['l6'][$i]}}</td>--}}
-                                                        {{--<td>{{$table['l8'][$i]}}</td>--}}
-                                                        {{--<td>{{($table['c3bg'][$i] != 0) ? round($table['l3'][$i] * 100 / $table['c3bg'][$i] , 2) : 0}}</td>--}}
-                                                        {{--<td>{{($table['l1'][$i] != 0) ? round($table['l8'][$i] * 100 / $table['l1'][$i] , 2) : 0}}</td>--}}
-                                                        {{--<td></td>--}}
-                                                        {{--<td></td>--}}
-                                                    {{--</tr>--}}
-                                                {{--@endforeach--}}
-                                                <tr>
-                                                    {{--<th>Total</th>--}}
-                                                    {{--<th>{{array_sum($table['c3'])}}</th>--}}
-                                                    {{--<th>{{array_sum($table['c3b'])}}</th>--}}
-                                                    {{--<th>{{array_sum($table['c3bg'])}}</th>--}}
-                                                    {{--<th>{{(array_sum($table['c3b']) != 0) ? round(array_sum($table['c3bg']) * 100 / array_sum($table['c3b']) , 2) : 0}}</th>--}}
-                                                    {{--<th>{{array_sum($table['l1'])}}</th>--}}
-                                                    {{--<th>{{array_sum($table['l3'])}}</th>--}}
-                                                    {{--<th>{{array_sum($table['l6'])}}</th>--}}
-                                                    {{--<th>{{array_sum($table['l8'])}}</th>--}}
-                                                    {{--<th>{{(array_sum($table['c3bg']) != 0) ? round(array_sum($table['l3']) * 100 / array_sum($table['c3bg']) , 2) : 0}}</th>--}}
-                                                    {{--<th>{{(array_sum($table['l1']) != 0) ? round(array_sum($table['l8']) * 100 / array_sum($table['l1']) , 2) : 0}}</th>--}}
-                                                    {{--<td></td>--}}
-                                                    {{--<td></td>--}}
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </article>
-                                    </div>
-
-                                    <div class="col-sm-12">
-                                        <article class="col-sm-12 col-md-12">
+                            <div class="row" id="wrapper">
+                                <div class="col-sm-12">
+                                    <article class="col-sm-12 col-md-12">
                                         @component('components.jarviswidget',
-                                        ['id' => 'c3bg', 'icon' => 'fa-line-chart', 'title' => "C3B", 'dropdown' => 'false'])
-                                            <!-- widget content -->
-                                                <div class="widget-body no-padding">
-                                                    <div id="c3bg_chart" class="chart has-legend"></div>
-                                                </div>
-                                            @endcomponent
-                                        </article>
-                                        <article class="col-sm-12 col-md-12">
-                                        @component('components.jarviswidget',
-                                        ['id' => 'c3b', 'icon' => 'fa-line-chart', 'title' => "C3B Price ", 'dropdown' => 'false'])
-                                            <!-- widget content -->
-                                                <div class="widget-body no-padding">
-                                                    <div id="c3b_chart" class="chart has-legend"></div>
-                                                </div>
-                                            @endcomponent
-                                        </article>
+                                                   ['id' => 1, 'icon' => 'fa-table', 'title' => 'Report'])
+                                        <table class="table table-bordered table-hover"
+                                               width="100%">
+                                            <thead>
+                                            <tr>
+                                                <th>Channel</th>
+                                                <th>C3</th>
+                                                <th>C3B</th>
+                                                <th>C3BG</th>
+                                                <th>C3BG/C3B (%)</th>
+                                                <th>L1</th>
+                                                <th>L3</th>
+                                                <th>L6</th>
+                                                <th>L8</th>
+                                                <th>L3/C3BG (%)</th>
+                                                <th>L8/L1 (%)</th>
+                                                <th>Price</th>
+                                                <th>Spent</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr style="font-weight: bold">
+                                                <td style="text-align: center"> Channel_1</td>
+                                                <td>5</td>
+                                                <td>5</td>
+                                                <td>5</td>
+                                                <td>5</td>
+                                                <td>5</td>
+                                                <td>5</td>
+                                                <td>5</td>
+                                                <td>5</td>
+                                                <td>5</td>
+                                                <td>5</td>
+                                                <td>5</td>
+                                                <td>5</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align: right">Ads0</td>
+                                                <td>2</td>
+                                                <td>2</td>
+                                                <td>2</td>
+                                                <td>2</td>
+                                                <td>2</td>
+                                                <td>2</td>
+                                                <td>2</td>
+                                                <td>2</td>
+                                                <td>2</td>
+                                                <td>2</td>
+                                                <td>2</td>
+                                                <td>2</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align: right">Ads1</td>
+                                                <td>3</td>
+                                                <td>3</td>
+                                                <td>3</td>
+                                                <td>3</td>
+                                                <td>3</td>
+                                                <td>3</td>
+                                                <td>3</td>
+                                                <td>3</td>
+                                                <td>3</td>
+                                                <td>3</td>
+                                                <td>3</td>
+                                                <td>3</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                        @endcomponent
+                                    </article>
+                                </div>
 
-                                        <article class="col-sm-12 col-md-12">
-                                        @component('components.jarviswidget',
-                                        ['id' => 'c3', 'icon' => 'fa-line-chart', 'title' => "C3B Quality", 'dropdown' => 'false'])
-                                            <!-- widget content -->
-                                                <div class="widget-body no-padding">
-                                                    <div id="c3_chart" class="chart has-legend"></div>
-                                                </div>
-                                            @endcomponent
-                                        </article>
+                                <div class="col-sm-12">
+                                    <article class="col-sm-12 col-md-12">
+                                    @component('components.jarviswidget',
+                                    ['id' => 'c3bg', 'icon' => 'fa-line-chart', 'title' => "C3B", 'dropdown' => 'false'])
+                                        <!-- widget content -->
+                                            <div class="widget-body no-padding">
+                                                <div id="c3bg_chart" class="chart has-legend"></div>
+                                            </div>
+                                        @endcomponent
+                                    </article>
+                                    <article class="col-sm-12 col-md-12">
+                                    @component('components.jarviswidget',
+                                    ['id' => 'c3b', 'icon' => 'fa-line-chart', 'title' => "C3B Price ", 'dropdown' => 'false'])
+                                        <!-- widget content -->
+                                            <div class="widget-body no-padding">
+                                                <div id="c3b_chart" class="chart has-legend"></div>
+                                            </div>
+                                        @endcomponent
+                                    </article>
 
-                                    </div>
+                                    <article class="col-sm-12 col-md-12">
+                                    @component('components.jarviswidget',
+                                    ['id' => 'c3', 'icon' => 'fa-line-chart', 'title' => "C3B Quality", 'dropdown' => 'false'])
+                                        <!-- widget content -->
+                                            <div class="widget-body no-padding">
+                                                <div id="c3_chart" class="chart has-legend"></div>
+                                            </div>
+                                        @endcomponent
+                                    </article>
 
                                 </div>
 
                             </div>
-                        @endcomponent
+
+                        </div>
 
                     </article>
 
