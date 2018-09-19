@@ -96,6 +96,18 @@
                                             </select>
                                             <i></i>
                                         </section>
+                                        <section class="col col-2">
+                                            <label class="label">Channel</label>
+                                            <input style="" type="text" value="" name="channel_id" id="channel_id" placeholder="Select channel">
+                                        <!-- <select name="channel_id" id="channel_id" class="select2" style="width: 280px"
+                                                data-url="">
+                                            <option value="">All</option>
+                                            @foreach($channels as $item)
+                                            <option value="{{ $item->name }}">{{ $item->name }}</option>
+                                            @endforeach
+                                                </select> -->
+                                            <i></i>
+                                        </section>
                                     </div>
                                     <div class="row">
                                         <div id="reportrange" class="pull-left"
@@ -123,59 +135,7 @@
                                 <hr>
 
                                 <div class="row" id="wrapper_report">
-                                    <div class="col-sm-12">
-                                        <article class="col-sm-12 col-md-12">
-                                            <table class="table table-bordered table-hover"
-                                                   width="100%">
-                                                <thead>
-                                                <tr>
-                                                    <th>Time</th>
-                                                    <th>C3</th>
-                                                    <th>C3B</th>
-                                                    <th>C3BG</th>
-                                                    <th>C3BG/C3B (%)</th>
-                                                    <th>L1</th>
-                                                    <th>L3</th>
-                                                    <th>L6</th>
-                                                    <th>L8</th>
-                                                    <th>L3/C3BG (%)</th>
-                                                    <th>L8/L1 (%)</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-
-                                                @foreach ($array_channel as $i)
-                                                    <tr>
-                                                        <td>{{$i}}</td>
-                                                        <td style="color:{{($table['c3'][$i]) >= ($table['c3_week'][$i]) ? 'green' : 'red'}}">{{$table['c3'][$i]}}</td>
-                                                        <td style="color:{{$table['c3b'][$i] >= $table['c3b_week'][$i] ? 'green' : 'red'}}">{{$table['c3b'][$i]}}</td>
-                                                        <td style="color:{{$table['c3bg'][$i] >= $table['c3bg_week'][$i] ? 'green' : 'red'}}">{{$table['c3bg'][$i]}}</td>
-                                                        <td>{{($table['c3b'][$i] != 0) ? round($table['c3bg'][$i] * 100 / $table['c3b'][$i] , 2) : 0}}</td>
-                                                        <td>{{$table['l1'][$i]}}</td>
-                                                        <td>{{$table['l3'][$i]}}</td>
-                                                        <td>{{$table['l6'][$i]}}</td>
-                                                        <td>{{$table['l8'][$i]}}</td>
-                                                        <td>{{($table['c3bg'][$i] != 0) ? round($table['l3'][$i] * 100 / $table['c3bg'][$i] , 2) : 0}}</td>
-                                                        <td>{{($table['l1'][$i] != 0) ? round($table['l8'][$i] * 100 / $table['l1'][$i] , 2) : 0}}</td>
-                                                    </tr>
-                                                @endforeach
-                                                    <tr>
-                                                        <th>Total</th>
-                                                        <th>{{array_sum($table['c3'])}}</th>
-                                                        <th>{{array_sum($table['c3b'])}}</th>
-                                                        <th>{{array_sum($table['c3bg'])}}</th>
-                                                        <th>{{(array_sum($table['c3b']) != 0) ? round(array_sum($table['c3bg']) * 100 / array_sum($table['c3b']) , 2) : 0}}</th>
-                                                        <th>{{array_sum($table['l1'])}}</th>
-                                                        <th>{{array_sum($table['l3'])}}</th>
-                                                        <th>{{array_sum($table['l6'])}}</th>
-                                                        <th>{{array_sum($table['l8'])}}</th>
-                                                        <th>{{(array_sum($table['c3bg']) != 0) ? round(array_sum($table['l3']) * 100 / array_sum($table['c3bg']) , 2) : 0}}</th>
-                                                        <th>{{(array_sum($table['l1']) != 0) ? round(array_sum($table['l8']) * 100 / array_sum($table['l1']) , 2) : 0}}</th>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </article>
-                                    </div>
+                                    @include('pages.lists.table_report_channel')
 
                                     <div class="col-sm-12">
                                         <article class="col-sm-12 col-md-12">
@@ -246,6 +206,7 @@
     <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+    <script src="{{ asset('js/plugin/selectize/js/standalone/selectize.min.js')}}"></script>
 
     <style>
         .chart{
@@ -280,6 +241,7 @@
                 var marketer_id = $('select[name="marketer_id"]').val();
                 var campaign_id = $('select[name="campaign_id"]').val();
                 var subcampaign_id = $('select[name="subcampaign_id"]').val();
+                var channel_id = $('input[name="channel_id"]').val();
                 var registered_date = $('.registered_date').text();
                 var type = $('select[name="type"]').val();
 
@@ -301,12 +263,23 @@
                         campaign_id     : campaign_id,
                         subcampaign_id  : subcampaign_id,
                         registered_date : registered_date,
+                        channel_id      : channel_id,
                         type : type,
                     }
                 }).done(function (response) {
                     $('.loading').hide();
                     $('#wrapper_report').html(response);
                 });
+            });
+
+            $('input[name=channel_id]').selectize({
+                delimiter: ',',
+                persist: false,
+                valueField: 'name',
+                labelField: 'name',
+                searchField: ['name'],
+                options: {!! $channels !!}
+
             });
         });
 

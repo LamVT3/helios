@@ -1361,7 +1361,7 @@ class SubReportController extends Controller
 
 	public function channelReport(){
 		$page_title = "Channel Report | Helios";
-		$page_css = array();
+		$page_css = array('selectize.default.css');
 		$no_main_header = FALSE; //set true for lock.php and login.php
 		$active = 'channel-report';
 		$breadcrumbs = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> Channel Report </span>";
@@ -1372,6 +1372,7 @@ class SubReportController extends Controller
 		$campaigns      = Campaign::where('is_active', 1)->get();
 		$page_size      = Config::getByKey('PAGE_SIZE');
 		$subcampaigns   = Subcampaign::where('is_active', 1)->get();
+		$channels        = Channel::where('is_active', 1)->orderBy('name')->get();
 
 		$date_time = $start_date = $end_date = date('Y-m-d');
 
@@ -1379,6 +1380,7 @@ class SubReportController extends Controller
 
 		$table = $data['table'];
 		$array_channel = $data['array_channel'];
+		$array_sum = $data['array_sum'];
 
 
 		return view('pages.channel-report', compact(
@@ -1390,20 +1392,32 @@ class SubReportController extends Controller
 			'sources',
 			'teams',
 			'marketers',
+			'channels',
 			'campaigns',
 			'page_size',
 			'subcampaigns',
 			'table',
 			'data_where',
 			'date_time',
-			'array_channel'
+			'array_channel',
+			'array_sum'
 		));
 	}
 
 	private function getChannel($start_date, $end_date, $type = 'TOA'){
-		$channels      = Channel::all();
-
 		$array_channel = array();
+
+		if (request()->channel_id){
+			$channels_arr       = explode(',',request()->channel_id);
+			$channels           = Channel::whereIn('name', $channels_arr)->get();
+			$channels_id        = Channel::whereIn('name', $channels_arr)->get()->pluck('_id');
+			$arr_ad             = Ad::whereIn('channel_id', $channels_id)->get()->pluck('channel_id','_id');
+		}
+		else {
+			$channels      = Channel::all();
+			$arr_ad        = Ad::pluck('channel_id','_id')->all();
+		}
+
 		foreach ($channels as $key => $channel) {
 			$array_channel[$channel->_id] = $channel->name;
 		}
@@ -1437,7 +1451,7 @@ class SubReportController extends Controller
 		}
 		
 		$ad_id  = $this->getAds();
-		$arr_ad = Ad::pluck('channel_id','_id')->all();
+
 		if ($type === 'TOA'){
 			if(count($ad_id) >= 0 && $isEmpy){
 				$match = [
@@ -1541,36 +1555,7 @@ class SubReportController extends Controller
 
 			arsort($table['c3']);
 			arsort($table['c3_week']);
-			$array_channel_new = [];
-			foreach ($table['c3'] as $key=>$value) {
-				if ($value != 0){
-					$array_channel_new[] = $key;
-				}
-			}
-			foreach ($table['l1'] as $key=>$value) {
-				if ($value != 0 && !in_array($key,$array_channel_new)){
-					$array_channel_new[] = $key;
-				}
-			}
-			foreach ($table['l3'] as $key=>$value) {
-				if ($value != 0 && !in_array($key,$array_channel_new)){
-					$array_channel_new[] = $key;
-				}
-			}
-			foreach ($table['l6'] as $key=>$value) {
-				if ($value != 0 && !in_array($key,$array_channel_new)){
-					$array_channel_new[] = $key;
-				}
-			}
-			foreach ($table['l8'] as $key=>$value) {
-				if ($value != 0 && !in_array($key,$array_channel_new)){
-					$array_channel_new[] = $key;
-				}
-			}
 
-			$array_channel = $array_channel_new;
-
-			return ['table'=>$table,'array_channel' => $array_channel];
 		}else if($type === 'TOT'){
 			if(count($ad_id) >= 0 && $isEmpy){
 				$match = [
@@ -1667,7 +1652,7 @@ class SubReportController extends Controller
 			$start = $start_date;
 			$end = date('Y-m-d', strtotime( $end_date ) + 86400);
 
-			$query_l1 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+			$query_l1 = Contact::raw(function ($collection) use ($start, $end, $ad_id, $isEmpy) {
 				if(count($ad_id) >= 0 && $isEmpy){
 					$match = [
 						['$match' => ['l1_time' => ['$gte' => $start, '$lte' => $end]]],
@@ -1693,7 +1678,7 @@ class SubReportController extends Controller
 				return $collection->aggregate($match);
 			});
 
-			$query_l3 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+			$query_l3 = Contact::raw(function ($collection) use ($start, $end, $ad_id, $isEmpy) {
 				if(count($ad_id) >= 0 && $isEmpy){
 					$match = [
 						['$match' => ['l3_time' => ['$gte' => $start, '$lte' => $end]]],
@@ -1719,7 +1704,7 @@ class SubReportController extends Controller
 				return $collection->aggregate($match);
 			});
 
-			$query_l6 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+			$query_l6 = Contact::raw(function ($collection) use ($start, $end, $ad_id, $isEmpy) {
 				if(count($ad_id) >= 0 && $isEmpy){
 					$match = [
 						['$match' => ['l6_time' => ['$gte' => $start, '$lte' => $end]]],
@@ -1745,7 +1730,7 @@ class SubReportController extends Controller
 				return $collection->aggregate($match);
 			});
 
-			$query_l8 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+			$query_l8 = Contact::raw(function ($collection) use ($start, $end, $ad_id, $isEmpy) {
 				if(count($ad_id) >= 0 && $isEmpy){
 					$match = [
 						['$match' => ['l8_time' => ['$gte' => $start, '$lte' => $end]]],
@@ -1814,7 +1799,14 @@ class SubReportController extends Controller
 				$table['l6'][ $channel ] += @$item_result->l6;
 				$table['l8'][ $channel ] += @$item_result->l8;
 			}
+		}
 
+		$array_channel_new = [];
+
+		if (request()->channel_id){
+			$array_channel_new = $channels_arr;
+		}
+		else{
 			foreach ($table['c3'] as $key=>$value) {
 				if ($value != 0){
 					$array_channel_new[] = $key;
@@ -1841,11 +1833,30 @@ class SubReportController extends Controller
 					$array_channel_new[] = $key;
 				}
 			}
-
-			$array_channel = $array_channel_new;
-
-			return ['table'=>$table,'array_channel' => $array_channel];
 		}
+
+		$array_channel = $array_channel_new;
+
+		$array_sum['c3']   = 0;
+		$array_sum['c3b']  = 0;
+		$array_sum['c3bg'] = 0;
+		$array_sum['l1']   = 0;
+		$array_sum['l3']   = 0;
+		$array_sum['l6']   = 0;
+		$array_sum['l8']   = 0;
+
+		foreach ($array_channel as $i){
+			$array_sum['c3']   += $table['c3'][$i];
+			$array_sum['c3b']  += $table['c3b'][$i];
+			$array_sum['c3bg'] += $table['c3bg'][$i];
+			$array_sum['l1']   += $table['l1'][$i];
+			$array_sum['l3']   += $table['l3'][$i];
+			$array_sum['l6']   += $table['l6'][$i];
+			$array_sum['l8']   += $table['l8'][$i];
+		}
+
+		return ['table'=>$table,'array_channel' => $array_channel, 'array_sum' => $array_sum];
+
 	}
 
 	public function channelReportFilter(){
