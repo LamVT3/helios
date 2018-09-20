@@ -7,7 +7,7 @@
         var current_month = d.getMonth();
         var dropdown = $('button#dropdown');
         dropdown.html(__arr_month[current_month]);
-        $('h2#c3_chart').html('C3 in ' + dropdown.html());
+        $('h2#c3_chart').html('C3B in ' + dropdown.html());
         $('h2#l8_chart').html('L8 in ' + dropdown.html());
         $('h2#monthly_chart').html('Report month <span class="yellow">' + dropdown.html()+ '</span>');
 
@@ -27,9 +27,11 @@
         var title       = $(this).parents('div.widget-toolbar').siblings('h2');
         var title_id    = title.attr('id');
         if(title_id == 'c3_chart'){
-            title.html('C3 in ' + dropdown.html());
+            title.html('C3B in ' + dropdown.html());
+            $('#c3_month').val(month);
             get_c3_chart(month);
         } else if (title_id == 'l8_chart'){
+            $('#l8_month').val(month);
             title.html('L8 in ' + dropdown.html());
             get_l8_chart(month);
         } else if (title_id == 'monthly_chart'){
