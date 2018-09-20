@@ -10,12 +10,6 @@
         @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs, 'currency' => true])
             <form action="/home" method="GET" class="form_search">
                 {{ csrf_field()}}
-                <div id="reportrange" class="pull-right"
-                     style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc;">
-                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
-                    <span></span> <b class="caret"></b>
-                </div>
-
                 @component('components.currency')
                 @endcomponent
             </form>
@@ -23,6 +17,56 @@
 
         <!-- widget grid -->
             <section id="widget-grid" class="">
+                <fieldset style="background-color: white">
+                    <legend>Filter
+                        <a id="filter" href="javascript:void(0)"><i class="fa fa-angle-up fa-lg"></i></a>
+                    </legend>
+                <form class="smart-form" >
+                    <div class="row" >
+                        <section class="col col-3">
+                            <label class="label">Marketer</label>
+                            <select name="marketer" class="select2" style="width: 280px" id="marketer"
+                                    data-url="">
+                                <option value="">All</option>
+                                @foreach($users as $item)
+                                    @if(auth()->user()->_id == $item->id && auth()->user()->role == 'Marketer')
+                                        <option value="{{ $item->id }}" selected>{{ $item->username}}</option>
+                                    @else
+                                        <option value="{{ $item->id }}">{{ $item->username }}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                            <i></i>
+                        </section>
+                        <section class="col col-3">
+                            <label class="label">Channel</label>
+                            <select name="channel" class="select2" style="width: 280px" id="channel"
+                                    data-url="">
+                                <option value="">All</option>
+                                @foreach($channels as $item)
+                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                            <i></i>
+                        </section>
+                        <section class="col col-3">
+                            <div id="reportrange" class="pull-left"
+                                 style="background: #fff; cursor: pointer; padding: 10px; margin: 20px 0px 0px 0px; border: 1px solid #ccc;">
+                                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                                <span></span> <b class="caret"></b>
+                            </div>
+                            <div id="" class="pull-right"
+                                 style="margin: 28px 0px 0px 0px; padding: 10px px 7px 10px;">
+                                <button id="filter" class="btn btn-primary btn-sm" type="button" style="float: right" >
+                                    <i class="fa fa-filter"></i>
+                                    Filter
+                                </button>
+                            </div>
+                        </section>
+                    </div>
+                </form>
+                </fieldset>
+
                 <!-- row -->
                 <div class="row">
                     <div class="col-sm-6 col-lg-3">
@@ -142,7 +186,7 @@
                     <article class="col-sm-12 col-md-12">
 
                     @component('components.jarviswidget',
-                    ['id' => 'c3_chart', 'icon' => 'fa-line-chart', 'title' => "C3 in " , 'dropdown' => "true"])
+                    ['id' => 'c3_chart', 'icon' => 'fa-line-chart', 'title' => "C3B in " , 'dropdown' => "true"])
                         <!-- widget content -->
                             <div class="widget-body no-padding">
 
@@ -272,6 +316,8 @@
 
         </div>
         <!-- END MAIN CONTENT -->
+        <input type="hidden" name="c3_month" id="c3_month" value="{{$month}}">
+        <input type="hidden" name="l8_month" id="l8_month" value="{{$month}}">
 
     </div>
     <!-- END MAIN PANEL -->
@@ -315,8 +361,6 @@
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
         $(document).ready(function () {
 
-            pageSetUp();
-
             var start = moment();
             var end = moment();
 
@@ -340,10 +384,10 @@
 
             if ($("#site-stats-c3").length) {
 
-                var plot = $.plot($("#site-stats-c3"), [{
-                    data: {{ $dashboard["chart_c3"] }},
-                    label: "C3"
-                }], {
+                var plot = $.plot($("#site-stats-c3"), [
+                    {data: {{ $dashboard["chart_c3"] }}, label: "C3B"},
+                    {data: {{ $dashboard["chart_kpi"] }}, label: "KPI"},
+                    ], {
                     series: {
                         lines: {
                             show: true,
@@ -379,18 +423,10 @@
                         borderWidth: 0,
                         borderColor: $chrt_border_color,
                     },
-                    tooltip: true,
-                    tooltipOpts: {
-                        content: "<b>%y C3</b> (%x)",
-                        dateFormat: "%d/%m/%Y",
-                        defaultTheme: false,
-                        shifts: {
-                            x: -50,
-                            y: 20
-                        }
-                    },
-                    colors: [$chrt_main, $chrt_third],
+                    colors: [$chrt_third, $chrt_main],
                 });
+
+                $("#site-stats-c3").UseTooltip();
 
             }
             /* end site stats */
@@ -469,6 +505,23 @@
 
             })
 
+            $('button#filter').click(function (e) {
+                var unit = $('#currency_unit').val();
+
+                var date = $('#reportrange span').html();
+                date = date.split('-');
+
+                var startDate = formatDate(date[0]);
+                var endDate = formatDate(date[1]);
+
+                dashboard(startDate, endDate, unit);
+
+                var c3_month = $('#c3_month').val();
+                var l8_month = $('#l8_month').val();
+                get_c3_chart(parseInt(c3_month));
+                get_l8_chart(parseInt(l8_month));
+            })
+
         });
 
         function formatDate(str) {
@@ -488,7 +541,7 @@
             var endDate = end.format('YYYY-MM-DD');
             var unit = $('#currency_unit').val();
 
-            dashboard(startDate, endDate, unit);
+            // dashboard(startDate, endDate, unit);
 
         }
 
@@ -503,10 +556,15 @@
             $('.widget-budget .widget-actual').html('...');
             $('.widget-revenue .widget-actual').html('...');
 
+            $marketer_id = $('#marketer').val();
+            $channel_id  = $('#channel').val();
+
             $.get("{{ route('ajax-dashboard') }}", {
-                startDate: startDate,
-                endDate: endDate,
-                unit: unit
+                startDate   : startDate,
+                endDate     : endDate,
+                unit        : unit,
+                marketer_id : $marketer_id,
+                channel_id  : $channel_id,
             }, function (data) {
                 var dashboard = data.dashboard;
                 $('.widget-c3 .widget-actual').html(dashboard.c3);
@@ -576,10 +634,17 @@
             else {
                 month = month.toString();
             }
+            var marketer_id = $('#marketer').val();
+            var channel_id  = $('#channel').val();
 
-            $.get("{{ route('ajax-getC3Chart') }}", {month: month}, function (data) {
-                var obj = jQuery.parseJSON(data);
-                set_c3_chart(obj);
+            $.get("{{ route('ajax-getC3Chart') }}",
+                {
+                    month       : month,
+                    marketer_id : marketer_id,
+                    channel_id  : channel_id
+                },
+            function (data) {
+                set_c3_chart(data);
             }).fail(
                 function (err) {
                     alert('Cannot connect to server. Please try again later.');
@@ -587,12 +652,14 @@
         }
 
         function set_c3_chart(data) {
+            console.log(data.chart_c3);
             if ($("#site-stats-c3").length) {
 
-                var plot = $.plot($("#site-stats-c3"), [{
-                    data: data,
-                    label: "C3"
-                }], {
+                var plot = $.plot($("#site-stats-c3"), [
+                        {data: $.parseJSON(data.chart_c3), label: "C3B"},
+                        {data: $.parseJSON(data.chart_kpi), label: "KPI"},
+                    ],
+                    {
                     series: {
                         lines: {
                             show: true,
@@ -628,21 +695,11 @@
                         borderWidth: 0,
                         borderColor: $chrt_border_color,
                     },
-                    tooltip: true,
-                    tooltipOpts: {
-                        content: "<b>%y C3</b> (%x)",
-                        dateFormat: "%d/%m/%Y",
-                        defaultTheme: false,
-                        shifts: {
-                            x: -50,
-                            y: 20
-                        }
-                    },
-                    colors: [$chrt_main, $chrt_third],
+                    colors: [$chrt_third, $chrt_main],
                 });
-
             }
             /* end site stats */
+            $("#site-stats-c3").UseTooltip();
         }
 
         function get_l8_chart(month) {
@@ -653,8 +710,16 @@
             else {
                 month = month.toString();
             }
+            var marketer_id = $('#marketer').val();
+            var channel_id  = $('#channel').val();
 
-            $.get("{{ route('ajax-getL8Chart') }}", {month: month}, function (data) {
+            $.get("{{ route('ajax-getL8Chart') }}",
+                {
+                    month       : month,
+                    marketer_id : marketer_id,
+                    channel_id  : channel_id
+                },
+                function (data) {
                 var obj = jQuery.parseJSON(data);
                 set_l8_chart(obj);
             }).fail(
@@ -720,6 +785,63 @@
 
             }
             /* end site stats */
+        }
+
+        var previousPoint = null, previousLabel = null;
+        $.fn.UseTooltip = function (mode) {
+            $(this).bind("plothover", function (event, pos, item) {
+                if (item) {
+                    if ((previousLabel != item.series.label) || (previousPoint != item.dataIndex)) {
+                        previousPoint = item.dataIndex;
+                        previousLabel = item.series.label;
+                        $("#tooltip").remove();
+
+                        var x = item.datapoint[0];
+                        var y = item.datapoint[1];
+
+                        var color = item.series.color;
+
+                        var tooltip = '';
+                        if(item.series.label == 'C3B'){
+                            tooltip = "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + y + "</strong>";
+                        }
+                        else if(item.series.label == 'KPI'){
+                            tooltip = "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + y + "</strong>" + " (C3B)";
+                        }
+
+                        showTooltip(item.pageX, item.pageY, color, tooltip);
+                    }
+                } else {
+                    $("#tooltip").remove();
+                    previousPoint = null;
+                }
+            });
+        };
+
+        function showTooltip(x, y, color, contents) {
+
+            $('<div id="tooltip">' + contents + '</div>').css({
+                position: 'absolute',
+                display: 'none',
+                top: y - 40,
+                left: x - 40,
+                border: '2px solid ' + color,
+                padding: '3px',
+                'font-size': '9px',
+                'border-radius': '5px',
+                'background-color': '#fff',
+                'font-family': 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+                opacity: 0.9
+            }).appendTo("body").fadeIn(200);
+        }
+        function getDate(date) {
+            var d = new Date(date);
+            var curr_date = d.getDate();
+            var curr_month = d.getMonth();
+            curr_month++;
+
+            return curr_date + "/" + curr_month;
+
         }
 
     </script>
