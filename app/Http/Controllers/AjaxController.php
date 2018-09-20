@@ -481,7 +481,7 @@ class AjaxController extends Controller
         $no = 0;
         foreach ($data as $item){
             $no++;
-            $rate = round($item['c3b'] * 100 / $total, 2);
+            $rate = $total ? round($item['c3b'] * 100 / $total, 2) : 0;
 
             $table .= "<tr>
                             <th>{$no}</th>
@@ -574,7 +574,7 @@ class AjaxController extends Controller
         $no = 0;
         foreach ($data as $item){
             $revenue = number_format($item['revenue'], 2);
-            $rate = round($item['revenue'] * 100 / $total, 2);
+            $rate = $total ? round($item['revenue'] * 100 / $total, 2) : 0;
             $no++;
             $table .= "<tr>
                             <th>{$no}</th>
@@ -699,7 +699,7 @@ class AjaxController extends Controller
         $no = 0;
         foreach ($data as $item){
             $spent = number_format($item['spent'], 2);
-            $rate = round($item['spent'] * 100 / $total, 2);
+            $rate = $total ? round($item['spent'] * 100 / $total, 2) : 0;
             $no++;
             $table .= "<tr>
                             <th>{$no}</th>
