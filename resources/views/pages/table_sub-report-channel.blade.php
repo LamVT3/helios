@@ -39,6 +39,16 @@
             </div>
         @endcomponent
     </article>
+
+    <article class="col-sm-12 col-md-12">
+    @component('components.jarviswidget',
+    ['id' => 'chart_reason', 'icon' => 'fa-line-chart', 'title' => "Reason Chart", 'dropdown' => 'false'])
+        <!-- widget content -->
+            <div class="widget-body no-padding">
+                <div id="reason_chart" class="chart has-legend"></div>
+            </div>
+        @endcomponent
+    </article>
     <script type="text/javascript">
 
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
@@ -116,15 +126,6 @@
                         show: true,
                         barWidth: 0.5,
                         align: "center",
-                        label: {
-                            show: true,
-                            formatter: labelFormatter,
-                            background: {
-                                opacity: 0.5,
-                                color: "#000"
-                            }
-                        }
-
                     }
                 },
                 xaxis: {
@@ -143,6 +144,52 @@
                     defaultTheme : false
                 },
                 colors: ["#FF8C00", "#666", "#BBB"]
+            });
+
+            var  ds_reason = [
+                { label: "C3A_Duplicated",  data: {{$data_reason['C3A_Duplicated']}}, color: '#e1ab0b'},
+                { label: "C3B_Under18",  data: {{$data_reason['C3B_Under18']}}, color: '#fe0000'},
+                { label: "C3B_Duplicated15Days",  data: {{$data_reason['C3B_Duplicated15Days']}}, color: '#93b40f'},
+                { label: "C3A_Test",  data: {{$data_reason['C3A_Test']}}, color: '#99FF99'},
+                { label: "C3B_SMS_Error",  data: {{$data_reason['C3B_SMS_Error']}}, color: '#006666'}
+
+            ];
+
+            $.plot("#reason_chart", ds_reason , {
+                series: {
+                    pie: {
+                        show : true,
+                        innerRadius : 0.5,
+                        radius : 1,
+                        threshold: 0.1
+                    }
+                },
+                legend: {
+                    show : true,
+                    noColumns : 1,
+                    labelBoxBorderColor : "#000",
+                    margin : [10, 15],
+                    backgroundColor : "#efefef",
+                    backgroundOpacity : 1,
+                    labelFormatter: function (label, series) {
+                        return '<div ' +
+                            'style="font-size:13px;padding:2px;">' +
+                            label + '</div>';
+                    }
+                },
+                grid : {
+                    hoverable : true
+                },
+                tooltip : true,
+                tooltipOpts : {
+                    cssClass: "flotTip",
+                    content: "%s: %p.0%",
+                    shifts: {
+                        x: 20,
+                        y: 0
+                    },
+                    defaultTheme: false
+                },
             });
         });
 

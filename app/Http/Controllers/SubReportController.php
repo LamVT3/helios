@@ -1377,6 +1377,7 @@ class SubReportController extends Controller
 		$date_time = $start_date = $end_date = date('Y-m-d');
 
 		$data = $this->getChannel($start_date, $start_date);
+		$data_reason = $this->getChannelReason($start_date, $start_date);
 
 		$table = $data['table'];
 		$array_channel = $data['array_channel'];
@@ -1400,7 +1401,8 @@ class SubReportController extends Controller
 			'data_where',
 			'date_time',
 			'array_channel',
-			'array_sum'
+			'array_sum',
+			'data_reason'
 		));
 	}
 
@@ -1855,7 +1857,9 @@ class SubReportController extends Controller
 			$array_sum['l8']   += $table['l8'][$i];
 		}
 
-		return ['table'=>$table,'array_channel' => $array_channel, 'array_sum' => $array_sum];
+		$data_reason = $this->getChannelReason($start_date, $end_date);
+
+		return ['table'=>$table,'array_channel' => $array_channel, 'array_sum' => $array_sum, 'data_reason' => $data_reason];
 
 	}
 
@@ -2106,6 +2110,78 @@ class SubReportController extends Controller
 
 		return ['table'=>$table,'array_ad' => $array_ad];
 
+	}
+
+	private function getChannelReason($start_date, $end_date){
+		// get Ad id
+		$ad_id  = $this->getAds();
+
+		$array_reason = [ 'C3A_Duplicated', 'C3B_Under18', 'C3B_Duplicated15Days', 'C3A_Test' , 'C3B_SMS_Error'];
+		$rs = [];
+
+		$source_id = request()->source_id;
+		$marketer_id = request()->marketer_id;
+		$team_id = request()->team_id;
+		$campaign_id = request()->campaign_id;
+		$subcampaign_id = request()->subcampaign_id;
+
+		$isEmpy = false;
+		if($source_id != "" || $marketer_id != "" ||$team_id != "" ||$campaign_id != "" ||$subcampaign_id != ""){
+			$isEmpy =true;
+		}
+
+		if(count($ad_id) > 0 && $isEmpy){
+			$match = [
+				['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
+				['$match' => ['ad_id' => ['$in' => $ad_id]]],
+				[
+					'$group' => [
+						'_id'                  => '$date',
+						'c3'                   => [ '$sum' => '$c3' ],
+						'C3A_Duplicated'       => [ '$sum' => '$C3A_Duplicated' ],
+						'C3B_Under18'          => [ '$sum' => '$C3B_Under18' ],
+						'C3B_Duplicated15Days' => [ '$sum' => '$C3B_Duplicated15Days' ],
+						'C3A_Test'             => [ '$sum' => '$C3A_Test' ],
+						'C3B_SMS_Error'        => [ '$sum' => 'C3B_SMS_Error' ]
+					]
+				]
+			];
+		}else{
+			$match = [
+				['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
+				[
+					'$group' => [
+						'_id'                  => '$date',
+						'c3'                   => [ '$sum' => '$c3' ],
+						'C3A_Duplicated'       => [ '$sum' => '$C3A_Duplicated' ],
+						'C3B_Under18'          => [ '$sum' => '$C3B_Under18' ],
+						'C3B_Duplicated15Days' => [ '$sum' => '$C3B_Duplicated15Days' ],
+						'C3A_Test'             => [ '$sum' => '$C3A_Test' ],
+						'C3B_SMS_Error'        => [ '$sum' => 'C3B_SMS_Error' ]
+					]
+				]
+			];
+		}
+
+		$query_chart = AdResult::raw(function ($collection) use ($match) {
+			return $collection->aggregate($match);
+		});
+
+		$rs['C3A_Duplicated'] = 0;
+		$rs['C3B_Under18'] = 0;
+		$rs['C3B_Duplicated15Days'] = 0;
+		$rs['C3A_Test'] = 0;
+		$rs['C3B_SMS_Error'] = 0;
+
+		foreach ( $query_chart as $item_result ) {
+			$rs['C3A_Duplicated']       += $item_result['C3A_Duplicated'];
+			$rs['C3B_Under18']          += $item_result['C3B_Under18'];
+			$rs['C3B_Duplicated15Days'] += $item_result['C3B_Duplicated15Days'];
+			$rs['C3A_Test']             += $item_result['C3A_Test'];
+			$rs['C3B_SMS_Error']        += $item_result['C3B_SMS_Error'];
+		}
+
+		return $rs;
 	}
 
 	public function channelReportFilter(){

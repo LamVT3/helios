@@ -177,6 +177,16 @@
                                             @endcomponent
                                         </article>
 
+                                        <article class="col-sm-12 col-md-12">
+                                        @component('components.jarviswidget',
+                                        ['id' => 'chart_reason', 'icon' => 'fa-line-chart', 'title' => "Reason Chart", 'dropdown' => 'false'])
+                                            <!-- widget content -->
+                                                <div class="widget-body no-padding">
+                                                    <div id="reason_chart" class="chart has-legend"></div>
+                                                </div>
+                                            @endcomponent
+                                        </article>
+
                                     </div>
 
                                 </div>
@@ -212,6 +222,8 @@
     <script src="{{ asset('js/plugin/flot/jquery.flot.cust.min.js') }}"></script>
     <script src="{{ asset('js/plugin/flot/jquery.flot.resize.min.js') }}"></script>
     <script src="{{ asset('js/plugin/flot/jquery.flot.time.min.js') }}"></script>
+    <script language="javascript" type="text/javascript" src="http://www.flotcharts.org/flot/jquery.flot.categories.js"></script>
+    <script language="javascript" type="text/javascript" src="http://www.flotcharts.org/flot/jquery.flot.pie.js"></script>
     <script src="{{ asset('js/plugin/flot/jquery.flot.tooltip.min.js') }}"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
@@ -234,14 +246,18 @@
         .border-right_none {
             border-right: none !important;
         }
+        #flotTip {
+            padding: 3px 5px;
+            background-color: #000;
+            z-index: 100;
+            color: #fff;
+            opacity: .80;
+            filter: alpha(opacity=85);
+        }
     </style>
     <script src="{{ asset('js/reports/hour-report.js') }}"></script>
-    <script language="javascript" type="text/javascript" src="http://www.flotcharts.org/flot/jquery.flot.categories.js"></script>
     <script type="text/javascript">
 
-        function labelFormatter(label, series) {
-            return "<div style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + 123 + "%</div>";
-        }
 
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
         $(document).ready(function () {
@@ -367,15 +383,6 @@
                         show: true,
                         barWidth: 0.5,
                         align: "center",
-                        label: {
-                            show: true,
-                            formatter: labelFormatter,
-                            background: {
-                                opacity: 0.5,
-                                color: "#000"
-                            }
-                        }
-
                     }
                 },
                 xaxis: {
@@ -396,6 +403,51 @@
                 colors: ["#FF8C00", "#666", "#BBB"]
             });
 
+            var  ds_reason = [
+            	{ label: "C3A_Duplicated",  data: {{$data_reason['C3A_Duplicated']}}, color: '#e1ab0b'},
+            	{ label: "C3B_Under18",  data: {{$data_reason['C3B_Under18']}}, color: '#fe0000'},
+                { label: "C3B_Duplicated15Days",  data: {{$data_reason['C3B_Duplicated15Days']}}, color: '#93b40f'},
+                { label: "C3A_Test",  data: {{$data_reason['C3A_Test']}}, color: '#99FF99'},
+                { label: "C3B_SMS_Error",  data: {{$data_reason['C3B_SMS_Error']}}, color: '#006666'}
+
+            ];
+
+            $.plot("#reason_chart", ds_reason , {
+                series: {
+                    pie: {
+                        show : true,
+                        innerRadius : 0.5,
+                        radius : 1,
+                        threshold: 0.1
+                    }
+                },
+                legend: {
+                    show : true,
+                    noColumns : 1,
+                    labelBoxBorderColor : "#000",
+                    margin : [10, 15],
+                    backgroundColor : "#efefef",
+                    backgroundOpacity : 1,
+                    labelFormatter: function (label, series) {
+                        return '<div ' +
+                            'style="font-size:13px;padding:2px;">' +
+                            label + '</div>';
+                    }
+                },
+                grid : {
+                    hoverable : true
+                },
+                tooltip : true,
+                tooltipOpts : {
+                    cssClass: "flotTip",
+                    content: "%s: %p.0%",
+                    shifts: {
+                        x: 20,
+                        y: 0
+                    },
+                    defaultTheme: false
+                },
+            });
         });
 
         function initChartChannel(item, data, arr_color){
