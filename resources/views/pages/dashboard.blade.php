@@ -379,7 +379,7 @@
                 },
 
 
-            }, cb);
+            });
             cb(start, end);
 
             if ($("#site-stats-c3").length) {
@@ -541,7 +541,7 @@
             var endDate = end.format('YYYY-MM-DD');
             var unit = $('#currency_unit').val();
 
-            // dashboard(startDate, endDate, unit);
+            dashboard(startDate, endDate, unit);
 
         }
 

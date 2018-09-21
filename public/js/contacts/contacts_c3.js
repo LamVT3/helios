@@ -534,7 +534,7 @@ function initDataTable() {
             $('p#cnt_export_to_olm').html(cnt_exported_to_olm);
 
             responsiveHelper_table_campaign.respond();
-            $('.loading').hide();
+            setTimeout("$('.loading').hide();", 500);
         },
         "order": [],
         "destroy": true,
@@ -609,21 +609,11 @@ function initDataTable() {
                     }
                 }
             },
-            // {
-            //     "data" : 'name',
-            //     "render": function ( data, type, row, meta ) {
-            //         return '<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="'+ data[0] +'">' +
-            //             '<i class="fa fa-eye"></i></a>';
-            //     }
-            // },
             {
                 "data" : 'name',
                 "render": function ( data, type, row, meta ) {
                     return '<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="' + data[0] + '">' +
                         '<i class="fa fa-eye"></i><b style="margin-left: 5px;">' + data[2] + '</b></a>';
-                    // + '<a data-toggle="modal" class="btn btn-xs btn-default"' +
-                    // 'data-target="#deleteModal data-item-id="'+ data[0] +'data-item-name="'+ data[1] +'"' +
-                    // 'data-original-title="Delete Row"><i class="fa fa-times"></i></a>';
                 }
             },
             {
@@ -688,13 +678,6 @@ function initDataTable() {
             var total_contacts  = iTotal - exported;
 
             $('input[name=total_contacts]').val(total_contacts);
-            // if(iTotal == 0){
-            //     return "";
-            // }
-            // // countExportedWhenSearch();
-            // var exported    = $('input[name="exported"]').val();
-            // var count_str   = '<span id="cnt_exported" class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
-            //
             return sPre;
         },
     });
@@ -723,8 +706,6 @@ function countExported() {
 
     if(is_export === '0'){
         $('input[name="exported"]').val(0);
-        // $('span#cnt_exported').text('(0 exported)');
-        // initDataTable();
         return;
     }
 
@@ -746,14 +727,6 @@ function countExported() {
     $.get(url, data, function (data) {
         $('input[name="exported"]').val(data.to_excel);
         $('input[name="export_to_olm"]').val(data.to_olm);
-        // setTimeout(function(){
-            // if(status == '0'){
-            //     $('input[name="exported"]').val(0);
-            // }
-            // $('input[name="exported"]').val(data);
-            // $('span#cnt_exported').text('(' + data +' exported)');
-            // initDataTable();
-        // }, 1000);
     }).fail(
         function (err) {
             alert('Cannot connect to server. Please try again later.');
@@ -807,24 +780,6 @@ function countExportedWhenSearch() {
 }
 
 function enable_update() {
-    // var is_checked = false;
-    // $("input:checkbox[id=is_update]:checked").each(function () {
-    //     is_checked = this.checked;
-    // });
-    //
-    // var cnt =$('#table_contacts input[type=checkbox]:checked').length;
-    //
-    // if(is_checked){
-    //     $('button#edit_contact').prop('disabled', false);
-    //     $('button#edit_contact').removeClass('disabled');
-    // }else{
-    //     if(cnt == 0){
-    //         $('button#update_contact').hide();
-    //         $('button#edit_contact').show();
-    //         $('button#edit_contact').prop('disabled', true);
-    //         $('button#edit_contact').addClass('disabled');
-    //     }
-    // }
     var cnt = $('#table_contacts input[type=checkbox]:checked').length;
     var check_all = $('input[id=update_all]').is(':checked');
 
