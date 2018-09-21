@@ -534,7 +534,7 @@ function initDataTable() {
             $('p#cnt_export_to_olm').html(cnt_exported_to_olm);
 
             responsiveHelper_table_campaign.respond();
-            setTimeout("$('.loading').hide();", 1000);
+            setTimeout("$('.loading').hide();", 500);
         },
         "order": [],
         "destroy": true,
