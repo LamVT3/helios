@@ -51,15 +51,15 @@
                 var channel_name = $this.data('channel_name');
                 var api_channel = $this.data('api_channel');
                 var tr_channel = $(this).parent().parent();
-                var ads_detail = tr_channel.next();
+                var ads_detail = tr_channel.nextUntil('.tr_channel');
 
-                if (ads_detail.hasClass('ads_detail') && ads_detail.hasClass('ads_show')){
+                if (ads_detail && ads_detail.hasClass('ads_show')){
                     $this.html('<i class="fa fa-plus-circle"></i>');
                     ads_detail.addClass('ads_hide');
                     ads_detail.removeClass('ads_show');
                     ads_detail.hide();
                 }
-                else if (ads_detail.hasClass('ads_detail') && ads_detail.hasClass('ads_hide')){
+                else if (ads_detail && ads_detail.hasClass('ads_hide')){
                     $this.html('<i class="fa fa-minus-circle"></i>');
                     ads_detail.addClass('ads_show');
                     ads_detail.removeClass('ads_hide');
