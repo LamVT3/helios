@@ -38,11 +38,7 @@ class ContactController extends Controller
         $active         = 'contacts';
         $breadcrumbs    = "<i class=\"fa-fw fa fa-child\"></i> Contacts <span>> C3</span>";
 
-        $page_size  = Config::getByKey('PAGE_SIZE');
-        $contacts   = Contact::where('submit_time', '>=', strtotime("midnight")*1000)
-            ->where('submit_time', '<', strtotime("tomorrow")*1000)
-            ->where('clevel', 'like', '%c3b%')
-            ->orderBy('submit_time', 'desc')->limit((int)$page_size)->get();
+        $page_size      = Config::getByKey('PAGE_SIZE');
         $sources        = Source::orderBy('name')->get();
         $teams          = Team::orderBy('name')->get();
         $marketers      = User::where('is_active', 1)->orderBy('username')->get();
@@ -59,7 +55,6 @@ class ContactController extends Controller
             'no_main_header',
             'active',
             'breadcrumbs',
-            'contacts',
             'sources',
             'teams',
             'marketers',
