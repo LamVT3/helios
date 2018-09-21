@@ -221,6 +221,9 @@
             margin-bottom: 100px;
 
         }
+        .border-right_none {
+            border-right: none !important;
+        }
     </style>
     <script src="{{ asset('js/reports/hour-report.js') }}"></script>
 
@@ -281,6 +284,59 @@
                 options: {!! $channels !!}
 
             });
+
+            $('.ads__show').click(function () {
+                var source_id = $('select[name="source_id"]').val();
+                var team_id = $('select[name="team_id"]').val();
+                var marketer_id = $('select[name="marketer_id"]').val();
+                var campaign_id = $('select[name="campaign_id"]').val();
+                var subcampaign_id = $('select[name="subcampaign_id"]').val();
+                var registered_date = $('.registered_date').text();
+                var type = $('select[name="type"]').val();
+
+                var $this = $(this);
+                var channel_name = $this.data('channel_name');
+                var api_channel = $this.data('api_channel');
+                var tr_channel = $(this).parent().parent();
+                var ads_detail = tr_channel.next();
+
+                if (ads_detail.hasClass('ads_detail') && ads_detail.hasClass('ads_show')){
+                    $this.html('<i class="fa fa-plus-circle"></i>');
+                    ads_detail.addClass('ads_hide');
+                    ads_detail.removeClass('ads_show');
+                    ads_detail.hide();
+                }
+                else if (ads_detail.hasClass('ads_detail') && ads_detail.hasClass('ads_hide')){
+                    $this.html('<i class="fa fa-minus-circle"></i>');
+                    ads_detail.addClass('ads_show');
+                    ads_detail.removeClass('ads_hide');
+                    ads_detail.show();
+                }
+                else{
+                    $this.html('<i class="fa fa-minus-circle"></i>');
+
+                    $('.loading').show();
+                    $.ajax({
+                        url: api_channel,
+                        type: 'GET',
+                        data: {
+                            channel_name : channel_name,
+                            source_id       : source_id,
+                            team_id         : team_id,
+                            marketer_id     : marketer_id,
+                            campaign_id     : campaign_id,
+                            subcampaign_id  : subcampaign_id,
+                            registered_date : registered_date,
+                            type : type,
+                        }
+                    }).done(function (response) {
+                        $('.loading').hide();
+                        $(tr_channel).after(response);
+                    });
+
+
+                }
+            })
         });
 
         function initChartChannel(item, data, arr_color){

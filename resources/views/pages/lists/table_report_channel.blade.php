@@ -4,6 +4,7 @@
                width="100%">
             <thead>
             <tr>
+                <th width="10px"></th>
                 <th>Channel</th>
                 <th>C3</th>
                 <th>C3B</th>
@@ -22,7 +23,8 @@
             <tbody>
 
             @foreach ($array_channel as $i)
-                    <tr>
+                    <tr class="tr_channel">
+                        <td><a href="javascript:void(0)" title="Show detail" class="ads__show" data-channel_name='{{$i}}' data-api_channel='{{route('channel-ads-detail')}}'><i class="fa fa-plus-circle"></i></a></td>
                         <td>{{$i}}</td>
                         <td style="color:{{($table['c3'][$i]) >= ($table['c3_week'][$i]) ? 'green' : 'red'}}">{{$table['c3'][$i]}}</td>
                         <td style="color:{{$table['c3b'][$i] >= $table['c3b_week'][$i] ? 'green' : 'red'}}">{{$table['c3b'][$i]}}</td>
@@ -37,11 +39,11 @@
                         <td>{{($table['l1'][$i] != 0) ? round($table['l6'][$i] * 100 / $table['l1'][$i] , 2) : 0}}</td>
                         <td>{{($table['l1'][$i] != 0) ? round($table['l8'][$i] * 100 / $table['l1'][$i] , 2) : 0}}</td>
                     </tr>
-                    @php
-                        
-                    @endphp
+
             @endforeach
+
             <tr>
+                <th></th>
                 <th>Total</th>
                 <th>{{$array_sum['c3']}}</th>
                 <th>{{$array_sum['c3b']}}</th>
@@ -60,3 +62,4 @@
         </table>
     </article>
 </div>
+

@@ -1859,6 +1859,255 @@ class SubReportController extends Controller
 
 	}
 
+	private function getAdsDetail($start_date, $end_date, $type = 'TOA'){
+		$array_ads = array();
+		$arr_ad = array();
+		$ad_id    = array();
+
+		$channel            = Channel::where('name', request()->channel_name)->first();
+
+		$data_where = $this->getWhereDataByCreatorID();
+
+		if (count($data_where) >= 1) {
+			$query = Ad::where($data_where)->where('channel_id',$channel->_id);
+		}
+		else{
+			$query = Ad::where('channel_id',$channel->_id);
+		}
+
+		$arr_ad = $query->get();
+
+		$ad_id = $query->pluck('_id')->toArray();
+
+		foreach ($arr_ad as $key => $ad) {
+			$array_ads[$ad->_id] = $ad->name;
+
+			$table['c3'][$ad->name] = 0;
+			$table['c3b'][$ad->name] = 0;
+			$table['c3bg'][$ad->name] = 0;
+			$table['l1'][$ad->name]   = 0;
+			$table['l3'][$ad->name]   = 0;
+			$table['l6'][$ad->name]   = 0;
+			$table['l8'][$ad->name]   = 0;
+		}
+
+		$table['c3']['Unknown'] = 0;
+		$table['c3b']['Unknown'] = 0;
+		$table['c3bg']['Unknown'] = 0;
+		$table['l1']['Unknown']   = 0;
+		$table['l3']['Unknown']   = 0;
+		$table['l6']['Unknown']   = 0;
+		$table['l8']['Unknown']   = 0;
+
+		if ($type === 'TOA')
+		{
+			$match = [
+				['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
+				['$match' => ['ad_id' => ['$in' => $ad_id]]],
+				[
+					'$group' => [
+						'_id'   => '$ad_id',
+						'c3'    => ['$sum' => '$c3'],
+						'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
+						'c3bg'  => ['$sum' => '$c3bg'],
+						'l1'    => ['$sum' => '$l1'],
+						'l3'    => ['$sum' => '$l3'],
+						'l6'    => ['$sum' => '$l6'],
+						'l8'    => ['$sum' => '$l8'],
+					]
+				]
+			];
+
+
+			$query_chart = AdResult::raw(function ($collection) use ($match) {
+				return $collection->aggregate($match);
+			});
+
+			foreach ( $query_chart as $key => $item_result ) {
+				$ad_name = @$array_ads[$item_result['_id']];
+
+				if ( $ad_name == '' ) {
+					$ad_name = 'Unknown';
+				}
+
+				$table['c3'][ $ad_name ]   += $item_result->c3;
+				$table['c3b'][ $ad_name ]  += $item_result->c3b;
+				$table['c3bg'][ $ad_name ] += $item_result->c3bg;
+				$table['l1'][ $ad_name ]   += $item_result->l1;
+				$table['l3'][ $ad_name ]   += $item_result->l3;
+				$table['l6'][ $ad_name ]   += $item_result->l6;
+				$table['l8'][ $ad_name ]   += $item_result->l8;
+			}
+
+			arsort($table['c3']);
+
+		}
+		else if($type === 'TOT')
+		{
+			$match = [
+				['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
+				['$match' => ['ad_id' => ['$in' => $ad_id]]],
+				[
+					'$group' => [
+						'_id'   => '$ad_id',
+						'c3'    => ['$sum' => '$c3'],
+						'c3b'   => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
+						'c3bg'  => ['$sum' => '$c3bg'],
+					]
+				]
+			];
+
+			$query_chart = AdResult::raw(function ($collection) use ($match) {
+				return $collection->aggregate($match);
+			});
+
+			foreach ( $query_chart as $item_result ) {
+				$ad_name = @$array_ads[$item_result['_id']];
+
+				if ( $ad_name == '' ) {
+					$ad_name = 'Unknown';
+				}
+
+				$table['c3'][ $ad_name ]   += $item_result->c3;
+				$table['c3b'][ $ad_name ]  += $item_result->c3b;
+				$table['c3bg'][ $ad_name ] += $item_result->c3bg;
+			}
+
+			arsort($table['c3']);
+
+			$start = $start_date;
+			$end = date('Y-m-d', strtotime( $end_date ) + 86400);
+
+			$query_l1 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+				$match = [
+					['$match' => ['l1_time' => ['$gte' => $start, '$lte' => $end]]],
+					['$match' => ['ad_id' => ['$in' => $ad_id]]],
+					[
+						'$group' => [
+							'_id' => '$ad_id',
+							'count' => ['$sum' => 1],
+						]
+					]
+				];
+				return $collection->aggregate($match);
+			});
+
+			$query_l3 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+				$match = [
+					['$match' => ['l3_time' => ['$gte' => $start, '$lte' => $end]]],
+					['$match' => ['ad_id' => ['$in' => $ad_id]]],
+					[
+						'$group' => [
+							'_id' => '$ad_id',
+							'count' => ['$sum' => 1],
+						]
+					]
+				];
+				return $collection->aggregate($match);
+			});
+
+			$query_l6 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+				$match = [
+					['$match' => ['l6_time' => ['$gte' => $start, '$lte' => $end]]],
+					['$match' => ['ad_id' => ['$in' => $ad_id]]],
+					[
+						'$group' => [
+							'_id' => '$ad_id',
+							'count' => ['$sum' => 1],
+						]
+					]
+				];
+				return $collection->aggregate($match);
+			});
+
+			$query_l8 = Contact::raw(function ($collection) use ($start, $end, $ad_id) {
+				$match = [
+					['$match' => ['l8_time' => ['$gte' => $start, '$lte' => $end]]],
+					['$match' => ['ad_id' => ['$in' => $ad_id]]],
+					[
+						'$group' => [
+							'_id' => '$ad_id',
+							'count' => ['$sum' => 1],
+						]
+					]
+				];
+				return $collection->aggregate($match);
+			});
+
+			$result = array();
+			foreach ($query_l1 as $key => $item){
+				if(isset($result[$item->id]->l1)){
+					$result[$item->id]->l1 += $item->count;
+				}
+				@$result[$item->id]->l1 = $item->count;
+			}
+			foreach ($query_l3 as $key => $item){
+				if(isset($result[$item->id]->l3)){
+					$result[$item->id]->l3 += $item->count;
+				}
+				@$result[$item->id]->l3 = $item->count;
+			}
+			foreach ($query_l6 as $key => $item){
+				if(isset($result[$item->id]->l6)){
+					$result[$item->id]->l6 += $item->count;
+				}
+				@$result[$item->id]->l6 = $item->count;
+			}
+			foreach ($query_l8 as $key => $item){
+				if(isset($result[$item->id]->l8)){
+					$result[$item->id]->l8 += $item->count;
+				}
+				@$result[$item->id]->l8 = $item->count;
+			}
+
+			foreach ( $result as $key => $item_result ) {
+				$ad_name = @$array_ads[$key];
+
+				if ( $ad_name && $ad_name == '' ) {
+					$ad_name = 'Unknown';
+				}
+
+				$table['l1'][ $ad_name ] += @$item_result->l1;
+				$table['l3'][ $ad_name ] += @$item_result->l3;
+				$table['l6'][ $ad_name ] += @$item_result->l6;
+				$table['l8'][ $ad_name ] += @$item_result->l8;
+			}
+		}
+
+		$array_ad_new = [];
+
+		foreach ($table['c3'] as $key=>$value) {
+			if ($value != 0){
+				$array_ad_new[] = $key;
+			}
+		}
+		foreach ($table['l1'] as $key=>$value) {
+			if ($value != 0 && !in_array($key,$array_ad_new)){
+				$array_ad_new[] = $key;
+			}
+		}
+		foreach ($table['l3'] as $key=>$value) {
+			if ($value != 0 && !in_array($key,$array_ad_new)){
+				$array_ad_new[] = $key;
+			}
+		}
+		foreach ($table['l6'] as $key=>$value) {
+			if ($value != 0 && !in_array($key,$array_ad_new)){
+				$array_ad_new[] = $key;
+			}
+		}
+		foreach ($table['l8'] as $key=>$value) {
+			if ($value != 0 && !in_array($key,$array_ad_new)){
+				$array_ad_new[] = $key;
+			}
+		}
+
+		$array_ad = $array_ad_new;
+
+		return ['table'=>$table,'array_ad' => $array_ad];
+
+	}
+
 	public function channelReportFilter(){
 		$startDate = Date('Y-m-d');
 		$endDate = Date('Y-m-d');
@@ -1880,6 +2129,23 @@ class SubReportController extends Controller
 		}
 
 		return view('pages.table_sub-report-channel', $data);
+	}
+
+	public function channelAdsDetail(){
+		$startDate = Date('Y-m-d');
+		$endDate = Date('Y-m-d');
+		$request = request();
+
+		if($request->registered_date){
+			$date_place = str_replace('-', ' ', $request->registered_date);
+			$date_arr = explode(' ', str_replace('/', '-', $date_place));
+			$startDate = Date('Y-m-d', strtotime($date_arr[0]));
+			$endDate = Date('Y-m-d', strtotime($date_arr[1]));
+		}
+
+		$data = $this->getAdsDetail($startDate, $endDate, $request->type);
+
+		return view('pages.lists.table_report_channel_ads_detail', $data);
 	}
 
     public function prepareDataByWeeks(){
