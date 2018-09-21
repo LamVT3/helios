@@ -215,6 +215,14 @@ class ContactController extends Controller
             unset($data_where['olm_status']);
         }
 
+        $status = @$request->is_export;
+        if($status == '1'){
+            $query->where('is_export', 1);
+        }
+        if($status == '0'){
+            $query->where('is_export', '<>', 1);
+        }
+
         if(@$data_where['clevel'] == 'c3bg'){
             $query->where('clevel','c3bg');
             unset($data_where['clevel']);
