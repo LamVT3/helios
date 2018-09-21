@@ -29,6 +29,16 @@
             </div>
         @endcomponent
     </article>
+
+    <article class="col-sm-12 col-md-12">
+    @component('components.jarviswidget',
+    ['id' => 'chart_number', 'icon' => 'fa-line-chart', 'title' => "Chart", 'dropdown' => 'false'])
+        <!-- widget content -->
+            <div class="widget-body no-padding">
+                <div id="number_chart" class="chart has-legend"></div>
+            </div>
+        @endcomponent
+    </article>
     <script type="text/javascript">
 
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
@@ -90,6 +100,50 @@
 
                 }
             })
+
+            var _data = [
+                ["C3B", {{$array_sum['c3b']}}],
+                ["C3BG", {{$array_sum['c3bg']}}],
+                ["L1", {{$array_sum['l1']}}],
+                ["L3", {{$array_sum['l3']}}],
+                ["L6", {{$array_sum['l6']}}],
+                ["L8", {{$array_sum['l8']}}]
+            ];
+
+            $.plot("#number_chart", [ _data ], {
+                series: {
+                    bars: {
+                        show: true,
+                        barWidth: 0.5,
+                        align: "center",
+                        label: {
+                            show: true,
+                            formatter: labelFormatter,
+                            background: {
+                                opacity: 0.5,
+                                color: "#000"
+                            }
+                        }
+
+                    }
+                },
+                xaxis: {
+                    mode: "categories",
+                    tickLength: 0
+                },
+                grid : {
+                    show : true,
+                    hoverable : true,
+                    clickable : false,
+                    borderColor : "#efefef",
+                },
+                tooltip : true,
+                tooltipOpts : {
+                    content : "<span>%y</span>",
+                    defaultTheme : false
+                },
+                colors: ["#FF8C00", "#666", "#BBB"]
+            });
         });
 
         function initChartChannel(item, data, arr_color){
