@@ -142,7 +142,7 @@
                                         @component('components.jarviswidget',
                                         ['id' => 'c3bg', 'icon' => 'fa-line-chart', 'title' => "C3BG ", 'dropdown' => 'false'])
                                             <!-- widget content -->
-                                                <div class="widget-body no-padding">
+                                                <div class="widget-body no-padding flot_channel">
                                                     <div id="c3bg_chart" class="chart has-legend"></div>
                                                 </div>
                                             @endcomponent
@@ -151,7 +151,7 @@
                                         @component('components.jarviswidget',
                                         ['id' => 'c3b', 'icon' => 'fa-line-chart', 'title' => "C3B ", 'dropdown' => 'false'])
                                             <!-- widget content -->
-                                                <div class="widget-body no-padding">
+                                                <div class="widget-body no-padding flot_channel">
                                                     <div id="c3b_chart" class="chart has-legend"></div>
                                                 </div>
                                             @endcomponent
@@ -161,7 +161,7 @@
                                         @component('components.jarviswidget',
                                         ['id' => 'c3', 'icon' => 'fa-line-chart', 'title' => "C3", 'dropdown' => 'false'])
                                             <!-- widget content -->
-                                                <div class="widget-body no-padding">
+                                                <div class="widget-body no-padding flot_channel">
                                                     <div id="c3_chart" class="chart has-legend"></div>
                                                 </div>
                                             @endcomponent
@@ -234,7 +234,7 @@
         .chart{
             height: 420px;
         }
-        .flot-x-axis .flot-tick-label {
+        .flot_channel .flot-x-axis .flot-tick-label {
             white-space: nowrap;
             transform: translate(-9px, 0) rotate(-65deg);
             text-indent: -100%;
@@ -397,7 +397,7 @@
                 },
                 tooltip : true,
                 tooltipOpts : {
-                    content : "<span>%y</span>",
+                    content : "<div>%y</div>",
                     defaultTheme : false
                 },
                 colors: ["#FF8C00", "#666", "#BBB"]
