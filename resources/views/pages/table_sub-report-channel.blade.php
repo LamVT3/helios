@@ -132,6 +132,9 @@
                     mode: "categories",
                     tickLength: 0
                 },
+                yaxes : [{
+                    min : 0
+                }],
                 grid : {
                     show : true,
                     hoverable : true,
