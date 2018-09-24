@@ -23,7 +23,7 @@
                     </legend>
                 <form class="smart-form" >
                     <div class="row" >
-                        <section class="col col-3">
+                        <section class="col col-sm-6 col-lg-3">
                             <label class="label">Marketer</label>
                             <select name="marketer" class="select2" style="width: 280px" id="marketer"
                                     data-url="">
@@ -38,7 +38,7 @@
                             </select>
                             <i></i>
                         </section>
-                        <section class="col col-3">
+                        <section class="col col-sm-6 col-lg-3">
                             <label class="label">Channel</label>
                             <select name="channel" class="select2" style="width: 280px" id="channel"
                                     data-url="">
@@ -49,13 +49,15 @@
                             </select>
                             <i></i>
                         </section>
-                        <section class="col col-3">
+                        <section class="col col-sm-6 col-lg-3">
                             <div id="reportrange" class="pull-left"
                                  style="background: #fff; cursor: pointer; padding: 10px; margin: 20px 0px 0px 0px; border: 1px solid #ccc;">
                                 <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
                                 <span></span> <b class="caret"></b>
                             </div>
-                            <div id="" class="pull-right"
+                        </section>
+                        <section class="col col-sm-6 col-lg-3">
+                            <div id="" class="pull-left"
                                  style="margin: 28px 0px 0px 0px; padding: 10px px 7px 10px;">
                                 <button id="filter" class="btn btn-primary btn-sm" type="button" style="float: right" >
                                     <i class="fa fa-filter"></i>
@@ -74,11 +76,11 @@
                         <div class="panel panel-default widget-c3">
                             <div class="panel-body status">
                                 <div class="who clearfix widget-title">
-                                    <h4><i class="fa fa-lg fa-fw fa-child"></i><strong>C3 Total</strong></h4>
+                                    <h4><i class="fa fa-lg fa-fw fa-child"></i><strong>C3B Total</strong></h4>
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
                                     Actual / KPI
-                                    <span class="widget-unit">C3</span>
+                                    <span class="widget-unit">C3B</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
                                     ...
@@ -318,6 +320,7 @@
         <!-- END MAIN CONTENT -->
         <input type="hidden" name="c3_month" id="c3_month" value="{{$month}}">
         <input type="hidden" name="l8_month" id="l8_month" value="{{$month}}">
+        <input type="hidden" name="get-channel-url" id="get-channel-url" value="{{route('dashboard-get-channel')}}">
 
     </div>
     <!-- END MAIN PANEL -->
@@ -379,8 +382,11 @@
                 },
 
 
-            });
+            }, cb);
+
             cb(start, end);
+
+            init_dashboard();
 
             if ($("#site-stats-c3").length) {
 
@@ -491,30 +497,13 @@
             $('.today').click();
 
             $('input#currency').click(function (e) {
-                var unit = $(this).val();
-                $('#currency_unit').val(unit);
-
-                var date = $('#reportrange span').html();
-                date = date.split('-');
-
-                var startDate = formatDate(date[0]);
-                var endDate = formatDate(date[1]);
-
-                dashboard(startDate, endDate, unit);
+                init_dashboard();
                 $('.today').click();
 
             })
 
             $('button#filter').click(function (e) {
-                var unit = $('#currency_unit').val();
-
-                var date = $('#reportrange span').html();
-                date = date.split('-');
-
-                var startDate = formatDate(date[0]);
-                var endDate = formatDate(date[1]);
-
-                dashboard(startDate, endDate, unit);
+                init_dashboard();
 
                 var c3_month = $('#c3_month').val();
                 var l8_month = $('#l8_month').val();
@@ -522,7 +511,41 @@
                 get_l8_chart(parseInt(l8_month));
             })
 
+            $('#marketer').change(function (e) {
+                var url = $('#get-channel-url').val();
+                var marketer = $('#marketer').val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: {
+                        marketer: marketer
+                    }
+                }).done(function (response) {
+                    var select_channel = "<option value='' selected>All</option>";
+                    $.each(response, function (index, item) {
+                        select_channel += "<option value=" + item.id + "> " + item.name + " </option>";
+                    });
+
+                    $('#channel').html(select_channel);
+                    $("#subcampaign_id").select2();
+                });
+            })
+
         });
+
+        function init_dashboard(){
+            var unit = $('#currency_unit').val();
+
+            var date = $('#reportrange span').html();
+            date = date.split('-');
+
+            var startDate = formatDate(date[0]);
+            var endDate = formatDate(date[1]);
+
+            dashboard(startDate, endDate, unit);
+        }
 
         function formatDate(str) {
             var date = str.split('/');
@@ -536,13 +559,6 @@
         // PAGE RELATED SCRIPTS
         function cb(start, end) {
             $('#reportrange span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
-
-            var startDate = start.format('YYYY-MM-DD');
-            var endDate = end.format('YYYY-MM-DD');
-            var unit = $('#currency_unit').val();
-
-            dashboard(startDate, endDate, unit);
-
         }
 
         function dashboard(startDate, endDate, unit) {
@@ -652,7 +668,6 @@
         }
 
         function set_c3_chart(data) {
-            console.log(data.chart_c3);
             if ($("#site-stats-c3").length) {
 
                 var plot = $.plot($("#site-stats-c3"), [

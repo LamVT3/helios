@@ -394,19 +394,20 @@ class AjaxController extends Controller
             $query_dashboard->whereIn('creator_id', $ads);
         }
 
-        $c3         = $query_dashboard->sum('c3');
+        $c3b        = $query_dashboard->sum('c3b');
+        $c3bg       = $query_dashboard->sum('c3bg');
         $spent      = $query_dashboard->sum('spent');  // USD
         $revenue    = $query_dashboard->sum('revenue'); // Bath
 
-        $dashboard['c3']        = $c3;
+        $dashboard['c3']        = $c3b + $c3bg;
         $dashboard['spent']     = $this->convert_spent($spent);
         $dashboard['revenue']   = $this->convert_revenue($revenue);
         $dashboard['c3_cost']   = $dashboard['c3'] ? round( $dashboard['spent'] / $dashboard['c3'], 2) : 0;
 
         $dashboard['c3']        = number_format($dashboard['c3']);
-        $dashboard['c3_cost']   = number_format($dashboard['c3_cost']);
-        $dashboard['spent']     = number_format($dashboard['spent']);
-        $dashboard['revenue']   = number_format($dashboard['revenue']);
+        $dashboard['c3_cost']   = number_format($dashboard['c3_cost'], 2);
+        $dashboard['spent']     = number_format($dashboard['spent'], 2);
+        $dashboard['revenue']   = number_format($dashboard['revenue'], 2);
         /* end Dashboard */
 
         return response()->json(['type' => 'success', 'dashboard' => $dashboard]);

@@ -49,8 +49,7 @@ class DashboardController extends Controller
         $user_id    = auth()->user()->_id;
 
         $users      = User::all();
-        $channels   = Channel::all();
-        $kpi = array();
+        $kpi        = array();
 
         $array_month = array();
         for ($i = 1; $i <= $d; $i++) {
@@ -63,6 +62,7 @@ class DashboardController extends Controller
             if(auth()->user()->kpi){
                 $kpi = auth()->user()->kpi;
             }
+            $channels   = $this->get_channel($user_id);
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
                 ['$match' => ['creator_id' => $user_id]],
@@ -79,7 +79,8 @@ class DashboardController extends Controller
                 ]
             ];
         }else{
-            $kpi = $this->getTotalKpi();
+            $kpi        = $this->getTotalKpi();
+            $channels   = Channel::all();
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
                 [
@@ -191,5 +192,17 @@ class DashboardController extends Controller
         }
 
         return $total_kpi;
+    }
+
+    public function get_channel($marketer_id = null){
+        $request = request();
+        if($request->marketer){
+            $marketer_id = $request->marketer;
+        }
+
+        $ads        = Ad::where('creator_id', $marketer_id)->pluck('channel_id')->toArray();
+        $channel    = Channel::whereIn('_id', $ads)->get();
+
+        return $channel;
     }
 }
