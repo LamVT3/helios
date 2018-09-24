@@ -5,7 +5,7 @@
     @component('components.jarviswidget',
     ['id' => 'c3bg', 'icon' => 'fa-line-chart', 'title' => "C3BG ", 'dropdown' => 'false'])
         <!-- widget content -->
-            <div class="widget-body no-padding">
+            <div class="widget-body no-padding flot_channel">
                 <div id="c3bg_chart" class="chart has-legend"></div>
             </div>
         @endcomponent
@@ -14,7 +14,7 @@
     @component('components.jarviswidget',
     ['id' => 'c3b', 'icon' => 'fa-line-chart', 'title' => "C3B ", 'dropdown' => 'false'])
         <!-- widget content -->
-            <div class="widget-body no-padding">
+            <div class="widget-body no-padding flot_channel">
                 <div id="c3b_chart" class="chart has-legend"></div>
             </div>
         @endcomponent
@@ -24,7 +24,7 @@
     @component('components.jarviswidget',
     ['id' => 'c3', 'icon' => 'fa-line-chart', 'title' => "C3", 'dropdown' => 'false'])
         <!-- widget content -->
-            <div class="widget-body no-padding">
+            <div class="widget-body no-padding flot_channel">
                 <div id="c3_chart" class="chart has-legend"></div>
             </div>
         @endcomponent
@@ -132,6 +132,9 @@
                     mode: "categories",
                     tickLength: 0
                 },
+                yaxes : [{
+                    min : 0
+                }],
                 grid : {
                     show : true,
                     hoverable : true,
@@ -140,7 +143,7 @@
                 },
                 tooltip : true,
                 tooltipOpts : {
-                    content : "<span>%y</span>",
+                    content : "<div>%y</div>",
                     defaultTheme : false
                 },
                 colors: ["#FF8C00", "#666", "#BBB"]
