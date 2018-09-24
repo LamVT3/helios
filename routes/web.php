@@ -18,6 +18,9 @@ Route::post('login', 'Auth\LoginController@login');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
 Route::get('/home', 'DashboardController@index')->name('dashboard');
+Route::group(['prefix' => 'dashboard'], function () {
+    Route::get('/get_channel', 'DashboardController@get_channel')->name('dashboard-get-channel');
+});
 
 Route::group(['prefix' => 'source'], function () {
     Route::get('/', 'SourceController@index')->name('source');
