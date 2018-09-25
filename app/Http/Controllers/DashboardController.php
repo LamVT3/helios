@@ -199,15 +199,14 @@ class DashboardController extends Controller
 
         if($request->marketer){
             $marketer_id = $request->marketer;
-        }
-        $ads        = Ad::where('creator_id', $marketer_id)->pluck('channel_id')->toArray();
-
-        if(count($ads) > 0 ){
+            $ads        = Ad::where('creator_id', $marketer_id)->pluck('channel_id')->toArray();
+            $channel    = Channel::whereIn('_id', $ads)->get();
+        }else if($marketer_id){
+            $ads        = Ad::where('creator_id', $marketer_id)->pluck('channel_id')->toArray();
             $channel    = Channel::whereIn('_id', $ads)->get();
         }else{
             $channel    = Channel::get();
         }
-
         return $channel;
     }
 }
