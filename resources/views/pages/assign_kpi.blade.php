@@ -44,11 +44,25 @@
                                             </section>
                                         </div>
 
-                                        <div class="text-right" style="margin-bottom: 20px">
-                                            <button id="filter_maketer" class="btn btn-primary btn-sm" type="submit" style="margin-right: 15px">
-                                                <i class="fa fa-filter"></i>
-                                                Filter
-                                            </button>
+                                        <div class="row">
+                                            <section class="col col-sm-6 col-lg-3">
+                                                <label class="label">KPI Selection</label>
+                                                <select name="kpi_selection" class="select2" style="width: 280px" id="kpi_selection"
+                                                        data-url="">
+                                                    <option value="c3b">C3B</option>
+                                                    <option value="c3b_cost">C3B Cost</option>
+                                                    <option value="l3_c3bg">L3/C3BG</option>
+                                                </select>
+                                                <i></i>
+                                            </section>
+                                            <section>
+                                                <div id="" class="text-right" style="margin: 10px 0px; padding: 10px 7px;">
+                                                    <button id="filter_maketer" class="btn btn-primary btn-sm" type="submit" style="margin-right: 15px">
+                                                        <i class="fa fa-filter"></i>
+                                                        Filter
+                                                    </button>
+                                                </div>
+                                            </section>
                                         </div>
 
                                         <div id="wrapper_kpi">
@@ -65,11 +79,25 @@
                                             </section>
                                         </div>
 
-                                        <div class="text-right" style="margin-bottom: 20px">
-                                            <button id="filter_team" class="btn btn-primary btn-sm" type="submit" style="margin-right: 15px">
-                                                <i class="fa fa-filter"></i>
-                                                Filter
-                                            </button>
+                                        <div class="row">
+                                            <section class="col col-sm-6 col-lg-3">
+                                                <label class="label">KPI Selection</label>
+                                                <select name="kpi_selection" class="select2" style="width: 280px" id="kpi_selection"
+                                                        data-url="">
+                                                    <option value="c3b">C3B</option>
+                                                    <option value="c3b_cost">C3B Cost</option>
+                                                    <option value="l3_c3bg">L3/C3BG</option>
+                                                </select>
+                                                <i></i>
+                                            </section>
+                                            <section>
+                                                <div id="" class="text-right" style="margin: 10px 0px; padding: 10px 7px;">
+                                                    <button id="filter_team" class="btn btn-primary btn-sm" type="submit" style="margin-right: 15px">
+                                                        <i class="fa fa-filter"></i>
+                                                        Filter
+                                                    </button>
+                                                </div>
+                                            </section>
                                         </div>
 
                                         <div id="wrapper_kpi_by_team">
@@ -183,6 +211,14 @@
             initFormKPI(user, month);
         });
 
+        $('select#kpi_selection').change(function(e){
+            e.preventDefault();
+            var month =  $('#selected_month').val();
+
+            initDataKPI(month);
+            initDataKPIByteam(month);
+        });
+
         $('#addModal').on('shown.bs.modal', function () {
             var user    = $(this).attr('data-user-id');
             var month   = $('#selected_month').val();
@@ -206,7 +242,7 @@
             $('#selected_month').val(month);
 
             initDataKPI(month);
-            initDataKPIByteam(month)
+            initDataKPIByteam(month);
         });
 
         $('a.edit_kpi').click(function() {
@@ -305,6 +341,7 @@
     function initDataKPI(month) {
         var url = $('#kpi_by_maketer_url').val();
         var maketer = $('input[name=maketer_name]').val();
+        var kpi_selection  = $('select#kpi_selection').val();
 
         $('.loading').show();
         $.ajax({
@@ -312,7 +349,8 @@
             type: 'GET',
             data: {
                 month   : month,
-                maketer : maketer
+                maketer : maketer,
+                kpi_selection : kpi_selection
             }
         }).done(function (response) {
             $('#wrapper_kpi').html(response);
@@ -328,6 +366,7 @@
     function initDataKPIByteam(month) {
         var url = $('#kpi_by_team_url').val();
         var team = $('input[name=team]').val();
+        var kpi_selection  = $('select#kpi_selection').val();
 
         $('.loading').show();
         $.ajax({
@@ -335,7 +374,8 @@
             type: 'GET',
             data: {
                 month   : month,
-                team    : team
+                team    : team,
+                kpi_selection : kpi_selection
             }
         }).done(function (response) {
             $('#wrapper_kpi_by_team').html(response);
