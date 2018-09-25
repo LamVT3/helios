@@ -67,8 +67,8 @@ class KpiController extends Controller
 
     function get_data_by_maketer($data){
         uasort($data, function ($item1, $item2) {
-            if ($item1['total_c3b'] == $item2['total_c3b']) return 0;
-            return $item2['total_c3b'] < $item1['total_c3b'] ? -1 : 1;
+            if ($item1['total_actual'] == $item2['total_actual']) return 0;
+            return $item2['total_actual'] < $item1['total_actual'] ? -1 : 1;
         });
         return $data;
     }
@@ -115,19 +115,44 @@ class KpiController extends Controller
         $users = User::all();
         foreach ($users as $user){
 
-            $kpi = isset($user->kpi[$year][$month]) ? $user->kpi[$year][$month] : array();
-            $data[$user->username]['kpi']       = $kpi;
-            $data[$user->username]['total_kpi'] = array_sum($kpi);
-
-            $data[$user->username]['c3b']       = $this->get_c3b_data($user);
-            $c3b = isset($data[$user->username]['c3b']) ? $data[$user->username]['c3b'] : array();
-            $data[$user->username]['total_c3b'] = array_sum($c3b);
             $data[$user->username]['user_id']   = $user->id;
+            switch ($request->kpi_selection) {
+                case "c3b_cost":
+                    $kpi_cost = isset($user->kpi_cost[$year][$month]) ? $user->kpi_cost[$year][$month] : array();
+                    $data[$user->username]['kpi']       = $kpi_cost;
+                    $data[$user->username]['total_kpi'] = array_sum($kpi_cost);
+
+                    $db_data = $this->get_db_data($user);
+
+                    $data[$user->username]['actual']       = isset($db_data['c3b_cost']) ? $db_data['c3b_cost'] : array();
+                    $actual = isset($data[$user->username]['actual']) ? $data[$user->username]['actual'] : array();
+                    $data[$user->username]['total_actual'] = array_sum($actual);
+                    break;
+                case "l3_c3bg":
+                    $kpi_l3_c3bg = isset($user->kpi_l3_c3bg[$year][$month]) ? $user->kpi_l3_c3bg[$year][$month] : array();
+                    $data[$user->username]['kpi']       = $kpi_l3_c3bg;
+                    $data[$user->username]['total_kpi'] = array_sum($kpi_l3_c3bg);
+
+                    $db_data = $this->get_db_data($user);
+
+                    $data[$user->username]['actual']       = isset($db_data['l3_c3bg']) ? $db_data['l3_c3bg'] : array() ;
+                    $actual = isset($data[$user->username]['actual']) ? $data[$user->username]['actual'] : array();
+                    $data[$user->username]['total_actual'] = array_sum($actual);
+                    break;
+                case "c3b":
+                default:
+                    $kpi = isset($user->kpi[$year][$month]) ? $user->kpi[$year][$month] : array();
+                    $data[$user->username]['kpi']       = $kpi;
+                    $data[$user->username]['total_kpi'] = array_sum($kpi);
+
+                    $data[$user->username]['actual']       = $this->get_c3b_data($user);
+                    $actual = isset($data[$user->username]['actual']) ? $data[$user->username]['actual'] : array();
+                    $data[$user->username]['total_actual'] = array_sum($actual);
+            }
 
             $team_name = $this->get_team($user->id);
             $data[$user->username]['team']   = $team_name;
         }
-
         return $data;
 
     }
@@ -177,6 +202,51 @@ class KpiController extends Controller
             $day = explode("-",@$item['_id']);
             $key = intval($day[2]);
             $data[$key] = @$item['c3b'];
+        }
+
+        return $data;
+    }
+
+    function get_db_data($user){
+        /*  phan date*/
+        $month = date('m'); /* thang hien tai */
+        $year = date('Y'); /* nam hien tai*/
+        $request = request();
+        if($request->month){
+            $month = $request->month;
+        }
+
+        $d = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+        $first_day_this_month = date('Y-'.$month.'-01'); /* ngày đàu tiên của tháng */
+        $last_day_this_month = date('Y-'.$month.'-t'); /* ngày cuối cùng của tháng */
+        /* end date */
+        $query = AdResult::raw(function($collection) use ($first_day_this_month,$last_day_this_month,$user) {
+            return $collection->aggregate([
+                ['$match' => [
+                    'date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month],
+                    'creator_id'  => $user->_id
+                ]],
+                [
+                    '$group' => [
+                        '_id' => '$date',
+                        'c3b' => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
+                        'c3bg' => ['$sum' => '$c3bg'],
+                        'spent' => ['$sum' => '$spent'],
+                        'l3' => ['$sum' => '$l3'],
+                    ]
+                ]
+            ]);
+        });
+        $data = array();
+        foreach ($query as $item){
+            $day = explode("-",@$item['_id']);
+            $key = intval($day[2]);
+            $spent = @$item['spent'];
+            $c3b = @$item['c3b'];
+            $c3bg = @$item['c3bg'];
+            $l3 = @$item['l3'];
+            $data['c3b_cost'][$key] = $c3b != 0 ? round($spent/$c3b,2) : 0;
+            $data['l3_c3bg'][$key] = $c3bg != 0 ? round($l3/$c3bg,2) : 0;
         }
 
         return $data;
@@ -254,18 +324,17 @@ class KpiController extends Controller
 
             if (!isset($res[$team])) {
                 $res[$team]['kpi']        = @$item['kpi'];
-                $res[$team]['c3b']        = @$item['c3b'];
+                $res[$team]['actual']     = @$item['actual'];
                 $res[$team]['total_kpi']  = @$item['total_kpi'];
-                $res[$team]['total_c3b']  = @$item['total_c3b'];
-            }
-            else{
+                $res[$team]['total_actual']  = @$item['total_actual'];
+            } else {
                 $cnt = $day;
                 for($i = 1; $i <= $cnt; $i++){
                     @$res[$team]['kpi'][$i] += @$item['kpi'][$i];
-                    @$res[$team]['c3b'][$i] += @$item['c3b'][$i];
+                    @$res[$team]['actual'][$i] += @$item['actual'][$i];
                 }
                 @$res[$team]['total_kpi']  += @$item['total_kpi'];
-                @$res[$team]['total_c3b']  += @$item['total_c3b'];
+                @$res[$team]['total_actual']  += @$item['total_actual'];
             }
         }
 
@@ -275,16 +344,16 @@ class KpiController extends Controller
                 $cnt = $day;
                 for($i = 1; $i <= $cnt; $i++){
                     @$res[$team]['kpi'][$i] += 0;
-                    @$res[$team]['c3b'][$i] += 0;
+                    @$res[$team]['actual'][$i] += 0;
                 }
                 @$res[$team]['total_kpi']  = 0;
-                @$res[$team]['total_c3b']  = 0;
+                @$res[$team]['total_actual']  = 0;
             }
         }
 
         uasort($res, function ($item1, $item2) {
-            if ($item1['total_c3b'] == $item2['total_c3b']) return 0;
-            return $item2['total_c3b'] < $item1['total_c3b'] ? -1 : 1;
+            if ($item1['total_actual'] == $item2['total_actual']) return 0;
+            return $item2['total_actual'] < $item1['total_actual'] ? -1 : 1;
         });
         return $res;
     }

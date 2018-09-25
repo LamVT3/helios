@@ -23,9 +23,42 @@
     </tr>
     </thead>
     <tbody>
+
+    <?php
+    $total_kpi = $total_actual = 0;
+    ?>
+    @foreach($data_team as $user => $item)
+        <?php
+        $total_kpi += @$item['total_kpi'];
+        $total_actual += @$item['total_actual'];
+        ?>
+    @endforeach
+    <tr style="font-weight: bold">
+        <td class="no-border-right"><span>Total</span></td>
+        <td class="border-bold-right">
+            {{--<a class=' btn-xs btn-default edit_kpi' data-user-id=""--}}
+            {{--href="" data-toggle="" data-target="" onclick=""--}}
+            {{--data-original-title='Edit Row'><i class='fa fa-pencil'></i></a>--}}
+        </td>
+        <td class="border-bold-right">{{ $total_kpi }}</td>
+        <td class="border-bold-right">{{ $total_actual }}</td>
+        <td class="border-bold-right">{{ $total_actual - $total_kpi }}</td>
+
+        @for ($i = 1; $i <= $days; $i++)
+            <?php $kpi = $actual = 0; ?>
+            @foreach($data_team as $user => $item)
+                <?php
+                $kpi += @$item['kpi'][$i];
+                $actual += @$item['actual'][$i];
+                ?>
+            @endforeach
+            <td>{{ $kpi }}</td>
+            <td class="border-bold-right act">{{ $actual }}</td>
+        @endfor
+    </tr>
     @foreach($data_team as $team => $item)
         <tr>
-            <?php $gap =  @$item['total_c3b'] - @$item['total_kpi']?>
+            <?php $gap =  @$item['total_actual'] - @$item['total_kpi']?>
 
             @if($gap < 0)
                 <td class="no-border-right gap_text"><span style="font-weight: bold">{{ $team }}</span></td>
@@ -37,7 +70,7 @@
 
             </td>
             <td class="border-bold-right">{{ @$item['total_kpi'] }}</td>
-            <td class="border-bold-right">{{ @$item['total_c3b'] }}</td>
+            <td class="border-bold-right">{{ @$item['total_actual'] }}</td>
 
             @if($gap < 0)
                 <td class="border-bold-right gap_text">{{ $gap }}</td>
@@ -46,15 +79,15 @@
             @endif
 
             @for ($i = 1; $i <= $days; $i++)
-                @if(@$item['c3b'][$i] - @$item['kpi'][$i] < 0)
+                @if(@$item['actual'][$i] - @$item['kpi'][$i] < 0)
                     <td>{{ @$item['kpi'][$i] ? @$item['kpi'][$i] : 0 }}</td>
                     <td class="border-bold-right act">
-                        {{ @$item['c3b'][$i] ? @$item['c3b'][$i] : 0 }}
-                        <span class="gap_text">({{@$item['c3b'][$i] - @$item['kpi'][$i]}})</span>
+                        {{ @$item['actual'][$i] ? @$item['actual'][$i] : 0 }}
+                        <span class="gap_text">({{@$item['actual'][$i] - @$item['kpi'][$i]}})</span>
                     </td>
                 @else
                     <td>{{ @$item['kpi'][$i] ? @$item['kpi'][$i] : 0 }}</td>
-                    <td class="border-bold-right">{{ @$item['c3b'][$i] ? @$item['c3b'][$i] : 0 }}</td>
+                    <td class="border-bold-right">{{ @$item['actual'][$i] ? @$item['actual'][$i] : 0 }}</td>
                 @endif
             @endfor
         </tr>
