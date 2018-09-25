@@ -196,12 +196,17 @@ class DashboardController extends Controller
 
     public function get_channel($marketer_id = null){
         $request = request();
+
         if($request->marketer){
             $marketer_id = $request->marketer;
         }
-
         $ads        = Ad::where('creator_id', $marketer_id)->pluck('channel_id')->toArray();
-        $channel    = Channel::whereIn('_id', $ads)->get();
+
+        if(count($ads) > 0 ){
+            $channel    = Channel::whereIn('_id', $ads)->get();
+        }else{
+            $channel    = Channel::get();
+        }
 
         return $channel;
     }
