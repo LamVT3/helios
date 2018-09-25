@@ -46,7 +46,7 @@
 
                                         <div class="row">
                                             <section class="col col-sm-6 col-lg-3">
-                                                <label class="label">KPI Selection</label>
+                                                <label class="kpi_label">KPI Selection</label>
                                                 <select name="kpi_selection" class="select2" style="width: 280px" id="kpi_selection"
                                                         data-url="">
                                                     <option value="c3b">C3B</option>
@@ -81,7 +81,7 @@
 
                                         <div class="row">
                                             <section class="col col-sm-6 col-lg-3">
-                                                <label class="label">KPI Selection</label>
+                                                <label class="kpi_label">KPI Selection</label>
                                                 <select name="kpi_selection" class="select2" style="width: 280px" id="kpi_selection"
                                                         data-url="">
                                                     <option value="c3b">C3B</option>
@@ -143,6 +143,19 @@
 
 <script src="{{ asset('js/plugin/selectize/js/standalone/selectize.min.js')}}"></script>
 <script src="{{ asset('js/fixedTable/tableHeadFixer.js') }}"></script>
+
+<style>
+    .kpi_label {
+        display: block;
+        margin-bottom: 6px;
+        line-height: 19px;
+        font-weight: bolder;
+        font-size: 13px;
+        color: #333;
+        text-align: left;
+        white-space: normal;
+    }
+</style>
 
 
 <script type="text/javascript">
