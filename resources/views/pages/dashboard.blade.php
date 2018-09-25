@@ -351,6 +351,12 @@
 
     <link rel="stylesheet" type="text/css" media="screen" href="{{ URL::to('css/custom-radio.css') }}">
 
+    <style>
+        .select2-container{
+            width: auto;  !important;
+        }
+    </style>
+
     <script type="text/javascript">
 
         // 2018-04-17 LamVT [HEL-9] add dropdown for C3/L8 chart
