@@ -46,6 +46,7 @@ class KpiController extends Controller
         $year   = date('Y');
         $result = $this->get_data();
 
+        $kpi_selection  = "c3b";
         $data_maketer   = $this->get_data_by_maketer($result);
         $data_team      = $this->get_data_by_team($result, $days);
 
@@ -56,6 +57,7 @@ class KpiController extends Controller
             'active',
             'breadcrumbs',
             'users',
+            'kpi_selection',
             'data_maketer',
             'data_team',
             'days',
@@ -148,6 +150,7 @@ class KpiController extends Controller
                     $data[$user->username]['actual']       = $this->get_c3b_data($user);
                     $actual = isset($data[$user->username]['actual']) ? $data[$user->username]['actual'] : array();
                     $data[$user->username]['total_actual'] = array_sum($actual);
+                    break;
             }
 
             $team_name = $this->get_team($user->id);
@@ -274,7 +277,10 @@ class KpiController extends Controller
             }
         }
 
+        $kpi_selection = $request->kpi_selection;
+
         return view('pages.table_report_kpi', compact(
+            'kpi_selection',
             'data_maketer',
             'days',
             'month',
@@ -305,7 +311,10 @@ class KpiController extends Controller
             }
         }
 
+        $kpi_selection = $request->kpi_selection;
+
         return view('pages.table_report_kpi_by_team', compact(
+            'kpi_selection',
             'data_team',
             'days',
             'month',
