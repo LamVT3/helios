@@ -25,6 +25,7 @@
     <tbody>
     <?php
         $total_kpi = $total_actual = 0;
+        $noMarketer = sizeof($data_maketer);
     ?>
     @foreach($data_maketer as $user => $item)
         <?php
@@ -32,13 +33,17 @@
             $total_actual += @$item['total_actual'];
         ?>
     @endforeach
-    <tr style="font-weight: bold">
+    <tr style="font-weight: bold; color: #3276b1; font-size: medium;">
         <td class="no-border-right"><span>Total</span></td>
         <td class="border-bold-right">
             {{--<a class=' btn-xs btn-default edit_kpi' data-user-id=""--}}
                {{--href="" data-toggle="" data-target="" onclick=""--}}
                {{--data-original-title='Edit Row'><i class='fa fa-pencil'></i></a>--}}
         </td>
+        <?php
+            $total_kpi = $kpi_selection == "c3b" ? $total_kpi : ($noMarketer != 0 ? round($total_kpi/$noMarketer,2) : 0);
+            $total_actual = $kpi_selection == "c3b" ? $total_actual : ($noMarketer != 0 ? round($total_actual/$noMarketer,2) : 0);
+        ?>
         <td class="border-bold-right">{{ $total_kpi }}</td>
         <td class="border-bold-right">{{ $total_actual }}</td>
         <td class="border-bold-right">{{ $total_actual - $total_kpi }}</td>
@@ -51,8 +56,9 @@
                     $actual += @$item['actual'][$i];
                 ?>
             @endforeach
-            <td>{{ $kpi }}</td>
-            <td class="border-bold-right act">{{ $actual }}</td>
+
+            <td>{{ $kpi_selection == "c3b" ? $kpi : ($noMarketer != 0 ? round($kpi/$noMarketer,2) : 0) }}</td>
+            <td class="border-bold-right act">{{ $kpi_selection == "c3b" ? $actual : ($noMarketer != 0 ? round($actual/$noMarketer,2) : 0) }}</td>
         @endfor
     </tr>
     @foreach($data_maketer as $user => $item)
