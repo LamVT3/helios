@@ -47,22 +47,28 @@
                             </select>
                             <i></i>
                         </section>
-                        <section class="col col-sm-6 col-lg-3">
+                        <section class="col col-sm-6 col-lg-3" style="min-height: 55px">
                             <label class="label">Currency</label>
-                            <select name="channel" class="select2" style="width: 280px" id="currency_unit"
-                                    data-url="">
-                                <option value="USD" selected>USD</option>
-                                <option value="VND">VND</option>
-                                <option value="Baht">Baht</option>
-                            </select>
-                            <i></i>
+                            <div id="wrapper_currency" style="border: 1px solid #ccc; float: left; padding: 5px 0px 5px 10px; width: 98%;">
+                                <label>
+                                    <input type="radio" name="currency" id="currency" value="USD" checked>USD
+                                </label>
+                                <label>
+                                    <input type="radio" name="currency" id="currency" value="VND">VND
+                                </label>
+                                <label>
+                                    <input type="radio" name="currency" id="currency" value="Baht">Baht
+                                </label>
+                            </div>
                         </section>
-                        <section class="col col-sm-6 col-lg-3">
+                        <section class="col col-sm-6 col-lg-3" style="min-height: 55px">
+                            <label class="label">Date</label>
                             <div id="reportrange" class="pull-left"
-                                 style="background: #fff; cursor: pointer; padding: 10px; margin: 20px 0px 0px 0px; border: 1px solid #ccc;">
+                                 style="background: #fff; cursor: pointer; padding: 7px 10px 7px 10px; border: 1px solid #ccc;">
                                 <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
                                 <span></span> <b class="caret"></b>
                             </div>
+                            <i></i>
                         </section>
                     </div>
                     <div class="row">
@@ -349,12 +355,20 @@
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
     <script src="{{ asset('js/fixedTable/tableHeadFixer.js') }}"></script>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="{{ URL::to('css/custom-radio.css') }}">
-
     <style>
-        .select2-container{
+        .select2-container
+        {
             width: auto;  !important;
         }
+        input#currency
+        {
+            margin-right: 5px;
+        }
+        #wrapper_currency label
+        {
+            margin-right: 15px;
+        }
+
     </style>
 
     <script type="text/javascript">
@@ -523,7 +537,7 @@
 
                 $('.widget-revenue-leaderboard button.active').click();
                 $('.widget-c3-leaderboard button.active').click();
-                $('.widget-revenue-leaderboard button.active').click();
+                $('.widget-spent-leaderboard button.active').click();
 
             })
 
@@ -552,7 +566,7 @@
         });
 
         function init_dashboard(){
-            var unit = $('#currency_unit').val();
+            var unit = $('input[name=currency]:checked').val();
 
             var date = $('#reportrange span').html();
             date = date.split('-');
@@ -630,7 +644,7 @@
 
             $('.widget-revenue-leaderboard button').removeClass('active');
             $(self).addClass('active');
-            var unit = $('#currency_unit').val();
+            var unit = $('input[name=currency]:checked').val();
 
             $.get("{{ route('ajax-revenue-leaderboard') }}", {period: period, unit: unit}, function (data) {
                 $('.revenue_leaderboard').html(data);
@@ -646,7 +660,7 @@
 
             $('.widget-spent-leaderboard button').removeClass('active');
             $(self).addClass('active');
-            var unit = $('#currency_unit').val();
+            var unit = $('input[name=currency]:checked').val();
 
             $.get("{{ route('ajax-spent-leaderboard') }}", {period: period, unit: unit}, function (data) {
                 $('.spent_leaderboard').html(data);
