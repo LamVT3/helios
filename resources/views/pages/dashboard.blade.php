@@ -7,11 +7,9 @@
         <!-- MAIN CONTENT -->
         <div id="content">
 
-        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs, 'currency' => true])
+        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
             <form action="/home" method="GET" class="form_search">
                 {{ csrf_field()}}
-                @component('components.currency')
-                @endcomponent
             </form>
         @endcomponent
 
@@ -50,15 +48,27 @@
                             <i></i>
                         </section>
                         <section class="col col-sm-6 col-lg-3">
+                            <label class="label">Currency</label>
+                            <select name="channel" class="select2" style="width: 280px" id="currency_unit"
+                                    data-url="">
+                                <option value="USD" selected>USD</option>
+                                <option value="VND">VND</option>
+                                <option value="Baht">Baht</option>
+                            </select>
+                            <i></i>
+                        </section>
+                        <section class="col col-sm-6 col-lg-3">
                             <div id="reportrange" class="pull-left"
                                  style="background: #fff; cursor: pointer; padding: 10px; margin: 20px 0px 0px 0px; border: 1px solid #ccc;">
                                 <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
                                 <span></span> <b class="caret"></b>
                             </div>
                         </section>
+                    </div>
+                    <div class="row">
                         <section class="col col-sm-6 col-lg-3">
                             <div id="" class="pull-left"
-                                 style="margin: 28px 0px 0px 0px; padding: 10px px 7px 10px;">
+                                 style="margin: 10px 0px 0px 0px; padding: 10px px 7px 10px;">
                                 <button id="filter" class="btn btn-primary btn-sm" type="button" style="float: right" >
                                     <i class="fa fa-filter"></i>
                                     Filter
@@ -341,6 +351,12 @@
 
     <link rel="stylesheet" type="text/css" media="screen" href="{{ URL::to('css/custom-radio.css') }}">
 
+    <style>
+        .select2-container{
+            width: auto;  !important;
+        }
+    </style>
+
     <script type="text/javascript">
 
         // 2018-04-17 LamVT [HEL-9] add dropdown for C3/L8 chart
@@ -360,7 +376,10 @@
         var $chrt_mono = "#000";
         /* site stats chart */
         // end 2018-04-17 LamVT [HEL-9] add dropdown for C3/L8 chart
-
+        $(".select2").select2({
+            placeholder: "Select a State",
+            allowClear: true
+        });
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
         $(document).ready(function () {
 
@@ -380,8 +399,6 @@
                     'This Month': [moment().startOf('month'), moment().endOf('month')],
                     'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
                 },
-
-
             }, cb);
 
             cb(start, end);
@@ -496,12 +513,6 @@
 
             $('.today').click();
 
-            $('input#currency').click(function (e) {
-                init_dashboard();
-                $('.today').click();
-
-            })
-
             $('button#filter').click(function (e) {
                 init_dashboard();
 
@@ -509,6 +520,11 @@
                 var l8_month = $('#l8_month').val();
                 get_c3_chart(parseInt(c3_month));
                 get_l8_chart(parseInt(l8_month));
+
+                $('.widget-revenue-leaderboard button.active').click();
+                $('.widget-c3-leaderboard button.active').click();
+                $('.widget-revenue-leaderboard button.active').click();
+
             })
 
             $('#marketer').change(function (e) {

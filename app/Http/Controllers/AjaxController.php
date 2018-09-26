@@ -73,6 +73,8 @@ class AjaxController extends Controller
     public function getFilterSource()
     {
         $data_where = array();
+        $arr_landingpage    = array();
+        $arr_channel        = array();
         $request = request();
         $html_team          = "<option value='' selected>All</option>";
         $html_marketer      = "<option value='' selected>All</option>";
@@ -128,10 +130,10 @@ class AjaxController extends Controller
             $teams = Team::orderBy('name')->get();
             foreach ($teams as $team) {
                 $html_team .= "<option value=" . $team->id . "> " . $team->name . " </option>";
-                $marketers  = $team->members;
-                foreach ($marketers as $item) {
-                    $html_marketer .= "<option value='" . $item['user_id'] . "'> " . $item['username'] . " </option>";
-                }
+            }
+            $marketers  = User::where('is_active', 1)->orderBy('username')->get();
+            foreach ($marketers as $item) {
+                $html_marketer .= "<option value='" . $item['user_id'] . "'> " . $item['username'] . " </option>";
             }
             $campaigns = Campaign::orderBy('name')->get();
             foreach ($campaigns as $item) {
@@ -168,6 +170,8 @@ class AjaxController extends Controller
     public function getFilterTeam()
     {
         $data_where = array();
+        $arr_landingpage    = array();
+        $arr_channel        = array();
         $request = request();
 
         $html_campaign      = "<option value='' selected>All</option>";
@@ -235,6 +239,8 @@ class AjaxController extends Controller
     public function getFilterMaketer()
     {
         $request = request();
+        $arr_landingpage    = array();
+        $arr_channel        = array();
         $html_campaign      = "<option value='' selected>All</option>";
         $html_subcampaign   = "<option value='' selected>All</option>";
         $html_channel       = "<option value='' selected>All</option>";
@@ -262,7 +268,6 @@ class AjaxController extends Controller
             $landing_page   = LandingPage::orderBy('name')->get();
             $channel        = Channel::where('is_active', 1)->orderBy('name')->get();
         }
-
         foreach ($campaigns as $item) {
             $html_campaign      .= "<option value=" . $item->id . "> " . $item->name . " </option>";
         }
@@ -290,6 +295,8 @@ class AjaxController extends Controller
     public function getFilterCampaign()
     {
         $request = request();
+        $arr_landingpage    = array();
+        $arr_channel        = array();
 
         $html_subcampaign   = "<option value='' selected>All</option>";
         $html_landingpage   = "<option value='' selected>All</option>";
@@ -338,6 +345,8 @@ class AjaxController extends Controller
     public function getFilterSubCampaign()
     {
         $request = request();
+        $arr_landingpage    = array();
+        $arr_channel        = array();
 
         $html_landingpage   = "<option value='' selected>All</option>";
         $html_channel       = "<option value='' selected>All</option>";
