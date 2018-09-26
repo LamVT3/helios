@@ -87,6 +87,17 @@ class KpiController extends Controller
         $kpi[$year][$month] = $request->kpi;
         ksort( $kpi[$year]);
         $user->kpi  = $kpi;
+
+        $kpi_cost   = $user->kpi_cost;
+        $kpi_cost[$year][$month] = $request->kpi_cost;
+        ksort( $kpi_cost[$year]);
+        $user->kpi_cost  = $kpi_cost;
+
+        $kpi_l3_c3bg = $user->kpi_l3_c3bg;
+        $kpi_l3_c3bg[$year][$month] = $request->kpi_l3_c3bg;
+        ksort( $kpi_l3_c3bg[$year]);
+        $user->kpi_l3_c3bg  = $kpi_l3_c3bg;
+
         $user->save();
     }
 
@@ -98,8 +109,16 @@ class KpiController extends Controller
         $year       = $request->year;
         $user       = User::where('_id', $user)->firstOrFail();
 
-        $kpi        = $user->kpi;
-        return @$kpi[$year][$month];
+        $kpi        = isset($user->kpi[$year][$month]) ? $user->kpi[$year][$month] : array();
+        $kpi_cost   = isset($user->kpi_cost[$year][$month]) ? $user->kpi_cost[$year][$month] : array();
+        $kpi_l3_c3bg = isset($user->kpi_l3_c3bg[$year][$month]) ? $user->kpi_l3_c3bg[$year][$month] : array();
+
+        $data = array();
+        $data['kpi'] = $kpi;
+        $data['kpi_cost'] = $kpi_cost;
+        $data['kpi_l3_c3bg'] = $kpi_l3_c3bg;
+
+        return @$data;
 
     }
 

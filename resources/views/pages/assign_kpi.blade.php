@@ -182,22 +182,35 @@
             var month = $('select#month').val();
 
             var cnt = 1;
-            var kpi = {};
+            var kpi = {}, kpi_cost = {}, kpi_l3_c3bg = {};
+
+            var serial = 1;
 
             $('input#day').each(function() {
                 var value = $(this).val();
                 if (!value){
-                    value = 0;
+                    value = "0";
                 }
-                kpi[cnt] = value;
-                cnt++;
+                if (serial === 1) {
+                    kpi[cnt] = value;
+                    serial++;
+                } else if (serial === 2) {
+                    kpi_cost[cnt] = value;
+                    serial++;
+                } else {
+                    kpi_l3_c3bg[cnt] = value;
+                    serial = 1;
+                    cnt++;
+                }
             });
 
             var data ={};
-            data.kpi        = kpi;
-            data.month      = month;
-            data.year       = year;
-            data.user_id   = $('select#username').val();
+            data.kpi         = kpi;
+            data.kpi_cost    = kpi_cost;
+            data.kpi_l3_c3bg = kpi_l3_c3bg;
+            data.month       = month;
+            data.year        = year;
+            data.user_id     = $('select#username').val();
 
             $.get(url, data, function (data) {
                 initDataKPI(month);
@@ -291,6 +304,10 @@
             initDataKPIByteam(month);
         });
 
+        $('#auto_assign').on('click', function () {
+           console.log('clicked');
+        });
+
         /* END BASIC */
     })
 
@@ -311,8 +328,7 @@
         var year = moment().year();
         var days = new Date(year, month, 0).getDate();
         var url  = $('input#get_kpi_url').val();
-        var month_name = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var month_name = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         $('#assign-kpi').attr('disabled', 'disabled');
 
         var data ={};
@@ -323,15 +339,60 @@
         $.get(url, data, function (data) {
             $("div.lst_days").html('');
             var i;
+            var kpi_total = 0, kpi_cost_total = 0, kpi_l3_c3bg_total = 0;
             for (i = 1; i <= days; i++) {
-                var value = data[i] ? data[i] : 0;
+                kpi_total += data['kpi'][i] ? parseInt(data['kpi'][i]) : 0;
+                kpi_cost_total += data['kpi_cost'][i] ? parseFloat(data['kpi_cost'][i]) : 0;
+                kpi_l3_c3bg_total += data['kpi_l3_c3bg'][i] ? parseFloat(data['kpi_l3_c3bg'][i]) : 0;
+            }
+            kpi_cost_total = Math.round(kpi_cost_total * 100 / days) / 100;
+            kpi_l3_c3bg_total = Math.round(kpi_l3_c3bg_total * 100 / days) / 100;
+            $("div.lst_days").append('<div class="row">' +
+                '   <section class="col col-3">' +
+                '       <label class="label" style="margin: 25px 0 0 8px;">Enter KPIs</label>'+
+                '   </section>'+
+                '   <section class="col col-2">C3B' +
+                '       <input class="form-control" id="total" type="number" value="'+kpi_total+'" placeholder="C3B KPI" ' +
+                '           max="" min="0" data-toggle="tooltip" title="Enter KPIs...">' +
+                '   </section>'+
+                '   <section class="col col-2">C3B Cost' +
+                '       <input class="form-control" id="total" type="number" value="'+kpi_cost_total+'" placeholder="C3B KPI" ' +
+                '           max="" min="0" step="0.01" data-toggle="tooltip" title="Enter KPIs...">' +
+                '   </section>'+
+                '   <section class="col col-2">L3/C3BG' +
+                '       <input class="form-control" id="total" type="number" value="'+kpi_l3_c3bg_total+'" placeholder="C3B KPI" ' +
+                '           max="" min="0" step="0.01" data-toggle="tooltip" title="Enter KPIs...">' +
+                '   </section>' +
+                '   <section class="col col-3">' +
+                '       <button id="auto_assign" type="button" class="btn btn-primary" style="margin: 18px 0 0 8px; padding: 7px">' +
+                '           Auto-Assign' +
+                '       </button>' +
+                '   </section>' +
+                '</div>' +
+                '<hr style="padding: 10px">');
+            for (i = 1; i <= days; i++) {
+                var kpi_val = data['kpi'][i] ? data['kpi'][i] : 0;
+                var kpi_cost_val = data['kpi_cost'][i] ? data['kpi_cost'][i] : 0;
+                var kpi_l3_c3bg_val = data['kpi_l3_c3bg'][i] ? data['kpi_l3_c3bg'][i] : 0;
                 var day = i < 10 ? '0' + i : i;
                 var item =
-                    '<section class="col col-2">' +
-                    day + month_name[month - 1] +
-                    '    <input class="form-control" id="day" type="number" value="'+ value +'"' +
-                    '           placeholder="" max="" min="1" data-toggle="tooltip" title="Enter KPIs...">' +
-                    '</section>';
+                    '<div class="row">' +
+                    '   <section class="col col-3">' +
+                    '       <label class="label" style="margin: 8px;">'+ day + " " + month_name[month - 1] +'</label>'+
+                    '   </section>'+
+                    '   <section class="col col-2">' +
+                    '       <input class="form-control" id="day" type="number" value="'+ kpi_val +'"' +
+                    '           placeholder="" max="" min="0" data-toggle="tooltip" title="Enter KPIs...">' +
+                    '   </section>'+
+                    '   <section class="col col-2">' +
+                    '       <input class="form-control" id="day" type="number" value="'+ kpi_cost_val +'"' +
+                    '           placeholder="" max="" min="0" step="0.01" data-toggle="tooltip" title="Enter KPIs...">' +
+                    '   </section>'+
+                    '   <section class="col col-2">' +
+                    '       <input class="form-control" id="day" type="number" value="'+ kpi_l3_c3bg_val +'"' +
+                    '           placeholder="" max="" min="0" step="0.01" data-toggle="tooltip" title="Enter KPIs...">' +
+                    '   </section>' +
+                    '</div>';
 
                 $("div.lst_days").append(item);
                 $('#assign-kpi').attr('disabled', false);
