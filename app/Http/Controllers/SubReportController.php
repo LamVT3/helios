@@ -558,6 +558,9 @@ class SubReportController extends Controller
         if ($request->subcampaign_id) {
             $data_where['subcampaign_id']   = $request->subcampaign_id;
         }
+        if ($request->channel_id) {
+            $data_where['channel_id']   = $request->channel_id;
+        }
 
         return $data_where;
     }
