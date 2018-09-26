@@ -22,17 +22,7 @@
 
     <article class="col-sm-12 col-md-12">
     @component('components.jarviswidget',
-    ['id' => 'c3', 'icon' => 'fa-line-chart', 'title' => "C3", 'dropdown' => 'false'])
-        <!-- widget content -->
-            <div class="widget-body no-padding flot_channel">
-                <div id="c3_chart" class="chart has-legend"></div>
-            </div>
-        @endcomponent
-    </article>
-
-    <article class="col-sm-12 col-md-12">
-    @component('components.jarviswidget',
-    ['id' => 'chart_number', 'icon' => 'fa-line-chart', 'title' => "Chart", 'dropdown' => 'false'])
+    ['id' => 'chart_number', 'icon' => 'fa-line-chart', 'title' => "Column Chart", 'dropdown' => 'false'])
         <!-- widget content -->
             <div class="widget-body no-padding">
                 <div id="number_chart" class="chart has-legend"></div>
@@ -54,7 +44,7 @@
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
         $(document).ready(function () {
             pageSetUp();
-            initC3();
+            // initC3();
             initC3B();
             initC3BG();
 
@@ -112,15 +102,15 @@
             })
 
             var _data = [
-                ["C3B", {{$array_sum['c3b']}}],
-                ["C3BG", {{$array_sum['c3bg']}}],
-                ["L1", {{$array_sum['l1']}}],
-                ["L3", {{$array_sum['l3']}}],
-                ["L6", {{$array_sum['l6']}}],
-                ["L8", {{$array_sum['l8']}}]
+                {color: '#ff00aa', data: [[0, {{$array_sum['c3b']}}]]},
+                {color: 'red', data: [[1, {{$array_sum['c3bg']}}]]},
+                {color: 'yellow', data: [[2, {{$array_sum['l1']}}]]},
+                {color: 'orange', data: [[3, {{$array_sum['l3']}}]]},
+                {color: 'blue', data: [[4, {{$array_sum['l6']}}]]},
+                {color: '#000000', data: [[5, {{$array_sum['l8']}}]]}
             ];
 
-            $.plot("#number_chart", [ _data ], {
+            var number_chart = $.plot("#number_chart", _data, {
                 series: {
                     bars: {
                         show: true,
@@ -130,7 +120,19 @@
                 },
                 xaxis: {
                     mode: "categories",
-                    tickLength: 0
+                    tickLength: 0,
+                    ticks: [
+                        [0, "C3B"],
+                        [1, "C3BG"],
+                        [2, "L1"],
+                        [3, "L3"],
+                        [4, "L6"],
+                        [5, "L8"]
+                    ],
+                    font:{
+                        size:14,
+                        color: "#333"
+                    }
                 },
                 yaxes : [{
                     min : 0
@@ -149,6 +151,17 @@
                 colors: ["#FF8C00", "#666", "#BBB"]
             });
 
+            $.each(number_chart.getData(), function(i, ele){
+                var el = ele.data[0];
+                var o = number_chart.pointOffset({x: el[0], y: el[1]});
+                $('<div class="data-point-label">' + el[1] + '</div>').css( {
+                    position: 'absolute',
+                    left: o.left - 15,
+                    top: o.top - 20,
+                    display: 'none'
+                }).appendTo(number_chart.getPlaceholder()).fadeIn('slow');
+            });
+
             var  ds_reason = [
                 { label: "C3A_Duplicated",  data: {{$data_reason['C3A_Duplicated']}}, color: '#e1ab0b'},
                 { label: "C3B_Under18",  data: {{$data_reason['C3B_Under18']}}, color: '#fe0000'},
@@ -164,20 +177,32 @@
                         show : true,
                         innerRadius : 0.5,
                         radius : 1,
-                        threshold: 0.1
+                        threshold: 0.1,
+                        label: {
+                            show: true,
+                            radius: 3/4,
+                            formatter: function(label, series){
+                                return "<div style='font-size:13px;padding:3px;color:#333;font-weight: 600'>"
+                                    + series.data[0][1] + ' - ' + Math.round(series.percent) + "%</div>";
+                            },
+                            background: {
+                                opacity: 1,
+                                color: '#fff'
+                            }
+                        }
                     }
                 },
                 legend: {
                     show : true,
                     noColumns : 1,
                     labelBoxBorderColor : "#000",
-                    margin : [10, 15],
+                    margin : [300, 20],
                     backgroundColor : "#efefef",
                     backgroundOpacity : 1,
                     labelFormatter: function (label, series) {
                         return '<div ' +
-                            'style="font-size:13px;padding:2px;">' +
-                            label + '</div>';
+                            'style="font-size:15px;padding:3px;color:#333">' +
+                            label +': <strong>' + series.data[0][1] + ' - ' + Math.round(series.percent)+'%</strong></div>';
                     }
                 },
                 grid : {
@@ -243,36 +268,36 @@
             /* end site stats */
         }
 
-        function initC3() {
-            var item = $("#c3_chart");
-            var data = [
-                    @if($week == true)
-                {   data :[
-                            @foreach ($array_channel as $key => $channel)
-                            @if($table['c3_week'][$channel]!=0)
-                        [{{$key}},{{$table['c3_week'][$channel]}}],
-                        @endif
-                        @endforeach
-                    ],
-                    label : "C3 Week",
-                    color: "#FF8C00"
-                },
-                    @endif
-                {   data :[
-                            @foreach ($array_channel as $key => $channel)
-                            @if($table['c3'][$channel]!=0)
-                        [{{$key}},{{$table['c3'][$channel]}}],
-                        @endif
-                        @endforeach
-                    ],
-                    label : "C3",
-                    color: "#7CFC00"
-                }
-            ];
+        {{--function initC3() {--}}
+            {{--var item = $("#c3_chart");--}}
+            {{--var data = [--}}
+                    {{--@if($week == true)--}}
+                {{--{   data :[--}}
+                            {{--@foreach ($array_channel as $key => $channel)--}}
+                            {{--@if($table['c3_week'][$channel]!=0)--}}
+                        {{--[{{$key}},{{$table['c3_week'][$channel]}}],--}}
+                        {{--@endif--}}
+                        {{--@endforeach--}}
+                    {{--],--}}
+                    {{--label : "C3 Week",--}}
+                    {{--color: "#FF8C00"--}}
+                {{--},--}}
+                    {{--@endif--}}
+                {{--{   data :[--}}
+                            {{--@foreach ($array_channel as $key => $channel)--}}
+                            {{--@if($table['c3'][$channel]!=0)--}}
+                        {{--[{{$key}},{{$table['c3'][$channel]}}],--}}
+                        {{--@endif--}}
+                        {{--@endforeach--}}
+                    {{--],--}}
+                    {{--label : "C3",--}}
+                    {{--color: "#7CFC00"--}}
+                {{--}--}}
+            {{--];--}}
 
-            initChartChannel(item, data);
-            item.UseChannelTooltip();
-        }
+            {{--initChartChannel(item, data);--}}
+            {{--item.UseChannelTooltip();--}}
+        {{--}--}}
 
         function initC3B() {
             var item = $("#c3b_chart");
