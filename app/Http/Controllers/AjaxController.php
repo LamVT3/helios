@@ -412,7 +412,7 @@ class AjaxController extends Controller
         $l8         = $query_dashboard->sum('l8');
         $l3         = $query_dashboard->sum('l3');
 
-//        $kpi = $this->get_kpi_dashboard($startDate, $endDate);
+        $kpi = $this->get_kpi_dashboard($startDate, $endDate);
 
         $dashboard['c3']        = $c3b + $c3bg;
 
@@ -432,22 +432,13 @@ class AjaxController extends Controller
 
         $dashboard['l8_l1']     = $l1 ? round( $l8 * 100 / $l1, 2) : 0;
 
-//        $dashboard['kpi']           = @$kpi['kpi'];
-//        $dashboard['kpi_cost']      = $this->convert_spent(@$kpi['kpi_cost']);
-//        $dashboard['kpi_l3_c3bg']   = @$kpi['kpi_l3_c3bg'] * 100;
-//        $dashboard['spent_left']    = $dashboard['kpi'] * $dashboard['kpi_cost'] - $dashboard['spent'];
-//
-//        $dashboard['spent']         = number_format($dashboard['spent'], 2);
-//        $dashboard['spent_left']    = number_format($dashboard['spent_left'], 2);
+        $dashboard['kpi']           = @$kpi['kpi'];
+        $dashboard['kpi_cost']      = $this->convert_spent(@$kpi['kpi_cost']);
+        $dashboard['kpi_l3_c3bg']   = @$kpi['kpi_l3_c3bg'] * 100;
+        $dashboard['spent_left']    = $dashboard['kpi'] * $dashboard['kpi_cost'] - $dashboard['spent'];
 
-
-        $dashboard['kpi']           = 0;
-        $dashboard['kpi_cost']      = 0;
-        $dashboard['kpi_l3_c3bg']   = 0;
-        $dashboard['spent_left']    = 0;
-
-        $dashboard['spent']         = 0;
-        $dashboard['spent_left']    = 0;
+        $dashboard['spent']         = number_format($dashboard['spent'], 2);
+        $dashboard['spent_left']    = number_format($dashboard['spent_left'], 2);
 
         /* end Dashboard */
 
