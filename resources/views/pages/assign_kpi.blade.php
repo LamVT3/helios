@@ -40,7 +40,6 @@
                                                 <label class="input">
                                                     <input type="text" value="" name="maketer_name" placeholder="Select maketer">
                                                 </label>
-
                                             </section>
                                         </div>
 
@@ -75,7 +74,6 @@
                                                 <label class="input">
                                                     <input type="text" value="" name="team" placeholder="Select team">
                                                 </label>
-
                                             </section>
                                         </div>
 
@@ -176,7 +174,7 @@
         $('#selected_year').val(moment().year());
         initDropdown(parseInt(month) - 1);
 
-        $('#assign-kpi').click(function(e){
+        $('#assign_kpi, #assign_close_kpi').click(function(e){
             e.preventDefault();
             var url = $('#form-assign-kpi').attr( 'url' );
 
@@ -322,7 +320,7 @@
         });
 
         /* END BASIC */
-    })
+    });
 
     function set_user_id(item){
         var user = $(item).attr('data-user-id');
@@ -347,7 +345,8 @@
         var days = new Date(year, month, 0).getDate();
         var url  = $('input#get_kpi_url').val();
         var month_name = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        $('#assign-kpi').attr('disabled', 'disabled');
+        // $('#assign_kpi').attr('disabled', 'disabled');
+        // $('#assign_close_kpi').attr('disabled', 'disabled');
 
         var data ={};
         data.month      = month;
@@ -387,6 +386,17 @@
                 '       </button>' +
                 '   </section>' +
                 '</div>' +
+                '<div class="row" style="margin: 0 20px 15px 0; text-align: right;">' +
+                '   <button type="button" onclick="assignKpi()" style="padding: 6px 12px;" class="btn btn-primary">' +
+                '       Assign' +
+                '   </button>' +
+                '   <button type="button" onclick="assignKpi()" style="padding: 6px 12px; margin-left: 5px;" class="btn btn-default" data-dismiss="modal">' +
+                '       Assign & Close' +
+                '   </button>' +
+                '   <button type="button" style="padding: 6px 12px; margin-left: 5px;" class="btn btn-default" data-dismiss="modal">' +
+                '       Cancel' +
+                '   </button>' +
+                '</div>' +
                 '<hr style="padding: 10px">');
             for (i = 1; i <= days; i++) {
                 var kpi_val = data['kpi'][i] ? data['kpi'][i] : 0;
@@ -413,12 +423,17 @@
                     '</div>';
 
                 $("div.lst_days").append(item);
-                $('#assign-kpi').attr('disabled', false);
+                // $('#assign_kpi').attr('disabled', false);
+                // $('#assign_close_kpi').attr('disabled', false);
             }
         }).fail(
             function (err) {
                 alert('Cannot connect to server. Please try again later.');
             });
+    }
+
+    function assignKpi() {
+        $('#assign_kpi').click();
     }
 
     function autoAssign() {

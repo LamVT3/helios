@@ -39,6 +39,7 @@
                                         <th data-class="expand">
                                             Username
                                         </th>
+                                        <th>Role</th>
                                         <th>Email</th>
                                         <!-- 2018-04-04 lamvt add active column -->
                                         <th>Active</th>
@@ -56,10 +57,11 @@
                                         <tr>
                                             <td>{{ $item->id }}</td>
                                             <td><a href="{{ route('profile-user', $item->username) }}">{{ $item->username }}</a></td>
+                                            <td>{{ $item->role }}</td>
                                             <td>{{ $item->email }}</td>
                                             <!-- 2018-04-04 lamvt add active column -->
                                             @if($item->is_active == 1)
-                                                <td style="color: #00a300;">Acvtive</td>
+                                                <td style="color: #00a300;">Active</td>
                                             @else
                                                 <td style="color: red;">In-Active</td>
                                             @endif

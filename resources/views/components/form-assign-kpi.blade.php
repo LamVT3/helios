@@ -59,8 +59,11 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="assign-kpi" type="submit" class="btn btn-primary" data-dismiss="modal">
+                    <button id="assign_kpi" type="submit" class="btn btn-primary">
                         Assign
+                    </button>
+                    <button id="assign_close_kpi" type="submit" class="btn btn-default" data-dismiss="modal">
+                        Assign & Close
                     </button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">
                         Cancel
