@@ -39,7 +39,9 @@ class KpiController extends Controller
         $active         = 'assign_kpi';
         $breadcrumbs    = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> KPI Report </span>";
 
-        $users  = User::all();
+        $users  = User::where('role', 'Marketer')
+            ->where('is_active', 1)
+            ->get();
         $teams  = Team::all();
         $days   = $this->get_days_in_month();
         $month  = date('M');
@@ -133,7 +135,10 @@ class KpiController extends Controller
             $month = $request->month;
         }
 
-        $users = User::all();
+        $users = User::where('role', 'Marketer')
+            ->where('is_active', 1)
+            ->get();
+        $data = array();
         foreach ($users as $user){
 
             $data[$user->username]['user_id']   = $user->id;
