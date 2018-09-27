@@ -394,6 +394,7 @@ class AjaxController extends Controller
         $query_dashboard = AdResult::where('date', '>=', $startDate)
             ->where('date', '<=', $endDate);
 
+        $kpi = array();
         if($request->marketer_id){
             $query_dashboard->where('creator_id', $request->marketer_id);
         }
@@ -407,16 +408,38 @@ class AjaxController extends Controller
         $c3bg       = $query_dashboard->sum('c3bg');
         $spent      = $query_dashboard->sum('spent');  // USD
         $revenue    = $query_dashboard->sum('revenue'); // Bath
+        $l1         = $query_dashboard->sum('l1');
+        $l8         = $query_dashboard->sum('l8');
+        $l3         = $query_dashboard->sum('l3');
+
+        $kpi = $this->get_kpi_dashboard($startDate, $endDate);
 
         $dashboard['c3']        = $c3b + $c3bg;
+
         $dashboard['spent']     = $this->convert_spent($spent);
         $dashboard['revenue']   = $this->convert_revenue($revenue);
-        $dashboard['c3_cost']   = $dashboard['c3'] ? round( $dashboard['spent'] / $dashboard['c3'], 2) : 0;
 
-        $dashboard['c3']        = number_format($dashboard['c3']);
+        $dashboard['c3_cost']   = $dashboard['c3'] ? round( $dashboard['spent'] / $dashboard['c3'], 2) : 0;
         $dashboard['c3_cost']   = number_format($dashboard['c3_cost'], 2);
-        $dashboard['spent']     = number_format($dashboard['spent'], 2);
-        $dashboard['revenue']   = number_format($dashboard['revenue'], 2);
+
+        $dashboard['l3_c3bg']   = $c3bg ? round( $dashboard['l3'] * 100 / $c3bg, 2) : 0;
+
+        $dashboard['c3bg_c3b']  = $c3b ? round( $c3bg * 100 / $c3b, 2) : 0;
+
+        $dashboard['me_re']     = $dashboard['revenue'] ? round( $dashboard['spent'] * 100 / $dashboard['revenue'], 2) : 0;
+
+        $dashboard['l1_c3bg']   = $c3b ? round( $l1 * 100 / $c3b, 2) : 0;
+
+        $dashboard['l8_l1']     = $c3b ? round( $l1 * 100 / $c3b, 2) : 0;
+
+        $dashboard['kpi']           = @$kpi['kpi'];
+        $dashboard['kpi_cost']      = $this->convert_spent(@$kpi['kpi_cost']);
+        $dashboard['kpi_l3_c3bg']   = @$kpi['kpi_l3_c3bg'];
+        $dashboard['spent_left']    = $dashboard['kpi'] * $dashboard['kpi_cost'] - $dashboard['spent'];
+
+        $dashboard['spent']         = number_format($dashboard['spent'], 2);
+        $dashboard['spent_left']    = number_format($dashboard['spent_left'], 2);
+
         /* end Dashboard */
 
         return response()->json(['type' => 'success', 'dashboard' => $dashboard]);
@@ -1275,6 +1298,88 @@ class AjaxController extends Controller
             $kpi    = @$user->kpi;
         }
         return $kpi;
+    }
+
+    private function get_kpi_dashboard($start, $end){
+        $request    = request();
+        $rs        = array();
+
+        $start      = explode('-', $start);
+        $startDay   = $start[2];
+        $startMonth = $start[1];
+        $startYear  = $start[0];
+
+        $end        = explode('-', $end);
+        $endDay     = $end[2];
+        $endMonth   = $end[1];
+        $endYear    = $end[0];
+
+        if($request->marketer_id){
+//            $user   = User::find('5b0397fde20e1a3eeb7d6eb4');
+            $user   = User::find($request->marketer_id);
+            $kpi            = @$user->kpi;
+            $kpi_cost       = @$user->kpi_cost;
+            $kpi_l3_c3bg    = @$user->kpi_l3_c3bg;
+
+            if($start == $end){
+                $rs['kpi']          = @$kpi[$startYear][$startMonth][$startDay];
+                $rs['kpi_cost']     = @$kpi_cost[$startYear][$startMonth][$startDay];
+                $rs['kpi_l3_c3bg']  = @$kpi_l3_c3bg[$startYear][$startMonth][$startDay];
+
+                return $rs;
+            }else{
+                @$rs['kpi']          = 0;
+                @$rs['kpi_cost']     = 0;
+                @$rs['kpi_l3_c3bg']  = 0;
+            }
+
+
+
+
+
+
+
+        }else{
+            $users   = User::all();
+            if($start == $end){
+                foreach ($users as $user){
+                    $kpi            = @$user->kpi;
+                    $kpi_cost       = @$user->kpi_cost;
+                    $kpi_l3_c3bg    = @$user->kpi_l3_c3bg;
+
+                    @$rs['kpi']          += @$kpi[$startYear][$startMonth][$startDay];
+                    @$rs['kpi_cost']     += @$kpi_cost[$startYear][$startMonth][$startDay];
+                    @$rs['kpi_l3_c3bg']  += @$kpi_l3_c3bg[$startYear][$startMonth][$startDay];
+                }
+                return $rs;
+            }else{
+                @$rs['kpi']          = 0;
+                @$rs['kpi_cost']     = 0;
+                @$rs['kpi_l3_c3bg']  = 0;
+            }
+
+
+
+
+
+
+        }
+
+
+        @$rs['kpi']          = 0;
+        @$rs['kpi_cost']     = 0;
+        @$rs['kpi_l3_c3bg']  = 0;
+
+
+
+
+
+
+
+
+
+
+        return $rs;
     }
 
 

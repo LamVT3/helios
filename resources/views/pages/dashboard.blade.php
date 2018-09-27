@@ -88,15 +88,100 @@
                 <!-- row -->
                 <div class="row">
                     <div class="col-sm-6 col-lg-3">
-
                         <div class="panel panel-default widget-c3">
                             <div class="panel-body status">
                                 <div class="who clearfix widget-title">
                                     <h4><i class="fa fa-lg fa-fw fa-child"></i><strong>C3B Total</strong></h4>
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
-                                    Actual / KPI
+                                    KPI
                                     <span class="widget-unit">C3B</span>
+                                </div>
+                                <div class="text text-align-right font-xl widget-actual pull-right">
+                                    ...
+                                </div>
+                                <div class="text text-align-right font-xl widget-kpi pull-left">
+                                    ...
+                                </div>
+
+                                {{--<div class="text text-align-right font-sm widget-kpi">
+                                    12,000
+                                </div>
+                                <ul class="links widget-progress">
+                                    <div class="progress progress-sm">
+                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 56%;vertical-align: top;line-height: unset;">56%</div>
+                                    </div>
+                                </ul>--}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="panel panel-default widget-c3b-cost">
+                            <div class="panel-body status">
+                                <div class="who clearfix widget-title">
+                                    <h4><i class="fa fa-lg fa-fw fa-money"></i><strong>C3B Cost</strong></h4>
+                                </div>
+                                <div class="text text-align-left font-xs widget-caption">
+                                    KPI
+                                    <span class="widget-unit">USD</span>
+                                </div>
+                                <div class="text text-align-right font-xl widget-actual pull-right">
+                                    ...
+                                </div>
+                                <div class="text text-align-right font-xl widget-kpi pull-left">
+                                    ...
+                                </div>
+                                {{--<div class="text text-align-right font-sm widget-kpi">
+                                    2.3
+                                </div>
+                                <ul class="links widget-progress">
+                                    <div class="progress progress-sm">
+                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 90%;vertical-align: top;line-height: unset;">90%</div>
+                                    </div>
+                                </ul>--}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="panel panel-default widget-l3-c3bg">
+                            <div class="panel-body status">
+                                <div class="who clearfix widget-title">
+                                    <h4><i class="fa fa-lg fa-fw fa-child"></i><strong>L3/C3BG</strong></h4>
+                                </div>
+                                <div class="text text-align-left font-xs widget-caption">
+                                    KPI
+                                    <span class="widget-unit">%</span>
+                                </div>
+                                <div class="text text-align-right font-xl widget-actual pull-right">
+                                    ...
+                                </div>
+                                <div class="text text-align-right font-xl widget-kpi pull-left">
+                                    ...
+                                </div>
+
+                                {{--<div class="text text-align-right font-sm widget-kpi">
+                                    12,000
+                                </div>
+                                <ul class="links widget-progress">
+                                    <div class="progress progress-sm">
+                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 56%;vertical-align: top;line-height: unset;">56%</div>
+                                    </div>
+                                </ul>--}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="panel panel-default widget-c3bg-c3b">
+                            <div class="panel-body status">
+                                <div class="who clearfix widget-title">
+                                    <h4><i class="fa fa-lg fa-fw fa-child"></i><strong>C3BG/C3B</strong></h4>
+                                </div>
+                                <div class="text text-align-left font-xs widget-caption">
+                                    KPI
+                                    <span class="widget-unit">%</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
                                     ...
@@ -111,38 +196,9 @@
                                 </ul>--}}
                             </div>
                         </div>
-
                     </div>
 
                     <div class="col-sm-6 col-lg-3">
-
-                        <div class="panel panel-default widget-c3-cost">
-                            <div class="panel-body status">
-                                <div class="who clearfix widget-title">
-                                    <h4><i class="fa fa-lg fa-fw fa-money"></i><strong>C3 Cost</strong></h4>
-                                </div>
-                                <div class="text text-align-left font-xs widget-caption">
-                                    Actual / KPI
-                                    <span class="widget-unit">USD</span>
-                                </div>
-                                <div class="text text-align-right font-xl widget-actual">
-                                    ...
-                                </div>
-                                {{--<div class="text text-align-right font-sm widget-kpi">
-                                    2.3
-                                </div>
-                                <ul class="links widget-progress">
-                                    <div class="progress progress-sm">
-                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 90%;vertical-align: top;line-height: unset;">90%</div>
-                                    </div>
-                                </ul>--}}
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="col-sm-6 col-lg-3">
-
                         <div class="panel panel-default widget-budget">
                             <div class="panel-body status">
 
@@ -150,10 +206,13 @@
                                     <h4><i class="fa fa-lg fa-fw fa-credit-card"></i><strong>Budget</strong></h4>
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
-                                    Actual / KPI
+                                    Left
                                     <span class="widget-unit">USD</span>
                                 </div>
-                                <div class="text text-align-right font-xl widget-actual">
+                                <div class="text text-align-right font-xl widget-actual pull-right">
+                                    ...
+                                </div>
+                                <div class="text text-align-right font-xl widget-kpi pull-left">
                                     ...
                                 </div>
                                 {{--<div class="text text-align-right font-sm widget-kpi">
@@ -166,20 +225,18 @@
                                 </ul>--}}
                             </div>
                         </div>
-
                     </div>
 
                     <div class="col-sm-6 col-lg-3">
-
-                        <div class="panel panel-default widget-revenue">
+                        <div class="panel panel-default widget-me-re">
                             <div class="panel-body status">
 
                                 <div class="who clearfix widget-title">
-                                    <h4><i class="fa fa-lg fa-fw fa-usd"></i><strong>Revenue</strong></h4>
+                                    <h4><i class="fa fa-lg fa-fw fa-usd"></i><strong>ME/RE</strong></h4>
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
-                                    Actual / KPI
-                                    <span class="widget-unit">USD</span>
+                                    KPI
+                                    <span class="widget-unit">%</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
                                     ...
@@ -194,8 +251,59 @@
                                 </ul>--}}
                             </div>
                         </div>
-
                     </div>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="panel panel-default widget-l1-c3bg">
+                            <div class="panel-body status">
+                                <div class="who clearfix widget-title">
+                                    <h4><i class="fa fa-lg fa-fw fa-money"></i><strong>L1/C3BG</strong></h4>
+                                </div>
+                                <div class="text text-align-left font-xs widget-caption">
+                                    KPI
+                                    <span class="widget-unit">%</span>
+                                </div>
+                                <div class="text text-align-right font-xl widget-actual">
+                                    ...
+                                </div>
+                                {{--<div class="text text-align-right font-sm widget-kpi">
+                                    2.3
+                                </div>
+                                <ul class="links widget-progress">
+                                    <div class="progress progress-sm">
+                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 90%;vertical-align: top;line-height: unset;">90%</div>
+                                    </div>
+                                </ul>--}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="panel panel-default widget-l8-l1">
+                            <div class="panel-body status">
+
+                                <div class="who clearfix widget-title">
+                                    <h4><i class="fa fa-lg fa-fw fa-credit-card"></i><strong>L8/L1</strong></h4>
+                                </div>
+                                <div class="text text-align-left font-xs widget-caption">
+                                    KPI
+                                    <span class="widget-unit">%</span>
+                                </div>
+                                <div class="text text-align-right font-xl widget-actual">
+                                    ...
+                                </div>
+                                {{--<div class="text text-align-right font-sm widget-kpi">
+                                    2,000
+                                </div>
+                                <ul class="links widget-progress">
+                                    <div class="progress progress-sm">
+                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 60%;vertical-align: top;line-height: unset;">60%</div>
+                                    </div>
+                                </ul>--}}
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- end row -->
@@ -374,6 +482,137 @@
             margin-right: 15px;
         }
 
+        .widget-caption .widget-unit {
+            float: right;
+            font-weight: bold;
+        }
+
+        .widget-kpi.text {
+            padding: 5px 10px;
+            color: #F44336;
+        }
+
+        .widget-progress .progress {
+            margin-bottom: 0px;
+        }
+
+        .widget-caption.text {
+            padding: 5px 10px;
+        }
+
+        /*.widget-revenue .widget-title {
+            background-color: #E91E63;
+            color: white;
+        }*/
+
+        .widget-c3 .progress-bar {
+            background-color: #3F51B5 !important;
+        }
+
+        .widget-c3 .widget-actual.text {
+            padding: 0 14px;
+            font-weight: bold;
+            color: #3F51B5;
+        }
+        /*
+        .widget-c3b-cost .widget-title {
+            background-color: #4CAF50;
+            color: white;
+        }*/
+
+        .widget-c3b-cost .progress-bar {
+            background-color: #4CAF50 !important;
+        }
+
+        .widget-c3b-cost .widget-actual.text {
+            padding: 0 14px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        /*.widget-budget .widget-title {
+            background-color: #FF9800;
+            color: white;
+        }*/
+
+        .widget-l3-c3bg .progress-bar {
+            background-color: #FF9800 !important;
+        }
+
+        .widget-l3-c3bg .widget-actual.text {
+            padding: 0 14px;
+            font-weight: bold;
+            color: #FF9800;
+        }
+
+        .widget-c3bg-c3b .progress-bar {
+            background-color: #FF66FF !important;
+        }
+
+        .widget-c3bg-c3b .widget-actual.text {
+            padding: 0 14px;
+            font-weight: bold;
+            color: #FF66FF;
+        }
+
+        .widget-budget .progress-bar {
+            background-color: #FF9800 !important;
+        }
+
+        .widget-budget .widget-actual.text {
+            padding: 0 14px;
+            font-weight: bold;
+            color: #FF9800;
+        }
+
+        .widget-me-re .progress-bar {
+            background-color: #4CAF50 !important;
+        }
+
+        .widget-me-re .widget-actual.text {
+            padding: 0 14px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .widget-l8-l1 .progress-bar {
+            background-color: #9999FF !important;
+        }
+
+        .widget-l8-l1 .widget-actual.text {
+            padding: 0 14px;
+            font-weight: bold;
+            color: #9999FF;
+        }
+
+        .widget-l1-c3bg .progress-bar {
+            background-color: #3F51B5 !important;
+        }
+
+        .widget-l1-c3bg .widget-actual.text {
+            padding: 0 14px;
+            font-weight: bold;
+            color: #3F51B5;
+        }
+
+        .widget-kpi
+        {
+            padding: 0 14px;
+            font-weight: bold;
+            font-size: 15px !important;
+        }
+
+        .widget-kpi-gap
+        {
+            font-size: 15px !important;
+            color: red;
+        }
+
+        /*.widget-c3 .widget-title {
+            background-color: #3F51B5;
+            color: white;
+        }*/
+
     </style>
 
     <script type="text/javascript">
@@ -422,6 +661,7 @@
                     'This Month': [moment().startOf('month'), moment().endOf('month')],
                     'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
                 },
+                opens: "left"
             }, cb);
 
             cb(start, end);
@@ -535,14 +775,21 @@
 
         function dashboard(startDate, endDate, unit) {
 
-            $('.widget-c3-cost .widget-unit').html(unit);
+            $('.widget-c3b-cost .widget-unit').html(unit);
             $('.widget-budget .widget-unit').html(unit);
-            $('.widget-revenue .widget-unit').html(unit);
 
             $('.widget-c3 .widget-actual').html('...');
-            $('.widget-c3-cost .widget-actual').html('...');
+            $('.widget-c3 .widget-kpi').html('...');
+            $('.widget-c3b-cost .widget-actual').html('...');
+            $('.widget-c3b-cost .widget-kpi').html('...');
+            $('.widget-l3-c3bg .widget-actual').html('...');
+            $('.widget-l3-c3bg .widget-kpi').html('...');
+            $('.widget-c3bg-c3b .widget-actual').html('...');
             $('.widget-budget .widget-actual').html('...');
-            $('.widget-revenue .widget-actual').html('...');
+            $('.widget-budget .widget-kpi').html('...');
+            $('.widget-me-re .widget-actual').html('...');
+            $('.widget-l1-c3bg .widget-actual').html('...');
+            $('.widget-l8-l1 .widget-actual').html('...');
 
             $marketer_id = $('#marketer').val();
             $channel_id  = $('#channel').val();
@@ -556,9 +803,17 @@
             }, function (data) {
                 var dashboard = data.dashboard;
                 $('.widget-c3 .widget-actual').html(dashboard.c3);
-                $('.widget-c3-cost .widget-actual').html(dashboard.c3_cost);
+                $('.widget-c3 .widget-kpi').html(dashboard.kpi);
+                $('.widget-c3b-cost .widget-actual').html(dashboard.c3_cost);
+                $('.widget-c3b-cost .widget-kpi').html(dashboard.kpi_cost);
+                $('.widget-l3-c3bg .widget-actual').html(dashboard.l3_c3bg);
+                $('.widget-l3-c3bg .widget-kpi').html(dashboard.kpi_l3_c3bg);
+                $('.widget-c3bg-c3b .widget-actual').html(dashboard.c3bg_c3b);
                 $('.widget-budget .widget-actual').html(dashboard.spent);
-                $('.widget-revenue .widget-actual').html(dashboard.revenue);
+                $('.widget-budget .widget-kpi').html(dashboard.spent_left);
+                $('.widget-me-re .widget-actual').html(dashboard.me_re);
+                $('.widget-l1-c3bg .widget-actual').html(dashboard.l1_c3bg);
+                $('.widget-l8-l1 .widget-actual').html(dashboard.l8_l1);
 
             }).fail(
                 function (err) {
