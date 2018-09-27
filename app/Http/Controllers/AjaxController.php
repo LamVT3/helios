@@ -424,7 +424,7 @@ class AjaxController extends Controller
 
         $dashboard['l3_c3bg']   = $c3bg ? round( $l3 * 100 / $c3bg, 2) : 0;
 
-        $dashboard['c3bg_c3b']  = $c3b ? round( $c3bg * 100 / $c3b, 2) : 0;
+        $dashboard['c3bg_c3b']  = $dashboard['c3'] ? round( $c3bg * 100 / $dashboard['c3'], 2) : 0;
 
         $dashboard['me_re']     = $dashboard['revenue'] ? round( $dashboard['spent'] * 100 / $dashboard['revenue'], 2) : 0;
 
