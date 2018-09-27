@@ -127,6 +127,7 @@
     <input type="hidden" id="kpi_by_team_url" value="{{route('kpi-by-team')}}">
     <input type="hidden" id="kpi_by_maketer_url" value="{{route('kpi-by-maketer')}}">
     <input type="hidden" id="selected_month" value="">
+    <input type="hidden" id="selected_year" value="">
 
 @endsection
 
@@ -172,34 +173,51 @@
             month = '0' + month;
         }
         $('#selected_month').val(month);
+        $('#selected_year').val(moment().year());
         initDropdown(parseInt(month) - 1);
 
         $('#assign-kpi').click(function(e){
             e.preventDefault();
             var url = $('#form-assign-kpi').attr( 'url' );
 
-            var year = moment().year();
+            var year = $('select#year').val();
             var month = $('select#month').val();
 
             var cnt = 1;
-            var kpi = {};
+            var kpi = {}, kpi_cost = {}, kpi_l3_c3bg = {};
+
+            var serial = 1;
 
             $('input#day').each(function() {
                 var value = $(this).val();
                 if (!value){
                     value = 0;
                 }
-                kpi[cnt] = value;
-                cnt++;
+                if (serial === 1) {
+                    kpi[cnt] = parseInt(value);
+                    serial++;
+                } else if (serial === 2) {
+                    kpi_cost[cnt] = parseFloat(value);
+                    serial++;
+                } else {
+                    kpi_l3_c3bg[cnt] = parseFloat(value);
+                    serial = 1;
+                    cnt++;
+                }
             });
 
             var data ={};
-            data.kpi        = kpi;
-            data.month      = month;
-            data.year       = year;
-            data.user_id   = $('select#username').val();
-
+            data.kpi         = kpi;
+            data.kpi_cost    = kpi_cost;
+            data.kpi_l3_c3bg = kpi_l3_c3bg;
+            data.month       = month;
+            data.year        = year;
+            data.user_id     = $('select#username').val();
             $.get(url, data, function (data) {
+                month = moment().month() + 1;
+                if(month < 10){
+                    month = '0' + month;
+                }
                 initDataKPI(month);
                 initDataKPIByteam(month);
             }).fail(
@@ -210,18 +228,29 @@
 
         $('select#month').change(function(e){
             e.preventDefault();
+            var year   = $('select#year').val();
             var month   = $('select#month').val();
             var user    = $('select#username').val();
 
-            initFormKPI(user, month);
+            initFormKPI(user, month, year);
+        });
+
+        $('select#year').change(function(e){
+            e.preventDefault();
+            var year   = $('select#year').val();
+            var month   = $('select#month').val();
+            var user    = $('select#username').val();
+
+            initFormKPI(user, month, year);
         });
 
         $('select#username').change(function(e){
             e.preventDefault();
+            var year   = $('select#year').val();
             var month   = $('select#month').val();
             var user    = $('select#username').val();
 
-            initFormKPI(user, month);
+            initFormKPI(user, month, year);
         });
 
         $('select#kpi_selection').change(function(e){
@@ -235,8 +264,9 @@
         $('#addModal').on('shown.bs.modal', function () {
             var user    = $(this).attr('data-user-id');
             var month   = $('#selected_month').val();
+            var year    = $('#selected_year').val();
 
-            initFormKPI(user, month);
+            initFormKPI(user, month, year);
         });
 
         $('li#month').click(function() {
@@ -297,22 +327,26 @@
     function set_user_id(item){
         var user = $(item).attr('data-user-id');
         $('#addModal').attr('data-user-id', user);
+
+        var year = moment().year();
+        var options = "<option selected='selected'>"+ year +"</option>";
+        options += "<option>"+ (year + 1) +"</option>";
+        document.getElementById("year").innerHTML = options;
     }
 
-    function initFormKPI(user, month){
+    function initFormKPI(user, month, year){
 
+        $('select#year').val(year);
         $('select#month').val(month);
         $('select#username').val(user);
 
-        initLstDays(user, month);
+        initLstDays(user, month, year);
     }
 
-    function initLstDays(user ,month) {
-        var year = moment().year();
+    function initLstDays(user ,month, year) {
         var days = new Date(year, month, 0).getDate();
         var url  = $('input#get_kpi_url').val();
-        var month_name = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var month_name = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         $('#assign-kpi').attr('disabled', 'disabled');
 
         var data ={};
@@ -323,15 +357,60 @@
         $.get(url, data, function (data) {
             $("div.lst_days").html('');
             var i;
+            var kpi_total = 0, kpi_cost_total = 0, kpi_l3_c3bg_total = 0;
             for (i = 1; i <= days; i++) {
-                var value = data[i] ? data[i] : 0;
+                kpi_total += data['kpi'][i] ? parseInt(data['kpi'][i]) : 0;
+                kpi_cost_total += data['kpi_cost'][i] ? parseFloat(data['kpi_cost'][i]) : 0;
+                kpi_l3_c3bg_total += data['kpi_l3_c3bg'][i] ? parseFloat(data['kpi_l3_c3bg'][i]) : 0;
+            }
+            kpi_cost_total = Math.round(kpi_cost_total * 100 / days) / 100;
+            kpi_l3_c3bg_total = Math.round(kpi_l3_c3bg_total * 100 / days) / 100;
+            $("div.lst_days").append('<div class="row">' +
+                '   <section class="col col-3">' +
+                '       <label class="label" style="margin: 25px 0 0 8px;">Enter KPIs</label>'+
+                '   </section>'+
+                '   <section class="col col-2">C3B' +
+                '       <input class="form-control" id="total" type="number" value="'+kpi_total+'" placeholder="C3B KPI" ' +
+                '           max="" min="0" data-toggle="tooltip" title="Enter KPIs...">' +
+                '   </section>'+
+                '   <section class="col col-2">C3B Cost' +
+                '       <input class="form-control" id="total" type="number" value="'+kpi_cost_total+'" placeholder="C3B KPI" ' +
+                '           max="" min="0" step="0.01" data-toggle="tooltip" title="Enter KPIs...">' +
+                '   </section>'+
+                '   <section class="col col-2">L3/C3BG' +
+                '       <input class="form-control" id="total" type="number" value="'+kpi_l3_c3bg_total+'" placeholder="C3B KPI" ' +
+                '           max="" min="0" step="0.01" data-toggle="tooltip" title="Enter KPIs...">' +
+                '   </section>' +
+                '   <section class="col col-3">' +
+                '       <button id="auto_assign" type="button" onclick="autoAssign()" class="btn btn-success" ' +
+                '           style="margin: 18px 0 0 8px; padding: 7px">Auto-Assign' +
+                '       </button>' +
+                '   </section>' +
+                '</div>' +
+                '<hr style="padding: 10px">');
+            for (i = 1; i <= days; i++) {
+                var kpi_val = data['kpi'][i] ? data['kpi'][i] : 0;
+                var kpi_cost_val = data['kpi_cost'][i] ? data['kpi_cost'][i] : 0;
+                var kpi_l3_c3bg_val = data['kpi_l3_c3bg'][i] ? data['kpi_l3_c3bg'][i] : 0;
                 var day = i < 10 ? '0' + i : i;
                 var item =
-                    '<section class="col col-2">' +
-                    day + month_name[month - 1] +
-                    '    <input class="form-control" id="day" type="number" value="'+ value +'"' +
-                    '           placeholder="" max="" min="1" data-toggle="tooltip" title="Enter KPIs...">' +
-                    '</section>';
+                    '<div class="row">' +
+                    '   <section class="col col-3">' +
+                    '       <label class="label" style="margin: 8px;">'+ day + " " + month_name[month - 1] +'</label>'+
+                    '   </section>'+
+                    '   <section class="col col-2">' +
+                    '       <input class="form-control" id="day" type="number" value="'+ kpi_val +'"' +
+                    '           placeholder="" max="" min="0" data-toggle="tooltip" title="Enter KPIs...">' +
+                    '   </section>'+
+                    '   <section class="col col-2">' +
+                    '       <input class="form-control" id="day" type="number" value="'+ kpi_cost_val +'"' +
+                    '           placeholder="" max="" min="0" step="0.01" data-toggle="tooltip" title="Enter KPIs...">' +
+                    '   </section>'+
+                    '   <section class="col col-2">' +
+                    '       <input class="form-control" id="day" type="number" value="'+ kpi_l3_c3bg_val +'"' +
+                    '           placeholder="" max="" min="0" step="0.01" data-toggle="tooltip" title="Enter KPIs...">' +
+                    '   </section>' +
+                    '</div>';
 
                 $("div.lst_days").append(item);
                 $('#assign-kpi').attr('disabled', false);
@@ -340,6 +419,52 @@
             function (err) {
                 alert('Cannot connect to server. Please try again later.');
             });
+    }
+
+    function autoAssign() {
+        var kpi = 0, mod = 0, kpi_cost = 0, kpi_l3_c3 = 0;
+        var year   = $('select#year').val();
+        var month   = $('select#month').val();
+        var days = new Date(year, month, 0).getDate();
+
+        var serial = 1;
+        $('input#total').each(function () {
+            var value = $(this).val();
+            if (serial === 1) {
+                mod = parseInt(value) % days;
+                if(mod !== 0) {
+                    value = value - mod;
+                }
+                kpi = value / days;
+                serial++;
+            } else if (serial === 2) {
+                kpi_cost = parseFloat(value);
+                $(this).val(kpi_cost);
+                serial++;
+            } else {
+                kpi_l3_c3 = parseFloat(value);
+                $(this).val(kpi_l3_c3);
+                serial = 1;
+            }
+        });
+
+        $('input#day').each(function () {
+            if (serial === 1) {
+                if (mod > 0) {
+                    $(this).val(kpi + 1);
+                    mod--;
+                } else {
+                    $(this).val(kpi);
+                }
+                serial++;
+            } else if (serial === 2) {
+                $(this).val(kpi_cost);
+                serial++;
+            } else {
+                $(this).val(kpi_l3_c3);
+                serial = 1;
+            }
+        });
     }
 
     function initDropdown(month){

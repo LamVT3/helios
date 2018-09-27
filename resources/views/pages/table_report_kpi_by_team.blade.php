@@ -42,8 +42,8 @@
             {{--data-original-title='Edit Row'><i class='fa fa-pencil'></i></a>--}}
         </td>
         <?php
-            $total_kpi = $kpi_selection == "c3b" ? $total_kpi : ($noMarketer != 0 ? round($total_kpi/$noMarketer,2) : 0);
-            $total_actual = $kpi_selection == "c3b" ? $total_actual : ($noMarketer != 0 ? round($total_actual/$noMarketer,2) : 0);
+            $total_kpi = $kpi_selection == "c3b" ? $total_kpi : ($noTeam != 0 ? round($total_kpi/$noTeam,2) : 0);
+            $total_actual = $kpi_selection == "c3b" ? $total_actual : ($noTeam != 0 ? round($total_actual/$noTeam,2) : 0);
         ?>
         <td class="border-bold-right">{{ $total_kpi }}</td>
         <td class="border-bold-right">{{ $total_actual }}</td>
@@ -58,8 +58,8 @@
                 ?>
             @endforeach
 
-            <td>{{ $kpi_selection == "c3b" ? $kpi : ($noMarketer != 0 ? round($kpi/$noMarketer,2) : 0) }}</td>
-            <td class="border-bold-right act">{{ $kpi_selection == "c3b" ? $actual : ($noMarketer != 0 ? round($actual/$noMarketer,2) : 0) }}</td>
+            <td>{{ $kpi_selection == "c3b" ? $kpi : ($noTeam != 0 ? round($kpi/$noTeam,2) : 0) }}</td>
+            <td class="border-bold-right act">{{ $kpi_selection == "c3b" ? $actual : ($noTeam != 0 ? round($actual/$noTeam,2) : 0) }}</td>
         @endfor
     </tr>
     @foreach($data_team as $team => $item)

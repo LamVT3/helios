@@ -44,6 +44,14 @@
                                     <i></i>
                                 </label>
                             </section>
+                            <section class="col col-sm-3">
+                                <label class="label">Year</label>
+                                <label class="select">
+                                    <select id="year">
+                                    </select>
+                                    <i></i>
+                                </label>
+                            </section>
                         </div>
                         <hr style="padding: 10px">
                         <div class="row lst_days">
