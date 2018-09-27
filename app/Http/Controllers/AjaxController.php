@@ -432,13 +432,22 @@ class AjaxController extends Controller
 
         $dashboard['l8_l1']     = $l1 ? round( $l8 * 100 / $l1, 2) : 0;
 
-        $dashboard['kpi']           = @$kpi['kpi'];
-        $dashboard['kpi_cost']      = $this->convert_spent(@$kpi['kpi_cost']);
-        $dashboard['kpi_l3_c3bg']   = @$kpi['kpi_l3_c3bg'];
-        $dashboard['spent_left']    = $dashboard['kpi'] * $dashboard['kpi_cost'] - $dashboard['spent'];
+//        $dashboard['kpi']           = @$kpi['kpi'];
+//        $dashboard['kpi_cost']      = $this->convert_spent(@$kpi['kpi_cost']);
+//        $dashboard['kpi_l3_c3bg']   = @$kpi['kpi_l3_c3bg'];
+//        $dashboard['spent_left']    = $dashboard['kpi'] * $dashboard['kpi_cost'] - $dashboard['spent'];
+//
+//        $dashboard['spent']         = number_format($dashboard['spent'], 2);
+//        $dashboard['spent_left']    = number_format($dashboard['spent_left'], 2);
 
-        $dashboard['spent']         = number_format($dashboard['spent'], 2);
-        $dashboard['spent_left']    = number_format($dashboard['spent_left'], 2);
+
+        $dashboard['kpi']           = 0;
+        $dashboard['kpi_cost']      = 0;
+        $dashboard['kpi_l3_c3bg']   = 0;
+        $dashboard['spent_left']    = 0;
+
+        $dashboard['spent']         = 0;
+        $dashboard['spent_left']    = 0;
 
         /* end Dashboard */
 
@@ -1322,9 +1331,9 @@ class AjaxController extends Controller
             $kpi_l3_c3bg    = @$user->kpi_l3_c3bg;
 
             if($start == $end){
-                $rs['kpi']          = @$kpi[$startYear][$startMonth][$startDay];
-                $rs['kpi_cost']     = @$kpi_cost[$startYear][$startMonth][$startDay];
-                $rs['kpi_l3_c3bg']  = @$kpi_l3_c3bg[$startYear][$startMonth][$startDay];
+                @$rs['kpi']          = @$kpi[$startYear][$startMonth][$startDay];
+                @$rs['kpi_cost']     = @$kpi_cost[$startYear][$startMonth][$startDay];
+                @$rs['kpi_l3_c3bg']  = @$kpi_l3_c3bg[$startYear][$startMonth][$startDay];
 
                 return $rs;
             }else{
