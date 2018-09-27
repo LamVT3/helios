@@ -80,7 +80,7 @@
                                         <div class="row">
                                             <section class="col col-sm-6 col-lg-3">
                                                 <label class="kpi_label">KPI Selection</label>
-                                                <select name="kpi_selection" class="select2" style="width: 280px" id="kpi_selection"
+                                                <select name="kpi_selection_team" class="select2" style="width: 280px" id="kpi_selection_team"
                                                         data-url="">
                                                     <option value="c3b">C3B</option>
                                                     <option value="c3b_cost">C3B Cost</option>
@@ -251,7 +251,7 @@
             initFormKPI(user, month, year);
         });
 
-        $('select#kpi_selection').change(function(e){
+        $('select#kpi_selection, select#kpi_selection_team').change(function(e){
             e.preventDefault();
             var month =  $('#selected_month').val();
 
@@ -519,7 +519,7 @@
     function initDataKPIByteam(month) {
         var url = $('#kpi_by_team_url').val();
         var team = $('input[name=team]').val();
-        var kpi_selection  = $('select#kpi_selection').val();
+        var kpi_selection  = $('select#kpi_selection_team').val();
 
         $('.loading').show();
         $.ajax({
