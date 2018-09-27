@@ -430,7 +430,7 @@ class AjaxController extends Controller
 
         $dashboard['l1_c3bg']   = $c3b ? round( $l1 * 100 / $c3b, 2) : 0;
 
-        $dashboard['l8_l1']     = $c3b ? round( $l1 * 100 / $c3b, 2) : 0;
+        $dashboard['l8_l1']     = $l1 ? round( $l8 * 100 / $l1, 2) : 0;
 
         $dashboard['kpi']           = @$kpi['kpi'];
         $dashboard['kpi_cost']      = $this->convert_spent(@$kpi['kpi_cost']);
