@@ -587,10 +587,12 @@ class ContactController extends Controller
                 if(count($invalid) < 5){
                     $fields = implode("',' ",$invalid);
                     $errors =  'Invalid field(s): \''.$fields.'\' in file import !!! - Please download sample file.';
-                    return redirect()->back()->withErrors($errors);
+                    echo $errors;
+	                exit;
                 }
                 $errors =  'File import is invalid !!! - Please download sample file.';
-                return redirect()->back()->withErrors($errors);
+                echo $errors;
+	            exit;
             }
 
             foreach($results as $item){
@@ -677,9 +679,7 @@ class ContactController extends Controller
                 $ad_result->save();
             }
 
-            session()->flash('message', $cnt.' Contact(s) have been imported successfully.');
-
-            echo $cnt;
+            echo $cnt . " Contact(s) have been imported successfully.";
 
         });
         //DB::connection('mongodb')->getQueryLog();
@@ -709,10 +709,12 @@ class ContactController extends Controller
                 if(count($invalid) < 5){
                     $fields = implode("',' ",$invalid);
                     $errors =  'Invalid field(s): \''.$fields.'\' in file import !!! - Please download sample file.';
-                    return redirect()->back()->withErrors($errors);
+                    echo $errors;
+                    exit;
                 }
                 $errors =  'File import is invalid !!! - Please download sample file.';
-                return redirect()->back()->withErrors($errors);
+	            echo $errors;
+	            exit;
             }
 
             $request = request();
@@ -817,9 +819,7 @@ class ContactController extends Controller
                 $ad_result->save();
             }
 
-            session()->flash('message', $cnt.' Contact(s) have been imported successfully.');
-
-            echo $cnt;
+            echo $cnt . " Contact(s) have been imported successfully.";
         });
         //DB::connection('mongodb')->getQueryLog();
         //return redirect()->back();
