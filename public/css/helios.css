@@ -400,6 +400,9 @@ div#wrapper_kpi, div#wrapper_kpi_by_team{
 .gap_text{
     color: red;
 }
+.bolder_text{
+    font-weight: bold;
+}
 #table_kpi td.act, #table_kpi_by_team td.act{
     width: auto;
     white-space:nowrap;

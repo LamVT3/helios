@@ -15,11 +15,7 @@
 
         <!-- widget grid -->
             <section id="widget-grid" class="">
-                <fieldset style="background-color: white">
-                    <legend>Filter
-                        <a id="filter" href="javascript:void(0)"><i class="fa fa-angle-up fa-lg"></i></a>
-                    </legend>
-                <form class="smart-form" >
+                <form class="smart-form" style="padding: 10px; background: white; border: 1px solid #ccc; margin: 0px 0px 20px 0px ">
                     <div class="row" >
                         <section class="col col-sm-6 col-lg-3">
                             <label class="label">Marketer</label>
@@ -49,7 +45,7 @@
                         </section>
                         <section class="col col-sm-6 col-lg-3" style="min-height: 55px">
                             <label class="label">Currency</label>
-                            <div id="wrapper_currency" style="border: 1px solid #ccc; float: left; padding: 5px 0px 5px 10px; width: 98%;">
+                            <div id="wrapper_currency" style="float: left; padding: 5px 0px 5px 0px;">
                                 <label>
                                     <input type="radio" name="currency" id="currency" value="USD" checked>USD
                                 </label>
@@ -83,19 +79,20 @@
                         </section>
                     </div>
                 </form>
-                </fieldset>
-
                 <!-- row -->
                 <div class="row">
                     <div class="col-sm-6 col-lg-3">
                         <div class="panel panel-default widget-c3">
                             <div class="panel-body status">
                                 <div class="who clearfix widget-title">
-                                    <h4><i class="fa fa-lg fa-fw fa-child"></i><strong>C3B Total</strong></h4>
+                                    <h4>
+                                        <i class="fa fa-lg fa-fw fa-child"></i><strong>C3B Total</strong>
+                                        <span class="widget-unit">(C3B)</span>
+                                    </h4>
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
                                     KPI
-                                    <span class="widget-unit">C3B</span>
+                                    <span class="widget-unit">Actual</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual pull-right">
                                     ...
@@ -120,11 +117,14 @@
                         <div class="panel panel-default widget-c3b-cost">
                             <div class="panel-body status">
                                 <div class="who clearfix widget-title">
-                                    <h4><i class="fa fa-lg fa-fw fa-money"></i><strong>C3B Cost</strong></h4>
+                                    <h4>
+                                        <i class="fa fa-lg fa-fw fa-money"></i><strong>C3B Cost</strong>
+                                        <span class="widget-unit">(USD)</span>
+                                    </h4>
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
                                     KPI
-                                    <span class="widget-unit">USD</span>
+                                    <span class="widget-unit">Actual</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual pull-right">
                                     ...
@@ -148,11 +148,14 @@
                         <div class="panel panel-default widget-l3-c3bg">
                             <div class="panel-body status">
                                 <div class="who clearfix widget-title">
-                                    <h4><i class="fa fa-lg fa-fw fa-child"></i><strong>L3/C3BG</strong></h4>
+                                    <h4>
+                                        <i class="fa fa-lg fa-fw fa-child"></i><strong>L3/C3BG</strong>
+                                        <span class="widget-unit">(%)</span>
+                                    </h4>
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
                                     KPI
-                                    <span class="widget-unit">%</span>
+                                    <span class="widget-unit">Actual</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual pull-right">
                                     ...
@@ -177,11 +180,13 @@
                         <div class="panel panel-default widget-c3bg-c3b">
                             <div class="panel-body status">
                                 <div class="who clearfix widget-title">
-                                    <h4><i class="fa fa-lg fa-fw fa-child"></i><strong>C3BG/C3B</strong></h4>
+                                    <h4>
+                                        <i class="fa fa-lg fa-fw fa-child"></i><strong>C3BG/C3B</strong>
+                                        <span class="widget-unit">(%)</span>
+                                    </h4>
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
-                                    KPI
-                                    <span class="widget-unit">%</span>
+                                    <span class="widget-unit">Actual</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
                                     ...
@@ -203,11 +208,14 @@
                             <div class="panel-body status">
 
                                 <div class="who clearfix widget-title">
-                                    <h4><i class="fa fa-lg fa-fw fa-credit-card"></i><strong>Budget</strong></h4>
+                                    <h4>
+                                        <i class="fa fa-lg fa-fw fa-credit-card"></i><strong>Budget</strong>
+                                        <span class="widget-unit">(USD)</span>
+                                    </h4>
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
                                     Left
-                                    <span class="widget-unit">USD</span>
+                                    <span class="widget-unit">Actual</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual pull-right">
                                     ...
@@ -232,11 +240,14 @@
                             <div class="panel-body status">
 
                                 <div class="who clearfix widget-title">
-                                    <h4><i class="fa fa-lg fa-fw fa-usd"></i><strong>ME/RE</strong></h4>
+                                    <h4>
+                                        <i class="fa fa-lg fa-fw fa-usd"></i><strong>ME/RE</strong>
+                                        <span class="widget-unit">(%)</span>
+                                    </h4>
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
-                                    KPI
-                                    <span class="widget-unit">%</span>
+
+                                    <span class="widget-unit">Actual</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
                                     ...
@@ -257,11 +268,14 @@
                         <div class="panel panel-default widget-l1-c3bg">
                             <div class="panel-body status">
                                 <div class="who clearfix widget-title">
-                                    <h4><i class="fa fa-lg fa-fw fa-money"></i><strong>L1/C3BG</strong></h4>
+                                    <h4>
+                                        <i class="fa fa-lg fa-fw fa-money"></i><strong>L1/C3BG</strong>
+                                        <span class="widget-unit">(%)</span>
+                                    </h4>
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
-                                    KPI
-                                    <span class="widget-unit">%</span>
+
+                                    <span class="widget-unit">Actual</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
                                     ...
@@ -283,11 +297,14 @@
                             <div class="panel-body status">
 
                                 <div class="who clearfix widget-title">
-                                    <h4><i class="fa fa-lg fa-fw fa-credit-card"></i><strong>L8/L1</strong></h4>
+                                    <h4>
+                                        <i class="fa fa-lg fa-fw fa-credit-card"></i><strong>L8/L1</strong>
+                                        <span class="widget-unit">(%)</span>
+                                    </h4>
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
-                                    KPI
-                                    <span class="widget-unit">%</span>
+
+                                    <span class="widget-unit">Actual</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
                                     ...
@@ -482,14 +499,19 @@
             margin-right: 15px;
         }
 
-        .widget-caption .widget-unit {
+        .widget-title .widget-unit {
             float: right;
-            font-weight: bold;
+            font-style: italic;
         }
 
-        .widget-kpi.text {
-            padding: 5px 10px;
-            color: #F44336;
+        .widget-caption .widget-unit {
+            float: right;
+            /*font-style: italic;*/
+        }
+
+        .widget-caption {
+            min-height: 30px !important;
+            padding: 0 14px !important;
         }
 
         .widget-progress .progress {
@@ -513,6 +535,12 @@
             padding: 0 14px;
             font-weight: bold;
             color: #3F51B5;
+        }
+
+        .widget-kpi.text {
+            padding: 0 14px;
+            color: #F44336;
+            font-style: italic;
         }
         /*
         .widget-c3b-cost .widget-title {
@@ -593,19 +621,6 @@
             padding: 0 14px;
             font-weight: bold;
             color: #3F51B5;
-        }
-
-        .widget-kpi
-        {
-            padding: 0 14px;
-            font-weight: bold;
-            font-size: 15px !important;
-        }
-
-        .widget-kpi-gap
-        {
-            font-size: 15px !important;
-            color: red;
         }
 
         /*.widget-c3 .widget-title {
@@ -775,8 +790,8 @@
 
         function dashboard(startDate, endDate, unit) {
 
-            $('.widget-c3b-cost .widget-unit').html(unit);
-            $('.widget-budget .widget-unit').html(unit);
+            $('.widget-c3b-cost .widget-title .widget-unit').html('(' + unit + ')');
+            $('.widget-budget .widget-title .widget-unit').html('(' + unit + ')');
 
             $('.widget-c3 .widget-actual').html('...');
             $('.widget-c3 .widget-kpi').html('...');
