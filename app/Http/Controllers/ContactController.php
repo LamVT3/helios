@@ -600,13 +600,12 @@ class ContactController extends Controller
                 }
 
                 // validate submit_time
-                $submit_time = is_object($item->submit_time) ? $item->submit_time->timestamp : $import_time;
+                $submit_time = $import_time * 1000;
 
                 $contact = new Contact();
                 $contact->contact_source = "import_data";
-                $contact->msg_type = "submitter";
-                $contact->submit_time = $submit_time * 1000;
-                $contact->submit_hour = (int) date( "H", $submit_time );
+                $contact->submit_time = $submit_time;
+                $contact->submit_hour = (int) date( "H", $submit_time / 1000 );
 	            $contact->submit_date = (int) strtotime(date('Y-m-d',$submit_time / 1000)) * 1000;
                 $contact->created_date = date('Y-m-d H:m:s');
                 $contact->source_name = $item->utm_source;
@@ -637,7 +636,14 @@ class ContactController extends Controller
                 $ad = Ad::where('uri_query', $uri_query)->first();
                 if($ad === null){
                     $contact->ad_id = 'unknown';
-                    $contact->marketer_id = auth()->user()->_id;
+	                $contact->marketer_id = 'unknown';
+	                $contact->source_name = "Unknown";
+	                $contact->team_name = "Unknown";
+	                $contact->marketer_name = "Unknown";
+	                $contact->channel_name = "Unknown";
+	                $contact->campaign_name = "Unknown";
+	                $contact->subcampaign_name = "Unknown";
+	                $contact->ad_name = "Unknown";
                 }else{
                     $contact->ad_id = $ad->_id;
                     $contact->source_id = $ad->source_id;
@@ -713,13 +719,13 @@ class ContactController extends Controller
 
             $startDate = strtotime("midnight")*1000;
             $endDate = strtotime("tomorrow")*1000;
-            if($request->registered_date){
-                $date_place = str_replace('-', ' ', $request->registered_date);
-                $date_arr = explode(' ', str_replace('/', '-', $date_place));
-                $startDate = strtotime($date_arr[1])*1000;
-                $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
-                $import_time = strtotime($date_arr[1])*1000;
-            }
+//            if($request->registered_date){
+//                $date_place = str_replace('-', ' ', $request->registered_date);
+//                $date_arr = explode(' ', str_replace('/', '-', $date_place));
+//                $startDate = strtotime($date_arr[1])*1000;
+//                $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+//                $import_time = strtotime($date_arr[1])*1000;
+//            }
 
             $query = Contact::where('submit_time', '>=', $startDate);
             $query->where('submit_time', '<', $endDate);
@@ -740,12 +746,13 @@ class ContactController extends Controller
                     continue;
                 }
 
+	            $submit_time = $import_time * 1000;
+
                 $contact = new Contact();
                 $contact->contact_source = "import_egentic";
-                $contact->msg_type = "submitter";
-                $contact->submit_time = $import_time;
-                $contact->submit_hour = (int) date( "H", $import_time / 1000 );
-	            $contact->submit_date = (int) strtotime(date('Y-m-d',$import_time / 1000)) * 1000;
+                $contact->submit_time = $submit_time;
+                $contact->submit_hour = (int) date( "H", $submit_time / 1000 );
+	            $contact->submit_date = (int) strtotime(date('Y-m-d',$submit_time / 1000)) * 1000;
                 $contact->created_date = date('Y-m-d H:m:s');
                 $contact->source_name = "";
                 $contact->team_name = "";
@@ -761,7 +768,7 @@ class ContactController extends Controller
                 $contact->landing_page = "";
                 $contact->ad_link = "";
                 $contact->channel_name = "TK100.eGentic";
-                $contact->import_time = time();
+                $contact->import_time = $import_time;
                 $contact->clevel = "c3bg";
 
                 // match ad_id
@@ -769,7 +776,14 @@ class ContactController extends Controller
                 $ad = Ad::where('uri_query', $uri_query)->first();
                 if($ad === null){
                     $contact->ad_id = 'unknown';
-                    $contact->marketer_id = auth()->user()->_id;
+                    $contact->marketer_id = 'unknown';
+	                $contact->source_name = "Unknown";
+	                $contact->team_name = "Unknown";
+	                $contact->marketer_name = "Unknown";
+	                $contact->channel_name = "Unknown";
+	                $contact->campaign_name = "Unknown";
+	                $contact->subcampaign_name = "Unknown";
+	                $contact->ad_name = "Unknown";
                 }else{
                     $contact->ad_id = $ad->_id;
                     $contact->source_id = $ad->source_id;
