@@ -35,19 +35,14 @@
                                 <!-- Tab panes -->
                                 <div class="tab-content">
                                     <div class="tab-pane container fade in active" id="maketer">
-                                        <div class="smart-form">
-                                            <section>
-                                                <label class="input">
-                                                    <input type="text" value="" name="maketer_name" placeholder="Select maketer">
-                                                </label>
-                                            </section>
-                                        </div>
-
                                         <div class="row">
                                             <section class="col col-sm-6 col-lg-3">
-                                                <label class="kpi_label">KPI Selection</label>
-                                                <select name="kpi_selection" class="select2" style="width: 280px" id="kpi_selection"
-                                                        data-url="">
+                                                <label class="label">Marketer</label>
+                                                <input type="text" value="" style="padding: 6px 8px;" name="maketer_name" placeholder="Select maketer">
+                                            </section>
+                                            <section class="col col-sm-6 col-lg-3">
+                                                <label class="label">KPI Selection</label>
+                                                <select name="kpi_selection" id="kpi_selection">
                                                     <option value="c3b">C3B</option>
                                                     <option value="c3b_cost">C3B Cost</option>
                                                     <option value="l3_c3bg">L3/C3BG</option>
@@ -55,7 +50,7 @@
                                                 <i></i>
                                             </section>
                                             <section>
-                                                <div id="" class="text-right" style="margin: 10px 0px; padding: 10px 7px;">
+                                                <div id="" class="text-right" style="margin: 18px 0px; padding: 10px 7px;">
                                                     <button id="filter_maketer" class="btn btn-primary btn-sm" type="submit" style="margin-right: 15px">
                                                         <i class="fa fa-filter"></i>
                                                         Filter
@@ -69,19 +64,14 @@
                                         </div>
                                     </div>
                                     <div class="tab-pane container fade" id="team">
-                                        <div class="smart-form">
-                                            <section>
-                                                <label class="input">
-                                                    <input type="text" value="" name="team" placeholder="Select team">
-                                                </label>
-                                            </section>
-                                        </div>
-
                                         <div class="row">
                                             <section class="col col-sm-6 col-lg-3">
-                                                <label class="kpi_label">KPI Selection</label>
-                                                <select name="kpi_selection_team" class="select2" style="width: 280px" id="kpi_selection_team"
-                                                        data-url="">
+                                                <label class="label">Team</label>
+                                                <input type="text" value="" name="team" placeholder="Select team">
+                                            </section>
+                                            <section class="col col-sm-6 col-lg-3">
+                                            <label class="label">KPI Selection</label>
+                                                <select name="kpi_selection_team" id="kpi_selection_team">
                                                     <option value="c3b">C3B</option>
                                                     <option value="c3b_cost">C3B Cost</option>
                                                     <option value="l3_c3bg">L3/C3BG</option>
@@ -89,7 +79,7 @@
                                                 <i></i>
                                             </section>
                                             <section>
-                                                <div id="" class="text-right" style="margin: 10px 0px; padding: 10px 7px;">
+                                                <div id="" class="text-right" style="margin: 18px 0px; padding: 10px 7px;">
                                                     <button id="filter_team" class="btn btn-primary btn-sm" type="submit" style="margin-right: 15px">
                                                         <i class="fa fa-filter"></i>
                                                         Filter
@@ -144,10 +134,9 @@
 <script src="{{ asset('js/fixedTable/tableHeadFixer.js') }}"></script>
 
 <style>
-    .kpi_label {
+    .label {
         display: block;
         margin-bottom: 6px;
-        line-height: 19px;
         font-weight: bolder;
         font-size: 13px;
         color: #333;
@@ -308,6 +297,8 @@
             searchField: ['name'],
             options: {!! $teams !!}
         });
+
+        $('select#kpi_selection, select#kpi_selection_team').selectize({});
 
         $('#filter_maketer').click(function() {
             var month =  $('#selected_month').val();
