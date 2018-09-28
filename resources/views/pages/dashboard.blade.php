@@ -44,15 +44,6 @@
                             <i></i>
                         </section>
                         <section class="col col-sm-6 col-lg-3" style="min-height: 55px">
-                            <label class="label">Date</label>
-                            <div id="reportrange" class="pull-left"
-                                 style="background: #fff; cursor: pointer; padding: 7px 10px 7px 10px; border: 1px solid #ccc;">
-                                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
-                                <span></span> <b class="caret"></b>
-                            </div>
-                            <i></i>
-                        </section>
-                        <section class="col col-sm-6 col-lg-3" style="min-height: 55px">
                             <label class="label">Currency</label>
                             <div id="wrapper_currency" style="float: left; padding: 5px 0px 5px 0px;">
                                 <label>
@@ -65,6 +56,15 @@
                                     <input type="radio" name="currency" id="currency" value="Baht">Baht
                                 </label>
                             </div>
+                        </section>
+                        <section class="col col-sm-6 col-lg-3" style="min-height: 55px">
+                            <label class="label">Date</label>
+                            <div id="reportrange" class="pull-left"
+                                 style="background: #fff; cursor: pointer; padding: 7px 10px 7px 10px; border: 1px solid #ccc;">
+                                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                                <span></span> <b class="caret"></b>
+                            </div>
+                            <i></i>
                         </section>
                     </div>
                     <div class="row">
