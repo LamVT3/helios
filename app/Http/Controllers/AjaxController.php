@@ -1353,6 +1353,12 @@ class AjaxController extends Controller
             @$rs['kpi_l3_c3bg']  = round(@$rs['kpi_l3_c3bg'] / $cnt, 2);
         }
 
+        if(count($day_between) > 1){
+            $cnt = count($day_between);
+            @$rs['kpi_cost']     = round(@$rs['kpi_cost'] / $cnt, 2);
+            @$rs['kpi_l3_c3bg']  = round(@$rs['kpi_l3_c3bg'] / $cnt, 2);
+        }
+
         return $rs;
     }
 

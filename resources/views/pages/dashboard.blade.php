@@ -790,8 +790,8 @@
 
         function dashboard(startDate, endDate, unit) {
 
-            $('.widget-c3b-cost .widget-title.widget-unit').html('(' + unit + ')');
-            $('.widget-budget .widget-title.widget-unit').html('(' + unit + ')');
+            $('.widget-c3b-cost .widget-title .widget-unit').html('(' + unit + ')');
+            $('.widget-budget .widget-title .widget-unit').html('(' + unit + ')');
 
             $('.widget-c3 .widget-actual').html('...');
             $('.widget-c3 .widget-kpi').html('...');

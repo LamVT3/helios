@@ -48,7 +48,7 @@ class DashboardController extends Controller
         $user_role  = auth()->user()->role;
         $user_id    = auth()->user()->_id;
 
-        $users      = User::all();
+        $users      = $users = User::where('role', 'Marketer')->where('is_active', 1)->get();
         $kpi        = array();
 
         $array_month = array();
