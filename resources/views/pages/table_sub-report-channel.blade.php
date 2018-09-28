@@ -180,10 +180,10 @@
                         threshold: 0.1,
                         label: {
                             show: true,
-                            radius: 3/4,
+                            radius: 1,
                             formatter: function(label, series){
                                 return "<div style='font-size:13px;padding:3px;color:#333;font-weight: 600'>"
-                                    + series.data[0][1] + ' - ' + Math.round(series.percent) + "%</div>";
+                                    + Math.round(series.percent) + "%</div>";
                             },
                             background: {
                                 opacity: 1,

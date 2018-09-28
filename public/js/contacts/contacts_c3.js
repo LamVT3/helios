@@ -329,7 +329,7 @@ $(document).ready(function () {
             cache: false,
             timeout: 600000,
             success: function(result){
-                document.getElementById("import_text").innerHTML = result + ' Contact(s) have been imported successfully.';
+                document.getElementById("import_text").innerHTML = result;
                 $('div#loader').hide();
                 $('div#import_success').show();
                 initDataTable();
@@ -357,7 +357,7 @@ $(document).ready(function () {
             cache: false,
             timeout: 600000,
             success: function(result){
-                document.getElementById("import_text").innerHTML = result + ' Contact(s) have been imported successfully.';
+                document.getElementById("import_text").innerHTML = result;
                 $('div#loader').hide();
                 $('div#import_success').show();
                 initDataTable();
