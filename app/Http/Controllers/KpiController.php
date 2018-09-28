@@ -39,7 +39,9 @@ class KpiController extends Controller
         $active         = 'assign_kpi';
         $breadcrumbs    = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> KPI Report </span>";
 
-        $users  = User::all();
+        $users  = User::where('role', 'Marketer')
+            ->where('is_active', 1)
+            ->get();
         $teams  = Team::all();
         $days   = $this->get_days_in_month();
         $month  = date('M');
@@ -87,6 +89,17 @@ class KpiController extends Controller
         $kpi[$year][$month] = $request->kpi;
         ksort( $kpi[$year]);
         $user->kpi  = $kpi;
+
+        $kpi_cost   = $user->kpi_cost;
+        $kpi_cost[$year][$month] = $request->kpi_cost;
+        ksort( $kpi_cost[$year]);
+        $user->kpi_cost  = $kpi_cost;
+
+        $kpi_l3_c3bg = $user->kpi_l3_c3bg;
+        $kpi_l3_c3bg[$year][$month] = $request->kpi_l3_c3bg;
+        ksort( $kpi_l3_c3bg[$year]);
+        $user->kpi_l3_c3bg  = $kpi_l3_c3bg;
+
         $user->save();
     }
 
@@ -98,8 +111,16 @@ class KpiController extends Controller
         $year       = $request->year;
         $user       = User::where('_id', $user)->firstOrFail();
 
-        $kpi        = $user->kpi;
-        return @$kpi[$year][$month];
+        $kpi        = isset($user->kpi[$year][$month]) ? $user->kpi[$year][$month] : array();
+        $kpi_cost   = isset($user->kpi_cost[$year][$month]) ? $user->kpi_cost[$year][$month] : array();
+        $kpi_l3_c3bg = isset($user->kpi_l3_c3bg[$year][$month]) ? $user->kpi_l3_c3bg[$year][$month] : array();
+
+        $data = array();
+        $data['kpi'] = $kpi;
+        $data['kpi_cost'] = $kpi_cost;
+        $data['kpi_l3_c3bg'] = $kpi_l3_c3bg;
+
+        return @$data;
 
     }
 
@@ -114,32 +135,37 @@ class KpiController extends Controller
             $month = $request->month;
         }
 
-        $users = User::all();
+        $users = User::where('role', 'Marketer')
+            ->where('is_active', 1)
+            ->get();
+        $data = array();
         foreach ($users as $user){
 
             $data[$user->username]['user_id']   = $user->id;
             switch ($request->kpi_selection) {
                 case "c3b_cost":
+                    $days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
                     $kpi_cost = isset($user->kpi_cost[$year][$month]) ? $user->kpi_cost[$year][$month] : array();
                     $data[$user->username]['kpi']       = $kpi_cost;
-                    $data[$user->username]['total_kpi'] = array_sum($kpi_cost);
+                    $data[$user->username]['total_kpi'] = round(array_sum($kpi_cost)/$days, 2);
 
                     $db_data = $this->get_db_data($user);
 
                     $data[$user->username]['actual']       = isset($db_data['c3b_cost']) ? $db_data['c3b_cost'] : array();
                     $actual = isset($data[$user->username]['actual']) ? $data[$user->username]['actual'] : array();
-                    $data[$user->username]['total_actual'] = array_sum($actual);
+                    $data[$user->username]['total_actual'] = round(array_sum($actual)/$days, 2);
                     break;
                 case "l3_c3bg":
+                    $days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
                     $kpi_l3_c3bg = isset($user->kpi_l3_c3bg[$year][$month]) ? $user->kpi_l3_c3bg[$year][$month] : array();
                     $data[$user->username]['kpi']       = $kpi_l3_c3bg;
-                    $data[$user->username]['total_kpi'] = array_sum($kpi_l3_c3bg);
+                    $data[$user->username]['total_kpi'] = round(array_sum($kpi_l3_c3bg)/$days, 2);
 
                     $db_data = $this->get_db_data($user);
 
                     $data[$user->username]['actual']       = isset($db_data['l3_c3bg']) ? $db_data['l3_c3bg'] : array() ;
                     $actual = isset($data[$user->username]['actual']) ? $data[$user->username]['actual'] : array();
-                    $data[$user->username]['total_actual'] = array_sum($actual);
+                    $data[$user->username]['total_actual'] = round(array_sum($actual)/$days, 2);
                     break;
                 case "c3b":
                 default:

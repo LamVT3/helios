@@ -7,9 +7,7 @@
     <!-- MAIN CONTENT -->
     <div id="content">
 {{-- --}}
-        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs, 'currency' => true])
-            @component('components.currency')
-            @endcomponent
+        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
         @endcomponent
 
         <div class="tab-v1">
@@ -44,7 +42,7 @@
                                                 {{--<a id="filter" href="javascript:void(0)"><i class="fa fa-angle-up fa-lg"></i></a>--}}
                                             {{--</legend>--}}
                                             <div class="row" id="filter">
-                                                <section class="col col-2">
+                                                <section class="col col-lg-2 col-sm-4">
                                                     <label class="label">Source</label>
                                                     <select name="source_id" class="select2" style="width: 280px" id="source_id" tabindex="1" autofocus
                                                             data-url="{!! route('ajax-getFilterSource') !!}">
@@ -55,7 +53,7 @@
                                                     </select>
                                                     <i></i>
                                                 </section>
-                                                <section class="col col-2">
+                                                <section class="col col-lg-2 col-sm-4">
                                                     <label class="label">Team</label>
                                                     <select name="team_id" class="select2" id="team_id" style="width: 280px" tabindex="2"
                                                             data-url="{!! route('ajax-getFilterTeam') !!}">
@@ -66,7 +64,7 @@
                                                     </select>
                                                     <i></i>
                                                 </section>
-                                                <section class="col col-2">
+                                                <section class="col col-lg-2 col-sm-4">
                                                     <label class="label">Marketer</label>
                                                     <select name="marketer_id" id="marketer_id" class="select2" style="width: 280px"
                                                             data-url="{!! route('ajax-getFilterMaketer') !!}" tabindex="3">
@@ -77,7 +75,7 @@
                                                     </select>
                                                     <i></i>
                                                 </section>
-                                                <section class="col col-2">
+                                                <section class="col col-lg-2 col-sm-4">
                                                     <label class="label">Campaign</label>
                                                     <select name="campaign_id" id="campaign_id" class="select2" style="width: 280px" tabindex="4"
                                                             data-url="{!! route('ajax-getFilterCampaign') !!}">
@@ -88,7 +86,7 @@
                                                     </select>
                                                     <i></i>
                                                 </section>
-                                                <section class="col col-2">
+                                                <section class="col col-lg-2 col-sm-4">
                                                     <label class="label">Sub Campaign</label>
                                                     <select name="subcampaign_id" id="subcampaign_id" class="select2" style="width: 280px"
                                                             data-url="{!! route('ajax-getFilterSubCampaign') !!}">
@@ -99,9 +97,23 @@
                                                     </select>
                                                     <i></i>
                                                 </section>
+                                                <section class="col col-lg-2 col-sm-4" style="min-height: 55px">
+                                                    <label class="label">Currency</label>
+                                                    <div id="wrapper_currency" style="border: 1px solid #ccc; float: left; padding: 5px 0px 5px 10px; width: 95%;">
+                                                        <label>
+                                                            <input type="radio" name="currency" id="currency" value="USD" checked>USD
+                                                        </label>
+                                                        <label>
+                                                            <input type="radio" name="currency" id="currency" value="VND">VND
+                                                        </label>
+                                                        <label>
+                                                            <input type="radio" name="currency" id="currency" value="Baht">Baht
+                                                        </label>
+                                                    </div>
+                                                </section>
                                             </div>
                                             <div class="row">
-                                                <section class="col col-4">
+                                                <section class="col col-lg-4 col-sm-8">
                                                     <label class="label">Landing Page</label>
                                                     <select name="landing_page" id="landing_page" class="select2" style="width: 280px"
                                                             data-url="">
@@ -112,7 +124,7 @@
                                                     </select>
                                                     <i></i>
                                                 </section>
-                                                <section class="col col-2">
+                                                <section class="col col-lg-2 col-sm-4">
                                                     <label class="label">Mode</label>
                                                     <select name="mode" id="mode" class="select2" style="width: 280px"
                                                             data-url="">
@@ -252,7 +264,17 @@
 <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 
-<link rel="stylesheet" type="text/css" media="screen" href="{{ URL::to('css/custom-radio.css') }}">
+<style>
+    input#currency
+    {
+        margin-right: 5px;
+    }
+    #wrapper_currency label
+    {
+        margin-right: 15px;
+    }
+</style>
+
 
 <script type="text/javascript">
     var m = new Date().getMonth() + 1;

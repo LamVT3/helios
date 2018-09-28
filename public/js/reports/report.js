@@ -172,13 +172,6 @@ $(document).ready(function () {
         });
     })
 
-    $('input#currency').click(function (e) {
-        var unit = $(this).val();
-        $('#currency_unit').val(unit);
-        $('.loading').show();
-        filterReport();
-    })
-
     $('.nav-tabs a').click(function(){
         var href = $(this).attr('href');
         if(href == '#report'){
@@ -208,7 +201,7 @@ function filterReport(){
     var subcampaign_id = $('select[name="subcampaign_id"]').val();
     var registered_date = $('.registered_date').text();
     var landing_page    = $('select[name="landing_page"]').val();
-    var unit = $('#currency_unit').val();
+    var unit = $('input[name=currency]:checked').val();
     var mode = $('select[name="mode"]').val();
 
     $('input[name="source_id"]').val(source_id);
