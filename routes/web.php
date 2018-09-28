@@ -18,6 +18,9 @@ Route::post('login', 'Auth\LoginController@login');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
 Route::get('/home', 'DashboardController@index')->name('dashboard');
+Route::group(['prefix' => 'dashboard'], function () {
+    Route::get('/get_channel', 'DashboardController@get_channel')->name('dashboard-get-channel');
+});
 
 Route::group(['prefix' => 'source'], function () {
     Route::get('/', 'SourceController@index')->name('source');
@@ -66,6 +69,8 @@ Route::group(['prefix' => 'contacts'], function () {
     Route::get('countExported', 'ContactController@countExported')->name('contacts.countExported');
     Route::get('export-to-OLM', 'ContactController@exportToOLM')->name('contacts.export-to-OLM');
     Route::get('count-export-to-OLM', 'ContactController@countContactOLM')->name('contacts.count-export-to-OLM');
+    Route::get('/paginate', 'ContactController@getContactPaginate')->name('contacts-paginate');
+    Route::get('/updateContacts', 'ContactController@updateContacts')->name('contacts-updateContacts');
 });
 
 Route::get('/report', 'ReportController@index')->name('report');
@@ -98,9 +103,7 @@ Route::group(['prefix' => 'ajax'], function () {
     Route::get('getFilterCampaign', 'AjaxController@getFilterCampaign')->name('ajax-getFilterCampaign');
     Route::get('/getC3Chart', 'AjaxController@getC3Chart')->name('ajax-getC3Chart');
     Route::get('/getL8Chart', 'AjaxController@getL8Chart')->name('ajax-getL8Chart');
-    Route::get('/paginate', 'AjaxController@getContactPaginate')->name('ajax-paginate');
     Route::get('/getFilterMaketer', 'AjaxController@getFilterMaketer')->name('ajax-getFilterMaketer');
-    Route::get('/updateContacts', 'AjaxController@updateContacts')->name('ajax-updateContacts');
     Route::get('/setStatisticChart', 'AjaxController@prepareStatisticChart')->name('ajax-setStatisticChart');
     Route::get('getFilterSubCampaign', 'AjaxController@getFilterSubCampaign')->name('ajax-getFilterSubCampaign');
 	Route::get('/getHourC3Chart', 'AjaxController@getHourC3Chart')->name('ajax-getHourC3Chart');
@@ -171,6 +174,7 @@ Route::group(['prefix' => 'sub_report'], function () {
     Route::get('/line-chart-filter', 'SubReportController@getFilter')->name('line-chart.filter');
 	Route::get('/channel-report', 'SubReportController@channelReport')->name('channel-report');
 	Route::get('/channel-report-filter', 'SubReportController@channelReportFilter')->name('channel-report.filter');
+	Route::get('/channel-ads-detail', 'SubReportController@channelAdsDetail')->name('channel-ads-detail');
 	Route::get('/hour-report', 'SubReportController@hourReport')->name('hour-report');
 	Route::post('/hour-report', 'SubReportController@hourReportFilter')->name('hour-report.filter');
 

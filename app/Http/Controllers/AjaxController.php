@@ -73,6 +73,8 @@ class AjaxController extends Controller
     public function getFilterSource()
     {
         $data_where = array();
+        $arr_landingpage    = array();
+        $arr_channel        = array();
         $request = request();
         $html_team          = "<option value='' selected>All</option>";
         $html_marketer      = "<option value='' selected>All</option>";
@@ -128,10 +130,10 @@ class AjaxController extends Controller
             $teams = Team::orderBy('name')->get();
             foreach ($teams as $team) {
                 $html_team .= "<option value=" . $team->id . "> " . $team->name . " </option>";
-                $marketers  = $team->members;
-                foreach ($marketers as $item) {
-                    $html_marketer .= "<option value='" . $item['user_id'] . "'> " . $item['username'] . " </option>";
-                }
+            }
+            $marketers  = User::where('is_active', 1)->orderBy('username')->get();
+            foreach ($marketers as $item) {
+                $html_marketer .= "<option value='" . $item['user_id'] . "'> " . $item['username'] . " </option>";
             }
             $campaigns = Campaign::orderBy('name')->get();
             foreach ($campaigns as $item) {
@@ -168,6 +170,8 @@ class AjaxController extends Controller
     public function getFilterTeam()
     {
         $data_where = array();
+        $arr_landingpage    = array();
+        $arr_channel        = array();
         $request = request();
 
         $html_campaign      = "<option value='' selected>All</option>";
@@ -235,6 +239,8 @@ class AjaxController extends Controller
     public function getFilterMaketer()
     {
         $request = request();
+        $arr_landingpage    = array();
+        $arr_channel        = array();
         $html_campaign      = "<option value='' selected>All</option>";
         $html_subcampaign   = "<option value='' selected>All</option>";
         $html_channel       = "<option value='' selected>All</option>";
@@ -262,7 +268,6 @@ class AjaxController extends Controller
             $landing_page   = LandingPage::orderBy('name')->get();
             $channel        = Channel::where('is_active', 1)->orderBy('name')->get();
         }
-
         foreach ($campaigns as $item) {
             $html_campaign      .= "<option value=" . $item->id . "> " . $item->name . " </option>";
         }
@@ -290,6 +295,8 @@ class AjaxController extends Controller
     public function getFilterCampaign()
     {
         $request = request();
+        $arr_landingpage    = array();
+        $arr_channel        = array();
 
         $html_subcampaign   = "<option value='' selected>All</option>";
         $html_landingpage   = "<option value='' selected>All</option>";
@@ -338,6 +345,8 @@ class AjaxController extends Controller
     public function getFilterSubCampaign()
     {
         $request = request();
+        $arr_landingpage    = array();
+        $arr_channel        = array();
 
         $html_landingpage   = "<option value='' selected>All</option>";
         $html_channel       = "<option value='' selected>All</option>";
@@ -385,19 +394,52 @@ class AjaxController extends Controller
         $query_dashboard = AdResult::where('date', '>=', $startDate)
             ->where('date', '<=', $endDate);
 
-        $c3         = $query_dashboard->sum('c3');
+        $kpi = array();
+        if($request->marketer_id){
+            $query_dashboard->where('creator_id', $request->marketer_id);
+        }
+        if($request->channel_id){
+            $ads    = array();
+            $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
+            $query_dashboard->whereIn('creator_id', $ads);
+        }
+
+        $c3b        = $query_dashboard->sum('c3b');
+        $c3bg       = $query_dashboard->sum('c3bg');
         $spent      = $query_dashboard->sum('spent');  // USD
         $revenue    = $query_dashboard->sum('revenue'); // Bath
+        $l1         = $query_dashboard->sum('l1');
+        $l8         = $query_dashboard->sum('l8');
+        $l3         = $query_dashboard->sum('l3');
 
-        $dashboard['c3']        = $c3;
+        $kpi = $this->get_kpi_dashboard($startDate, $endDate);
+
+        $dashboard['c3']        = $c3b + $c3bg;
+
         $dashboard['spent']     = $this->convert_spent($spent);
         $dashboard['revenue']   = $this->convert_revenue($revenue);
-        $dashboard['c3_cost']   = $dashboard['c3'] ? round( $dashboard['spent'] / $dashboard['c3'], 2) : 0;
 
-        $dashboard['c3']        = number_format($dashboard['c3']);
-        $dashboard['c3_cost']   = number_format($dashboard['c3_cost']);
-        $dashboard['spent']     = number_format($dashboard['spent']);
-        $dashboard['revenue']   = number_format($dashboard['revenue']);
+        $dashboard['c3_cost']   = $dashboard['c3'] ? round( $dashboard['spent'] / $dashboard['c3'], 2) : 0;
+        $dashboard['c3_cost']   = number_format($dashboard['c3_cost'], 2);
+
+        $dashboard['l3_c3bg']   = $c3bg ? round( $l3 * 100 / $c3bg, 2) : 0;
+
+        $dashboard['c3bg_c3b']  = $dashboard['c3'] ? round( $c3bg * 100 / $dashboard['c3'], 2) : 0;
+
+        $dashboard['me_re']     = $dashboard['revenue'] ? round( $dashboard['spent'] * 100 / $dashboard['revenue'], 2) : 0;
+
+        $dashboard['l1_c3bg']   = $c3bg ? round( $l1 * 100 / $c3bg, 2) : 0;
+
+        $dashboard['l8_l1']     = $l1 ? round( $l8 * 100 / $l1, 2) : 0;
+
+        $dashboard['kpi']           = @$kpi['kpi'];
+        $dashboard['kpi_cost']      = $this->convert_spent(@$kpi['kpi_cost']);
+        $dashboard['kpi_l3_c3bg']   = @$kpi['kpi_l3_c3bg'] * 100;
+        $dashboard['spent_left']    = $dashboard['kpi'] * $dashboard['kpi_cost'] - $dashboard['spent'];
+
+        $dashboard['spent']         = number_format($dashboard['spent'], 2);
+        $dashboard['spent_left']    = number_format($dashboard['spent_left'], 2);
+
         /* end Dashboard */
 
         return response()->json(['type' => 'success', 'dashboard' => $dashboard]);
@@ -434,18 +476,20 @@ class AjaxController extends Controller
             ]);
         });
 
+
         $table = '<table id="c3_leaderboard" class="table table-bordered table-hover no-boder-top" width="100%">
                             <thead>
                                 <tr>
                                     <th>#</th>
                                     <th class="text-center">Name</th>
-                                    <th class="text-center">Rank</th>
                                     <th class="text-center">C3B</th>
+                                    <th class="text-center">%</th>
                                 </tr>
                             </thead>
                             <tbody>';
 
         $data = array();
+        $total = 0;
         foreach ($query as $i => $item) {
 //            if($i > 4) break;
 //            if(!$item->c3) continue;  // not show if c3 = 0
@@ -464,16 +508,19 @@ class AjaxController extends Controller
                 $data[$user['username']]['rank']        = $user['rank'];
                 $data[$user['username']]['c3b']         = $item->c3b;
             }
+            $total += $item->c3b;
         }
 
         $no = 0;
         foreach ($data as $item){
             $no++;
+            $rate = $total ? round($item['c3b'] * 100 / $total, 2) : 0;
+
             $table .= "<tr>
                             <th>{$no}</th>
                             <th class='text-center'>{$item['username']}</th>
-                            <td class='text-center'>{$item['rank']}</td>
                             <td class='text-center'>{$item['c3b']}</td>
+                             <td class='text-center'>{$rate}</td>
                         </tr>";
         }
 
@@ -520,13 +567,14 @@ class AjaxController extends Controller
                                 <tr>
                                     <th>#</th>
                                     <th class="text-center">Name</th>
-                                    <th class="text-center">Rank</th>
                                     <th class="text-center">Revenue ('. $request->unit .')</th>
+                                    <th class="text-center">%</th>
                                 </tr>
                             </thead>
                             <tbody>';
 
         $data = array();
+        $total = 0;
         foreach ($query as $i => $item) {
 //            if($i > 4) break;
 //            if(!$item->revenue) continue;
@@ -552,17 +600,20 @@ class AjaxController extends Controller
                 $data[$user['username']]['rank']        = $user['rank'];
                 $data[$user['username']]['revenue']     = $revenue;
             }
+
+            $total += $revenue;
         }
 
         $no = 0;
         foreach ($data as $item){
             $revenue = number_format($item['revenue'], 2);
+            $rate = $total ? round($item['revenue'] * 100 / $total, 2) : 0;
             $no++;
             $table .= "<tr>
                             <th>{$no}</th>
                             <th class='text-center'>{$item['username']}</th>
-                            <td class='text-center'>{$item['rank']}</td>
                             <td class='text-center'>{$revenue}</td>
+                            <td class='text-center'>{$rate}</td>
                         </tr>";
         }
 
@@ -647,13 +698,14 @@ class AjaxController extends Controller
                                 <tr>
                                     <th>#</th>
                                     <th class="text-center">Name</th>
-                                    <th class="text-center">Rank</th>
                                     <th class="text-center">Spent ('. $request->unit .')</th>
+                                    <th class="text-center">%</th>
                                 </tr>
                             </thead>
                             <tbody>';
 
         $data = array();
+        $total = 0;
         foreach ($query as $i => $item) {
 //            if($i > 4) break;
 //            if(!$item->spent) continue;
@@ -674,17 +726,19 @@ class AjaxController extends Controller
                 $data[$user['username']]['rank']        = $user['rank'];
                 $data[$user['username']]['spent']       = $spent;
             }
+            $total += $spent;
         }
 
         $no = 0;
         foreach ($data as $item){
             $spent = number_format($item['spent'], 2);
+            $rate = $total ? round($item['spent'] * 100 / $total, 2) : 0;
             $no++;
             $table .= "<tr>
                             <th>{$no}</th>
                             <th class='text-center'>{$item['username']}</th>
-                            <td class='text-center'>{$item['rank']}</td>
                             <td class='text-center'>{$spent}</td>
+                            <td class='text-center'>{$rate}</td>
                         </tr>";
         }
 
@@ -734,19 +788,73 @@ class AjaxController extends Controller
         $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
         /* end date */
 
-        /*  start Chart*/
-        $query_chart = AdResult::raw(function ($collection) use ($first_day_this_month, $last_day_this_month) {
-            return $collection->aggregate([
+        $request    = request();
+
+        if($request->marketer_id && $request->channel_id){
+            $ads    = array();
+            $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
+            $kpi = $this->get_kpi();
+            $match = [
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                ['$match' => ['creator_id' => $request->marketer_id]],
+                ['$match' => ['ad_id' => ['$in' => $ads]]],
+                [
+                    '$group' => [
+                        '_id' => '$date',
+                        'c3' => [
+                            '$sum' => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
+                        ],
+                    ]
+                ]
+            ];
+        }elseif($request->marketer_id){
+            $kpi = $this->get_kpi();
+            $match = [
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                ['$match' => ['creator_id' => $request->marketer_id]],
+                [
+                    '$group' => [
+                        '_id' => '$date',
+                        'c3' => [
+                            '$sum' => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
+                        ],
+                    ]
+                ]
+            ];
+        }elseif($request->channel_id){
+            $kpi = $this->getTotalKpi();
+            $ads    = array();
+            $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
+
+            $match = [
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                ['$match' => ['ad_id' => ['$in' => $ads]]],
+                [
+                    '$group' => [
+                        '_id' => '$date',
+                        'c3' => [
+                            '$sum' => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
+                        ],
+                    ]
+                ]
+            ];
+        }else{
+            $kpi = $this->getTotalKpi();
+            $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
                 [
                     '$group' => [
                         '_id' => '$date',
                         'c3' => [
-                            '$sum' => '$c3'
+                            '$sum' => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         ],
                     ]
                 ]
-            ]);
+            ];
+        }
+        /*  start Chart*/
+        $query_chart = AdResult::raw(function ($collection) use ($first_day_this_month, $last_day_this_month, $match) {
+            return $collection->aggregate($match);
         });
 
         $array_month = array();
@@ -771,10 +879,18 @@ class AjaxController extends Controller
             } else {
                 $chart_c3[] = [$timestamp, 0];
             }
+            if (isset($kpi[$year][$month][$key])) {
+                $chart_kpi[] = [$timestamp, (int)$kpi[$year][$month][$key]];
+            } else {
+                $chart_kpi[] = [$timestamp, 0];
+            }
         }
-        $chart_c3 = json_encode($chart_c3);
+        $chart_c3   = json_encode($chart_c3);
+        $chart_kpi  = json_encode($chart_kpi);
+        $dashboard['chart_c3']  = $chart_c3;
+        $dashboard['chart_kpi'] = $chart_kpi;
 
-    return $chart_c3;
+        return $dashboard;
     }
 
     public function getL8Chart(){
@@ -786,9 +902,55 @@ class AjaxController extends Controller
         $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
         $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
 
-        /*  start Chart*/
-        $query_chart = AdResult::raw(function ($collection) use ($first_day_this_month, $last_day_this_month) {
-            return $collection->aggregate([
+        $request    = request();
+
+        if($request->marketer_id && $request->channel_id){
+            $ads    = array();
+            $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
+            $match = [
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                ['$match' => ['creator_id' => $request->marketer_id]],
+                ['$match' => ['ad_id' => ['$in' => $ads]]],
+                [
+                    '$group' => [
+                        '_id' => '$date',
+                        'l8' => [
+                            '$sum' => '$l8'
+                        ]
+                    ]
+                ]
+            ];
+        }elseif($request->marketer_id){
+            $match = [
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                ['$match' => ['creator_id' => $request->marketer_id]],
+                [
+                    '$group' => [
+                        '_id' => '$date',
+                        'l8' => [
+                            '$sum' => '$l8'
+                        ]
+                    ]
+                ]
+            ];
+        }elseif($request->channel_id){
+            $ads    = array();
+            $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
+
+            $match = [
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                ['$match' => ['ad_id' => ['$in' => $ads]]],
+                [
+                    '$group' => [
+                        '_id' => '$date',
+                        'l8' => [
+                            '$sum' => '$l8'
+                        ]
+                    ]
+                ]
+            ];
+        }else{
+            $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
                 [
                     '$group' => [
@@ -798,7 +960,12 @@ class AjaxController extends Controller
                         ]
                     ]
                 ]
-            ]);
+            ];
+        }
+
+        /*  start Chart*/
+        $query_chart = AdResult::raw(function ($collection) use ($first_day_this_month, $last_day_this_month, $match) {
+            return $collection->aggregate($match);
         });
 
         $array_month = array();
@@ -830,384 +997,6 @@ class AjaxController extends Controller
         return $chart_l8;
     }
     // end 2018-04-17 [HEL-9] LamVT add dropdown for C3/L8 chart
-
-    public function getContactPaginate(){
-        $params = \request();
-        $data   = $this->getC3Data();
-
-        $json_data = array(
-            "draw"            => intval( $params['draw'] ),
-            "recordsTotal"    => intval( $data['total'] ),
-            "recordsFiltered" => intval( $data['total']),
-            "data"            => $data['contacts'],
-        );
-
-        echo json_encode($json_data);  // send data as json format
-    }
-
-    public function getC3Data()
-    {
-        $request     = request();
-        $status      = \request('is_export');
-        $columns     = $this->setColumns();
-        $data_where  = $this->getWhereData();
-        $data_search = $this->getSeachData();
-        $order       = $this->getOrderData();
-        $startDate   = strtotime("midnight")*1000;
-        $endDate     = strtotime("tomorrow")*1000;
-
-        if($request->registered_date){
-            $date_place = str_replace('-', ' ', $request->registered_date);
-            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
-            $startDate  = strtotime($date_arr[0])*1000;
-            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
-        }
-
-        $query = Contact::where('submit_time', '>=', $startDate);
-        $query->where('submit_time', '<', $endDate);
-
-        // HoaTV fix multiple select channel
-        $arrChannelName = array();
-        if ($request->channel) {
-            $arrChannelName    = explode(',',$request->channel);
-            $query->whereIn('channel_name',$arrChannelName);
-        }
-
-        if(count($data_where) > 0){
-            if(@$data_where['clevel'] == 'c3b'){
-                $query->where('clevel', 'like', '%c3b%');
-                unset($data_where['clevel']);
-            }elseif (@$data_where['clevel'] == 'c3b_only'){
-                $query->where('clevel', 'c3b');
-                unset($data_where['clevel']);
-            }
-            if(@$data_where['current_level'] == 'l0'){
-                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
-                unset($data_where['current_level']);
-            }
-            if(@$data_where['olm_status'] === 0){
-                $query->where('olm_status', 0);
-                unset($data_where['olm_status']);
-            }
-            if(@$data_where['olm_status'] === 1){
-                $query->where('olm_status', 0);
-                unset($data_where['olm_status']);
-            }
-            if(@$data_where['olm_status'] == -1){
-                $query->whereNotIn('olm_status', [0, 1, 2]);
-                unset($data_where['olm_status']);
-            }
-            $query->where($data_where);
-        }
-        if($status == '1'){
-            $query->where('is_export', 1);
-        }
-        if($status == '0'){
-            $query->where('is_export', '<>', 1);
-        }
-
-        if($request->c3bg_checkbox == "true") {
-            if($request->checked_date){
-                $date_place = str_replace('-', ' ', $request->checked_date);
-                $date_arr   = explode(' ', str_replace('/', '-', $date_place));
-                $startDate  = strtotime($date_arr[0])*1000;
-                $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
-            }
-            $queryC3bg = Contact::where('submit_time', '>=', $startDate);
-            $queryC3bg->where('submit_time', '<', $endDate);
-            $checkedContacts = $queryC3bg->get();
-            $phoneArr = array();
-            foreach($checkedContacts as $contact) {
-                array_push($phoneArr, $contact['phone']);
-            }
-            $query->whereNotIn('phone', $phoneArr);
-        }
-
-        if($data_search != ''){
-            foreach ($columns as $key => $value){
-                $query->orWhere($value, 'like', "%{$data_search}%");
-            }
-        }
-        if($order){
-            $query->orderBy($columns[$order['column']], $order['type']);
-        } else {
-            $query->orderBy('submit_time', 'desc');
-        }
-        $total    = $query->count();
-        $limit    = intval($request->length);
-        $offset   = intval($request->start);
-        $contacts = $query->skip($offset)->take($limit)->get();
-
-        $data['contacts']   = $this->formatRecord($contacts);
-        $data['total']      = $total;
-
-        return $data;
-    }
-
-    private function getSeachData(){
-        $request        = request();
-
-        if($request['search']['value']){
-            return $request['search']['value'];
-        }
-
-        return '';
-    }
-
-    private function getOrderData(){
-        $request    = request();
-        $order      = array();
-
-        if($request['order'][0]['column'] && $request['order'][0]['dir']){
-            $order['column']    = $request['order'][0]['column'];
-            $order['type']      = $request['order'][0]['dir'];
-        }
-
-        return $order;
-    }
-
-    private function setColumns(){
-        //define index of column
-        $columns = array(
-            0   =>'name',
-            1   =>'email',
-            2   =>'phone',
-            3   =>'age',
-            4   =>'submit_time',
-            5   =>'clevel',
-            6   =>'current_level',
-            7   =>'source_name',
-            8   =>'team_name',
-            9   =>'marketer_name',
-            10  =>'campaign_name',
-            11  =>'subcampaign_name',
-            12  =>'ad_name',
-            13  =>'landing_page',
-            14  =>'channel_name',
-            15  =>'olm_status'
-        );
-
-        return $columns;
-    }
-
-    private function getWhereData(){
-        $request    = request();
-        $data_where = array();
-        if ($request->source_id) {
-            $data_where['source_id']        = $request->source_id;
-        }
-        if ($request->team_id) {
-            $data_where['team_id']          = $request->team_id;
-        }
-        if ($request->marketer_id) {
-            $data_where['marketer_id']      = $request->marketer_id;
-        }
-        if ($request->campaign_id) {
-            $data_where['campaign_id']      = $request->campaign_id;
-        }
-        if ($request->subcampaign_id) {
-            $data_where['subcampaign_id']   = $request->subcampaign_id;
-        }
-        if ($request->current_level) {
-            $data_where['current_level']    = $request->current_level;
-        }
-        if ($request->clevel) {
-            $data_where['clevel']           = $request->clevel;
-        }
-        if ($request->landing_page) {
-            $data_where['landing_page']     = $request->landing_page;
-        }
-        // HoaTV remove
-        // if ($request->channel) {
-        //     $data_where['channel_name']     = $request->channel;
-        // }
-        if (isset($request->olm_status)) {
-            $data_where['olm_status']       = $request->olm_status;
-        }
-
-        return $data_where;
-    }
-
-    private function formatRecord($contacts){
-
-        $name[0] = 11;
-        $name[1] = 22;
-        $name[2] = 33;
-
-        foreach ($contacts as $contact){
-            $arr[0] = $contact['_id'];
-            $arr[1] = $contact['name'];
-            $duplicatedNumbers = Contact::where('_id', '<>', $contact['_id'])
-                ->where('phone', $contact['phone'])->count();
-            $arr[2] = $duplicatedNumbers;
-
-            $contact['name']                = $contact['name'] ? $arr : "-";
-            $contact['email']               = $contact['email'] ? $contact['email'] : "-";
-            $contact['phone']               = $contact['phone'] ? $contact['phone'] : "-";
-            $contact['age']                 = $contact['age'] ? $contact['age'] : "-";
-            $contact['submit_time']         = $contact['submit_time'] ?
-                date('d-m-Y H:i:s',$contact['submit_time']/1000) : "-";
-            $contact['clevel']              = $contact['clevel']? $contact['clevel'] : "-";
-            $contact['current_level']       = $contact['current_level'] ? $contact['current_level'] : "-";
-            $contact['source_name']         = $contact['source_name'] ? $contact['source_name'] : "-";
-            $contact['team_name']           = $contact['team_name'] ? $contact['team_name'] : "-";
-            $contact['marketer_name']       = $contact['marketer_name'] ? $contact['marketer_name'] : "-";
-            $contact['campaign_name']       = $contact['campaign_name'] ? $contact['campaign_name'] : "-";
-            $contact['subcampaign_name']    = $contact['subcampaign_name'] ? $contact['subcampaign_name'] : "-";
-            $contact['ad_name']             = $contact['ad_name'] ? $contact['ad_name'] : "-";
-            $contact['landing_page']        = $contact['landing_page'] ? $contact['landing_page'] : "-";
-            $contact['channel_name']        = $contact['channel_name'] ? $contact['channel_name'] : "-";
-        }
-
-        return $contacts;
-    }
-
-    public function updateContacts(){
-
-        $data_where = $this->getWhereDataUpdateExport();
-
-        $request = request();
-
-        $startDate = strtotime("midnight")*1000;
-        $endDate = strtotime("tomorrow")*1000;
-        if($request->registered_date){
-            $date_place = str_replace('-', ' ', $request->registered_date);
-            $date_arr = explode(' ', str_replace('/', '-', $date_place));
-            $startDate = strtotime($date_arr[0])*1000;
-            // $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
-            $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
-        }
-        $query = Contact::where('submit_time', '>=', $startDate);
-        $query->where('submit_time', '<', $endDate);
-
-        // HoaTV fix multiple select channel
-        $arrChannelName = array();
-        if ($request->channel) {
-            $arrChannelName    = explode(',',$request->channel);
-            $query->whereIn('channel_name',$arrChannelName);
-        }
-
-        if(count($data_where) > 0){
-            if(@$data_where['clevel'] == 'c3b'){
-                $query->where('clevel', 'like', '%c3b%');
-                unset($data_where['clevel']);
-            }
-            if(@$data_where['current_level'] == 'l0'){
-                $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
-                unset($data_where['current_level']);
-            }
-            $query->where($data_where);
-        }
-        $id = [];
-
-        if($request->id){
-            $id = $request->id;
-            $query->whereIn('_id', array_keys($request->id));
-        }
-        // only current page
-        $page_size  = Config::getByKey('PAGE_SIZE');
-        $query->limit((int)$page_size);
-
-        $query->orderBy('submit_time', 'desc');
-
-        $contacts = $query->get();
-        foreach ($contacts as $contact)
-        {
-            if(isset($id[$contact->_id])){
-                if(isset($id[$contact->_id]['status'])){
-                    $contact->is_export     = (int)$id[$contact->_id]['status'];
-                }
-                if(isset($id[$contact->_id]['olm_status'])){
-                    $contact->olm_status    = (int)$id[$contact->_id]['olm_status'];
-                }
-                if(isset($id[$contact->_id]['channel_name'])){
-                    $contact->channel_name  = $id[$contact->_id]['channel_name'];
-                }
-                if(isset($id[$contact->_id]['channel_id'])){
-                    $contact->channel_id    = $id[$contact->_id]['channel_id'];
-                }
-
-                // HoaTV for change level from c3bg to c3b
-                if(isset($id[$contact->_id]['invalid_reason']) && $contact->clevel == "c3bg"){
-                    $contact->invalid_reason    = $id[$contact->_id]['invalid_reason'];
-                    $contact->invalid_reason_mode    = $id[$contact->_id]['invalid_reason_mode'];
-                    $contact->is_update_manual    = true;
-                    $contact->clevel = "c3b";
-                    // handle count ad_result only from from c3bg down to c3b
-                    $this->handleCountAdResult(true,$contact->ad_id, $contact->submit_time);
-                }else if(!isset($id[$contact->_id]['invalid_reason']) && $contact->clevel == "c3b" && $contact->is_update_manual){
-                    // only contact is  already update is allow to update 
-                    $contact->invalid_reason    = "";
-                    $contact->invalid_reason_mode    = "";
-                    $contact->is_update_manual    = true;
-                    $contact->clevel = "c3bg";
-                    // handle count ad_result only from from c3b down to c3bg
-                    $this->handleCountAdResult(false, $contact->ad_id, $contact->submit_time);
-                }
-
-                $contact->save();
-            }else{
-                if($request->new_status != '')
-                {
-                    $contact->is_export = (int)$request->new_status;
-                    $contact->save();
-                }
-            }
-        }
-    }
-
-    // HoaTV handle ad_result when changes level from c3bg down to c3b and vice versa
-    private function handleCountAdResult($isDown, $adID, $submitTime){
-        $adResult = AdResult::where('ad_id', $adID)->where('date',date('Y-m-d',$submitTime/1000))->first();
-        if($isDown){
-            $adResult->c3bg = (int)$adResult->c3bg - 1;
-            $adResult->c3b = (int)$adResult->c3b + 1;
-        }else{
-            $adResult->c3bg = (int)$adResult->c3bg + 1;
-            $adResult->c3b = (int)$adResult->c3b - 1;
-        }
-        $adResult->save();
-    }
-
-    private function getWhereDataUpdateExport(){
-        $request    = request();
-        $data_where = array();
-        if ($request->source_id) {
-            $data_where['source_id']        = $request->source_id;
-        }
-        if ($request->team_id) {
-            $data_where['team_id']          = $request->team_id;
-        }
-        if ($request->marketer_id) {
-            $data_where['marketer_id']      = $request->marketer_id;
-        }
-        if ($request->campaign_id) {
-            $data_where['campaign_id']      = $request->campaign_id;
-        }
-        if ($request->subcampaign_id) {
-            $data_where['subcampaign_id']   = $request->subcampaign_id;
-        }
-        if ($request->current_level) {
-            $data_where['current_level']    = $request->current_level;
-        }
-        if ($request->clevel) {
-            $data_where['clevel']           = $request->clevel;
-        }
-        if ($request->old_status) {
-            $data_where['is_export']        = (int)$request->old_status;
-        }
-        if ($request->landing_page) {
-            $data_where['landing_page']     = $request->landing_page;
-        }
-        // if ($request->channel) {
-        //     $data_where['channel_name']     = $request->channel;
-        // }
-        if (isset($request->olm_status)) {
-            $data_where['olm_status']       = $request->olm_status;
-        }
-
-        return $data_where;
-    }
 
 	public function getHourC3Chart(){
 
@@ -1466,6 +1255,131 @@ class AjaxController extends Controller
         }
 
         return json_encode($channel);
+    }
+
+    private function getTotalKpi(){
+        $request = request();
+        $users  = User::all();
+        $month  = date('m');
+        if($request->month){
+            $month = $request->month;
+        }
+        $year   = date('Y');
+        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+
+
+        $total_kpi = array();
+        foreach ($users as $user){
+            $kpi = @$user->kpi[$year][$month];
+            if(count($kpi) < 1){
+                continue;
+            }
+            if(isset($total_kpi[$year][$month])){
+                for ($i = 1; $i <= $d; $i++) {
+                    if (isset($total_kpi[$year][$month][$i])) {
+                        @$total_kpi[$year][$month][$i] += (int)@$kpi[$i];
+                    } else {
+                        @$total_kpi[$year][$month][$i] = (int)@$kpi[$i];
+                    }
+                }
+            }else{
+                $total_kpi[$year][$month] = @$kpi;
+            }
+        }
+
+        return $total_kpi;
+    }
+
+    private function get_kpi(){
+        $request = request();
+        $kpi = array();
+        if($request->marketer_id){
+            $user   = User::find($request->marketer_id);
+            $kpi    = @$user->kpi;
+        }
+        return $kpi;
+    }
+
+    private function get_kpi_dashboard($start, $end){
+        $request    = request();
+        $rs        = array();
+
+        $start      = explode('-', $start);
+        $startDay   = $start[2];
+        $startMonth = $start[1];
+        $startYear  = $start[0];
+
+        $end        = explode('-', $end);
+        $endDay     = $end[2];
+        $endMonth   = $end[1];
+        $endYear    = $end[0];
+
+        if($request->marketer_id){
+//            $user   = User::find('5b0397fde20e1a3eeb7d6eb4');
+            $user   = User::find($request->marketer_id);
+            $kpi            = @$user->kpi;
+            $kpi_cost       = @$user->kpi_cost;
+            $kpi_l3_c3bg    = @$user->kpi_l3_c3bg;
+
+            if($start == $end){
+                @$rs['kpi']          = @$kpi[$startYear][$startMonth][$startDay];
+                @$rs['kpi_cost']     = @$kpi_cost[$startYear][$startMonth][$startDay];
+                @$rs['kpi_l3_c3bg']  = @$kpi_l3_c3bg[$startYear][$startMonth][$startDay];
+
+                return $rs;
+            }else{
+                @$rs['kpi']          = 0;
+                @$rs['kpi_cost']     = 0;
+                @$rs['kpi_l3_c3bg']  = 0;
+            }
+
+
+
+
+
+
+
+        }else{
+            $users   = User::all();
+            if($start == $end){
+                foreach ($users as $user){
+                    $kpi            = @$user->kpi;
+                    $kpi_cost       = @$user->kpi_cost;
+                    $kpi_l3_c3bg    = @$user->kpi_l3_c3bg;
+
+                    @$rs['kpi']          += @$kpi[$startYear][$startMonth][$startDay];
+                    @$rs['kpi_cost']     += @$kpi_cost[$startYear][$startMonth][$startDay];
+                    @$rs['kpi_l3_c3bg']  += @$kpi_l3_c3bg[$startYear][$startMonth][$startDay];
+                }
+                return $rs;
+            }else{
+                @$rs['kpi']          = 0;
+                @$rs['kpi_cost']     = 0;
+                @$rs['kpi_l3_c3bg']  = 0;
+            }
+
+
+
+
+
+
+        }
+
+
+        @$rs['kpi']          = 0;
+        @$rs['kpi_cost']     = 0;
+        @$rs['kpi_l3_c3bg']  = 0;
+
+
+
+
+
+
+
+
+
+
+        return $rs;
     }
 
 

@@ -215,15 +215,12 @@ $(document).ready(function () {
     });
 
     $('input#mode').change(function (e) {
-        $('.loading').show();
-
         countExported();
 
         setTimeout(function(){
             // initDataTable();
             // countExported();
             initDataTable();
-            $('.loading').hide();
         },1000);
     });
 
@@ -260,15 +257,12 @@ $(document).ready(function () {
 
     $('#search-form-c3').submit(function (e) {
         e.preventDefault();
-        $('.loading').show();
-
         countExported();
 
         setTimeout(function(){
             // initDataTable();
             // countExported();
             initDataTable();
-            $('.loading').hide();
         },1000);
     });
 
@@ -335,7 +329,7 @@ $(document).ready(function () {
             cache: false,
             timeout: 600000,
             success: function(result){
-                document.getElementById("import_text").innerHTML = result + ' Contact(s) have been imported successfully.';
+                document.getElementById("import_text").innerHTML = result;
                 $('div#loader').hide();
                 $('div#import_success').show();
                 initDataTable();
@@ -363,7 +357,7 @@ $(document).ready(function () {
             cache: false,
             timeout: 600000,
             success: function(result){
-                document.getElementById("import_text").innerHTML = result + ' Contact(s) have been imported successfully.';
+                document.getElementById("import_text").innerHTML = result;
                 $('div#loader').hide();
                 $('div#import_success').show();
                 initDataTable();
@@ -456,7 +450,6 @@ $(document).ready(function () {
 });
 
 function initDataTable() {
-
     var url             = $('#search-form-c3').attr('url');
     var source_id       = $('select[name="source_id"]').val();
     var team_id         = $('select[name="team_id"]').val();
@@ -508,6 +501,7 @@ function initDataTable() {
         "<'dt-toolbar-footer'<'col-sm-6 col-xs-12'i><'col-sm-6 col-xs-12'p>>",
         "autoWidth": true,
         "preDrawCallback": function () {
+            $('.loading').show();
             // Initialize the responsive datatables helper once.
             if (!responsiveHelper_table_campaign) {
                 responsiveHelper_table_campaign = new ResponsiveDatatablesHelper($('#table_contacts'), breakpointDefinition);
@@ -540,6 +534,7 @@ function initDataTable() {
             $('p#cnt_export_to_olm').html(cnt_exported_to_olm);
 
             responsiveHelper_table_campaign.respond();
+            setTimeout("$('.loading').hide();", 500);
         },
         "order": [],
         "destroy": true,
@@ -565,7 +560,7 @@ function initDataTable() {
                     d.landing_page      = landing_page,
                     d.channel           = channel,
                     d.search_text       = search,
-                    d.olm_status    = olm_status
+                    d.olm_status        = olm_status ? parseInt(olm_status) : '';
             }
         },
         "columns": [
@@ -614,21 +609,11 @@ function initDataTable() {
                     }
                 }
             },
-            // {
-            //     "data" : 'name',
-            //     "render": function ( data, type, row, meta ) {
-            //         return '<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="'+ data[0] +'">' +
-            //             '<i class="fa fa-eye"></i></a>';
-            //     }
-            // },
             {
                 "data" : 'name',
                 "render": function ( data, type, row, meta ) {
                     return '<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="' + data[0] + '">' +
                         '<i class="fa fa-eye"></i><b style="margin-left: 5px;">' + data[2] + '</b></a>';
-                    // + '<a data-toggle="modal" class="btn btn-xs btn-default"' +
-                    // 'data-target="#deleteModal data-item-id="'+ data[0] +'data-item-name="'+ data[1] +'"' +
-                    // 'data-original-title="Delete Row"><i class="fa fa-times"></i></a>';
                 }
             },
             {
@@ -693,13 +678,6 @@ function initDataTable() {
             var total_contacts  = iTotal - exported;
 
             $('input[name=total_contacts]').val(total_contacts);
-            // if(iTotal == 0){
-            //     return "";
-            // }
-            // // countExportedWhenSearch();
-            // var exported    = $('input[name="exported"]').val();
-            // var count_str   = '<span id="cnt_exported" class="text-success">' + ' (' + exported + ' exported' + ')' + '</span>';
-            //
             return sPre;
         },
     });
@@ -728,8 +706,6 @@ function countExported() {
 
     if(is_export === '0'){
         $('input[name="exported"]').val(0);
-        // $('span#cnt_exported').text('(0 exported)');
-        // initDataTable();
         return;
     }
 
@@ -746,19 +722,11 @@ function countExported() {
     data.is_export          = is_export;
     data.search_text        = search;
     data.channel            = channel;
-    data.olm_status         = olm_status;
+    data.olm_status         = olm_status ? parseInt(olm_status) : '';
 
     $.get(url, data, function (data) {
         $('input[name="exported"]').val(data.to_excel);
         $('input[name="export_to_olm"]').val(data.to_olm);
-        // setTimeout(function(){
-            // if(status == '0'){
-            //     $('input[name="exported"]').val(0);
-            // }
-            // $('input[name="exported"]').val(data);
-            // $('span#cnt_exported').text('(' + data +' exported)');
-            // initDataTable();
-        // }, 1000);
     }).fail(
         function (err) {
             alert('Cannot connect to server. Please try again later.');
@@ -812,24 +780,6 @@ function countExportedWhenSearch() {
 }
 
 function enable_update() {
-    // var is_checked = false;
-    // $("input:checkbox[id=is_update]:checked").each(function () {
-    //     is_checked = this.checked;
-    // });
-    //
-    // var cnt =$('#table_contacts input[type=checkbox]:checked').length;
-    //
-    // if(is_checked){
-    //     $('button#edit_contact').prop('disabled', false);
-    //     $('button#edit_contact').removeClass('disabled');
-    // }else{
-    //     if(cnt == 0){
-    //         $('button#update_contact').hide();
-    //         $('button#edit_contact').show();
-    //         $('button#edit_contact').prop('disabled', true);
-    //         $('button#edit_contact').addClass('disabled');
-    //     }
-    // }
     var cnt = $('#table_contacts input[type=checkbox]:checked').length;
     var check_all = $('input[id=update_all]').is(':checked');
 
@@ -1049,19 +999,6 @@ function updateContacts(id) {
     // var channel         = $('select[name="channel_id"]').val();
     var channel         = $('input[name="channel_id"]').val();
 
-    // if(id == '' && status == ''){
-    //     countExported();
-    //     setTimeout(function(){
-    //         // if(old_status == '0'){
-    //         //     $('input[name="exported"]').val(0);
-    //         // }
-    //         $('input#update_all').prop('checked', false); // Unchecks checkbox all
-    //         initDataTable();
-    //         $('.loading').hide();
-    //         $('div#update_success').show();
-    //     }, 1000);
-    // }
-
     var data = {};
     data.id                = id;
     data.source_id         = source_id;
@@ -1086,13 +1023,11 @@ function updateContacts(id) {
             initDataTable();
             $('input#update_all').prop('checked', false); // Unchecks checkbox all
 
-            $('.loading').hide();
             $('div#update_success').show();
             $('div#export_success').hide();
         }, 1000);
     }).fail(
         function (err) {
-            $('.loading').hide();
             alert('Cannot connect to server. Please try again later.');
         });
 
@@ -1116,6 +1051,8 @@ function exportToOLM(id) {
     var olm_status      = $('select[name="olm_status"]').val();
     var limit           = $('input#export_sale_limit').val();
     var export_sale_date = $('input#export_sale_date').val();
+    var export_sale_sort = $("input[name='export_sale_sort']:checked"). val();
+
 
     var data = {};
     data.id                 = id;
@@ -1131,9 +1068,10 @@ function exportToOLM(id) {
     data.new_status         = status;
     data.landing_page       = landing_page;
     data.channel            = channel;
-    data.olm_status         = olm_status;
+    data.olm_status         = olm_status ? parseInt(olm_status) : '';
     data.limit              = limit;
     data.export_sale_date   = export_sale_date;
+    data.export_sale_sort   = export_sale_sort;
 
     $.get(url, data, function (data) {
         countExported();
@@ -1144,18 +1082,17 @@ function exportToOLM(id) {
 
             $('div#update_success').hide();
             $('div#export_success').show();
-            $('.loading').hide();
 
         }, 1000);
     }).fail(
         function (err) {
-            $('.loading').hide();
             alert('Cannot connect to server. Please try again later.');
         });
 
 }
 
 function showModalExportToOLM(data){
+        $('#total_contact').html('<h2 style="font-weight:800">Total:' + data.cnt_total +'</h2' );
         $('#contact_success').html('- ' + data.cnt_success + ' contacts success');
         $('#contact_duplicate').html('- ' + data.cnt_duplicate + ' contacts duplicated');
         $('#contact_error').html('- ' + data.cnt_error + ' contacts error');

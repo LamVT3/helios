@@ -7,34 +7,181 @@
         <!-- MAIN CONTENT -->
         <div id="content">
 
-        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs, 'currency' => true])
+        @component('components.breadcrumbs', ['breadcrumbs' => $breadcrumbs])
             <form action="/home" method="GET" class="form_search">
                 {{ csrf_field()}}
-                <div id="reportrange" class="pull-right"
-                     style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc;">
-                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
-                    <span></span> <b class="caret"></b>
-                </div>
-
-                @component('components.currency')
-                @endcomponent
             </form>
         @endcomponent
 
         <!-- widget grid -->
             <section id="widget-grid" class="">
+                <fieldset style="background-color: white">
+                    <legend>Filter
+                        <a id="filter" href="javascript:void(0)"><i class="fa fa-angle-up fa-lg"></i></a>
+                    </legend>
+                <form class="smart-form" >
+                    <div class="row" >
+                        <section class="col col-sm-6 col-lg-3">
+                            <label class="label">Marketer</label>
+                            <select name="marketer" class="select2" style="width: 280px" id="marketer"
+                                    data-url="">
+                                <option value="">All</option>
+                                @foreach($users as $item)
+                                    @if(auth()->user()->_id == $item->id && auth()->user()->role == 'Marketer')
+                                        <option value="{{ $item->id }}" selected>{{ $item->username}}</option>
+                                    @else
+                                        <option value="{{ $item->id }}">{{ $item->username }}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                            <i></i>
+                        </section>
+                        <section class="col col-sm-6 col-lg-3">
+                            <label class="label">Channel</label>
+                            <select name="channel" class="select2" style="width: 280px" id="channel"
+                                    data-url="">
+                                <option value="">All</option>
+                                @foreach($channels as $item)
+                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                            <i></i>
+                        </section>
+                        <section class="col col-sm-6 col-lg-3" style="min-height: 55px">
+                            <label class="label">Currency</label>
+                            <div id="wrapper_currency" style="border: 1px solid #ccc; float: left; padding: 5px 0px 5px 10px; width: 98%;">
+                                <label>
+                                    <input type="radio" name="currency" id="currency" value="USD" checked>USD
+                                </label>
+                                <label>
+                                    <input type="radio" name="currency" id="currency" value="VND">VND
+                                </label>
+                                <label>
+                                    <input type="radio" name="currency" id="currency" value="Baht">Baht
+                                </label>
+                            </div>
+                        </section>
+                        <section class="col col-sm-6 col-lg-3" style="min-height: 55px">
+                            <label class="label">Date</label>
+                            <div id="reportrange" class="pull-left"
+                                 style="background: #fff; cursor: pointer; padding: 7px 10px 7px 10px; border: 1px solid #ccc;">
+                                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                                <span></span> <b class="caret"></b>
+                            </div>
+                            <i></i>
+                        </section>
+                    </div>
+                    <div class="row">
+                        <section class="col col-sm-6 col-lg-3">
+                            <div id="" class="pull-left"
+                                 style="margin: 10px 0px 0px 0px; padding: 10px px 7px 10px;">
+                                <button id="filter" class="btn btn-primary btn-sm" type="button" style="float: right" >
+                                    <i class="fa fa-filter"></i>
+                                    Filter
+                                </button>
+                            </div>
+                        </section>
+                    </div>
+                </form>
+                </fieldset>
+
                 <!-- row -->
                 <div class="row">
                     <div class="col-sm-6 col-lg-3">
-
                         <div class="panel panel-default widget-c3">
                             <div class="panel-body status">
                                 <div class="who clearfix widget-title">
-                                    <h4><i class="fa fa-lg fa-fw fa-child"></i><strong>C3 Total</strong></h4>
+                                    <h4><i class="fa fa-lg fa-fw fa-child"></i><strong>C3B Total</strong></h4>
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
-                                    Actual / KPI
-                                    <span class="widget-unit">C3</span>
+                                    KPI
+                                    <span class="widget-unit">C3B</span>
+                                </div>
+                                <div class="text text-align-right font-xl widget-actual pull-right">
+                                    ...
+                                </div>
+                                <div class="text text-align-right font-xl widget-kpi pull-left">
+                                    ...
+                                </div>
+
+                                {{--<div class="text text-align-right font-sm widget-kpi">
+                                    12,000
+                                </div>
+                                <ul class="links widget-progress">
+                                    <div class="progress progress-sm">
+                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 56%;vertical-align: top;line-height: unset;">56%</div>
+                                    </div>
+                                </ul>--}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="panel panel-default widget-c3b-cost">
+                            <div class="panel-body status">
+                                <div class="who clearfix widget-title">
+                                    <h4><i class="fa fa-lg fa-fw fa-money"></i><strong>C3B Cost</strong></h4>
+                                </div>
+                                <div class="text text-align-left font-xs widget-caption">
+                                    KPI
+                                    <span class="widget-unit">USD</span>
+                                </div>
+                                <div class="text text-align-right font-xl widget-actual pull-right">
+                                    ...
+                                </div>
+                                <div class="text text-align-right font-xl widget-kpi pull-left">
+                                    ...
+                                </div>
+                                {{--<div class="text text-align-right font-sm widget-kpi">
+                                    2.3
+                                </div>
+                                <ul class="links widget-progress">
+                                    <div class="progress progress-sm">
+                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 90%;vertical-align: top;line-height: unset;">90%</div>
+                                    </div>
+                                </ul>--}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="panel panel-default widget-l3-c3bg">
+                            <div class="panel-body status">
+                                <div class="who clearfix widget-title">
+                                    <h4><i class="fa fa-lg fa-fw fa-child"></i><strong>L3/C3BG</strong></h4>
+                                </div>
+                                <div class="text text-align-left font-xs widget-caption">
+                                    KPI
+                                    <span class="widget-unit">%</span>
+                                </div>
+                                <div class="text text-align-right font-xl widget-actual pull-right">
+                                    ...
+                                </div>
+                                <div class="text text-align-right font-xl widget-kpi pull-left">
+                                    ...
+                                </div>
+
+                                {{--<div class="text text-align-right font-sm widget-kpi">
+                                    12,000
+                                </div>
+                                <ul class="links widget-progress">
+                                    <div class="progress progress-sm">
+                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 56%;vertical-align: top;line-height: unset;">56%</div>
+                                    </div>
+                                </ul>--}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="panel panel-default widget-c3bg-c3b">
+                            <div class="panel-body status">
+                                <div class="who clearfix widget-title">
+                                    <h4><i class="fa fa-lg fa-fw fa-child"></i><strong>C3BG/C3B</strong></h4>
+                                </div>
+                                <div class="text text-align-left font-xs widget-caption">
+                                    KPI
+                                    <span class="widget-unit">%</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
                                     ...
@@ -49,38 +196,9 @@
                                 </ul>--}}
                             </div>
                         </div>
-
                     </div>
 
                     <div class="col-sm-6 col-lg-3">
-
-                        <div class="panel panel-default widget-c3-cost">
-                            <div class="panel-body status">
-                                <div class="who clearfix widget-title">
-                                    <h4><i class="fa fa-lg fa-fw fa-money"></i><strong>C3 Cost</strong></h4>
-                                </div>
-                                <div class="text text-align-left font-xs widget-caption">
-                                    Actual / KPI
-                                    <span class="widget-unit">USD</span>
-                                </div>
-                                <div class="text text-align-right font-xl widget-actual">
-                                    ...
-                                </div>
-                                {{--<div class="text text-align-right font-sm widget-kpi">
-                                    2.3
-                                </div>
-                                <ul class="links widget-progress">
-                                    <div class="progress progress-sm">
-                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 90%;vertical-align: top;line-height: unset;">90%</div>
-                                    </div>
-                                </ul>--}}
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="col-sm-6 col-lg-3">
-
                         <div class="panel panel-default widget-budget">
                             <div class="panel-body status">
 
@@ -88,10 +206,13 @@
                                     <h4><i class="fa fa-lg fa-fw fa-credit-card"></i><strong>Budget</strong></h4>
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
-                                    Actual / KPI
+                                    Left
                                     <span class="widget-unit">USD</span>
                                 </div>
-                                <div class="text text-align-right font-xl widget-actual">
+                                <div class="text text-align-right font-xl widget-actual pull-right">
+                                    ...
+                                </div>
+                                <div class="text text-align-right font-xl widget-kpi pull-left">
                                     ...
                                 </div>
                                 {{--<div class="text text-align-right font-sm widget-kpi">
@@ -104,20 +225,18 @@
                                 </ul>--}}
                             </div>
                         </div>
-
                     </div>
 
                     <div class="col-sm-6 col-lg-3">
-
-                        <div class="panel panel-default widget-revenue">
+                        <div class="panel panel-default widget-me-re">
                             <div class="panel-body status">
 
                                 <div class="who clearfix widget-title">
-                                    <h4><i class="fa fa-lg fa-fw fa-usd"></i><strong>Revenue</strong></h4>
+                                    <h4><i class="fa fa-lg fa-fw fa-usd"></i><strong>ME/RE</strong></h4>
                                 </div>
                                 <div class="text text-align-left font-xs widget-caption">
-                                    Actual / KPI
-                                    <span class="widget-unit">USD</span>
+                                    KPI
+                                    <span class="widget-unit">%</span>
                                 </div>
                                 <div class="text text-align-right font-xl widget-actual">
                                     ...
@@ -132,8 +251,59 @@
                                 </ul>--}}
                             </div>
                         </div>
-
                     </div>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="panel panel-default widget-l1-c3bg">
+                            <div class="panel-body status">
+                                <div class="who clearfix widget-title">
+                                    <h4><i class="fa fa-lg fa-fw fa-money"></i><strong>L1/C3BG</strong></h4>
+                                </div>
+                                <div class="text text-align-left font-xs widget-caption">
+                                    KPI
+                                    <span class="widget-unit">%</span>
+                                </div>
+                                <div class="text text-align-right font-xl widget-actual">
+                                    ...
+                                </div>
+                                {{--<div class="text text-align-right font-sm widget-kpi">
+                                    2.3
+                                </div>
+                                <ul class="links widget-progress">
+                                    <div class="progress progress-sm">
+                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 90%;vertical-align: top;line-height: unset;">90%</div>
+                                    </div>
+                                </ul>--}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="panel panel-default widget-l8-l1">
+                            <div class="panel-body status">
+
+                                <div class="who clearfix widget-title">
+                                    <h4><i class="fa fa-lg fa-fw fa-credit-card"></i><strong>L8/L1</strong></h4>
+                                </div>
+                                <div class="text text-align-left font-xs widget-caption">
+                                    KPI
+                                    <span class="widget-unit">%</span>
+                                </div>
+                                <div class="text text-align-right font-xl widget-actual">
+                                    ...
+                                </div>
+                                {{--<div class="text text-align-right font-sm widget-kpi">
+                                    2,000
+                                </div>
+                                <ul class="links widget-progress">
+                                    <div class="progress progress-sm">
+                                        <div class="progress-bar bg-color-red" role="progressbar" style="width: 60%;vertical-align: top;line-height: unset;">60%</div>
+                                    </div>
+                                </ul>--}}
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- end row -->
@@ -142,7 +312,7 @@
                     <article class="col-sm-12 col-md-12">
 
                     @component('components.jarviswidget',
-                    ['id' => 'c3_chart', 'icon' => 'fa-line-chart', 'title' => "C3 in " , 'dropdown' => "true"])
+                    ['id' => 'c3_chart', 'icon' => 'fa-line-chart', 'title' => "C3B in " , 'dropdown' => "true"])
                         <!-- widget content -->
                             <div class="widget-body no-padding">
 
@@ -156,18 +326,21 @@
 
                 </div>
 
-                <div class="row">
+                <div class="row" id="c3a_c3b">
                     <article class="col-sm-12 col-md-12">
-
+                        <div class="loading" style="display: none">
+                            <div class="col-md-12 text-center">
+                                <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""
+                                     style="width: 2%;"/>
+                            </div>
+                        </div>
+                        <br>
                     @component('components.jarviswidget',
-                    ['id' => 'l8_chart', 'icon' => 'fa-line-chart', 'title' => "L8 in ", 'dropdown' => 'true'])
+                    ['id' => 'C3A-C3B', 'icon' => 'fa-line-chart', 'title' => "C3A-C3B Report in ", 'dropdown' => 'true'])
                         <!-- widget content -->
                             <div class="widget-body no-padding">
-
-                                {{--<div class="widget-body-toolbar bg-color-white smart-form">--}}
-
-                                {{--</div>--}}
-                                <div id="site-stats-l8" class="chart has-legend"></div>
+                                @component('components.C3A-C3B_chart', ['id' => 'C3A-C3B_chart', 'chk' => 'C3A-C3B_chk'])
+                                @endcomponent
                             </div>
                         @endcomponent
                     </article>
@@ -272,6 +445,11 @@
 
         </div>
         <!-- END MAIN CONTENT -->
+        <input type="hidden" name="c3_month" id="c3_month" value="{{$month}}">
+        <input type="hidden" name="C3AC3B_month" id="C3AC3B_month" value="{{$month}}">
+        <input type="hidden" name="get-channel-url" id="get-channel-url" value="{{route('dashboard-get-channel')}}">
+        <input type="hidden" id="c3_total" value="{{ $dashboard['c3a_c3b']["c3"] }}">
+        <input type="hidden" name="C3AC3B_url" value="{{route('get-C3AC3B')}}">
 
     </div>
     <!-- END MAIN PANEL -->
@@ -290,7 +468,152 @@
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
     <script src="{{ asset('js/fixedTable/tableHeadFixer.js') }}"></script>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="{{ URL::to('css/custom-radio.css') }}">
+    <style>
+        .select2-container
+        {
+            width: auto; !important;
+        }
+        input#currency
+        {
+            margin-right: 5px;
+        }
+        #wrapper_currency label
+        {
+            margin-right: 15px;
+        }
+
+        .widget-caption .widget-unit {
+            float: right;
+            font-weight: bold;
+        }
+
+        .widget-kpi.text {
+            padding: 5px 10px;
+            color: #F44336;
+        }
+
+        .widget-progress .progress {
+            margin-bottom: 0px;
+        }
+
+        .widget-caption.text {
+            padding: 5px 10px;
+        }
+
+        /*.widget-revenue .widget-title {
+            background-color: #E91E63;
+            color: white;
+        }*/
+
+        .widget-c3 .progress-bar {
+            background-color: #3F51B5 !important;
+        }
+
+        .widget-c3 .widget-actual.text {
+            padding: 0 14px;
+            font-weight: bold;
+            color: #3F51B5;
+        }
+        /*
+        .widget-c3b-cost .widget-title {
+            background-color: #4CAF50;
+            color: white;
+        }*/
+
+        .widget-c3b-cost .progress-bar {
+            background-color: #4CAF50 !important;
+        }
+
+        .widget-c3b-cost .widget-actual.text {
+            padding: 0 14px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        /*.widget-budget .widget-title {
+            background-color: #FF9800;
+            color: white;
+        }*/
+
+        .widget-l3-c3bg .progress-bar {
+            background-color: #FF9800 !important;
+        }
+
+        .widget-l3-c3bg .widget-actual.text {
+            padding: 0 14px;
+            font-weight: bold;
+            color: #FF9800;
+        }
+
+        .widget-c3bg-c3b .progress-bar {
+            background-color: #FF66FF !important;
+        }
+
+        .widget-c3bg-c3b .widget-actual.text {
+            padding: 0 14px;
+            font-weight: bold;
+            color: #FF66FF;
+        }
+
+        .widget-budget .progress-bar {
+            background-color: #FF9800 !important;
+        }
+
+        .widget-budget .widget-actual.text {
+            padding: 0 14px;
+            font-weight: bold;
+            color: #FF9800;
+        }
+
+        .widget-me-re .progress-bar {
+            background-color: #4CAF50 !important;
+        }
+
+        .widget-me-re .widget-actual.text {
+            padding: 0 14px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .widget-l8-l1 .progress-bar {
+            background-color: #9999FF !important;
+        }
+
+        .widget-l8-l1 .widget-actual.text {
+            padding: 0 14px;
+            font-weight: bold;
+            color: #9999FF;
+        }
+
+        .widget-l1-c3bg .progress-bar {
+            background-color: #3F51B5 !important;
+        }
+
+        .widget-l1-c3bg .widget-actual.text {
+            padding: 0 14px;
+            font-weight: bold;
+            color: #3F51B5;
+        }
+
+        .widget-kpi
+        {
+            padding: 0 14px;
+            font-weight: bold;
+            font-size: 15px !important;
+        }
+
+        .widget-kpi-gap
+        {
+            font-size: 15px !important;
+            color: red;
+        }
+
+        /*.widget-c3 .widget-title {
+            background-color: #3F51B5;
+            color: white;
+        }*/
+
+    </style>
 
     <script type="text/javascript">
 
@@ -312,10 +635,15 @@
         /* site stats chart */
         // end 2018-04-17 LamVT [HEL-9] add dropdown for C3/L8 chart
 
+        var __arr_month = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
+
+        $(".select2").select2({
+            placeholder: "Select a State",
+            allowClear: true
+        });
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
         $(document).ready(function () {
-
-            pageSetUp();
 
             var start = moment();
             var end = moment();
@@ -333,143 +661,103 @@
                     'This Month': [moment().startOf('month'), moment().endOf('month')],
                     'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
                 },
-
-
+                opens: "left"
             }, cb);
+
             cb(start, end);
 
-            if ($("#site-stats-c3").length) {
+            init_dashboard();
 
-                var plot = $.plot($("#site-stats-c3"), [{
-                    data: {{ $dashboard["chart_c3"] }},
-                    label: "C3"
-                }], {
-                    series: {
-                        lines: {
-                            show: true,
-                            lineWidth: 1,
-                            fill: true,
-                            fillColor: {
-                                colors: [{
-                                    opacity: 0.1
-                                }, {
-                                    opacity: 0.15
-                                }]
-                            }
-                        },
-                        points: {
-                            show: true
-                        },
-                        shadowSize: 0
-                    },
-                    xaxis: {
-                        mode: "time",
-                        timeformat: "%d/%m",
-                        ticks: 14
-                    },
+            var data_c3b = [
+                {data: {{ $dashboard["chart_c3"] }}, label: "C3B"},
+                {data: {{ $dashboard["chart_kpi"] }}, label: "KPI"},
+            ];
 
-                    yaxes: [{
-                        ticks: 10,
-                        min: 0,
-                    }],
-                    grid: {
-                        hoverable: true,
-                        clickable: true,
-                        tickColor: $chrt_border_color,
-                        borderWidth: 0,
-                        borderColor: $chrt_border_color,
-                    },
-                    tooltip: true,
-                    tooltipOpts: {
-                        content: "<b>%y C3</b> (%x)",
-                        dateFormat: "%d/%m/%Y",
-                        defaultTheme: false,
-                        shifts: {
-                            x: -50,
-                            y: 20
-                        }
-                    },
-                    colors: [$chrt_main, $chrt_third],
-                });
+            var data_c3a_c3b = [
+                {data: {{ $dashboard['c3a_c3b']["C3A_Duplicated"] }}, label: "C3A-Duplicated"},
+                {data: {{ $dashboard['c3a_c3b']["C3B_Under18"] }}, label: "C3B-Under18"},
+                {data: {{ $dashboard['c3a_c3b']["C3B_Duplicated15Days"] }}, label: "C3B-Duplicated15Days"},
+                {data: {{ $dashboard['c3a_c3b']["C3A_Test"] }}, label: "C3A-Test"}
+            ];
 
-            }
-            /* end site stats */
-
-            if ($("#site-stats-l8").length) {
-
-                var plot = $.plot($("#site-stats-l8"), [{
-                    data: {{ $dashboard["chart_l8"] }},
-                    label: "L8"
-                }], {
-                    series: {
-                        lines: {
-                            show: true,
-                            lineWidth: 1,
-                            fill: true,
-                            fillColor: {
-                                colors: [{
-                                    opacity: 0.1
-                                }, {
-                                    opacity: 0.15
-                                }]
-                            }
-                        },
-                        points: {
-                            show: true
-                        },
-                        shadowSize: 0
-                    },
-                    xaxis: {
-                        mode: "time",
-                        timeformat: "%d/%m",
-                        ticks: 14
-                    },
-
-                    yaxes: [{
-                        ticks: 10,
-                        min: 0,
-                    }],
-                    grid: {
-                        hoverable: true,
-                        clickable: true,
-                        tickColor: $chrt_border_color,
-                        borderWidth: 0,
-                        borderColor: $chrt_border_color,
-                    },
-                    tooltip: true,
-                    tooltipOpts: {
-                        content: "<b>%y L8</b> (%x)",
-                        dateFormat: "%d/%m/%Y",
-                        defaultTheme: false,
-                        shifts: {
-                            x: -50,
-                            y: 20
-                        }
-                    },
-                    colors: [$chrt_second],
-                });
-
-            }
+            initChart($("#site-stats-c3"), data_c3b, [$chrt_third, $chrt_main]);
+            initChart($("#C3A-C3B_chart"), data_c3a_c3b, ["#800000", "#6A5ACD", "#808080", "#7CFC00"], 'C3AC3B');
             /* end site stats */
 
             $('.today').click();
 
-            $('input#currency').click(function (e) {
-                var unit = $(this).val();
-                $('#currency_unit').val(unit);
+            $('button#filter').click(function (e) {
+                init_dashboard();
 
-                var date = $('#reportrange span').html();
-                date = date.split('-');
+                var c3_month = $('#c3_month').val();
+                get_c3_chart(parseInt(c3_month));
 
-                var startDate = formatDate(date[0]);
-                var endDate = formatDate(date[1]);
+                var c3a_c3b_month = $('input[name="C3AC3B_month"]').val();
+                get_C3AC3B(c3a_c3b_month);
 
-                dashboard(startDate, endDate, unit);
-                $('.today').click();
+                $('.widget-revenue-leaderboard button.active').click();
+                $('.widget-c3-leaderboard button.active').click();
+                $('.widget-spent-leaderboard button.active').click();
 
             })
 
+            $('#marketer').change(function (e) {
+                var url = $('#get-channel-url').val();
+                var marketer = $('#marketer').val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: {
+                        marketer: marketer
+                    }
+                }).done(function (response) {
+                    var select_channel = "<option value='' selected>All</option>";
+                    $.each(response, function (index, item) {
+                        select_channel += "<option value=" + item.id + "> " + item.name + " </option>";
+                    });
+
+                    $('#channel').html(select_channel);
+                    $("#subcampaign_id").select2();
+                });
+            })
+
+            $('div#c3a_c3b li#month').click(function() {
+                var month       = $(this).val();
+                var dropdown    = $(this).closest('ul').siblings();
+                dropdown.html(__arr_month[month - 1]);
+
+                $('h2#C3A-C3B').html('C3A-C3B Report in ' + dropdown.html());
+                if (month < 10) {
+                    month = "0" + month.toString();
+                }
+                else {
+                    month = month.toString();
+                }
+                $('input[name="C3AC3B_month"]').val(month);
+                get_C3AC3B(month);
+            });
+
+            $('#C3A-C3B_chk input[type=checkbox]').change(function (e) {
+                var month = $('input[name="C3AC3B_month"]').val();
+                get_C3AC3B(month);
+            })
+
         });
+
+        function init_dashboard(){
+            var unit = $('input[name=currency]:checked').val();
+
+            var date = $('#reportrange span').html();
+            date = date.split('-');
+
+            var startDate = formatDate(date[0]);
+            var endDate = formatDate(date[1]);
+
+            dashboard(startDate, endDate, unit);
+
+        }
 
         function formatDate(str) {
             var date = str.split('/');
@@ -483,36 +771,49 @@
         // PAGE RELATED SCRIPTS
         function cb(start, end) {
             $('#reportrange span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
-
-            var startDate = start.format('YYYY-MM-DD');
-            var endDate = end.format('YYYY-MM-DD');
-            var unit = $('#currency_unit').val();
-
-            dashboard(startDate, endDate, unit);
-
         }
 
         function dashboard(startDate, endDate, unit) {
 
-            $('.widget-c3-cost .widget-unit').html(unit);
+            $('.widget-c3b-cost .widget-unit').html(unit);
             $('.widget-budget .widget-unit').html(unit);
-            $('.widget-revenue .widget-unit').html(unit);
 
             $('.widget-c3 .widget-actual').html('...');
-            $('.widget-c3-cost .widget-actual').html('...');
+            $('.widget-c3 .widget-kpi').html('...');
+            $('.widget-c3b-cost .widget-actual').html('...');
+            $('.widget-c3b-cost .widget-kpi').html('...');
+            $('.widget-l3-c3bg .widget-actual').html('...');
+            $('.widget-l3-c3bg .widget-kpi').html('...');
+            $('.widget-c3bg-c3b .widget-actual').html('...');
             $('.widget-budget .widget-actual').html('...');
-            $('.widget-revenue .widget-actual').html('...');
+            $('.widget-budget .widget-kpi').html('...');
+            $('.widget-me-re .widget-actual').html('...');
+            $('.widget-l1-c3bg .widget-actual').html('...');
+            $('.widget-l8-l1 .widget-actual').html('...');
+
+            $marketer_id = $('#marketer').val();
+            $channel_id  = $('#channel').val();
 
             $.get("{{ route('ajax-dashboard') }}", {
-                startDate: startDate,
-                endDate: endDate,
-                unit: unit
+                startDate   : startDate,
+                endDate     : endDate,
+                unit        : unit,
+                marketer_id : $marketer_id,
+                channel_id  : $channel_id,
             }, function (data) {
                 var dashboard = data.dashboard;
                 $('.widget-c3 .widget-actual').html(dashboard.c3);
-                $('.widget-c3-cost .widget-actual').html(dashboard.c3_cost);
+                $('.widget-c3 .widget-kpi').html(dashboard.kpi);
+                $('.widget-c3b-cost .widget-actual').html(dashboard.c3_cost);
+                $('.widget-c3b-cost .widget-kpi').html(dashboard.kpi_cost);
+                $('.widget-l3-c3bg .widget-actual').html(dashboard.l3_c3bg);
+                $('.widget-l3-c3bg .widget-kpi').html(dashboard.kpi_l3_c3bg);
+                $('.widget-c3bg-c3b .widget-actual').html(dashboard.c3bg_c3b);
                 $('.widget-budget .widget-actual').html(dashboard.spent);
-                $('.widget-revenue .widget-actual').html(dashboard.revenue);
+                $('.widget-budget .widget-kpi').html(dashboard.spent_left);
+                $('.widget-me-re .widget-actual').html(dashboard.me_re);
+                $('.widget-l1-c3bg .widget-actual').html(dashboard.l1_c3bg);
+                $('.widget-l8-l1 .widget-actual').html(dashboard.l8_l1);
 
             }).fail(
                 function (err) {
@@ -540,7 +841,7 @@
 
             $('.widget-revenue-leaderboard button').removeClass('active');
             $(self).addClass('active');
-            var unit = $('#currency_unit').val();
+            var unit = $('input[name=currency]:checked').val();
 
             $.get("{{ route('ajax-revenue-leaderboard') }}", {period: period, unit: unit}, function (data) {
                 $('.revenue_leaderboard').html(data);
@@ -556,7 +857,7 @@
 
             $('.widget-spent-leaderboard button').removeClass('active');
             $(self).addClass('active');
-            var unit = $('#currency_unit').val();
+            var unit = $('input[name=currency]:checked').val();
 
             $.get("{{ route('ajax-spent-leaderboard') }}", {period: period, unit: unit}, function (data) {
                 $('.spent_leaderboard').html(data);
@@ -576,148 +877,193 @@
             else {
                 month = month.toString();
             }
+            var marketer_id = $('#marketer').val();
+            var channel_id  = $('#channel').val();
 
-            $.get("{{ route('ajax-getC3Chart') }}", {month: month}, function (data) {
-                var obj = jQuery.parseJSON(data);
-                set_c3_chart(obj);
+            $.get("{{ route('ajax-getC3Chart') }}",
+                {
+                    month       : month,
+                    marketer_id : marketer_id,
+                    channel_id  : channel_id
+                },
+            function (data) {
+                var data_c3b = [
+                    {data: $.parseJSON(data.chart_c3), label: "C3B"},
+                    {data: $.parseJSON(data.chart_kpi), label: "KPI"},
+                ];
+                initChart($("#site-stats-c3"), data_c3b, [$chrt_third, $chrt_main]);
             }).fail(
                 function (err) {
                     alert('Cannot connect to server. Please try again later.');
                 });
         }
 
-        function set_c3_chart(data) {
-            if ($("#site-stats-c3").length) {
+        var previousPoint = null, previousLabel = null;
+        $.fn.UseTooltip = function (mode) {
+            $(this).bind("plothover", function (event, pos, item) {
+                if (item) {
+                    if ((previousLabel != item.series.label) || (previousPoint != item.dataIndex)) {
+                        previousPoint = item.dataIndex;
+                        previousLabel = item.series.label;
+                        $("#tooltip").remove();
 
-                var plot = $.plot($("#site-stats-c3"), [{
-                    data: data,
-                    label: "C3"
-                }], {
-                    series: {
-                        lines: {
-                            show: true,
-                            lineWidth: 1,
-                            fill: true,
-                            fillColor: {
-                                colors: [{
-                                    opacity: 0.1
-                                }, {
-                                    opacity: 0.15
-                                }]
-                            }
-                        },
-                        points: {
-                            show: true
-                        },
-                        shadowSize: 0
-                    },
-                    xaxis: {
-                        mode: "time",
-                        timeformat: "%d/%m",
-                        ticks: 14
-                    },
+                        var x = item.datapoint[0];
+                        var y = item.datapoint[1];
 
-                    yaxes: [{
-                        ticks: 10,
-                        min: 0,
-                    }],
-                    grid: {
-                        hoverable: true,
-                        clickable: true,
-                        tickColor: $chrt_border_color,
-                        borderWidth: 0,
-                        borderColor: $chrt_border_color,
-                    },
-                    tooltip: true,
-                    tooltipOpts: {
-                        content: "<b>%y C3</b> (%x)",
-                        dateFormat: "%d/%m/%Y",
-                        defaultTheme: false,
-                        shifts: {
-                            x: -50,
-                            y: 20
+                        var color = item.series.color;
+
+                        var c3_total = jQuery.parseJSON($('#c3_total').val());
+                        var x_index = getDate(x).split("/")[0];
+                        var per = 0;
+                        if (numberWithCommas(y) != 0)
+                            per = (numberWithCommas(y) * 100 / c3_total[x_index]).toFixed(2);
+
+                        var tooltip = '';
+                        if(item.series.label == 'C3B'){
+                            tooltip = "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + y + "</strong>";
+                        } else if(item.series.label == 'KPI'){
+                            tooltip = "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + y + "</strong>" + " (C3B)";
+                        } else if (mode == 'C3AC3B') {
+                            tooltip = "<strong>" + item.series.label + "</strong><br>" + getDate(x) + " : <strong>" + numberWithCommas(y) + " - " + per + " % </strong>";
                         }
-                    },
-                    colors: [$chrt_main, $chrt_third],
-                });
 
-            }
-            /* end site stats */
+                        showTooltip(item.pageX, item.pageY, color, tooltip);
+                    }
+                } else {
+                    $("#tooltip").remove();
+                    previousPoint = null;
+                }
+            });
+        };
+
+        function showTooltip(x, y, color, contents) {
+
+            $('<div id="tooltip">' + contents + '</div>').css({
+                position: 'absolute',
+                display: 'none',
+                top: y - 40,
+                left: x - 40,
+                border: '2px solid ' + color,
+                padding: '3px',
+                'font-size': '9px',
+                'border-radius': '5px',
+                'background-color': '#fff',
+                'font-family': 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+                opacity: 0.9
+            }).appendTo("body").fadeIn(200);
         }
+        function getDate(date) {
+            var d = new Date(date);
+            var curr_date = d.getDate();
+            var curr_month = d.getMonth();
+            curr_month++;
 
-        function get_l8_chart(month) {
+            return curr_date + "/" + curr_month;
 
-            if (month < 10) {
-                month = "0" + month.toString();
-            }
-            else {
-                month = month.toString();
-            }
+        }
+        function numberWithCommas(number) {
+            var parts = number.toFixed().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return parts.join(".");
+        }
+        function get_C3AC3B(month) {
+            var url = $('input[name="C3AC3B_url"]').val();
+            var marketer_id = $('#marketer').val();
+            var channel_id  = $('#channel').val();
 
-            $.get("{{ route('ajax-getL8Chart') }}", {month: month}, function (data) {
-                var obj = jQuery.parseJSON(data);
-                set_l8_chart(obj);
+            var data = {};
+            data.marketer_id    = marketer_id;
+            data.channel_id     = channel_id;
+            data.month          = month;
+
+            $("#C3A-C3B_chart").parent().parent().parent().parent().find('.loading').css("display", "block");
+            $.get(url, data, function (rs) {
+                set_C3AC3B(rs, $("#C3A-C3B_chart"), $('#C3A-C3B_chk'));
             }).fail(
                 function (err) {
                     alert('Cannot connect to server. Please try again later.');
                 });
         }
+        function set_C3AC3B(rs, element, checkbox) {
+            var item = element;
+            var dataSet = [];
+            var arr_color = [];
 
-        function set_l8_chart(data) {
-            if ($("#site-stats-l8").length) {
+            var C3A_Duplicated = {data: jQuery.parseJSON(rs.C3A_Duplicated), label: "C3A-Duplicated"};
+            var C3B_Under18 = {data: jQuery.parseJSON(rs.C3B_Under18), label: "C3B-Under18"};
+            var C3B_Duplicated15Days = {data: jQuery.parseJSON(rs.C3B_Duplicated15Days), label: "C3B-Duplicated15Days"};
+            var C3A_Test = {data: jQuery.parseJSON(rs.C3A_Test), label: "C3A-Test"};
+            $('#c3_total').val(rs.c3);
 
-                var plot = $.plot($("#site-stats-l8"), [{
-                    data: data,
-                    label: "L8"
-                }], {
-                    series: {
-                        lines: {
-                            show: true,
-                            lineWidth: 1,
-                            fill: true,
-                            fillColor: {
-                                colors: [{
-                                    opacity: 0.1
-                                }, {
-                                    opacity: 0.15
-                                }]
-                            }
-                        },
-                        points: {
-                            show: true
-                        },
-                        shadowSize: 0
-                    },
-                    xaxis: {
-                        mode: "time",
-                        timeformat: "%d/%m",
-                        ticks: 14
-                    },
+            var lst_checkbox = checkbox.find('input[type=checkbox]:checked');
+            jQuery.each(lst_checkbox, function (index, checkbox) {
+                $label = $(checkbox).val();
+                if ($label == 'C3A-Duplicated') {
+                    dataSet.push(C3A_Duplicated);
+                    arr_color.push('#800000');
+                }
+                if ($label == 'C3B-Under18') {
+                    dataSet.push(C3B_Under18);
+                    arr_color.push('#6A5ACD')
+                }
+                if ($label == 'C3B-Duplicated15Days') {
+                    dataSet.push(C3B_Duplicated15Days);
+                    arr_color.push('#808080')
+                }
+                if ($label == 'C3A-Test') {
+                    dataSet.push(C3A_Test);
+                    arr_color.push('#7CFC00')
+                }
+            });
 
-                    yaxes: [{
-                        ticks: 10,
-                        min: 0,
-                    }],
-                    grid: {
-                        hoverable: true,
-                        clickable: true,
-                        tickColor: $chrt_border_color,
-                        borderWidth: 0,
-                        borderColor: $chrt_border_color,
-                    },
-                    tooltip: true,
-                    tooltipOpts: {
-                        content: "<b>%y L8</b> (%x)",
-                        dateFormat: "%d/%m/%Y",
-                        defaultTheme: false,
-                        shifts: {
-                            x: -50,
-                            y: 20
+
+            initChart(item, dataSet, arr_color, 'C3AC3B');
+        }
+
+
+        function initChart(item, data, arr_color, type) {
+            var option = {
+                series: {
+                    lines: {
+                        show: true,
+                        lineWidth: 1,
+                        fill: true,
+                        fillColor: {
+                            colors: [{
+                                opacity: 0.1
+                            }, {
+                                opacity: 0.15
+                            }]
                         }
                     },
-                    colors: [$chrt_second],
-                });
+                    points: {
+                        show: true
+                    },
+                    shadowSize: 0
+                },
+                yaxes: [{
+                    ticks: 10,
+                    min: 0,
+                }],
+                xaxis: {
+                    mode: "time",
+                    timeformat: "%d/%m",
+                    ticks: 14
+                },
+                grid: {
+                    hoverable: true,
+                    // clickable : true,
+                    tickColor: $chrt_border_color,
+                    borderWidth: 0,
+                    borderColor: $chrt_border_color,
+                },
+                colors: arr_color,
+            };
 
+            if (item.length) {
+                $.plot(item, data, option);
+                item.UseTooltip(type);
+                item.parent().parent().parent().parent().find('.loading').css("display", "none");
             }
             /* end site stats */
         }

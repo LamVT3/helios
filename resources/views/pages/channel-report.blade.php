@@ -39,6 +39,18 @@
                                             <i></i>
                                         </section>
                                         <section class="col col-2">
+                                            <label class="label">Channel</label>
+                                            <input style="" type="text" value="" name="channel_id" id="channel_id" placeholder="Select channel">
+                                        <!-- <select name="channel_id" id="channel_id" class="select2" style="width: 280px"
+                                                data-url="">
+                                            <option value="">All</option>
+                                            @foreach($channels as $item)
+                                            <option value="{{ $item->name }}">{{ $item->name }}</option>
+                                            @endforeach
+                                                </select> -->
+                                            <i></i>
+                                        </section>
+                                        <section class="col col-1">
                                             <label class="label">Team</label>
                                             <select name="team_id" class="select2" id="team_id" style="width: 280px"
                                                     tabindex="2"
@@ -86,7 +98,7 @@
                                             </select>
                                             <i></i>
                                         </section>
-                                        <section class="col col-2">
+                                        <section class="col col-1">
                                             <label class="label">Mode</label>
                                             <select name="type" id="type" class="select2"
                                                     style="width: 280px"
@@ -123,66 +135,14 @@
                                 <hr>
 
                                 <div class="row" id="wrapper_report">
-                                    <div class="col-sm-12">
-                                        <article class="col-sm-12 col-md-12">
-                                            <table class="table table-bordered table-hover"
-                                                   width="100%">
-                                                <thead>
-                                                <tr>
-                                                    <th>Time</th>
-                                                    <th>C3</th>
-                                                    <th>C3B</th>
-                                                    <th>C3BG</th>
-                                                    <th>C3BG/C3B (%)</th>
-                                                    <th>L1</th>
-                                                    <th>L3</th>
-                                                    <th>L6</th>
-                                                    <th>L8</th>
-                                                    <th>L3/C3BG (%)</th>
-                                                    <th>L8/L1 (%)</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-
-                                                @foreach ($array_channel as $i)
-                                                    <tr>
-                                                        <td>{{$i}}</td>
-                                                        <td style="color:{{($table['c3'][$i]) >= ($table['c3_week'][$i]) ? 'green' : 'red'}}">{{$table['c3'][$i]}}</td>
-                                                        <td style="color:{{$table['c3b'][$i] >= $table['c3b_week'][$i] ? 'green' : 'red'}}">{{$table['c3b'][$i]}}</td>
-                                                        <td style="color:{{$table['c3bg'][$i] >= $table['c3bg_week'][$i] ? 'green' : 'red'}}">{{$table['c3bg'][$i]}}</td>
-                                                        <td>{{($table['c3b'][$i] != 0) ? round($table['c3bg'][$i] * 100 / $table['c3b'][$i] , 2) : 0}}</td>
-                                                        <td>{{$table['l1'][$i]}}</td>
-                                                        <td>{{$table['l3'][$i]}}</td>
-                                                        <td>{{$table['l6'][$i]}}</td>
-                                                        <td>{{$table['l8'][$i]}}</td>
-                                                        <td>{{($table['c3bg'][$i] != 0) ? round($table['l3'][$i] * 100 / $table['c3bg'][$i] , 2) : 0}}</td>
-                                                        <td>{{($table['l1'][$i] != 0) ? round($table['l8'][$i] * 100 / $table['l1'][$i] , 2) : 0}}</td>
-                                                    </tr>
-                                                @endforeach
-                                                    <tr>
-                                                        <th>Total</th>
-                                                        <th>{{array_sum($table['c3'])}}</th>
-                                                        <th>{{array_sum($table['c3b'])}}</th>
-                                                        <th>{{array_sum($table['c3bg'])}}</th>
-                                                        <th>{{(array_sum($table['c3b']) != 0) ? round(array_sum($table['c3bg']) * 100 / array_sum($table['c3b']) , 2) : 0}}</th>
-                                                        <th>{{array_sum($table['l1'])}}</th>
-                                                        <th>{{array_sum($table['l3'])}}</th>
-                                                        <th>{{array_sum($table['l6'])}}</th>
-                                                        <th>{{array_sum($table['l8'])}}</th>
-                                                        <th>{{(array_sum($table['c3bg']) != 0) ? round(array_sum($table['l3']) * 100 / array_sum($table['c3bg']) , 2) : 0}}</th>
-                                                        <th>{{(array_sum($table['l1']) != 0) ? round(array_sum($table['l8']) * 100 / array_sum($table['l1']) , 2) : 0}}</th>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </article>
-                                    </div>
+                                    @include('pages.lists.table_report_channel')
 
                                     <div class="col-sm-12">
                                         <article class="col-sm-12 col-md-12">
                                         @component('components.jarviswidget',
                                         ['id' => 'c3bg', 'icon' => 'fa-line-chart', 'title' => "C3BG ", 'dropdown' => 'false'])
                                             <!-- widget content -->
-                                                <div class="widget-body no-padding">
+                                                <div class="widget-body no-padding flot_channel">
                                                     <div id="c3bg_chart" class="chart has-legend"></div>
                                                 </div>
                                             @endcomponent
@@ -191,7 +151,7 @@
                                         @component('components.jarviswidget',
                                         ['id' => 'c3b', 'icon' => 'fa-line-chart', 'title' => "C3B ", 'dropdown' => 'false'])
                                             <!-- widget content -->
-                                                <div class="widget-body no-padding">
+                                                <div class="widget-body no-padding flot_channel">
                                                     <div id="c3b_chart" class="chart has-legend"></div>
                                                 </div>
                                             @endcomponent
@@ -199,10 +159,20 @@
 
                                         <article class="col-sm-12 col-md-12">
                                         @component('components.jarviswidget',
-                                        ['id' => 'c3', 'icon' => 'fa-line-chart', 'title' => "C3", 'dropdown' => 'false'])
+                                        ['id' => 'chart_number', 'icon' => 'fa-line-chart', 'title' => "Column Chart", 'dropdown' => 'false'])
                                             <!-- widget content -->
                                                 <div class="widget-body no-padding">
-                                                    <div id="c3_chart" class="chart has-legend"></div>
+                                                    <div id="number_chart" class="chart has-legend"></div>
+                                                </div>
+                                            @endcomponent
+                                        </article>
+
+                                        <article class="col-sm-12 col-md-12">
+                                        @component('components.jarviswidget',
+                                        ['id' => 'chart_reason', 'icon' => 'fa-line-chart', 'title' => "Reason Chart", 'dropdown' => 'false'])
+                                            <!-- widget content -->
+                                                <div class="widget-body no-padding">
+                                                    <div id="reason_chart" class="chart has-legend"></div>
                                                 </div>
                                             @endcomponent
                                         </article>
@@ -242,16 +212,19 @@
     <script src="{{ asset('js/plugin/flot/jquery.flot.cust.min.js') }}"></script>
     <script src="{{ asset('js/plugin/flot/jquery.flot.resize.min.js') }}"></script>
     <script src="{{ asset('js/plugin/flot/jquery.flot.time.min.js') }}"></script>
+    <script language="javascript" type="text/javascript" src="http://www.flotcharts.org/flot/jquery.flot.categories.js"></script>
+    <script language="javascript" type="text/javascript" src="http://www.flotcharts.org/flot/jquery.flot.pie.js"></script>
     <script src="{{ asset('js/plugin/flot/jquery.flot.tooltip.min.js') }}"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+    <script src="{{ asset('js/plugin/selectize/js/standalone/selectize.min.js')}}"></script>
 
     <style>
         .chart{
             height: 420px;
         }
-        .flot-x-axis .flot-tick-label {
+        .flot_channel .flot-x-axis .flot-tick-label {
             white-space: nowrap;
             transform: translate(-9px, 0) rotate(-65deg);
             text-indent: -100%;
@@ -260,15 +233,31 @@
             margin-bottom: 100px;
 
         }
+        .border-right_none {
+            border-right: none !important;
+        }
+        #flotTip {
+            padding: 3px 5px;
+            background-color: #000;
+            z-index: 100;
+            color: #fff;
+            opacity: .80;
+            filter: alpha(opacity=85);
+        }
+        .data-point-label {
+            font-size: 15px;
+            color: #333;
+            font-weight: 600;
+        }
     </style>
     <script src="{{ asset('js/reports/hour-report.js') }}"></script>
-
     <script type="text/javascript">
+
 
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
         $(document).ready(function () {
             pageSetUp();
-            initC3();
+            // initC3();
             initC3B();
             initC3BG();
 
@@ -280,6 +269,7 @@
                 var marketer_id = $('select[name="marketer_id"]').val();
                 var campaign_id = $('select[name="campaign_id"]').val();
                 var subcampaign_id = $('select[name="subcampaign_id"]').val();
+                var channel_id = $('input[name="channel_id"]').val();
                 var registered_date = $('.registered_date').text();
                 var type = $('select[name="type"]').val();
 
@@ -301,12 +291,195 @@
                         campaign_id     : campaign_id,
                         subcampaign_id  : subcampaign_id,
                         registered_date : registered_date,
+                        channel_id      : channel_id,
                         type : type,
                     }
                 }).done(function (response) {
                     $('.loading').hide();
                     $('#wrapper_report').html(response);
                 });
+            });
+
+            $('input[name=channel_id]').selectize({
+                delimiter: ',',
+                persist: false,
+                valueField: 'name',
+                labelField: 'name',
+                searchField: ['name'],
+                options: {!! $channels !!}
+
+            });
+
+            $('.ads__show').click(function () {
+                var source_id = $('select[name="source_id"]').val();
+                var team_id = $('select[name="team_id"]').val();
+                var marketer_id = $('select[name="marketer_id"]').val();
+                var campaign_id = $('select[name="campaign_id"]').val();
+                var subcampaign_id = $('select[name="subcampaign_id"]').val();
+                var registered_date = $('.registered_date').text();
+                var type = $('select[name="type"]').val();
+
+                var $this = $(this);
+                var channel_name = $this.data('channel_name');
+                var api_channel = $this.data('api_channel');
+                var tr_channel = $(this).parent().parent();
+                var ads_detail = tr_channel.nextUntil('.tr_channel');
+
+                if (ads_detail && ads_detail.hasClass('ads_show')){
+                    $this.html('<i class="fa fa-plus-circle"></i>');
+                    ads_detail.addClass('ads_hide');
+                    ads_detail.removeClass('ads_show');
+                    ads_detail.hide();
+                }
+                else if (ads_detail && ads_detail.hasClass('ads_hide')){
+                    $this.html('<i class="fa fa-minus-circle"></i>');
+                    ads_detail.addClass('ads_show');
+                    ads_detail.removeClass('ads_hide');
+                    ads_detail.show();
+                }
+                else{
+                    $this.html('<i class="fa fa-minus-circle"></i>');
+
+                    $('.loading').show();
+                    $.ajax({
+                        url: api_channel,
+                        type: 'GET',
+                        data: {
+                            channel_name : channel_name,
+                            source_id       : source_id,
+                            team_id         : team_id,
+                            marketer_id     : marketer_id,
+                            campaign_id     : campaign_id,
+                            subcampaign_id  : subcampaign_id,
+                            registered_date : registered_date,
+                            type : type,
+                        }
+                    }).done(function (response) {
+                        $('.loading').hide();
+                        $(tr_channel).after(response);
+                    });
+
+
+                }
+            })
+
+            var _data = [
+                {color: '#ff00aa', data: [[0, {{$array_sum['c3b']}}]]},
+                {color: 'red', data: [[1, {{$array_sum['c3bg']}}]]},
+                {color: 'yellow', data: [[2, {{$array_sum['l1']}}]]},
+                {color: 'orange', data: [[3, {{$array_sum['l3']}}]]},
+                {color: 'blue', data: [[4, {{$array_sum['l6']}}]]},
+                {color: '#000000', data: [[5, {{$array_sum['l8']}}]]}
+            ];
+
+            var number_chart = $.plot("#number_chart", _data, {
+                series: {
+                    bars: {
+                        show: true,
+                        barWidth: 0.5,
+                        align: "center",
+                    }
+                },
+                xaxis: {
+                    mode: "categories",
+                    tickLength: 0,
+                    ticks: [
+                        [0, "C3B"],
+                        [1, "C3BG"],
+                        [2, "L1"],
+                        [3, "L3"],
+                        [4, "L6"],
+                        [5, "L8"]
+                    ],
+                    font:{
+                        size:14,
+                        color: "#333"
+                    }
+                },
+                yaxes : [{
+                    min : 0
+                }],
+                grid : {
+                    show : true,
+                    hoverable : true,
+                    clickable : false,
+                    borderColor : "#efefef",
+                },
+                tooltip : true,
+                tooltipOpts : {
+                    content : "<div>%y</div>",
+                    defaultTheme : false
+                },
+                colors: ["#FF8C00", "#666", "#BBB"]
+            });
+
+            $.each(number_chart.getData(), function(i, ele){
+                var el = ele.data[0];
+                var o = number_chart.pointOffset({x: el[0], y: el[1]});
+                $('<div class="data-point-label">' + el[1] + '</div>').css( {
+                    position: 'absolute',
+                    left: o.left - 15,
+                    top: o.top - 20,
+                    display: 'none'
+                }).appendTo(number_chart.getPlaceholder()).fadeIn('slow');
+            });
+
+            var  ds_reason = [
+            	{ label: "C3A_Duplicated",  data: {{$data_reason['C3A_Duplicated']}}, color: '#e1ab0b'},
+            	{ label: "C3B_Under18",  data: {{$data_reason['C3B_Under18']}}, color: '#fe0000'},
+                { label: "C3B_Duplicated15Days",  data: {{$data_reason['C3B_Duplicated15Days']}}, color: '#93b40f'},
+                { label: "C3A_Test",  data: {{$data_reason['C3A_Test']}}, color: '#99FF99'},
+                { label: "C3B_SMS_Error",  data: {{$data_reason['C3B_SMS_Error']}}, color: '#006666'}
+
+            ];
+
+            $.plot("#reason_chart", ds_reason , {
+                series: {
+                    pie: {
+                        show : true,
+                        innerRadius : 0.5,
+                        radius : 1,
+                        threshold: 0.1,
+                        label: {
+                            show: true,
+                            radius: 1,
+                            formatter: function(label, series){
+                                return "<div style='font-size:13px;padding:3px;color:#333;font-weight: 600'>"
+                                    + Math.round(series.percent) + "%</div>";
+                            },
+                            background: {
+                                opacity: 1,
+                                color: '#fff'
+                            }
+                        }
+                    }
+                },
+                legend: {
+                    show : true,
+                    noColumns : 1,
+                    labelBoxBorderColor : "#000",
+                    margin : [300, 20],
+                    backgroundColor : "#efefef",
+                    backgroundOpacity : 1,
+                    labelFormatter: function (label, series) {
+                        return '<div ' +
+                            'style="font-size:15px;padding:3px;color:#333">' +
+                            label +': <strong>' + series.data[0][1] + ' - ' + Math.round(series.percent)+'%</strong></div>';
+                    }
+                },
+                grid : {
+                    hoverable : true
+                },
+                tooltip : true,
+                tooltipOpts : {
+                    cssClass: "flotTip",
+                    content: "%s: %p.0%",
+                    shifts: {
+                        x: 20,
+                        y: 0
+                    },
+                    defaultTheme: false
+                },
             });
         });
 
@@ -357,34 +530,34 @@
             /* end site stats */
         }
 
-        function initC3() {
-            var item = $("#c3_chart");
-            var data = [
-                {   data :[
-                            @foreach ($array_channel as $key => $channel)
-                                @if($table['c3_week'][$channel]!=0)
-                                    [{{$key}},{{$table['c3_week'][$channel]}}],
-                                @endif
-                            @endforeach
-                    ],
-                    label : "C3 Week",
-                    color: "#FF8C00"
-                },
-                {   data :[
-                            @foreach ($array_channel as $key => $channel)
-                                @if($table['c3'][$channel]!=0)
-                                    [{{$key}},{{$table['c3'][$channel]}}],
-                                @endif
-                            @endforeach
-                    ],
-                    label : "C3",
-                    color: "#7CFC00"
-                }
-            ];
+        {{--function initC3() {--}}
+            {{--var item = $("#c3_chart");--}}
+            {{--var data = [--}}
+                {{--{   data :[--}}
+                            {{--@foreach ($array_channel as $key => $channel)--}}
+                                {{--@if($table['c3_week'][$channel]!=0)--}}
+                                    {{--[{{$key}},{{$table['c3_week'][$channel]}}],--}}
+                                {{--@endif--}}
+                            {{--@endforeach--}}
+                    {{--],--}}
+                    {{--label : "C3 Week",--}}
+                    {{--color: "#FF8C00"--}}
+                {{--},--}}
+                {{--{   data :[--}}
+                            {{--@foreach ($array_channel as $key => $channel)--}}
+                                {{--@if($table['c3'][$channel]!=0)--}}
+                                    {{--[{{$key}},{{$table['c3'][$channel]}}],--}}
+                                {{--@endif--}}
+                            {{--@endforeach--}}
+                    {{--],--}}
+                    {{--label : "C3",--}}
+                    {{--color: "#7CFC00"--}}
+                {{--}--}}
+            {{--];--}}
 
-            initChartChannel(item, data);
-            item.UseChannelTooltip();
-        }
+            {{--initChartChannel(item, data);--}}
+            {{--item.UseChannelTooltip();--}}
+        {{--}--}}
 
         function initC3B() {
             var item = $("#c3b_chart");

@@ -52,7 +52,7 @@
                     @component('components.jarviswidget',
                     ['id' => 1, 'icon' => 'fa-table', 'title' => 'C3 Produced'])
                     <div class="widget-body">
-                        <form id="search-form-c3" class="smart-form" action="#" url="{!! route('ajax-paginate') !!}">
+                        <form id="search-form-c3" class="smart-form" action="#" url="{!! route('contacts-paginate') !!}">
                             <div class="row">
                                 <div id="reportrange" class="pull-left"
                                      style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; margin: 10px 15px">
@@ -65,7 +65,7 @@
                                     <a id="filter" href="javascript:void(0)"><i class="fa fa-angle-up fa-lg"></i></a>
                                 </legend>
                                 <div class="row" id="filter">
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Source</label>
                                         <select name="source_id" class="select2" style="width: 280px" id="source_id"
                                                 data-url="{!! route('ajax-getFilterSource') !!}">
@@ -76,7 +76,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Team</label>
                                         <select name="team_id" class="select2" style="width: 280px" id="team_id"
                                                 data-url="{!! route('ajax-getFilterTeam') !!}">
@@ -87,7 +87,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Marketer</label>
                                         <select name="marketer_id" id="marketer_id" class="select2" style="width: 280px"
                                                 data-url="{!! route('ajax-getFilterMaketer') !!}">
@@ -98,7 +98,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Campaign</label>
                                         <select name="campaign_id" id="campaign_id" class="select2" style="width: 280px"
                                                 data-url="{!! route('ajax-getFilterCampaign') !!}">
@@ -109,7 +109,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Sub Campaign</label>
                                         <select name="subcampaign_id" id="subcampaign_id" class="select2" style="width: 280px"
                                                 data-url="{!! route('ajax-getFilterSubCampaign') !!}">
@@ -120,7 +120,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Channel</label>
                                         <input style="190px !impotant" type="text" value="" name="channel_id" id="channel_id" placeholder="Select channel">
                                         <!-- <select name="channel_id" id="channel_id" class="select2" style="width: 280px"
@@ -134,7 +134,7 @@
                                     </section>
                                 </div>
                                 <div class="row" id="filter">
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">CLevel</label>
                                         <select name="clevel" id="clevel" class="select2"
                                                 style="width: 280px">
@@ -146,7 +146,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">CRM Level</label>
                                         <select name="current_level" id="current_level" class="select2"
                                                 style="width: 280px">
@@ -163,7 +163,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-4">
+                                    <section class="col col-lg-4 col-sm-8">
                                         <label class="label">Landing Page</label>
                                         <select name="landing_page" id="landing_page" class="select2" style="width: 280px"
                                                 data-url="">
@@ -174,7 +174,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Status Export</label>
                                         <select name="is_export" id="is_export" class="select2"
                                                 style="width: 280px" data-url="">
@@ -184,7 +184,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Status Sale</label>
                                         <select name="olm_status" id="olm_status" class="select2"
                                                 style="width: 280px" data-url="">
@@ -198,12 +198,12 @@
                                     </section>
                                 </div>
                                 <div class="row" id="filter">
-                                    <section class="col col-2" style="margin: 0px;">
+                                    <section class="col col-lg-2 col-sm-4" style="margin: 0px;">
                                         <label class="label">Export</label>
                                     </section>
                                 </div>
                                 <div class="row" id="filter">
-                                    <section class="col col-4">
+                                    <section class="col col-lg-4 col-sm-8">
                                         <label class="checkbox">
                                             <input type="checkbox" id="mark_exported"/>
                                             <i></i>Mark contact as “Exported”</label>
@@ -215,16 +215,6 @@
                                             <label class="export_label" for="limit"> entries</label>
                                         </div>
                                     </section>
-                                    {{--<section class="col col-3">--}}
-                                        {{--<label class="checkbox">--}}
-                                            {{--<input type="checkbox" id="c3bg" name="c3bg"/>--}}
-                                            {{--<i></i>C3BG</label>--}}
-                                        {{--<div id="c3range" class="pull-left"--}}
-                                             {{--style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; /*margin: 10px 15px*/">--}}
-                                            {{--<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;--}}
-                                            {{--<span class="checked_date"></span> <b class="caret"></b>--}}
-                                        {{--</div>--}}
-                                    {{--</section>--}}
                                 </div>
                                 <div class="row" id="filter">
                                     <section class="col col-12 pull-right text-right">
@@ -322,39 +312,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {{--@foreach ($contacts as $item)--}}
-                                    {{--<tr id="contact-{{ $item->_id }}">--}}
-                                        {{--<td><a href="javascript:void(0)" class="name" data-id="{{ $item->_id }}">{{ $item->name }}</a>--}}
-                                        {{--</td>--}}
-                                        {{--<td>{{ $item->email }}</td>--}}
-                                        {{--<td>{{ $item->phone }}</td>--}}
-                                        {{--<td>{{ $item->age }}</td>--}}
-                                        {{--<td>{{ Date('d-m-Y H:i:s', $item->submit_time/1000) }}</td>--}}
-                                        {{--<td>{{ $item->clevel }}</td>--}}
-                                        {{--<td>{{ $item->current_level }}</td>--}}
-                                        {{--<td>{{ $item->source_name or '-100' }}</td>--}}
-                                        {{--<td>{{ $item->team_name or '-100' }}</td>--}}
-                                        {{--<td>{{ $item->marketer_name or '-100' }}</td>--}}
-                                        {{--<td>{{ $item->campaign_name or '-100' }}</td>--}}
-                                        {{--<td>{{ $item->subcampaign_name or '-100' }}</td>--}}
-                                        {{--<td>{{ $item->ad_name or '-100' }}</td>--}}
-                                        {{--<td>{{ $item->landing_page }}</td>--}}
-                                        {{--<td>{{ $item->invalid_reason }}</td>--}}
-                                        {{--<td>--}}
-                                            {{--@permission('edit-review')--}}
-                                            {{--<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="{{ $item->_id }}"><i--}}
-                                                        {{--class='fa fa-eye'></i></a>--}}
-                                            {{--<a data-toggle="modal" class='btn btn-xs btn-default'--}}
-                                                   {{--data-target="#deleteModal"--}}
-                                                   {{--data-item-id="{{ $item->_id }}"--}}
-                                                   {{--data-item-name="{{ $item->name }}"--}}
-                                                   {{--data-original-title='Delete Row'><i--}}
-                                                        {{--class='fa fa-times'></i></a>--}}
-                                            {{--@endpermission--}}
-                                        {{--</td>--}}
-                                    {{--</tr>--}}
-                                    {{--@endforeach--}}
-
                                 </tbody>
                             </table>
                         </div>
@@ -373,36 +330,6 @@
 
         @include('components.form-import-contact', ['type' => null])
         @include('components.form-import-egentic', ['type' => null])
-
-        {{--
-        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                            &times;
-                        </button>
-                        <h3 class="modal-title"> Are you sure you want to delete this campaign?</h3>
-                    </div>
-                    <div class="modal-footer">
-                        <form method="post" action="">
-                            {{ csrf_field() }}
-                            <input type="hidden" name="id" value=""/>
-                            <button type="submit" class="btn btn-danger">
-                                Delete
-                            </button>
-                            <button type="button" class="btn btn-default" data-dismiss="modal">
-                                Cancel
-                            </button>
-
-                        </form>
-                    </div>
-
-                </div><!-- /.modal-content -->
-
-            </div><!-- /.modal-dialog -->
-        </div>
-        --}}
 
     </div>
     <!-- END MAIN CONTENT -->
@@ -469,6 +396,11 @@
                         <input type="number" class="form-control" id="export_sale_limit" style="padding-left: 5px">
                         <em id="export_sale_limit-error" class="error_require_field" style="display: none;">This field is required.</em>
                     </div>
+                    <div class="form-group" style="padding-top: 10px">
+                        <label for="export_sale_limit" class="label require_field">Sort</label>
+                        <input type="radio" class="form-check-input" id="export_sale_sort" name="export_sale_sort" value="desc" checked><span style="padding: 5px 15px 5px 5px">Descending</span>
+                        <input type="radio" class="form-check-input" id="export_sale_sort" name="export_sale_sort" value="asc" style="padding-left: 5px"><span style="padding: 5px">Ascending</span>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -488,9 +420,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h3 class="modal-title">Contacts has been exported successfully !!!</h3>
+                <h3 class="modal-title">Export result</h3>
             </div>
             <div class="modal-body">
+                <!-- HoaTV - Add total contact -->
+                <p style="font-size: 25px" id="total_contact">...</p>
                 <p class="text-primary" style="font-size: 25px" id="contact_success">...</p>
                 <p class="text-warning" style="font-size: 25px" id="contact_duplicate">...</p>
                 <p class="text-danger" style="font-size: 25px" id="contact_error">...</p>
@@ -507,7 +441,7 @@
 <input type="hidden" name="exported" value="{{$export_to_excel}}">
 <input type="hidden" name="export_to_olm" value="{{$export_to_olm}}">
 <input type="hidden" name="exported_url" value="{{route("contacts.countExported")}}">
-<input type="hidden" name="update_status_export" value="{{route("ajax-updateContacts")}}">
+<input type="hidden" name="update_status_export" value="{{route("contacts-updateContacts")}}">
 <input type="hidden" name="export_to_olm_url" value="{{route("contacts.export-to-OLM")}}">
 <input type="hidden" name="update_all" value="0">
 <input type="hidden" name="status_update_all" value="">
@@ -549,6 +483,11 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+
+     .select2-container
+     {
+         width: auto;  !important;
+     }
 </style>
 
 <script type="text/javascript">
@@ -570,9 +509,7 @@
     });
 
     $(document).ready(function () {
-        $('.loading').show();
         initDataTable();
-        setTimeout("$('.loading').hide();", 1000);
 
         // HoaTV multiple select
         $('input[name=channel_id]').selectize({
