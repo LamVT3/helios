@@ -1449,9 +1449,10 @@ class SubReportController extends Controller
 		$team_id = request()->team_id;
 		$campaign_id = request()->campaign_id;
 		$subcampaign_id = request()->subcampaign_id;
+		$channel_name = request()->channel_name;
 
 		$isEmpy = false;
-		if($source_id != "" || $marketer_id != "" ||$team_id != "" ||$campaign_id != "" ||$subcampaign_id != ""){
+		if($channel_name != "" || $source_id != "" || $marketer_id != "" ||$team_id != "" ||$campaign_id != "" ||$subcampaign_id != ""){
 			$isEmpy =true;
 		}
 		
@@ -2120,7 +2121,7 @@ class SubReportController extends Controller
 		$channels_arr       = explode(',', request()->channel_name);
 		$channels_id        = Channel::whereIn('name', $channels_arr)->get()->pluck('_id');
 
-		if ($channels_id){
+		if (count($channels_id) > 0){
 			$data_where = $this->getWhereDataByCreatorID();
 
 			if (count($data_where) >= 1) {
@@ -2149,7 +2150,7 @@ class SubReportController extends Controller
 			$isEmpy =true;
 		}
 
-		if(count($ad_id) > 0 && $isEmpy){
+		if(count($ad_id) >= 0 && $isEmpy){
 			$match = [
 				['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
 				['$match' => ['ad_id' => ['$in' => $ad_id]]],

@@ -257,7 +257,11 @@
     </style>
     <script src="{{ asset('js/reports/hour-report.js') }}"></script>
     <script type="text/javascript">
-
+        function resetChannel(){
+            var $select = $('#channel_id').selectize();
+            var control = $select[0].selectize;
+            control.clear();
+        }
 
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
         $(document).ready(function () {
@@ -265,6 +269,129 @@
             // initC3();
             initC3B();
             initC3BG();
+
+            $('#source_id').change(function (e) {
+                resetChannel();
+                var url = $('#source_id').attr('data-url');
+                var source_id = $('select[name="source_id"]').val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: {
+                        source_id: source_id
+                    }
+                }).done(function (response) {
+                    $('#team_id').html(response.content_team);
+                    $("#team_id").select2();
+                    $('#marketer_id').html(response.content_marketer);
+                    $("#marketer_id").select2();
+                    $('#campaign_id').html(response.content_campaign);
+                    $("#campaign_id").select2();
+                    $('#subcampaign_id').html(response.content_subcampaign);
+                    $("#subcampaign_id").select2();
+                    $('#landing_page').html(response.content_landingpage);
+                    $("#landing_page").select2();
+
+                    // $('#channel_id').html(response.content_channel);
+                    // $("#channel_id").select2();
+                });
+            })
+
+            $('#team_id').change(function (e) {
+                resetChannel();
+                var url = $('#team_id').attr('data-url');
+                var team_id = $('select[name="team_id"]').val();
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: {
+                        team_id: team_id
+                    }
+                }).done(function (response) {
+                    $('#marketer_id').html(response.content_marketer);
+                    $("#marketer_id").select2();
+                    $('#campaign_id').html(response.content_campaign);
+                    $("#campaign_id").select2();
+                    $('#subcampaign_id').html(response.content_subcampaign);
+                    $("#subcampaign_id").select2();
+                    $('#landing_page').html(response.content_landingpage);
+                    $("#landing_page").select2();
+                    // $('#channel_id').html(response.content_channel);
+                    // $("#channel_id").select2();
+                });
+            })
+
+            $('#marketer_id').change(function (e) {
+                resetChannel();
+                var url = $('#marketer_id').attr('data-url');
+                var creator_id = $('select[name="marketer_id"]').val();
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: {
+                        creator_id: creator_id
+                    }
+                }).done(function (response) {
+                    $('#campaign_id').html(response.content_campaign);
+                    $("#campaign_id").select2();
+                    $('#subcampaign_id').html(response.content_subcampaign);
+                    $("#subcampaign_id").select2();
+                    $('#landing_page').html(response.content_landingpage);
+                    $("#landing_page").select2();
+                    // $('#channel_id').html(response.content_channel);
+                    // $("#channel_id").select2();
+                });
+            })
+
+            $('#campaign_id').change(function (e) {
+                resetChannel();
+                var url = $('#campaign_id').attr('data-url');
+                var campaign_id = $('select[name="campaign_id"]').val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: {
+                        campaign_id: campaign_id
+                    }
+                }).done(function (response) {
+                    $('#subcampaign_id').html(response.content_subcampaign);
+                    $("#subcampaign_id").select2();
+                    $('#landing_page').html(response.content_landingpage);
+                    $("#landing_page").select2();
+                    // $('#channel_id').html(response.content_channel);
+                    // $("#channel_id").select2();
+                });
+            })
+
+            $('#subcampaign_id').change(function (e) {
+                resetChannel();
+                var url = $('#subcampaign_id').attr('data-url');
+                var subcampaign_id = $('select[name="subcampaign_id"]').val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: {
+                        subcampaign_id: subcampaign_id
+                    }
+                }).done(function (response) {
+                    $('#landing_page').html(response.content_landingpage);
+                    $("#landing_page").select2();
+                    // $('#channel_id').html(response.content_channel);
+                    // $("#channel_id").select2();
+                });
+            })
 
             $('#search-form-channel-report').submit(function (e) {
                 e.preventDefault();
