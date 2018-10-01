@@ -782,7 +782,6 @@ class ContactController extends Controller
 	                $contact->source_name = "Unknown";
 	                $contact->team_name = "Unknown";
 	                $contact->marketer_name = "Unknown";
-	                $contact->channel_name = "Unknown";
 	                $contact->campaign_name = "Unknown";
 	                $contact->subcampaign_name = "Unknown";
 	                $contact->ad_name = "Unknown";
@@ -828,7 +827,7 @@ class ContactController extends Controller
     private function format_phone($phone)
     {
         $phone = preg_replace('/[^0-9]/', "", $phone);
-        $phone = trim($phone, '0');
+        $phone = ltrim($phone, '0');
 
         return $phone;
     }

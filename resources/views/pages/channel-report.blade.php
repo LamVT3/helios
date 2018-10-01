@@ -50,7 +50,7 @@
                                                 </select> -->
                                             <i></i>
                                         </section>
-                                        <section class="col col-1">
+                                        <section class="col col-2">
                                             <label class="label">Team</label>
                                             <select name="team_id" class="select2" id="team_id" style="width: 280px"
                                                     tabindex="2"
@@ -98,7 +98,10 @@
                                             </select>
                                             <i></i>
                                         </section>
-                                        <section class="col col-1">
+
+                                    </div>
+                                    <div class="row">
+                                        <section class="col col-2">
                                             <label class="label">Mode</label>
                                             <select name="type" id="type" class="select2"
                                                     style="width: 280px"
@@ -108,13 +111,15 @@
                                             </select>
                                             <i></i>
                                         </section>
-                                    </div>
-                                    <div class="row">
-                                        <div id="reportrange" class="pull-left"
-                                             style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; margin: 10px 15px">
-                                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
-                                            <span class="registered_date"></span> <b class="caret"></b>
-                                        </div>
+                                        <section class="col col-4">
+                                            <label class="label">Time</label>
+                                            <div id="reportrange" class="pull-left"
+                                                 style="background: #fff; cursor: pointer; padding: 8px; border: 1px solid #ccc;">
+                                                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp
+                                                <span class="registered_date"></span> <b class="caret"></b>
+                                            </div>
+                                            <i></i>
+                                        </section>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12 text-right">
@@ -444,12 +449,11 @@
                             show: true,
                             radius: 1,
                             formatter: function(label, series){
-                                return "<div style='font-size:13px;padding:3px;color:#333;font-weight: 600'>"
+                                return "<div style='font-size:12px;color:#333;font-weight: 600'>"
                                     + Math.round(series.percent) + "%</div>";
                             },
                             background: {
-                                opacity: 1,
-                                color: '#fff'
+                                opacity: 0.8
                             }
                         }
                     }
@@ -458,7 +462,7 @@
                     show : true,
                     noColumns : 1,
                     labelBoxBorderColor : "#000",
-                    margin : [300, 20],
+                    margin : [20, 20],
                     backgroundColor : "#efefef",
                     backgroundOpacity : 1,
                     labelFormatter: function (label, series) {

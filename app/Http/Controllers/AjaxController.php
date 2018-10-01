@@ -439,6 +439,9 @@ class AjaxController extends Controller
 
         $dashboard['spent']         = number_format($dashboard['spent'], 2);
         $dashboard['spent_left']    = number_format($dashboard['spent_left'], 2);
+        $dashboard['kpi_cost']      = number_format($dashboard['kpi_cost'], 2);
+        $dashboard['kpi']           = number_format($dashboard['kpi']);
+        $dashboard['c3']            = number_format($dashboard['c3']);
 
         /* end Dashboard */
 
@@ -1302,7 +1305,9 @@ class AjaxController extends Controller
 
     private function get_kpi_dashboard($start, $end){
         $request    = request();
-        $rs        = array();
+        $rs         = array();
+
+        $day_between = $this->get_array_day($start, $end);
 
         $start      = explode('-', $start);
         $startDay   = $start[2];
@@ -1315,71 +1320,61 @@ class AjaxController extends Controller
         $endYear    = $end[0];
 
         if($request->marketer_id){
-//            $user   = User::find('5b0397fde20e1a3eeb7d6eb4');
-            $user   = User::find($request->marketer_id);
+            $users   = User::where('role', 'Marketer')
+                ->where('_id', $request->marketer_id)
+                ->where('is_active', 1)
+                ->get();
+        }else{
+            $users = User::where('role', 'Marketer')
+                ->where('is_active', 1)
+                ->get();
+        }
+
+        foreach ($users as $user){
+
             $kpi            = @$user->kpi;
             $kpi_cost       = @$user->kpi_cost;
             $kpi_l3_c3bg    = @$user->kpi_l3_c3bg;
 
-            if($start == $end){
-                @$rs['kpi']          = @$kpi[$startYear][$startMonth][$startDay];
-                @$rs['kpi_cost']     = @$kpi_cost[$startYear][$startMonth][$startDay];
-                @$rs['kpi_l3_c3bg']  = @$kpi_l3_c3bg[$startYear][$startMonth][$startDay];
+            foreach ($day_between as $date){
+                $date   = explode('-', $date);
+                $day    = $date[2];
+                $month  = $date[1];
+                $year   = $date[0];
 
-                return $rs;
-            }else{
-                @$rs['kpi']          = 0;
-                @$rs['kpi_cost']     = 0;
-                @$rs['kpi_l3_c3bg']  = 0;
+                @$rs['kpi']          += @$kpi[$year][$month][$day];
+                @$rs['kpi_cost']     += @$kpi_cost[$year][$month][$day];
+                @$rs['kpi_l3_c3bg']  += @$kpi_l3_c3bg[$year][$month][$day];
             }
-
-
-
-
-
-
-
-        }else{
-            $users   = User::all();
-            if($start == $end){
-                foreach ($users as $user){
-                    $kpi            = @$user->kpi;
-                    $kpi_cost       = @$user->kpi_cost;
-                    $kpi_l3_c3bg    = @$user->kpi_l3_c3bg;
-
-                    @$rs['kpi']          += @$kpi[$startYear][$startMonth][$startDay];
-                    @$rs['kpi_cost']     += @$kpi_cost[$startYear][$startMonth][$startDay];
-                    @$rs['kpi_l3_c3bg']  += @$kpi_l3_c3bg[$startYear][$startMonth][$startDay];
-                }
-                return $rs;
-            }else{
-                @$rs['kpi']          = 0;
-                @$rs['kpi_cost']     = 0;
-                @$rs['kpi_l3_c3bg']  = 0;
-            }
-
-
-
-
-
-
         }
 
+        if(count($users) > 1){
+            $cnt = count($users);
+            @$rs['kpi_cost']     = round(@$rs['kpi_cost'] / $cnt, 2);
+            @$rs['kpi_l3_c3bg']  = round(@$rs['kpi_l3_c3bg'] / $cnt, 2);
+        }
 
-        @$rs['kpi']          = 0;
-        @$rs['kpi_cost']     = 0;
-        @$rs['kpi_l3_c3bg']  = 0;
-
-
-
-
-
-
-
-
-
+        if(count($day_between) > 1){
+            $cnt = count($day_between);
+            @$rs['kpi_cost']     = round(@$rs['kpi_cost'] / $cnt, 2);
+            @$rs['kpi_l3_c3bg']  = round(@$rs['kpi_l3_c3bg'] / $cnt, 2);
+        }
 
         return $rs;
+    }
+
+    private function get_array_day($start, $end){
+        $date_from  = strtotime($start);
+        $date_to    = strtotime($end);
+        $rs = [];
+
+        for ($i=$date_from; $i<=$date_to; $i+=86400) {
+            $rs[] = date("Y-m-d", $i);
+        }
+
+        return $rs;
+
+
     }
 
 

@@ -182,12 +182,11 @@
                             show: true,
                             radius: 1,
                             formatter: function(label, series){
-                                return "<div style='font-size:13px;padding:3px;color:#333;font-weight: 600'>"
+                                return "<div style='font-size:12px;color:#333;font-weight: 600'>"
                                     + Math.round(series.percent) + "%</div>";
                             },
                             background: {
-                                opacity: 1,
-                                color: '#fff'
+                                opacity: 0.8
                             }
                         }
                     }
@@ -196,7 +195,7 @@
                     show : true,
                     noColumns : 1,
                     labelBoxBorderColor : "#000",
-                    margin : [300, 20],
+                    margin : [20, 20],
                     backgroundColor : "#efefef",
                     backgroundOpacity : 1,
                     labelFormatter: function (label, series) {
