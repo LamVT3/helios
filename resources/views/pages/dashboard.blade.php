@@ -740,7 +740,7 @@
                     });
 
                     $('#channel').html(select_channel);
-                    $("#subcampaign_id").select2();
+                    $("#channel").select2();
                 });
             })
 
