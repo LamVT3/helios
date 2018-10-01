@@ -778,6 +778,9 @@
 
             dashboard(startDate, endDate, unit);
 
+            $c3ac3b_month = $('input[name="C3AC3B_month"]').val();
+            $('h2#C3A-C3B').html('C3A-C3B Report in ' + __arr_month[$c3ac3b_month - 1]);
+
         }
 
         function formatDate(str) {

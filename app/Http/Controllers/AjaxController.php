@@ -401,7 +401,7 @@ class AjaxController extends Controller
         if($request->channel_id){
             $ads    = array();
             $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
-            $query_dashboard->whereIn('creator_id', $ads);
+            $query_dashboard->whereIn('ad_id', $ads);
         }
 
         $c3b        = $query_dashboard->sum('c3b');
