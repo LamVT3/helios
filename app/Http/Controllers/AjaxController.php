@@ -441,6 +441,7 @@ class AjaxController extends Controller
         $dashboard['spent_left']    = number_format($dashboard['spent_left'], 2);
         $dashboard['kpi_cost']      = number_format($dashboard['kpi_cost'], 2);
         $dashboard['kpi']           = number_format($dashboard['kpi']);
+        $dashboard['c3']            = number_format($dashboard['c3']);
 
         /* end Dashboard */
 
