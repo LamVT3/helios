@@ -736,7 +736,7 @@
                 }).done(function (response) {
                     var select_channel = "<option value='' selected>All</option>";
                     $.each(response, function (index, item) {
-                        select_channel += "<option value=" + item.id + "> " + item.name + " </option>";
+                        select_channel += "<option value=" + item._id + "> " + item.name + " </option>";
                     });
 
                     $('#channel').html(select_channel);
