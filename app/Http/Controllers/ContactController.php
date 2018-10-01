@@ -782,7 +782,6 @@ class ContactController extends Controller
 	                $contact->source_name = "Unknown";
 	                $contact->team_name = "Unknown";
 	                $contact->marketer_name = "Unknown";
-	                $contact->channel_name = "Unknown";
 	                $contact->campaign_name = "Unknown";
 	                $contact->subcampaign_name = "Unknown";
 	                $contact->ad_name = "Unknown";
