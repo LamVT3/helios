@@ -486,10 +486,6 @@
     <script src="{{ asset('js/fixedTable/tableHeadFixer.js') }}"></script>
 
     <style>
-        .select2-container
-        {
-            width: auto; !important;
-        }
         input#currency
         {
             margin-right: 5px;
