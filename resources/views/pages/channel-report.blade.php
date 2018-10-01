@@ -296,7 +296,7 @@
                         campaign_id     : campaign_id,
                         subcampaign_id  : subcampaign_id,
                         registered_date : registered_date,
-                        channel_id      : channel_id,
+                        channel_name    : channel_id,
                         type : type,
                     }
                 }).done(function (response) {
