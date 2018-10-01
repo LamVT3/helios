@@ -628,6 +628,16 @@
             color: white;
         }*/
 
+        .line-height-md{
+            font-size: 130%!important;
+            line-height: 2.82em!important;
+        }
+
+        .line-height-sm{
+            font-size: 95%!important;
+            line-height: 3.82em!important;
+        }
+
     </style>
 
     <script type="text/javascript">
@@ -829,6 +839,23 @@
                 $('.widget-me-re .widget-actual').html(dashboard.me_re);
                 $('.widget-l1-c3bg .widget-actual').html(dashboard.l1_c3bg);
                 $('.widget-l8-l1 .widget-actual').html(dashboard.l8_l1);
+
+                $('.panel-body').each(function( index ) {
+                    var kpi = $(this).find('.widget-kpi').text();
+                    var actual = $(this).find('.widget-actual').text();
+
+                    if((kpi.length + actual.length) > 12
+                        && (kpi.length + actual.length) < 24){
+                        $(this).find('.widget-kpi').removeClass('font-xl').removeClass('line-height-md').removeClass('line-height-sm').addClass('line-height-md');
+                        $(this).find('.widget-actual').removeClass('font-xl').removeClass('line-height-md').removeClass('line-height-sm').addClass('line-height-md');
+                    }else if (kpi.length + actual.length > 24){
+                        $(this).find('.widget-kpi').removeClass('font-xl').removeClass('line-height-md').removeClass('line-height-sm').addClass('line-height-sm');
+                        $(this).find('.widget-actual').removeClass('font-xl').removeClass('line-height-md').removeClass('line-height-sm').addClass('line-height-sm');
+                    }else{
+                        $(this).find('.widget-kpi').removeClass('font-xl').removeClass('line-height-md').removeClass('line-height-sm').addClass('font-xl');
+                        $(this).find('.widget-actual').removeClass('font-xl').removeClass('line-height-md').removeClass('line-height-sm').addClass('font-xl');
+                    }
+                });
 
             }).fail(
                 function (err) {

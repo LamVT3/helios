@@ -828,7 +828,7 @@ class ContactController extends Controller
     private function format_phone($phone)
     {
         $phone = preg_replace('/[^0-9]/', "", $phone);
-        $phone = trim($phone, '0');
+        $phone = ltrim($phone, '0');
 
         return $phone;
     }
