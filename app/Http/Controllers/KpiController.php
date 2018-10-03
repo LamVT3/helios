@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Ad;
+use App\UserKpi;
 use App\Team;
 use App\User;
 use App\AdResult;
 use App\Channel;
+use function Faker\Provider\pt_BR\check_digit;
 use Illuminate\Http\Request;
 
 class KpiController extends Controller
@@ -39,9 +42,7 @@ class KpiController extends Controller
         $active         = 'assign_kpi';
         $breadcrumbs    = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> KPI Report </span>";
 
-        $users  = User::where('role', 'Marketer')
-            ->where('is_active', 1)
-            ->get();
+        $users  = User::getMarketerActive();
         $teams  = Team::all();
         $days   = $this->get_days_in_month();
         $month  = date('M');
@@ -49,8 +50,8 @@ class KpiController extends Controller
         $result = $this->get_data();
 
         $kpi_selection  = "c3b";
-        $data_maketer   = $this->get_data_by_maketer($result);
-        $data_team      = $this->get_data_by_team($result, $days);
+        $data_maketer   = $this->get_data_by_maketer($result); // get data to show in table follow marketer
+        $data_team      = $this->get_data_by_team($result, $days); // get data to show in table follow team
 
         return view('pages.assign_kpi', compact(
             'page_title',
@@ -79,41 +80,58 @@ class KpiController extends Controller
 
     public function save_kpi(){
 
-        $request    = request();
-        $user       = $request->user_id;
-        $month      = $request->month;
-        $year       = $request->year;
-        $user       = User::find($user);
+        $request   = request();
+        $userId    = $request->user_id;
+        $channelId = $request->channel_id;
+        $month     = $request->month;
+        $year      = $request->year;
+        $userKpi   = UserKpi::firstOrNew(['user_id' => $userId, 'channel_id'=> $channelId]); // find first or create new row
 
-        $kpi        = $user->kpi;
+        $kpi = $userKpi->kpi;
         $kpi[$year][$month] = $request->kpi;
-        ksort( $kpi[$year]);
-        $user->kpi  = $kpi;
+        ksort($kpi[$year]);
+        $userKpi->kpi = $kpi;
 
-        $kpi_cost   = $user->kpi_cost;
+        $kpi_cost = $userKpi->kpi_cost;
         $kpi_cost[$year][$month] = $request->kpi_cost;
-        ksort( $kpi_cost[$year]);
-        $user->kpi_cost  = $kpi_cost;
+        ksort($kpi_cost[$year]);
+        $userKpi->kpi_cost = $kpi_cost;
 
-        $kpi_l3_c3bg = $user->kpi_l3_c3bg;
+        $kpi_l3_c3bg = $userKpi->kpi_l3_c3bg ;
         $kpi_l3_c3bg[$year][$month] = $request->kpi_l3_c3bg;
-        ksort( $kpi_l3_c3bg[$year]);
-        $user->kpi_l3_c3bg  = $kpi_l3_c3bg;
+        ksort($kpi_l3_c3bg[$year]);
+        $userKpi->kpi_l3_c3bg = $kpi_l3_c3bg;
 
-        $user->save();
+        $userKpi->save();
     }
 
     public function get_kpi(){
 
         $request    = request();
-        $user       = $request->user_id;
+        $userId     = $request->user_id;
+        $channelId  = $request->channel_id;
         $month      = $request->month;
         $year       = $request->year;
-        $user       = User::where('_id', $user)->firstOrFail();
 
-        $kpi        = isset($user->kpi[$year][$month]) ? $user->kpi[$year][$month] : array();
-        $kpi_cost   = isset($user->kpi_cost[$year][$month]) ? $user->kpi_cost[$year][$month] : array();
-        $kpi_l3_c3bg = isset($user->kpi_l3_c3bg[$year][$month]) ? $user->kpi_l3_c3bg[$year][$month] : array();
+        if($channelId == null) {
+            $channels = $this->get_channel_user($userId); // get channels was own user
+            $channelId = sizeof($channels) > 0 ? $channels[0]->_id : 0;
+        }
+
+        $userKpi = UserKpi::getKpiTwoParam($userId, $channelId); // get kpi follow user and channel
+
+        $kpi = $kpi_cost = $kpi_l3_c3bg = array();
+        if($userId) {
+            if(isset($userKpi->kpi[$year][$month])) {
+                $kpi = $userKpi->kpi[$year][$month];
+            }
+            if(isset($userKpi->kpi[$year][$month])) {
+                $kpi_cost = $userKpi->kpi_cost[$year][$month];
+            }
+            if(isset($userKpi->kpi[$year][$month])) {
+                $kpi_l3_c3bg = $userKpi->kpi_l3_c3bg[$year][$month];
+            }
+        }
 
         $data = array();
         $data['kpi'] = $kpi;
@@ -124,10 +142,26 @@ class KpiController extends Controller
 
     }
 
+    // get channels of user
+    public function get_channel_user($userId = null){
+
+        $request = request();
+        $userId  = $userId == null ? $request->user_id : $userId;
+
+        $ads = Ad::where('creator_id', $userId)->get();
+        $channel_ids = array();
+        foreach ($ads as $ad) {
+            if(isset($ad->channel_id)) {
+                array_push($channel_ids, $ad->channel_id);
+            }
+        }
+        $channels = Channel::whereIn('_id', $channel_ids)->get();
+        return $channels;
+    }
+
     public function get_data(){
 
         $request = request();
-        /*  phan date*/
         $month = date('m'); /* thang hien tai */
         $year = date('Y'); /* nam hien tai*/
 
@@ -135,58 +169,61 @@ class KpiController extends Controller
             $month = $request->month;
         }
 
-        $users = User::where('role', 'Marketer')
-            ->where('is_active', 1)
-            ->get();
+        // only get for marketers was activated
+        $users = User::getMarketerActive();
+
         $data = array();
-        foreach ($users as $user){
+        foreach ($users as $user) {
+            $userId = $user->id;
+            $data[$user->username]['user_id'] = $userId;
 
-            $data[$user->username]['user_id']   = $user->id;
-            switch ($request->kpi_selection) {
-                case "c3b_cost":
-                    $days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-                    $kpi_cost = isset($user->kpi_cost[$year][$month]) ? $user->kpi_cost[$year][$month] : array();
-                    $data[$user->username]['kpi']       = $kpi_cost;
-                    $data[$user->username]['total_kpi'] = round(array_sum($kpi_cost)/$days, 2);
+            $days = $this->get_days_in_month();
+            $data[$user->username]['kpi'] = array();
+            $data[$user->username]['actual'] = array();
+            $data[$user->username]['total_kpi'] = 0;
+            $data[$user->username]['total_actual'] = 0;
 
-                    $db_data = $this->get_db_data($user);
+            $channels = $this->get_channel_user($userId);
+            $db_data = $this->get_db_data($userId);
 
-                    $data[$user->username]['actual']       = isset($db_data['c3b_cost']) ? $db_data['c3b_cost'] : array();
-                    $actual = isset($data[$user->username]['actual']) ? $data[$user->username]['actual'] : array();
-                    $data[$user->username]['total_actual'] = round(array_sum($actual)/$days, 2);
-                    break;
-                case "l3_c3bg":
-                    $days = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-                    $kpi_l3_c3bg = isset($user->kpi_l3_c3bg[$year][$month]) ? $user->kpi_l3_c3bg[$year][$month] : array();
-                    $data[$user->username]['kpi']       = $kpi_l3_c3bg;
-                    $data[$user->username]['total_kpi'] = round(array_sum($kpi_l3_c3bg)/$days, 2);
+            foreach ($channels as $channel) {
+                $userKpi = UserKpi::getKpiTwoParam($userId, $channel->_id);
 
-                    $db_data = $this->get_db_data($user);
+                $kpi = isset($userKpi->kpi[$year][$month]) ? $userKpi->kpi[$year][$month] : array();
+                $data[$user->username]['channels'][$channel->name]['kpi'] = $kpi;
+                $data[$user->username]['channels'][$channel->name]['total_kpi'] = array_sum($kpi);
 
-                    $data[$user->username]['actual']       = isset($db_data['l3_c3bg']) ? $db_data['l3_c3bg'] : array() ;
-                    $actual = isset($data[$user->username]['actual']) ? $data[$user->username]['actual'] : array();
-                    $data[$user->username]['total_actual'] = round(array_sum($actual)/$days, 2);
-                    break;
-                case "c3b":
-                default:
-                    $kpi = isset($user->kpi[$year][$month]) ? $user->kpi[$year][$month] : array();
-                    $data[$user->username]['kpi']       = $kpi;
-                    $data[$user->username]['total_kpi'] = array_sum($kpi);
+                $actual = isset($db_data[$channel->name]['c3b']) ? $db_data[$channel->name]['c3b'] : array();
+                $data[$user->username]['channels'][$channel->name]['actual'] = $actual;
+                $data[$user->username]['channels'][$channel->name]['total_actual'] = array_sum($actual);
 
-                    $data[$user->username]['actual']       = $this->get_c3b_data($user);
-                    $actual = isset($data[$user->username]['actual']) ? $data[$user->username]['actual'] : array();
-                    $data[$user->username]['total_actual'] = array_sum($actual);
-                    break;
+                for($i = 1; $i <= $days; $i++) {
+                    if(isset($data[$user->username]['kpi'][$i])) {
+                        if(isset($kpi[$i])) {
+                            $data[$user->username]['kpi'][$i] = $data[$user->username]['kpi'][$i] + $kpi[$i];
+                        }
+                    } else if(isset($kpi[$i])) {
+                            $data[$user->username]['kpi'][$i] = $kpi[$i];
+                        }
+
+                    if(isset($data[$user->username]['actual'][$i])) {
+                        if(isset($actual[$i])) {
+                            $data[$user->username]['actual'][$i] = $data[$user->username]['actual'][$i] + $actual[$i];
+                        }
+                    } else if(isset($actual[$i])) {
+                        $data[$user->username]['actual'][$i] = $actual[$i];
+                    }
+                }
+                $data[$user->username]['total_kpi'] += array_sum($kpi);
+                $data[$user->username]['total_actual'] += array_sum($actual);
             }
-
-            $team_name = $this->get_team($user->id);
-            $data[$user->username]['team']   = $team_name;
+            $team_name = $this->get_team($userId);
+            $data[$user->username]['team'] = $team_name;
         }
         return $data;
-
     }
 
-    function get_days_in_month($month = null){
+    function get_days_in_month(){
         $request = request();
         $year = date('Y');
         $month = date('m');
@@ -199,86 +236,58 @@ class KpiController extends Controller
 
     }
 
-    function get_c3b_data($user){
-        /*  phan date*/
+    function get_db_data($userId){
         $month = date('m'); /* thang hien tai */
-        $year = date('Y'); /* nam hien tai*/
         $request = request();
         if($request->month){
             $month = $request->month;
         }
 
-        $d = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-        $first_day_this_month = date('Y-'.$month.'-01'); /* ngày đàu tiên của tháng */
-        $last_day_this_month = date('Y-'.$month.'-t'); /* ngày cuối cùng của tháng */
-        /* end date */
-        $query = AdResult::raw(function($collection) use ($first_day_this_month,$last_day_this_month,$user) {
-            return $collection->aggregate([
-                ['$match' => [
-                    'date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month],
-                    'creator_id'  => $user->_id
-                ]],
-                [
-                    '$group' => [
-                        '_id' => '$date',
-                        'c3b' => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
-                    ]
-                ]
-            ]);
-        });
+        $first_day_this_month = date('Y-'.'09'.'-01'); /* ngày đàu tiên của tháng */
+        $last_day_this_month = date('Y-'.'09'.'-t'); /* ngày cuối cùng của tháng */
+
+        $channels = $this->get_channel_user($userId);
+
         $data = array();
-        foreach ($query as $item){
-            $day = explode("-",@$item['_id']);
-            $key = intval($day[2]);
-            $data[$key] = @$item['c3b'];
+        foreach ($channels as $channel) {
+            $ads = $this->get_ad_ids_channel($channel->_id);
+            $adResults = AdResult::where('creator_id', $userId)
+                ->whereIn('ad_id', $ads)
+                ->whereBetween('date', [$first_day_this_month, $last_day_this_month])
+                ->get();
+
+            foreach ($adResults as $adResult){
+                $day = explode("-", $adResult->date);
+                $key = intval($day[2]);
+                $spent = $adResult->spent;
+                $c3b = $adResult->c3b + $adResult->c3bg;
+                $c3bg = $adResult->c3bg;
+                $l3 = $adResult->l3;
+
+                $data[$channel->name]['c3b'][$key] =
+                    isset($data[$channel->name]['c3b'][$key]) ? ($data[$channel->name]['c3b'][$key] + $c3b) : $c3b;
+                $c3b_cost = $c3b != 0 ? round($spent/$c3b,2) : 0;
+                $data[$channel->name]['c3b_cost'][$key] =
+                    isset($data[$channel->name]['c3b_cost'][$key]) ? ($data[$channel->name]['c3b_cost'][$key] + $c3b_cost) : $c3b_cost;
+                $l3_c3bg = $c3bg != 0 ? round($l3/$c3bg,2) : 0;
+                $data[$channel->name]['l3_c3bg'][$key] =
+                    isset($data[$channel->name]['l3_c3bg'][$key]) ? ($data[$channel->name]['l3_c3bg'][$key] + $l3_c3bg) : $l3_c3bg;
+            }
         }
 
         return $data;
     }
 
-    function get_db_data($user){
-        /*  phan date*/
-        $month = date('m'); /* thang hien tai */
-        $year = date('Y'); /* nam hien tai*/
-        $request = request();
-        if($request->month){
-            $month = $request->month;
+    public function get_ad_ids_channel($channel_id) {
+        $ads = Ad::where('channel_id', $channel_id)
+            ->get();
+
+        $ad_ids = array();
+        foreach ($ads as $ad) {
+            array_push($ad_ids, $ad->_id);
         }
 
-        $d = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
-        $first_day_this_month = date('Y-'.$month.'-01'); /* ngày đàu tiên của tháng */
-        $last_day_this_month = date('Y-'.$month.'-t'); /* ngày cuối cùng của tháng */
-        /* end date */
-        $query = AdResult::raw(function($collection) use ($first_day_this_month,$last_day_this_month,$user) {
-            return $collection->aggregate([
-                ['$match' => [
-                    'date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month],
-                    'creator_id'  => $user->_id
-                ]],
-                [
-                    '$group' => [
-                        '_id' => '$date',
-                        'c3b' => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
-                        'c3bg' => ['$sum' => '$c3bg'],
-                        'spent' => ['$sum' => '$spent'],
-                        'l3' => ['$sum' => '$l3'],
-                    ]
-                ]
-            ]);
-        });
-        $data = array();
-        foreach ($query as $item){
-            $day = explode("-",@$item['_id']);
-            $key = intval($day[2]);
-            $spent = @$item['spent'];
-            $c3b = @$item['c3b'];
-            $c3bg = @$item['c3bg'];
-            $l3 = @$item['l3'];
-            $data['c3b_cost'][$key] = $c3b != 0 ? round($spent/$c3b,2) : 0;
-            $data['l3_c3bg'][$key] = $c3bg != 0 ? round($l3/$c3bg,2) : 0;
-        }
-
-        return $data;
+        return $ad_ids;
     }
 
     public function kpi_by_maketer(){

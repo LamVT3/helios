@@ -112,6 +112,7 @@
     </div>
     <!-- END MAIN PANEL -->
     <input type="hidden" id="get_kpi_url" value="{{route('get-kpi')}}">
+    <input type="hidden" id="get_channel_user_url" value="{{route('get-channel-user')}}">
     <input type="hidden" id="kpi_by_team_url" value="{{route('kpi-by-team')}}">
     <input type="hidden" id="kpi_by_maketer_url" value="{{route('kpi-by-maketer')}}">
     <input type="hidden" id="selected_month" value="">
@@ -200,6 +201,7 @@
             data.month       = month;
             data.year        = year;
             data.user_id     = $('select#username').val();
+            data.channel_id  = $('select#channel_name').val();
             $.get(url, data, function (data) {
                 month = moment().month() + 1;
                 if(month < 10){
@@ -215,29 +217,42 @@
 
         $('select#month').change(function(e){
             e.preventDefault();
-            var year   = $('select#year').val();
+            var year    = $('select#year').val();
             var month   = $('select#month').val();
             var user    = $('select#username').val();
+            var channel = $('select#channel_name').val();
 
-            initFormKPI(user, month, year);
+            initFormKPI(user, channel, month, year);
         });
 
         $('select#year').change(function(e){
             e.preventDefault();
-            var year   = $('select#year').val();
+            var year    = $('select#year').val();
             var month   = $('select#month').val();
             var user    = $('select#username').val();
+            var channel = $('select#channel_name').val();
 
-            initFormKPI(user, month, year);
+            initFormKPI(user, channel, month, year);
         });
 
         $('select#username').change(function(e){
             e.preventDefault();
-            var year   = $('select#year').val();
+            var year    = $('select#year').val();
             var month   = $('select#month').val();
             var user    = $('select#username').val();
 
-            initFormKPI(user, month, year);
+            initFormKPI(user, null, month, year);
+            initChannelOfUser(user);
+        });
+
+        $('select#channel_name').change(function(e){
+            e.preventDefault();
+            var year    = $('select#year').val();
+            var month   = $('select#month').val();
+            var user    = $('select#username').val();
+            var channel = $('select#channel_name').val();
+
+            initFormKPI(user, channel, month, year);
         });
 
         $('select#kpi_selection, select#kpi_selection_team').change(function(e){
@@ -253,7 +268,8 @@
             var month   = $('#selected_month').val();
             var year    = $('#selected_year').val();
 
-            initFormKPI(user, month, year);
+            initFormKPI(user, null, month, year);
+            initChannelOfUser(user);
         });
 
         $('li#month').click(function() {
@@ -310,6 +326,10 @@
             initDataKPIByteam(month);
         });
 
+        $("#table_kpi").treetable({
+            expandable: true
+        });
+
         /* END BASIC */
     });
 
@@ -323,28 +343,61 @@
         document.getElementById("year").innerHTML = options;
     }
 
-    function initFormKPI(user, month, year){
+    function initFormKPI(user, channel, month, year){
 
         $('select#year').val(year);
         $('select#month').val(month);
         $('select#username').val(user);
+        $('select#channel_name').val(channel);
 
-        initLstDays(user, month, year);
+        initLstDays(user, channel, month, year);
     }
 
-    function initLstDays(user ,month, year) {
+    function initChannelOfUser(userId) {
+        var url  = $('input#get_channel_user_url').val();
+
+        var d = {};
+        d.user_id = userId;
+        $.get(url, d, function (data) {
+            var channel_options = '';
+            var disable = true;
+            for (var i in data) {
+                var channel = data[i];
+                if ('name' in channel) {
+                    disable = false;
+                    channel_options += '<option value="'+channel['_id']+'">'+ channel['name'] +'</option>';
+                }
+            }
+
+            if (channel_options === '') {
+                channel_options = '<option>----------</option>';
+            }
+
+            $("select#channel_name").html(channel_options);
+
+            if (disable) {
+                $("div.lst_days input").attr('disabled', true);
+                $("button[name='assign']").attr('disabled', true);
+            } else {
+                $("div.lst_days input").attr('disabled', false);
+                $("button[name='assign']").attr('disabled', false);
+            }
+        });
+
+    }
+
+    function initLstDays(user, channel, month, year) {
         var days = new Date(year, month, 0).getDate();
         var url  = $('input#get_kpi_url').val();
         var month_name = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        // $('#assign_kpi').attr('disabled', 'disabled');
-        // $('#assign_close_kpi').attr('disabled', 'disabled');
 
-        var data ={};
-        data.month      = month;
-        data.year       = year;
-        data.user_id    = user;
+        var d = {};
+        d.month      = month;
+        d.year       = year;
+        d.user_id    = user;
+        d.channel_id = channel;
 
-        $.get(url, data, function (data) {
+        $.get(url, d, function (data) {
             $("div.lst_days").html('');
             var i;
             var kpi_total = 0, kpi_cost_total = 0, kpi_l3_c3bg_total = 0;
@@ -355,7 +408,7 @@
             }
             kpi_cost_total = Math.round(kpi_cost_total * 100 / days) / 100;
             kpi_l3_c3bg_total = Math.round(kpi_l3_c3bg_total * 100 / days) / 100;
-            $("div.lst_days").append('<div class="row">' +
+            $("div.lst_days").append('<div class="row" style="display: none">' +
                 '   <section class="col col-3">' +
                 '       <label class="label" style="margin: 25px 0 0 8px;">Enter KPIs</label>'+
                 '   </section>'+
@@ -378,17 +431,19 @@
                 '   </section>' +
                 '</div>' +
                 '<div class="row" style="margin: 0 20px 15px 0; text-align: right;">' +
-                '   <button type="button" onclick="assignKpi()" style="padding: 6px 12px;" class="btn btn-primary">' +
+                '   <button type="button" name="assign" onclick="autoFill()" style="padding: 6px 12px;" class="btn btn-success">' +
+                '       Auto-Fill' +
+                '   </button>' +
+                '   <button type="button" name="assign" onclick="assignKpi()" style="padding: 6px 12px; margin-left: 5px;" class="btn btn-primary">' +
                 '       Assign' +
                 '   </button>' +
-                '   <button type="button" onclick="assignKpi()" style="padding: 6px 12px; margin-left: 5px;" class="btn btn-default" data-dismiss="modal">' +
+                '   <button type="button" name="assign" onclick="assignKpi()" style="padding: 6px 12px; margin-left: 5px;" class="btn btn-default" data-dismiss="modal">' +
                 '       Assign & Close' +
                 '   </button>' +
                 '   <button type="button" style="padding: 6px 12px; margin-left: 5px;" class="btn btn-default" data-dismiss="modal">' +
                 '       Cancel' +
                 '   </button>' +
-                '</div>' +
-                '<hr style="padding: 10px">');
+                '</div>');
             for (i = 1; i <= days; i++) {
                 var kpi_val = data['kpi'][i] ? data['kpi'][i] : 0;
                 var kpi_cost_val = data['kpi_cost'][i] ? data['kpi_cost'][i] : 0;
@@ -396,8 +451,8 @@
                 var day = i < 10 ? '0' + i : i;
                 var item =
                     '<div class="row">' +
-                    '   <section class="col col-3">' +
-                    '       <label class="label" style="margin: 8px;">'+ day + " " + month_name[month - 1] +'</label>'+
+                    '   <section class="col col-2">' +
+                    '       <label class="label" style="margin: 8px;">'+ day + (day === "01" ? "st" : day === "02" ? "nd" : day === "03" ? "rd" : "th") + '</label>'+
                     '   </section>'+
                     '   <section class="col col-2">' +
                     '       <input class="form-control" id="day" type="number" value="'+ kpi_val +'"' +
@@ -414,8 +469,6 @@
                     '</div>';
 
                 $("div.lst_days").append(item);
-                // $('#assign_kpi').attr('disabled', false);
-                // $('#assign_close_kpi').attr('disabled', false);
             }
         }).fail(
             function (err) {
@@ -425,6 +478,27 @@
 
     function assignKpi() {
         $('#assign_kpi').click();
+    }
+
+    function autoFill() {
+        var kpi = 0, kpi_cost = 0, kpi_l3_c3 = 0;
+        var serial = 1;
+        $('input#day').each(function () {
+        if (serial === 1) {
+            kpi = kpi === 0 ? $(this).val() : kpi;
+            $(this).val(kpi);
+            serial++;
+        } else if (serial === 2) {
+            kpi_cost = kpi_cost === 0 ? $(this).val() : kpi_cost;
+            $(this).val(kpi_cost);
+            serial++;
+        } else {
+            kpi_l3_c3 = kpi_l3_c3 === 0 ? $(this).val() : kpi_l3_c3;
+            $(this).val(kpi_l3_c3);
+            serial = 1;
+        }
+    });
+
     }
 
     function autoAssign() {

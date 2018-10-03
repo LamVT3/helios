@@ -63,7 +63,7 @@
         @endfor
     </tr>
     @foreach($data_maketer as $user => $item)
-        <tr>
+        <tr data-tt-id="{{@$item['user_id']}}">
             <?php $gap = $kpi_selection == "c3b_cost" ? @$item['total_kpi'] - @$item['total_actual'] : @$item['total_actual'] - @$item['total_kpi'] ?>
 
             @if($gap < 0)
@@ -105,6 +105,41 @@
                 @endif
             @endfor
         </tr>
+        @if(isset($item['channels']))
+            @foreach($item['channels'] as $key => $value)
+                <?php $gap = $kpi_selection == "c3b_cost" ? $value['total_kpi'] - $value['total_actual'] : $value['total_actual'] - $value['total_kpi'] ?>
+                <tr data-tt-parent-id="{{@$item['user_id']}}" style="display: none">
+                    @if($gap < 0)
+                        <td class="no-border-right gap_text" style="text-align: left"><span>{{$key}}</span></td>
+                        <td class="border-bold-right"></td>
+                        <td class="border-bold-right gap_text">{{ $value['total_kpi'] }}</td>
+                        <td class="border-bold-right gap_text">{{ $value['total_actual'] }}</td>
+                        <td class="border-bold-right gap_text">{{$gap}}</td>
+                    @else
+                        <td class="no-border-right" style="text-align: left"><span>{{$key}}</span></td>
+                        <td class="border-bold-right"></td>
+                        <td class="border-bold-right">{{ $value['total_kpi'] }}</td>
+                        <td class="border-bold-right">{{ $value['total_actual'] }}</td>
+                        <td class="border-bold-right">{{$gap}}</td>
+                    @endif
+
+                    @for ($i = 1; $i <= $days; $i++)
+                        <?php
+                            $value['kpi'][$i] = isset($value['kpi'][$i]) ? $value['kpi'][$i] : 0;
+                            $value['actual'][$i] = isset($value['actual'][$i]) ? $value['actual'][$i] : 0;
+                            $gap_day = $kpi_selection == "c3b_cost" ? $value['kpi'][$i] - $value['actual'][$i] : $value['actual'][$i] - $value['kpi'][$i];
+                        ?>
+                        @if($gap_day < 0)
+                            <td class="gap_text">{{ $value['kpi'][$i] }}</td>
+                            <td class="border-bold-right gap_text">{{ $value['actual'][$i] }}<span>({{$gap_day}})</span></td>
+                        @else
+                            <td>{{ $value['kpi'][$i] }}</td>
+                            <td class="border-bold-right">{{ $value['actual'][$i] }}</td>
+                        @endif
+                    @endfor
+                </tr>
+            @endforeach
+        @endif
     @endforeach
     </tbody>
 </table>
