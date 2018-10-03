@@ -418,6 +418,19 @@ class SubReportController extends Controller
 		// get start date and end date
 		list($year, $month, $d, $first_day_this_month, $last_day_this_month) = $this->getDate($quality_month);
 
+        $source_id = request()->source_id;
+        $marketer_id = request()->marketer_id;
+        $team_id = request()->team_id;
+        $campaign_id = request()->campaign_id;
+        $subcampaign_id = request()->subcampaign_id;
+        $channel_name = request()->channel_name;
+        $channel_id = request()->channel_id;
+
+        $isEmpy = false;
+        if($channel_name != "" || $source_id != "" || $marketer_id != "" ||$team_id != "" ||$campaign_id != "" ||$subcampaign_id != "" || $channel_id!= ""){
+            $isEmpy =true;
+        }
+
 		// get Ad id
 		$ad_id  = $this->getAds();
 
@@ -431,7 +444,7 @@ class SubReportController extends Controller
 		$array_reason = [ 'C3A_Duplicated', 'C3B_Under18', 'C3B_Duplicated15Days', 'C3A_Test' ];
 		$rs = [];
 
-		if(count($ad_id) > 0){
+        if(count($ad_id) >= 0 && $isEmpy){
 			$match = [
 				['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
 				['$match' => ['ad_id' => ['$in' => $ad_id]]],
@@ -2566,12 +2579,26 @@ class SubReportController extends Controller
     }
 
 	private function getC3AC3BByWeeks($start_date, $end_date, $w){
+        $source_id = request()->source_id;
+        $marketer_id = request()->marketer_id;
+        $team_id = request()->team_id;
+        $campaign_id = request()->campaign_id;
+        $subcampaign_id = request()->subcampaign_id;
+        $channel_name = request()->channel_name;
+        $channel_id = request()->channel_id;
+
+        $isEmpy = false;
+        if($channel_name != "" || $source_id != "" || $marketer_id != "" ||$team_id != "" ||$campaign_id != "" ||$subcampaign_id != "" || $channel_id!= ""){
+            $isEmpy =true;
+        }
+
+
 		$ad_id  = $this->getAds();
 
 		$array_reason = [ 'C3A_Duplicated', 'C3B_Under18', 'C3B_Duplicated15Days', 'C3A_Test' ];
 		$rs = [];
 
-		if(count($ad_id) > 0){
+        if(count($ad_id) >= 0 && $isEmpy){
 			$match = [
 				['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
 				['$match' => ['ad_id' => ['$in' => $ad_id]]],
@@ -2643,12 +2670,25 @@ class SubReportController extends Controller
 	}
 
 	private function getC3AC3BByMonths($start_date, $end_date){
+        $source_id = request()->source_id;
+        $marketer_id = request()->marketer_id;
+        $team_id = request()->team_id;
+        $campaign_id = request()->campaign_id;
+        $subcampaign_id = request()->subcampaign_id;
+        $channel_name = request()->channel_name;
+        $channel_id = request()->channel_id;
+
+        $isEmpy = false;
+        if($channel_name != "" || $source_id != "" || $marketer_id != "" ||$team_id != "" ||$campaign_id != "" ||$subcampaign_id != "" || $channel_id!= ""){
+            $isEmpy =true;
+        }
+
 		$ad_id  = $this->getAds();
 
 		$array_reason = [ 'C3A_Duplicated', 'C3B_Under18', 'C3B_Duplicated15Days', 'C3A_Test' ];
 		$rs = [];
 
-		if(count($ad_id) > 0){
+        if(count($ad_id) >= 0 && $isEmpy){
 			$match = [
 				['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
 				['$match' => ['ad_id' => ['$in' => $ad_id]]],
