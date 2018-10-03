@@ -1425,15 +1425,21 @@ class SubReportController extends Controller
 	private function getChannel($start_date, $end_date, $type = 'TOA'){
 		$array_channel = array();
 
+		$data_where = $this->getWhereDataByCreatorID();
+
 		if (request()->channel_name){
 			$channels_arr       = explode(',',request()->channel_name);
 			$channels           = Channel::whereIn('name', $channels_arr)->get();
 			$channels_id        = Channel::whereIn('name', $channels_arr)->get()->pluck('_id');
-			$arr_ad             = Ad::whereIn('channel_id', $channels_id)->get()->pluck('channel_id','_id');
+			$query              = Ad::where($data_where)->whereIn('channel_id', $channels_id);
+			$arr_ad             = $query->pluck('channel_id','_id');
+			$ad_id              = $query->pluck('_id')->toArray();
 		}
 		else {
-			$channels      = Channel::all();
-			$arr_ad        = Ad::pluck('channel_id','_id')->all();
+			$channels           = Channel::all();
+			$query              = Ad::where($data_where);
+			$arr_ad             = $query->pluck('channel_id','_id');
+			$ad_id              = $query->pluck('_id')->toArray();
 		}
 
 		foreach ($channels as $key => $channel) {
@@ -1468,8 +1474,6 @@ class SubReportController extends Controller
 		if($channel_name != "" || $source_id != "" || $marketer_id != "" ||$team_id != "" ||$campaign_id != "" ||$subcampaign_id != ""){
 			$isEmpy =true;
 		}
-		
-		$ad_id  = $this->getAds();
 
 		if ($type === 'TOA'){
 			if(count($ad_id) >= 0 && $isEmpy){
