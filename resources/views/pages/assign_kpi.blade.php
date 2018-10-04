@@ -157,7 +157,7 @@
 
     $(document).ready(function () {
 
-        $("#table_kpi").tableHeadFixer({"left" : 5, 'z-index': 0});
+        $("#table_kpi").tableHeadFixer({"left" : 6, 'z-index': 0});
         $("#table_kpi_by_team").tableHeadFixer({"left" : 5, 'z-index': 0});
 
         var month = moment().month() + 1;
@@ -600,7 +600,7 @@
             }
         }).done(function (response) {
             $('#wrapper_kpi').html(response);
-            $("#table_kpi").tableHeadFixer({"left" : 5, 'z-index': 0});
+            $("#table_kpi").tableHeadFixer({"left" : 6, 'z-index': 0});
             initDropdown(parseInt(month) - 1);
             $('button#dropdown').click();
         });

@@ -1,7 +1,7 @@
 <table id="table_kpi" class="table table-hover table-bordered">
     <thead>
     <tr>
-        <th colspan="5" class="border-bold-right"></th>
+        <th colspan="6" class="border-bold-right"></th>
 
         @for ($i = 1; $i <= $days; $i++)
             <th colspan="2" style="text-align: center" class="border-bold-right"> {{$i < 10 ? '0'.$i.$month : $i.$month}} </th>
