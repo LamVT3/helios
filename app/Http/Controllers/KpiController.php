@@ -169,6 +169,8 @@ class KpiController extends Controller
             $month = $request->month;
         }
 
+        $kpi_selection = isset($request->kpi_selection) ? $request->kpi_selection : "c3b";
+
         // only get for marketers was activated
         $users = User::getMarketerActive();
 
@@ -183,13 +185,14 @@ class KpiController extends Controller
             $data[$user->username]['total_kpi'] = 0;
             $data[$user->username]['total_actual'] = 0;
 
-            $channels = $this->get_channel_user($userId);
+//            $channels = $this->get_channel_user($userId);
             $db_data = $this->get_db_data($userId);
 
-            foreach ($channels as $channel) {
-                $userKpi = UserKpi::getKpiTwoParam($user->_id, $channel->_id);
+            $userKpis = UserKpi::getKpiOneParam($user->_id);
 
-                switch ($request->kpi_selection) {
+            foreach ($userKpis as $userKpi) {
+                $channel = Channel::find($userKpi->channel_id);
+                switch ($kpi_selection) {
                     case "c3b_cost":
                         $kpi = isset($userKpi->kpi_cost[$year][$month]) ? $userKpi->kpi_cost[$year][$month] : array();
                         break;
@@ -202,11 +205,11 @@ class KpiController extends Controller
                         break;
                 }
                 $data[$user->username]['channels'][$channel->name]['kpi'] = $kpi;
-                $actual = isset($db_data[$channel->name][$request->kpi_selection]) ?
-                    $db_data[$channel->name][$request->kpi_selection] : array();
+                $actual = isset($db_data[$channel->name][$kpi_selection]) ?
+                    $db_data[$channel->name][$kpi_selection] : array();
                 $data[$user->username]['channels'][$channel->name]['actual'] = $actual;
 
-                switch ($request->kpi_selection) {
+                switch ($kpi_selection) {
                     case "c3b_cost":
                     case "l3_c3bg":
                         $data[$user->username]['channels'][$channel->name]['total_kpi'] = round(array_sum($kpi)/$days, 2);
@@ -239,7 +242,7 @@ class KpiController extends Controller
                 $data[$user->username]['total_kpi'] += array_sum($kpi);
                 $data[$user->username]['total_actual'] += array_sum($actual);
             }
-            switch ($request->kpi_selection) {
+            switch ($kpi_selection) {
                 case "c3b_cost":
                 case "l3_c3bg":
                     $data[$user->username]['total_kpi'] = round($data[$user->username]['total_kpi']/$days, 2);
@@ -270,8 +273,9 @@ class KpiController extends Controller
     }
 
     function get_db_data($userId){
-        $month = date('m'); /* thang hien tai */
         $request = request();
+        $month = date('m'); /* thang hien tai */
+
         if($request->month){
             $month = $request->month;
         }
@@ -284,6 +288,7 @@ class KpiController extends Controller
         $data = array();
         foreach ($channels as $channel) {
             $ads = $this->get_ad_ids_channel($channel->_id);
+
             $adResults = AdResult::where('creator_id', $userId)
                 ->whereIn('ad_id', $ads)
                 ->whereBetween('date', [$first_day_this_month, $last_day_this_month])
@@ -307,7 +312,6 @@ class KpiController extends Controller
                     isset($data[$channel->name]['l3_c3bg'][$key]) ? ($data[$channel->name]['l3_c3bg'][$key] + $l3_c3bg) : $l3_c3bg;
             }
         }
-
         return $data;
     }
 

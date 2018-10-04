@@ -38,7 +38,7 @@
                                         <div class="row">
                                             <section class="col col-sm-6 col-lg-3">
                                                 <label class="label">Marketer</label>
-                                                <input type="text" value="" style="padding: 6px 8px;" name="maketer_name" placeholder="Select maketer">
+                                                <input type="text" value="" style="padding: 6px 8px;" name="maketer_name" placeholder="Select marketer">
                                             </section>
                                             <section class="col col-sm-6 col-lg-3">
                                                 <label class="label">KPI Selection</label>
@@ -428,36 +428,37 @@
         $.get(url, d, function (data) {
             $("div.lst_days").html('');
             var i;
-            var kpi_total = 0, kpi_cost_total = 0, kpi_l3_c3bg_total = 0;
-            for (i = 1; i <= days; i++) {
-                kpi_total += data['kpi'][i] ? parseInt(data['kpi'][i]) : 0;
-                kpi_cost_total += data['kpi_cost'][i] ? parseFloat(data['kpi_cost'][i]) : 0;
-                kpi_l3_c3bg_total += data['kpi_l3_c3bg'][i] ? parseFloat(data['kpi_l3_c3bg'][i]) : 0;
-            }
-            kpi_cost_total = Math.round(kpi_cost_total * 100 / days) / 100;
-            kpi_l3_c3bg_total = Math.round(kpi_l3_c3bg_total * 100 / days) / 100;
-            $("div.lst_days").append('<div class="row" style="display: none">' +
-                '   <section class="col col-3">' +
-                '       <label class="label" style="margin: 25px 0 0 8px;">Enter KPIs</label>'+
-                '   </section>'+
-                '   <section class="col col-2">C3B' +
-                '       <input class="form-control" id="total" type="number" value="'+kpi_total+'" placeholder="C3B KPI" ' +
-                '           max="" min="0" data-toggle="tooltip" title="Enter KPIs...">' +
-                '   </section>'+
-                '   <section class="col col-2">C3B Cost' +
-                '       <input class="form-control" id="total" type="number" value="'+kpi_cost_total+'" placeholder="C3B KPI" ' +
-                '           max="" min="0" step="0.01" data-toggle="tooltip" title="Enter KPIs...">' +
-                '   </section>'+
-                '   <section class="col col-2">L3/C3BG' +
-                '       <input class="form-control" id="total" type="number" value="'+kpi_l3_c3bg_total+'" placeholder="C3B KPI" ' +
-                '           max="" min="0" step="0.01" data-toggle="tooltip" title="Enter KPIs...">' +
-                '   </section>' +
-                '   <section class="col col-3">' +
-                '       <button id="auto_assign" type="button" onclick="autoAssign()" class="btn btn-success" ' +
-                '           style="margin: 18px 0 0 8px; padding: 7px">Auto-Assign' +
-                '       </button>' +
-                '   </section>' +
-                '</div>' +
+            // var kpi_total = 0, kpi_cost_total = 0, kpi_l3_c3bg_total = 0;
+            // for (i = 1; i <= days; i++) {
+            //     kpi_total += data['kpi'][i] ? parseInt(data['kpi'][i]) : 0;
+            //     kpi_cost_total += data['kpi_cost'][i] ? parseFloat(data['kpi_cost'][i]) : 0;
+            //     kpi_l3_c3bg_total += data['kpi_l3_c3bg'][i] ? parseFloat(data['kpi_l3_c3bg'][i]) : 0;
+            // }
+            // kpi_cost_total = Math.round(kpi_cost_total * 100 / days) / 100;
+            // kpi_l3_c3bg_total = Math.round(kpi_l3_c3bg_total * 100 / days) / 100;
+            $("div.lst_days").append(
+            // '<div class="row" style="display: none">' +
+            //     '   <section class="col col-3">' +
+            //     '       <label class="label" style="margin: 25px 0 0 8px;">Enter KPIs</label>'+
+            //     '   </section>'+
+            //     '   <section class="col col-2">C3B' +
+            //     '       <input class="form-control" id="total" type="number" value="'+kpi_total+'" placeholder="C3B KPI" ' +
+            //     '           max="" min="0" data-toggle="tooltip" title="Enter KPIs...">' +
+            //     '   </section>'+
+            //     '   <section class="col col-2">C3B Cost' +
+            //     '       <input class="form-control" id="total" type="number" value="'+kpi_cost_total+'" placeholder="C3B KPI" ' +
+            //     '           max="" min="0" step="0.01" data-toggle="tooltip" title="Enter KPIs...">' +
+            //     '   </section>'+
+            //     '   <section class="col col-2">L3/C3BG' +
+            //     '       <input class="form-control" id="total" type="number" value="'+kpi_l3_c3bg_total+'" placeholder="C3B KPI" ' +
+            //     '           max="" min="0" step="0.01" data-toggle="tooltip" title="Enter KPIs...">' +
+            //     '   </section>' +
+            //     '   <section class="col col-3">' +
+            //     '       <button id="auto_assign" type="button" onclick="autoAssign()" class="btn btn-success" ' +
+            //     '           style="margin: 18px 0 0 8px; padding: 7px">Auto-Assign' +
+            //     '       </button>' +
+            //     '   </section>' +
+            //     '</div>' +
                 '<div class="row" style="margin: 0 20px 15px 0; text-align: right;">' +
                 '   <button type="button" name="assign" onclick="autoFill()" style="padding: 6px 12px;" class="btn btn-success">' +
                 '       Auto-Fill' +
@@ -472,6 +473,19 @@
                 '       Cancel' +
                 '   </button>' +
                 '</div>');
+            $("div.lst_days").append(
+            '<div class="row">' +
+            '   <section class="col col-2"></section>'+
+            '   <section class="col col-2">' +
+            '       <label class="label">C3B</lable>' +
+            '   </section>'+
+            '   <section class="col col-2">' +
+            '       <label class="label">C3B Cost</lable>' +
+            '   </section>'+
+            '   <section class="col col-2">' +
+            '       <label class="label">L3/C3BG</lable>' +
+            '   </section>' +
+            '</div>');
             for (i = 1; i <= days; i++) {
                 var kpi_val = data['kpi'][i] ? data['kpi'][i] : 0;
                 var kpi_cost_val = data['kpi_cost'][i] ? data['kpi_cost'][i] : 0;
