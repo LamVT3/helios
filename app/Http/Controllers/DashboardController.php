@@ -48,7 +48,7 @@ class DashboardController extends Controller
         $user_role  = auth()->user()->role;
         $user_id    = auth()->user()->_id;
 
-        $users      = User::all();
+        $users      = $users = User::where('role', 'Marketer')->where('is_active', 1)->get();
         $kpi        = array();
 
         $array_month = array();
@@ -72,9 +72,10 @@ class DashboardController extends Controller
                         'c3' => [
                             '$sum' => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         ],
-                        'l8' => [
-                            '$sum' => '$l8'
-                        ]
+                        'C3A_Duplicated'       => [ '$sum' => '$C3A_Duplicated' ],
+                        'C3B_Under18'          => [ '$sum' => '$C3B_Under18' ],
+                        'C3B_Duplicated15Days' => [ '$sum' => '$C3B_Duplicated15Days' ],
+                        'C3A_Test'             => [ '$sum' => '$C3A_Test' ],
                     ]
                 ]
             ];
@@ -89,9 +90,10 @@ class DashboardController extends Controller
                         'c3' => [
                             '$sum' => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
                         ],
-                        'l8' => [
-                            '$sum' => '$l8'
-                        ]
+                        'C3A_Duplicated'       => [ '$sum' => '$C3A_Duplicated' ],
+                        'C3B_Under18'          => [ '$sum' => '$C3B_Under18' ],
+                        'C3B_Duplicated15Days' => [ '$sum' => '$C3B_Duplicated15Days' ],
+                        'C3A_Test'             => [ '$sum' => '$C3A_Test' ],
                     ]
                 ]
             ];
@@ -102,18 +104,34 @@ class DashboardController extends Controller
             return $collection->aggregate($match);
         });
 
-        $c3_array = array();
-        $l8_array = array();
+
+        $c3_array   = array();
+        $rs         = array();
+
+        foreach ( $array_month as $key => $timestamp ) {
+            $rs['c3'][$key] = 0;
+            $rs['C3A_Duplicated'][$key] = 0;
+            $rs['C3B_Under18'][$key] = 0;
+            $rs['C3B_Duplicated15Days'][$key] = 0;
+            $rs['C3A_Test'][$key] = 0;
+        }
 
         foreach ($query_chart as $item_result) {
             $day = explode('-', $item_result['_id']);
+
             $c3_array[(int)($day[2])] = $item_result['c3'];
-            $l8_array[(int)($day[2])] = $item_result['l8'];
+
+            $rs['c3'][ (int) ( $day[2] ) ]                   += $item_result['c3'];
+            $rs['C3A_Duplicated'][ (int) ( $day[2] ) ]       += $item_result['C3A_Duplicated'];
+            $rs['C3B_Under18'][ (int) ( $day[2] ) ]          += $item_result['C3B_Under18'];
+            $rs['C3B_Duplicated15Days'][ (int) ( $day[2] ) ] += $item_result['C3B_Duplicated15Days'];
+            $rs['C3A_Test'][ (int) ( $day[2] ) ]             += $item_result['C3A_Test'];
         }
 
         /*  lay du lieu c3*/
-        $chart_c3  = array();
-        $chart_kpi = array();
+        $chart_c3   = array();
+        $chart_kpi  = array();
+        $chart      = array();
         foreach ($array_month as $key => $timestamp) {
             if (isset($c3_array[$key])) {
                 $chart_c3[] = [$timestamp, $c3_array[$key]];
@@ -125,25 +143,39 @@ class DashboardController extends Controller
             } else {
                 $chart_kpi[] = [$timestamp, 0];
             }
+
+            $chart['C3A_Duplicated'][] = [
+                $timestamp,
+                isset( $rs['C3A_Duplicated'][ $key ] ) ? $rs['C3A_Duplicated'][ $key ] : 0,
+            ];
+
+            $chart['C3B_Under18'][] = [
+                $timestamp,
+                isset( $rs['C3B_Under18'][ $key ] ) ? $rs['C3B_Under18'][ $key ] : 0,
+            ];
+
+            $chart['C3B_Duplicated15Days'][] = [
+                $timestamp,
+                isset( $rs['C3B_Duplicated15Days'][ $key ] ) ? $rs['C3B_Duplicated15Days'][ $key ] : 0,
+            ];
+
+            $chart['C3A_Test'][] = [
+                $timestamp,
+                isset( $rs['C3A_Test'][ $key ] ) ? $rs['C3A_Test'][ $key ] : 0,
+            ];
         }
         $chart_c3   = json_encode($chart_c3);
         $chart_kpi  = json_encode($chart_kpi);
 
-        /* lay du lieu l8*/
-        $chart_l8 = array();
-        foreach ($array_month as $key => $timestamp) {
-            if (isset($l8_array[$key])) {
-                $chart_l8[] = [$timestamp, $l8_array[$key]];
-            } else {
-                $chart_l8[] = [$timestamp, 0];
-            }
-        }
-        $chart_l8 = json_encode($chart_l8);
-        /* end l8 */
+        $result['C3A_Duplicated']       = json_encode( $chart['C3A_Duplicated'] );
+        $result['C3B_Under18']          = json_encode( $chart['C3B_Under18'] );
+        $result['C3B_Duplicated15Days'] = json_encode( $chart['C3B_Duplicated15Days'] );
+        $result['C3A_Test']             = json_encode( $chart['C3A_Test'] );
+        $result['c3']                   = json_encode($rs['c3']);
 
         $dashboard['chart_c3']  = $chart_c3;
         $dashboard['chart_kpi'] = $chart_kpi;
-        $dashboard['chart_l8']  = $chart_l8;
+        $dashboard['c3a_c3b']   = $result;
 
         /* end Chart */
 
@@ -196,13 +228,17 @@ class DashboardController extends Controller
 
     public function get_channel($marketer_id = null){
         $request = request();
+
         if($request->marketer){
             $marketer_id = $request->marketer;
+            $ads        = Ad::where('creator_id', $marketer_id)->pluck('channel_id')->toArray();
+            $channel    = Channel::whereIn('_id', $ads)->get();
+        }else if($marketer_id){
+            $ads        = Ad::where('creator_id', $marketer_id)->pluck('channel_id')->toArray();
+            $channel    = Channel::whereIn('_id', $ads)->get();
+        }else{
+            $channel    = Channel::get();
         }
-
-        $ads        = Ad::where('creator_id', $marketer_id)->pluck('channel_id')->toArray();
-        $channel    = Channel::whereIn('_id', $ads)->get();
-
         return $channel;
     }
 }

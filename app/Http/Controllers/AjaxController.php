@@ -73,6 +73,8 @@ class AjaxController extends Controller
     public function getFilterSource()
     {
         $data_where = array();
+        $arr_landingpage    = array();
+        $arr_channel        = array();
         $request = request();
         $html_team          = "<option value='' selected>All</option>";
         $html_marketer      = "<option value='' selected>All</option>";
@@ -128,10 +130,10 @@ class AjaxController extends Controller
             $teams = Team::orderBy('name')->get();
             foreach ($teams as $team) {
                 $html_team .= "<option value=" . $team->id . "> " . $team->name . " </option>";
-                $marketers  = $team->members;
-                foreach ($marketers as $item) {
-                    $html_marketer .= "<option value='" . $item['user_id'] . "'> " . $item['username'] . " </option>";
-                }
+            }
+            $marketers  = User::where('is_active', 1)->orderBy('username')->get();
+            foreach ($marketers as $item) {
+                $html_marketer .= "<option value='" . $item['user_id'] . "'> " . $item['username'] . " </option>";
             }
             $campaigns = Campaign::orderBy('name')->get();
             foreach ($campaigns as $item) {
@@ -168,6 +170,8 @@ class AjaxController extends Controller
     public function getFilterTeam()
     {
         $data_where = array();
+        $arr_landingpage    = array();
+        $arr_channel        = array();
         $request = request();
 
         $html_campaign      = "<option value='' selected>All</option>";
@@ -235,6 +239,8 @@ class AjaxController extends Controller
     public function getFilterMaketer()
     {
         $request = request();
+        $arr_landingpage    = array();
+        $arr_channel        = array();
         $html_campaign      = "<option value='' selected>All</option>";
         $html_subcampaign   = "<option value='' selected>All</option>";
         $html_channel       = "<option value='' selected>All</option>";
@@ -262,7 +268,6 @@ class AjaxController extends Controller
             $landing_page   = LandingPage::orderBy('name')->get();
             $channel        = Channel::where('is_active', 1)->orderBy('name')->get();
         }
-
         foreach ($campaigns as $item) {
             $html_campaign      .= "<option value=" . $item->id . "> " . $item->name . " </option>";
         }
@@ -290,6 +295,8 @@ class AjaxController extends Controller
     public function getFilterCampaign()
     {
         $request = request();
+        $arr_landingpage    = array();
+        $arr_channel        = array();
 
         $html_subcampaign   = "<option value='' selected>All</option>";
         $html_landingpage   = "<option value='' selected>All</option>";
@@ -338,6 +345,8 @@ class AjaxController extends Controller
     public function getFilterSubCampaign()
     {
         $request = request();
+        $arr_landingpage    = array();
+        $arr_channel        = array();
 
         $html_landingpage   = "<option value='' selected>All</option>";
         $html_channel       = "<option value='' selected>All</option>";
@@ -385,29 +394,55 @@ class AjaxController extends Controller
         $query_dashboard = AdResult::where('date', '>=', $startDate)
             ->where('date', '<=', $endDate);
 
+        $kpi = array();
         if($request->marketer_id){
             $query_dashboard->where('creator_id', $request->marketer_id);
         }
         if($request->channel_id){
             $ads    = array();
             $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
-            $query_dashboard->whereIn('creator_id', $ads);
+            $query_dashboard->whereIn('ad_id', $ads);
         }
 
         $c3b        = $query_dashboard->sum('c3b');
         $c3bg       = $query_dashboard->sum('c3bg');
         $spent      = $query_dashboard->sum('spent');  // USD
         $revenue    = $query_dashboard->sum('revenue'); // Bath
+        $l1         = $query_dashboard->sum('l1');
+        $l8         = $query_dashboard->sum('l8');
+        $l3         = $query_dashboard->sum('l3');
+
+        $kpi = $this->get_kpi_dashboard($startDate, $endDate);
 
         $dashboard['c3']        = $c3b + $c3bg;
+
         $dashboard['spent']     = $this->convert_spent($spent);
         $dashboard['revenue']   = $this->convert_revenue($revenue);
-        $dashboard['c3_cost']   = $dashboard['c3'] ? round( $dashboard['spent'] / $dashboard['c3'], 2) : 0;
 
-        $dashboard['c3']        = number_format($dashboard['c3']);
+        $dashboard['c3_cost']   = $dashboard['c3'] ? round( $dashboard['spent'] / $dashboard['c3'], 2) : 0;
         $dashboard['c3_cost']   = number_format($dashboard['c3_cost'], 2);
-        $dashboard['spent']     = number_format($dashboard['spent'], 2);
-        $dashboard['revenue']   = number_format($dashboard['revenue'], 2);
+
+        $dashboard['l3_c3bg']   = $c3bg ? round( $l3 * 100 / $c3bg, 2) : 0;
+
+        $dashboard['c3bg_c3b']  = $dashboard['c3'] ? round( $c3bg * 100 / $dashboard['c3'], 2) : 0;
+
+        $dashboard['me_re']     = $dashboard['revenue'] ? round( $dashboard['spent'] * 100 / $dashboard['revenue'], 2) : 0;
+
+        $dashboard['l1_c3bg']   = $c3bg ? round( $l1 * 100 / $c3bg, 2) : 0;
+
+        $dashboard['l8_l1']     = $l1 ? round( $l8 * 100 / $l1, 2) : 0;
+
+        $dashboard['kpi']           = @$kpi['kpi'];
+        $dashboard['kpi_cost']      = $this->convert_spent(@$kpi['kpi_cost']);
+        $dashboard['kpi_l3_c3bg']   = @$kpi['kpi_l3_c3bg'] * 100;
+        $dashboard['spent_left']    = $dashboard['kpi'] * $dashboard['kpi_cost'] - $dashboard['spent'];
+
+        $dashboard['spent']         = number_format($dashboard['spent'], 2);
+        $dashboard['spent_left']    = number_format($dashboard['spent_left'], 2);
+        $dashboard['kpi_cost']      = number_format($dashboard['kpi_cost'], 2);
+        $dashboard['kpi']           = number_format($dashboard['kpi']);
+        $dashboard['c3']            = number_format($dashboard['c3']);
+
         /* end Dashboard */
 
         return response()->json(['type' => 'success', 'dashboard' => $dashboard]);
@@ -1266,6 +1301,80 @@ class AjaxController extends Controller
             $kpi    = @$user->kpi;
         }
         return $kpi;
+    }
+
+    private function get_kpi_dashboard($start, $end){
+        $request    = request();
+        $rs         = array();
+
+        $day_between = $this->get_array_day($start, $end);
+
+        $start      = explode('-', $start);
+        $startDay   = $start[2];
+        $startMonth = $start[1];
+        $startYear  = $start[0];
+
+        $end        = explode('-', $end);
+        $endDay     = $end[2];
+        $endMonth   = $end[1];
+        $endYear    = $end[0];
+
+        if($request->marketer_id){
+            $users   = User::where('role', 'Marketer')
+                ->where('_id', $request->marketer_id)
+                ->where('is_active', 1)
+                ->get();
+        }else{
+            $users = User::where('role', 'Marketer')
+                ->where('is_active', 1)
+                ->get();
+        }
+
+        foreach ($users as $user){
+
+            $kpi            = @$user->kpi;
+            $kpi_cost       = @$user->kpi_cost;
+            $kpi_l3_c3bg    = @$user->kpi_l3_c3bg;
+
+            foreach ($day_between as $date){
+                $date   = explode('-', $date);
+                $day    = $date[2];
+                $month  = $date[1];
+                $year   = $date[0];
+
+                @$rs['kpi']          += @$kpi[$year][$month][$day];
+                @$rs['kpi_cost']     += @$kpi_cost[$year][$month][$day];
+                @$rs['kpi_l3_c3bg']  += @$kpi_l3_c3bg[$year][$month][$day];
+            }
+        }
+
+        if(count($users) > 1){
+            $cnt = count($users);
+            @$rs['kpi_cost']     = round(@$rs['kpi_cost'] / $cnt, 2);
+            @$rs['kpi_l3_c3bg']  = round(@$rs['kpi_l3_c3bg'] / $cnt, 2);
+        }
+
+        if(count($day_between) > 1){
+            $cnt = count($day_between);
+            @$rs['kpi_cost']     = round(@$rs['kpi_cost'] / $cnt, 2);
+            @$rs['kpi_l3_c3bg']  = round(@$rs['kpi_l3_c3bg'] / $cnt, 2);
+        }
+
+        return $rs;
+    }
+
+    private function get_array_day($start, $end){
+        $date_from  = strtotime($start);
+        $date_to    = strtotime($end);
+        $rs = [];
+
+        for ($i=$date_from; $i<=$date_to; $i+=86400) {
+            $rs[] = date("Y-m-d", $i);
+        }
+
+        return $rs;
+
+
     }
 
 

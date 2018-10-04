@@ -39,6 +39,18 @@
                                             <i></i>
                                         </section>
                                         <section class="col col-2">
+                                            <label class="label">Channel</label>
+                                            <input style="" type="text" value="" name="channel_id" id="channel_id" placeholder="Select channel">
+                                        <!-- <select name="channel_id" id="channel_id" class="select2" style="width: 280px"
+                                                data-url="">
+                                            <option value="">All</option>
+                                            @foreach($channels as $item)
+                                            <option value="{{ $item->name }}">{{ $item->name }}</option>
+                                            @endforeach
+                                                </select> -->
+                                            <i></i>
+                                        </section>
+                                        <section class="col col-2">
                                             <label class="label">Team</label>
                                             <select name="team_id" class="select2" id="team_id" style="width: 280px"
                                                     tabindex="2"
@@ -86,6 +98,9 @@
                                             </select>
                                             <i></i>
                                         </section>
+
+                                    </div>
+                                    <div class="row">
                                         <section class="col col-2">
                                             <label class="label">Mode</label>
                                             <select name="type" id="type" class="select2"
@@ -96,25 +111,15 @@
                                             </select>
                                             <i></i>
                                         </section>
-                                        <section class="col col-2">
-                                            <label class="label">Channel</label>
-                                            <input style="" type="text" value="" name="channel_id" id="channel_id" placeholder="Select channel">
-                                        <!-- <select name="channel_id" id="channel_id" class="select2" style="width: 280px"
-                                                data-url="">
-                                            <option value="">All</option>
-                                            @foreach($channels as $item)
-                                            <option value="{{ $item->name }}">{{ $item->name }}</option>
-                                            @endforeach
-                                                </select> -->
+                                        <section class="col col-4">
+                                            <label class="label">Time</label>
+                                            <div id="reportrange" class="pull-left"
+                                                 style="background: #fff; cursor: pointer; padding: 8px; border: 1px solid #ccc;">
+                                                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp
+                                                <span class="registered_date"></span> <b class="caret"></b>
+                                            </div>
                                             <i></i>
                                         </section>
-                                    </div>
-                                    <div class="row">
-                                        <div id="reportrange" class="pull-left"
-                                             style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; margin: 10px 15px">
-                                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
-                                            <span class="registered_date"></span> <b class="caret"></b>
-                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12 text-right">
@@ -159,17 +164,7 @@
 
                                         <article class="col-sm-12 col-md-12">
                                         @component('components.jarviswidget',
-                                        ['id' => 'c3', 'icon' => 'fa-line-chart', 'title' => "C3", 'dropdown' => 'false'])
-                                            <!-- widget content -->
-                                                <div class="widget-body no-padding flot_channel">
-                                                    <div id="c3_chart" class="chart has-legend"></div>
-                                                </div>
-                                            @endcomponent
-                                        </article>
-
-                                        <article class="col-sm-12 col-md-12">
-                                        @component('components.jarviswidget',
-                                        ['id' => 'chart_number', 'icon' => 'fa-line-chart', 'title' => "Chart", 'dropdown' => 'false'])
+                                        ['id' => 'chart_number', 'icon' => 'fa-line-chart', 'title' => "Column Chart", 'dropdown' => 'false'])
                                             <!-- widget content -->
                                                 <div class="widget-body no-padding">
                                                     <div id="number_chart" class="chart has-legend"></div>
@@ -254,17 +249,149 @@
             opacity: .80;
             filter: alpha(opacity=85);
         }
+        .data-point-label {
+            font-size: 15px;
+            color: #333;
+            font-weight: 600;
+        }
     </style>
     <script src="{{ asset('js/reports/hour-report.js') }}"></script>
     <script type="text/javascript">
-
+        function resetChannel(){
+            var $select = $('#channel_id').selectize();
+            var control = $select[0].selectize;
+            control.clear();
+        }
 
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
         $(document).ready(function () {
             pageSetUp();
-            initC3();
+            // initC3();
             initC3B();
             initC3BG();
+
+            $('#source_id').change(function (e) {
+                resetChannel();
+                var url = $('#source_id').attr('data-url');
+                var source_id = $('select[name="source_id"]').val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: {
+                        source_id: source_id
+                    }
+                }).done(function (response) {
+                    $('#team_id').html(response.content_team);
+                    $("#team_id").select2();
+                    $('#marketer_id').html(response.content_marketer);
+                    $("#marketer_id").select2();
+                    $('#campaign_id').html(response.content_campaign);
+                    $("#campaign_id").select2();
+                    $('#subcampaign_id').html(response.content_subcampaign);
+                    $("#subcampaign_id").select2();
+                    $('#landing_page').html(response.content_landingpage);
+                    $("#landing_page").select2();
+
+                    // $('#channel_id').html(response.content_channel);
+                    // $("#channel_id").select2();
+                });
+            })
+
+            $('#team_id').change(function (e) {
+                resetChannel();
+                var url = $('#team_id').attr('data-url');
+                var team_id = $('select[name="team_id"]').val();
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: {
+                        team_id: team_id
+                    }
+                }).done(function (response) {
+                    $('#marketer_id').html(response.content_marketer);
+                    $("#marketer_id").select2();
+                    $('#campaign_id').html(response.content_campaign);
+                    $("#campaign_id").select2();
+                    $('#subcampaign_id').html(response.content_subcampaign);
+                    $("#subcampaign_id").select2();
+                    $('#landing_page').html(response.content_landingpage);
+                    $("#landing_page").select2();
+                    // $('#channel_id').html(response.content_channel);
+                    // $("#channel_id").select2();
+                });
+            })
+
+            $('#marketer_id').change(function (e) {
+                resetChannel();
+                var url = $('#marketer_id').attr('data-url');
+                var creator_id = $('select[name="marketer_id"]').val();
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: {
+                        creator_id: creator_id
+                    }
+                }).done(function (response) {
+                    $('#campaign_id').html(response.content_campaign);
+                    $("#campaign_id").select2();
+                    $('#subcampaign_id').html(response.content_subcampaign);
+                    $("#subcampaign_id").select2();
+                    $('#landing_page').html(response.content_landingpage);
+                    $("#landing_page").select2();
+                    // $('#channel_id').html(response.content_channel);
+                    // $("#channel_id").select2();
+                });
+            })
+
+            $('#campaign_id').change(function (e) {
+                resetChannel();
+                var url = $('#campaign_id').attr('data-url');
+                var campaign_id = $('select[name="campaign_id"]').val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: {
+                        campaign_id: campaign_id
+                    }
+                }).done(function (response) {
+                    $('#subcampaign_id').html(response.content_subcampaign);
+                    $("#subcampaign_id").select2();
+                    $('#landing_page').html(response.content_landingpage);
+                    $("#landing_page").select2();
+                    // $('#channel_id').html(response.content_channel);
+                    // $("#channel_id").select2();
+                });
+            })
+
+            $('#subcampaign_id').change(function (e) {
+                resetChannel();
+                var url = $('#subcampaign_id').attr('data-url');
+                var subcampaign_id = $('select[name="subcampaign_id"]').val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: {
+                        subcampaign_id: subcampaign_id
+                    }
+                }).done(function (response) {
+                    $('#landing_page').html(response.content_landingpage);
+                    $("#landing_page").select2();
+                    // $('#channel_id').html(response.content_channel);
+                    // $("#channel_id").select2();
+                });
+            })
 
             $('#search-form-channel-report').submit(function (e) {
                 e.preventDefault();
@@ -296,7 +423,7 @@
                         campaign_id     : campaign_id,
                         subcampaign_id  : subcampaign_id,
                         registered_date : registered_date,
-                        channel_id      : channel_id,
+                        channel_name    : channel_id,
                         type : type,
                     }
                 }).done(function (response) {
@@ -369,15 +496,15 @@
             })
 
             var _data = [
-                ["C3B", {{$array_sum['c3b']}}],
-                ["C3BG", {{$array_sum['c3bg']}}],
-                ["L1", {{$array_sum['l1']}}],
-                ["L3", {{$array_sum['l3']}}],
-                ["L6", {{$array_sum['l6']}}],
-                ["L8", {{$array_sum['l8']}}]
+                {color: '#ff00aa', data: [[0, {{$array_sum['c3b']}}]]},
+                {color: 'red', data: [[1, {{$array_sum['c3bg']}}]]},
+                {color: 'yellow', data: [[2, {{$array_sum['l1']}}]]},
+                {color: 'orange', data: [[3, {{$array_sum['l3']}}]]},
+                {color: 'blue', data: [[4, {{$array_sum['l6']}}]]},
+                {color: '#000000', data: [[5, {{$array_sum['l8']}}]]}
             ];
 
-            $.plot("#number_chart", [ _data ], {
+            var number_chart = $.plot("#number_chart", _data, {
                 series: {
                     bars: {
                         show: true,
@@ -387,7 +514,19 @@
                 },
                 xaxis: {
                     mode: "categories",
-                    tickLength: 0
+                    tickLength: 0,
+                    ticks: [
+                        [0, "C3B"],
+                        [1, "C3BG"],
+                        [2, "L1"],
+                        [3, "L3"],
+                        [4, "L6"],
+                        [5, "L8"]
+                    ],
+                    font:{
+                        size:14,
+                        color: "#333"
+                    }
                 },
                 yaxes : [{
                     min : 0
@@ -406,6 +545,17 @@
                 colors: ["#FF8C00", "#666", "#BBB"]
             });
 
+            $.each(number_chart.getData(), function(i, ele){
+                var el = ele.data[0];
+                var o = number_chart.pointOffset({x: el[0], y: el[1]});
+                $('<div class="data-point-label">' + el[1] + '</div>').css( {
+                    position: 'absolute',
+                    left: o.left - 15,
+                    top: o.top - 20,
+                    display: 'none'
+                }).appendTo(number_chart.getPlaceholder()).fadeIn('slow');
+            });
+
             var  ds_reason = [
             	{ label: "C3A_Duplicated",  data: {{$data_reason['C3A_Duplicated']}}, color: '#e1ab0b'},
             	{ label: "C3B_Under18",  data: {{$data_reason['C3B_Under18']}}, color: '#fe0000'},
@@ -421,20 +571,31 @@
                         show : true,
                         innerRadius : 0.5,
                         radius : 1,
-                        threshold: 0.1
+                        threshold: 0.1,
+                        label: {
+                            show: true,
+                            radius: 1,
+                            formatter: function(label, series){
+                                return "<div style='font-size:12px;color:#333;font-weight: 600'>"
+                                    + Math.round(series.percent) + "%</div>";
+                            },
+                            background: {
+                                opacity: 0.8
+                            }
+                        }
                     }
                 },
                 legend: {
                     show : true,
                     noColumns : 1,
                     labelBoxBorderColor : "#000",
-                    margin : [10, 15],
+                    margin : [20, 20],
                     backgroundColor : "#efefef",
                     backgroundOpacity : 1,
                     labelFormatter: function (label, series) {
                         return '<div ' +
-                            'style="font-size:13px;padding:2px;">' +
-                            label + '</div>';
+                            'style="font-size:15px;padding:3px;color:#333">' +
+                            label +': <strong>' + series.data[0][1] + ' - ' + Math.round(series.percent)+'%</strong></div>';
                     }
                 },
                 grid : {
@@ -500,34 +661,34 @@
             /* end site stats */
         }
 
-        function initC3() {
-            var item = $("#c3_chart");
-            var data = [
-                {   data :[
-                            @foreach ($array_channel as $key => $channel)
-                                @if($table['c3_week'][$channel]!=0)
-                                    [{{$key}},{{$table['c3_week'][$channel]}}],
-                                @endif
-                            @endforeach
-                    ],
-                    label : "C3 Week",
-                    color: "#FF8C00"
-                },
-                {   data :[
-                            @foreach ($array_channel as $key => $channel)
-                                @if($table['c3'][$channel]!=0)
-                                    [{{$key}},{{$table['c3'][$channel]}}],
-                                @endif
-                            @endforeach
-                    ],
-                    label : "C3",
-                    color: "#7CFC00"
-                }
-            ];
+        {{--function initC3() {--}}
+            {{--var item = $("#c3_chart");--}}
+            {{--var data = [--}}
+                {{--{   data :[--}}
+                            {{--@foreach ($array_channel as $key => $channel)--}}
+                                {{--@if($table['c3_week'][$channel]!=0)--}}
+                                    {{--[{{$key}},{{$table['c3_week'][$channel]}}],--}}
+                                {{--@endif--}}
+                            {{--@endforeach--}}
+                    {{--],--}}
+                    {{--label : "C3 Week",--}}
+                    {{--color: "#FF8C00"--}}
+                {{--},--}}
+                {{--{   data :[--}}
+                            {{--@foreach ($array_channel as $key => $channel)--}}
+                                {{--@if($table['c3'][$channel]!=0)--}}
+                                    {{--[{{$key}},{{$table['c3'][$channel]}}],--}}
+                                {{--@endif--}}
+                            {{--@endforeach--}}
+                    {{--],--}}
+                    {{--label : "C3",--}}
+                    {{--color: "#7CFC00"--}}
+                {{--}--}}
+            {{--];--}}
 
-            initChartChannel(item, data);
-            item.UseChannelTooltip();
-        }
+            {{--initChartChannel(item, data);--}}
+            {{--item.UseChannelTooltip();--}}
+        {{--}--}}
 
         function initC3B() {
             var item = $("#c3b_chart");

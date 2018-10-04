@@ -65,7 +65,7 @@
                                     <a id="filter" href="javascript:void(0)"><i class="fa fa-angle-up fa-lg"></i></a>
                                 </legend>
                                 <div class="row" id="filter">
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Source</label>
                                         <select name="source_id" class="select2" style="width: 280px" id="source_id"
                                                 data-url="{!! route('ajax-getFilterSource') !!}">
@@ -76,7 +76,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Team</label>
                                         <select name="team_id" class="select2" style="width: 280px" id="team_id"
                                                 data-url="{!! route('ajax-getFilterTeam') !!}">
@@ -87,7 +87,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Marketer</label>
                                         <select name="marketer_id" id="marketer_id" class="select2" style="width: 280px"
                                                 data-url="{!! route('ajax-getFilterMaketer') !!}">
@@ -98,7 +98,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Campaign</label>
                                         <select name="campaign_id" id="campaign_id" class="select2" style="width: 280px"
                                                 data-url="{!! route('ajax-getFilterCampaign') !!}">
@@ -109,7 +109,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Sub Campaign</label>
                                         <select name="subcampaign_id" id="subcampaign_id" class="select2" style="width: 280px"
                                                 data-url="{!! route('ajax-getFilterSubCampaign') !!}">
@@ -120,7 +120,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Channel</label>
                                         <input style="190px !impotant" type="text" value="" name="channel_id" id="channel_id" placeholder="Select channel">
                                         <!-- <select name="channel_id" id="channel_id" class="select2" style="width: 280px"
@@ -134,7 +134,7 @@
                                     </section>
                                 </div>
                                 <div class="row" id="filter">
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">CLevel</label>
                                         <select name="clevel" id="clevel" class="select2"
                                                 style="width: 280px">
@@ -146,7 +146,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">CRM Level</label>
                                         <select name="current_level" id="current_level" class="select2"
                                                 style="width: 280px">
@@ -163,7 +163,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-4">
+                                    <section class="col col-lg-4 col-sm-8">
                                         <label class="label">Landing Page</label>
                                         <select name="landing_page" id="landing_page" class="select2" style="width: 280px"
                                                 data-url="">
@@ -174,7 +174,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Status Export</label>
                                         <select name="is_export" id="is_export" class="select2"
                                                 style="width: 280px" data-url="">
@@ -184,7 +184,7 @@
                                         </select>
                                         <i></i>
                                     </section>
-                                    <section class="col col-2">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Status Sale</label>
                                         <select name="olm_status" id="olm_status" class="select2"
                                                 style="width: 280px" data-url="">
@@ -198,12 +198,12 @@
                                     </section>
                                 </div>
                                 <div class="row" id="filter">
-                                    <section class="col col-2" style="margin: 0px;">
+                                    <section class="col col-lg-2 col-sm-4" style="margin: 0px;">
                                         <label class="label">Export</label>
                                     </section>
                                 </div>
                                 <div class="row" id="filter">
-                                    <section class="col col-4">
+                                    <section class="col col-lg-4 col-sm-8">
                                         <label class="checkbox">
                                             <input type="checkbox" id="mark_exported"/>
                                             <i></i>Mark contact as “Exported”</label>
@@ -483,6 +483,11 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+
+     .select2-container
+     {
+         width: auto;  !important;
+     }
 </style>
 
 <script type="text/javascript">

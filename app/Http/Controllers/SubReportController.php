@@ -418,6 +418,19 @@ class SubReportController extends Controller
 		// get start date and end date
 		list($year, $month, $d, $first_day_this_month, $last_day_this_month) = $this->getDate($quality_month);
 
+        $source_id = request()->source_id;
+        $marketer_id = request()->marketer_id;
+        $team_id = request()->team_id;
+        $campaign_id = request()->campaign_id;
+        $subcampaign_id = request()->subcampaign_id;
+        $channel_name = request()->channel_name;
+        $channel_id = request()->channel_id;
+
+        $isEmpy = false;
+        if($channel_name != "" || $source_id != "" || $marketer_id != "" ||$team_id != "" ||$campaign_id != "" ||$subcampaign_id != "" || $channel_id!= ""){
+            $isEmpy =true;
+        }
+
 		// get Ad id
 		$ad_id  = $this->getAds();
 
@@ -431,7 +444,7 @@ class SubReportController extends Controller
 		$array_reason = [ 'C3A_Duplicated', 'C3B_Under18', 'C3B_Duplicated15Days', 'C3A_Test' ];
 		$rs = [];
 
-		if(count($ad_id) > 0){
+        if(count($ad_id) >= 0 && $isEmpy){
 			$match = [
 				['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
 				['$match' => ['ad_id' => ['$in' => $ad_id]]],
@@ -557,6 +570,9 @@ class SubReportController extends Controller
         }
         if ($request->subcampaign_id) {
             $data_where['subcampaign_id']   = $request->subcampaign_id;
+        }
+        if ($request->channel_id) {
+            $data_where['channel_id']   = $request->channel_id;
         }
 
         return $data_where;
@@ -1409,15 +1425,21 @@ class SubReportController extends Controller
 	private function getChannel($start_date, $end_date, $type = 'TOA'){
 		$array_channel = array();
 
-		if (request()->channel_id){
-			$channels_arr       = explode(',',request()->channel_id);
+		$data_where = $this->getWhereDataByCreatorID();
+
+		if (request()->channel_name){
+			$channels_arr       = explode(',',request()->channel_name);
 			$channels           = Channel::whereIn('name', $channels_arr)->get();
 			$channels_id        = Channel::whereIn('name', $channels_arr)->get()->pluck('_id');
-			$arr_ad             = Ad::whereIn('channel_id', $channels_id)->get()->pluck('channel_id','_id');
+			$query              = Ad::where($data_where)->whereIn('channel_id', $channels_id);
+			$arr_ad             = $query->pluck('channel_id','_id');
+			$ad_id              = $query->pluck('_id')->toArray();
 		}
 		else {
-			$channels      = Channel::all();
-			$arr_ad        = Ad::pluck('channel_id','_id')->all();
+			$channels           = Channel::all();
+			$query              = Ad::where($data_where);
+			$arr_ad             = $query->pluck('channel_id','_id');
+			$ad_id              = $query->pluck('_id')->toArray();
 		}
 
 		foreach ($channels as $key => $channel) {
@@ -1446,13 +1468,12 @@ class SubReportController extends Controller
 		$team_id = request()->team_id;
 		$campaign_id = request()->campaign_id;
 		$subcampaign_id = request()->subcampaign_id;
+		$channel_name = request()->channel_name;
 
 		$isEmpy = false;
-		if($source_id != "" || $marketer_id != "" ||$team_id != "" ||$campaign_id != "" ||$subcampaign_id != ""){
+		if($channel_name != "" || $source_id != "" || $marketer_id != "" ||$team_id != "" ||$campaign_id != "" ||$subcampaign_id != ""){
 			$isEmpy =true;
 		}
-		
-		$ad_id  = $this->getAds();
 
 		if ($type === 'TOA'){
 			if(count($ad_id) >= 0 && $isEmpy){
@@ -1805,7 +1826,7 @@ class SubReportController extends Controller
 
 		$array_channel_new = [];
 
-		if (request()->channel_id){
+		if (request()->channel_name){
 			$array_channel_new = $channels_arr;
 		}
 		else{
@@ -2113,8 +2134,23 @@ class SubReportController extends Controller
 	}
 
 	private function getChannelReason($start_date, $end_date){
-		// get Ad id
-		$ad_id  = $this->getAds();
+
+		$channels_arr       = explode(',', request()->channel_name);
+		$channels_id        = Channel::whereIn('name', $channels_arr)->get()->pluck('_id');
+
+		if (count($channels_id) > 0){
+			$data_where = $this->getWhereDataByCreatorID();
+
+			if (count($data_where) >= 1) {
+				$ad_id = Ad::where($data_where)->whereIn('channel_id', $channels_id)->pluck('_id')->toArray();
+			}
+			else{
+				$ad_id = Ad::whereIn('channel_id', $channels_id)->pluck('_id')->toArray();
+			}
+		}
+		else{
+			$ad_id  = $this->getAds();
+		}
 
 		$array_reason = [ 'C3A_Duplicated', 'C3B_Under18', 'C3B_Duplicated15Days', 'C3A_Test' , 'C3B_SMS_Error'];
 		$rs = [];
@@ -2124,13 +2160,14 @@ class SubReportController extends Controller
 		$team_id = request()->team_id;
 		$campaign_id = request()->campaign_id;
 		$subcampaign_id = request()->subcampaign_id;
+		$channel_name = request()->channel_name;
 
 		$isEmpy = false;
-		if($source_id != "" || $marketer_id != "" ||$team_id != "" ||$campaign_id != "" ||$subcampaign_id != ""){
+		if($channel_name != "" || $source_id != "" || $marketer_id != "" ||$team_id != "" ||$campaign_id != "" ||$subcampaign_id != ""){
 			$isEmpy =true;
 		}
 
-		if(count($ad_id) > 0 && $isEmpy){
+		if(count($ad_id) >= 0 && $isEmpy){
 			$match = [
 				['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
 				['$match' => ['ad_id' => ['$in' => $ad_id]]],
@@ -2142,7 +2179,7 @@ class SubReportController extends Controller
 						'C3B_Under18'          => [ '$sum' => '$C3B_Under18' ],
 						'C3B_Duplicated15Days' => [ '$sum' => '$C3B_Duplicated15Days' ],
 						'C3A_Test'             => [ '$sum' => '$C3A_Test' ],
-						'C3B_SMS_Error'        => [ '$sum' => 'C3B_SMS_Error' ]
+						'C3B_SMS_Error'        => [ '$sum' => '$C3B_SMS_Error' ]
 					]
 				]
 			];
@@ -2157,7 +2194,7 @@ class SubReportController extends Controller
 						'C3B_Under18'          => [ '$sum' => '$C3B_Under18' ],
 						'C3B_Duplicated15Days' => [ '$sum' => '$C3B_Duplicated15Days' ],
 						'C3A_Test'             => [ '$sum' => '$C3A_Test' ],
-						'C3B_SMS_Error'        => [ '$sum' => 'C3B_SMS_Error' ]
+						'C3B_SMS_Error'        => [ '$sum' => '$C3B_SMS_Error' ]
 					]
 				]
 			];
@@ -2546,12 +2583,26 @@ class SubReportController extends Controller
     }
 
 	private function getC3AC3BByWeeks($start_date, $end_date, $w){
+        $source_id = request()->source_id;
+        $marketer_id = request()->marketer_id;
+        $team_id = request()->team_id;
+        $campaign_id = request()->campaign_id;
+        $subcampaign_id = request()->subcampaign_id;
+        $channel_name = request()->channel_name;
+        $channel_id = request()->channel_id;
+
+        $isEmpy = false;
+        if($channel_name != "" || $source_id != "" || $marketer_id != "" ||$team_id != "" ||$campaign_id != "" ||$subcampaign_id != "" || $channel_id!= ""){
+            $isEmpy =true;
+        }
+
+
 		$ad_id  = $this->getAds();
 
 		$array_reason = [ 'C3A_Duplicated', 'C3B_Under18', 'C3B_Duplicated15Days', 'C3A_Test' ];
 		$rs = [];
 
-		if(count($ad_id) > 0){
+        if(count($ad_id) >= 0 && $isEmpy){
 			$match = [
 				['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
 				['$match' => ['ad_id' => ['$in' => $ad_id]]],
@@ -2623,12 +2674,25 @@ class SubReportController extends Controller
 	}
 
 	private function getC3AC3BByMonths($start_date, $end_date){
+        $source_id = request()->source_id;
+        $marketer_id = request()->marketer_id;
+        $team_id = request()->team_id;
+        $campaign_id = request()->campaign_id;
+        $subcampaign_id = request()->subcampaign_id;
+        $channel_name = request()->channel_name;
+        $channel_id = request()->channel_id;
+
+        $isEmpy = false;
+        if($channel_name != "" || $source_id != "" || $marketer_id != "" ||$team_id != "" ||$campaign_id != "" ||$subcampaign_id != "" || $channel_id!= ""){
+            $isEmpy =true;
+        }
+
 		$ad_id  = $this->getAds();
 
 		$array_reason = [ 'C3A_Duplicated', 'C3B_Under18', 'C3B_Duplicated15Days', 'C3A_Test' ];
 		$rs = [];
 
-		if(count($ad_id) > 0){
+        if(count($ad_id) >= 0 && $isEmpy){
 			$match = [
 				['$match' => ['date' => ['$gte' => $start_date, '$lte' => $end_date]]],
 				['$match' => ['ad_id' => ['$in' => $ad_id]]],
