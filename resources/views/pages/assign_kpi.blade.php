@@ -144,6 +144,10 @@
         text-align: left;
         white-space: normal;
     }
+
+    .channel_hidden {
+        display: none;
+    }
 </style>
 
 
@@ -326,8 +330,32 @@
             initDataKPIByteam(month);
         });
 
-        $("#table_kpi").treetable({
-            expandable: true
+        $(document).on('click', '.channel__show', function () {
+            $(this).addClass('channel_hidden');
+            $(this).parent().find('a[class="channel__hide channel_hidden"]').removeClass('channel_hidden');
+
+            var tr_parent = $(this).parent().parent();
+            var userId = tr_parent.attr('data-tt-id');
+            var tr_child = tr_parent.parent().find('tr[data-tt-parent-id='+userId+']');
+            console.log(userId);
+            console.log(tr_child);
+
+            tr_child.removeClass('channel_hidden');
+
+        });
+
+        $(document).on('click', '.channel__hide', function () {
+            $(this).addClass('channel_hidden');
+            $(this).parent().find('a[class="channel__show channel_hidden"]').removeClass('channel_hidden');
+
+            var tr_parent = $(this).parent().parent();
+            var userId = tr_parent.attr('data-tt-id');
+            var tr_child = tr_parent.parent().find('tr[data-tt-parent-id='+userId+']');
+            console.log(userId);
+            console.log(tr_child);
+
+            tr_child.addClass('channel_hidden');
+
         });
 
         /* END BASIC */

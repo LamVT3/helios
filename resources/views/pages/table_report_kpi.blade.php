@@ -9,7 +9,8 @@
 
     </tr>
     <tr>
-        <th class="no-border-right">Maketer</th>
+        <th class="no-border-right" style="border-left: none"></th>
+        <th class="no-border-right">Marketer</th>
         <th class="border-bold-right" style="border-left: none"></th>
         <th class="border-bold-right">Plan</th>
         <th class="border-bold-right">Actual</th>
@@ -34,6 +35,7 @@
         ?>
     @endforeach
     <tr style="font-weight: bold; color: #3276b1; font-size: medium;">
+        <td class="no-border-right" style="border-left: none"></td>
         <td class="no-border-right"><span>Total</span></td>
         <td class="border-bold-right">
             {{--<a class=' btn-xs btn-default edit_kpi' data-user-id=""--}}
@@ -65,11 +67,18 @@
     @foreach($data_maketer as $user => $item)
         <tr data-tt-id="{{@$item['user_id']}}">
             <?php $gap = $kpi_selection == "c3b_cost" ? @$item['total_kpi'] - @$item['total_actual'] : @$item['total_actual'] - @$item['total_kpi'] ?>
-
+            <td class="no-border-right" style="border-left: none">
+                <a href="javascript:void(0)" title="Show detail" class="channel__show"><i class="fa fa-plus-circle"></i></a>
+                <a href="javascript:void(0)" title="Hide detail" class="channel__hide channel_hidden"><i class="fa fa-minus-circle"></i></a>
+            </td>
             @if($gap < 0)
-                <td class="no-border-right gap_text"><span class="bolder_text">{{ @$user }}</span></td>
+                <td class="no-border-right gap_text" style="text-align: left">
+                    <span class="bolder_text">{{ @$user }}</span>
+                </td>
             @else
-                <td class="no-border-right"><span class="bolder_text">{{ @$user }}</span></td>
+                <td class="no-border-right" style="text-align: left">
+                    <span class="bolder_text">{{ @$user }}</span>
+                </td>
             @endif
 
             <td class="border-bold-right">
@@ -108,15 +117,16 @@
         @if(isset($item['channels']))
             @foreach($item['channels'] as $key => $value)
                 <?php $gap = $kpi_selection == "c3b_cost" ? $value['total_kpi'] - $value['total_actual'] : $value['total_actual'] - $value['total_kpi'] ?>
-                <tr data-tt-parent-id="{{@$item['user_id']}}" style="display: none">
+                <tr data-tt-parent-id="{{@$item['user_id']}}" class="channel_hidden">
+                    <td class="no-border-right" style="border-left: none"></td>
                     @if($gap < 0)
-                        <td class="no-border-right gap_text" style="text-align: left"><span>{{$key}}</span></td>
+                        <td class="no-border-right gap_text" style="text-align: center"><span>{{$key}}</span></td>
                         <td class="border-bold-right"></td>
                         <td class="border-bold-right gap_text">{{ $value['total_kpi'] }}</td>
                         <td class="border-bold-right gap_text">{{ $value['total_actual'] }}</td>
                         <td class="border-bold-right gap_text">{{$gap}}</td>
                     @else
-                        <td class="no-border-right" style="text-align: left"><span>{{$key}}</span></td>
+                        <td class="no-border-right" style="text-align: center"><span>{{$key}}</span></td>
                         <td class="border-bold-right"></td>
                         <td class="border-bold-right">{{ $value['total_kpi'] }}</td>
                         <td class="border-bold-right">{{ $value['total_actual'] }}</td>

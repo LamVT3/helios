@@ -187,15 +187,37 @@ class KpiController extends Controller
             $db_data = $this->get_db_data($userId);
 
             foreach ($channels as $channel) {
-                $userKpi = UserKpi::getKpiTwoParam($userId, $channel->_id);
+                $userKpi = UserKpi::getKpiTwoParam($user->_id, $channel->_id);
 
-                $kpi = isset($userKpi->kpi[$year][$month]) ? $userKpi->kpi[$year][$month] : array();
+                switch ($request->kpi_selection) {
+                    case "c3b_cost":
+                        $kpi = isset($userKpi->kpi_cost[$year][$month]) ? $userKpi->kpi_cost[$year][$month] : array();
+                        break;
+                    case "l3_c3bg":
+                        $kpi = isset($userKpi->kpi_l3_c3bg[$year][$month]) ? $userKpi->kpi_l3_c3bg[$year][$month] : array();
+                        break;
+                    case "c3b":
+                    default:
+                        $kpi = isset($userKpi->kpi[$year][$month]) ? $userKpi->kpi[$year][$month] : array();
+                        break;
+                }
                 $data[$user->username]['channels'][$channel->name]['kpi'] = $kpi;
-                $data[$user->username]['channels'][$channel->name]['total_kpi'] = array_sum($kpi);
-
-                $actual = isset($db_data[$channel->name]['c3b']) ? $db_data[$channel->name]['c3b'] : array();
+                $actual = isset($db_data[$channel->name][$request->kpi_selection]) ?
+                    $db_data[$channel->name][$request->kpi_selection] : array();
                 $data[$user->username]['channels'][$channel->name]['actual'] = $actual;
-                $data[$user->username]['channels'][$channel->name]['total_actual'] = array_sum($actual);
+
+                switch ($request->kpi_selection) {
+                    case "c3b_cost":
+                    case "l3_c3bg":
+                        $data[$user->username]['channels'][$channel->name]['total_kpi'] = round(array_sum($kpi)/$days, 2);
+                        $data[$user->username]['channels'][$channel->name]['total_actual'] = round(array_sum($actual)/$days, 2);
+                        break;
+                    case "c3b":
+                    default:
+                        $data[$user->username]['channels'][$channel->name]['total_kpi'] = array_sum($kpi);
+                        $data[$user->username]['channels'][$channel->name]['total_actual'] = array_sum($actual);
+                        break;
+                }
 
                 for($i = 1; $i <= $days; $i++) {
                     if(isset($data[$user->username]['kpi'][$i])) {
@@ -203,8 +225,8 @@ class KpiController extends Controller
                             $data[$user->username]['kpi'][$i] = $data[$user->username]['kpi'][$i] + $kpi[$i];
                         }
                     } else if(isset($kpi[$i])) {
-                            $data[$user->username]['kpi'][$i] = $kpi[$i];
-                        }
+                        $data[$user->username]['kpi'][$i] = $kpi[$i];
+                    }
 
                     if(isset($data[$user->username]['actual'][$i])) {
                         if(isset($actual[$i])) {
@@ -217,6 +239,17 @@ class KpiController extends Controller
                 $data[$user->username]['total_kpi'] += array_sum($kpi);
                 $data[$user->username]['total_actual'] += array_sum($actual);
             }
+            switch ($request->kpi_selection) {
+                case "c3b_cost":
+                case "l3_c3bg":
+                    $data[$user->username]['total_kpi'] = round($data[$user->username]['total_kpi']/$days, 2);
+                    $data[$user->username]['total_actual'] = round($data[$user->username]['total_actual']/$days, 2);
+                    break;
+                case "c3b":
+                default:
+                    break;
+            }
+
             $team_name = $this->get_team($userId);
             $data[$user->username]['team'] = $team_name;
         }
@@ -243,8 +276,8 @@ class KpiController extends Controller
             $month = $request->month;
         }
 
-        $first_day_this_month = date('Y-'.'09'.'-01'); /* ngày đàu tiên của tháng */
-        $last_day_this_month = date('Y-'.'09'.'-t'); /* ngày cuối cùng của tháng */
+        $first_day_this_month = date('Y-'.$month.'-01'); /* ngày đàu tiên của tháng */
+        $last_day_this_month = date('Y-'.$month.'-t'); /* ngày cuối cùng của tháng */
 
         $channels = $this->get_channel_user($userId);
 
@@ -403,26 +436,9 @@ class KpiController extends Controller
     }
 
     private function get_team($user_id){
-        $query = Team::raw(function($collection) use ($user_id){
-            $key = 'members.'.$user_id.'.user_id';
-            return $collection->aggregate([
-                ['$match' => [
-                    $key => $user_id,
-                ]],
-                [
-                    '$group' => [
-                        '_id'  => '$name',
-                    ]
-                ]
-            ]);
-        });
-        $team_name = '';
-        if(count($query) == 1){
-            foreach ($query as $item){
-                $team_name  = $item->_id;
-            }
-        }
-        return$team_name;
+        $team = Team::where('members.'.$user_id.'.user_id', $user_id)
+                    ->first();
+        return isset($team->name) ? $team->name : "";
     }
 
 }
