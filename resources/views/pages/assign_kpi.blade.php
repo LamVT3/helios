@@ -259,13 +259,13 @@
             initFormKPI(user, channel, month, year);
         });
 
-        $('select#kpi_selection, select#kpi_selection_team').change(function(e){
-            e.preventDefault();
-            var month =  $('#selected_month').val();
-
-            initDataKPI(month);
-            initDataKPIByteam(month);
-        });
+        // $('select#kpi_selection, select#kpi_selection_team').change(function(e){
+        //     e.preventDefault();
+        //     var month =  $('#selected_month').val();
+        //
+        //     initDataKPI(month);
+        //     initDataKPIByteam(month);
+        // });
 
         $('#addModal').on('shown.bs.modal', function () {
             var user    = $(this).attr('data-user-id');
