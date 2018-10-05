@@ -11,7 +11,7 @@
     <tr>
         <th class="no-border-right">Team</th>
         <th class="border-bold-right" style="border-left: none"></th>
-        <th class="border-bold-right">Plan</th>
+        <th class="border-bold-right">KPI</th>
         <th class="border-bold-right">Actual</th>
         <th class="border-bold-right">GAP</th>
 

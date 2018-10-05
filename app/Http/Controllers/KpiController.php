@@ -169,7 +169,7 @@ class KpiController extends Controller
             $month = $request->month;
         }
 
-        $kpi_selection = isset($request->kpi_selection) ? $request->kpi_selection : "c3b";
+        $kpi_selection = isset($request->kpi_selection) ? $request->kpi_selection : "c3b_cost";
 
         // only get for marketers was activated
         $users = User::getMarketerActive();
@@ -185,13 +185,15 @@ class KpiController extends Controller
             $data[$user->username]['total_kpi'] = 0;
             $data[$user->username]['total_actual'] = 0;
 
-//            $channels = $this->get_channel_user($userId);
             $db_data = $this->get_db_data($userId);
-
             $userKpis = UserKpi::getKpiOneParam($user->_id);
 
+            $data[$user->username]['count'] = 0;
             foreach ($userKpis as $userKpi) {
                 $channel = Channel::find($userKpi->channel_id);
+//                $kpi = isset($userKpi->kpi[$year][$month]) ? $userKpi->kpi[$year][$month] : array();
+//                $kpi_cost = isset($userKpi->kpi_cost[$year][$month]) ? $userKpi->kpi_cost[$year][$month] : array();
+//                $kpi_l3_c3bg = isset($userKpi->kpi_l3_c3bg[$year][$month]) ? $userKpi->kpi_l3_c3bg[$year][$month] : array();
                 switch ($kpi_selection) {
                     case "c3b_cost":
                         $kpi = isset($userKpi->kpi_cost[$year][$month]) ? $userKpi->kpi_cost[$year][$month] : array();
@@ -204,7 +206,10 @@ class KpiController extends Controller
                         $kpi = isset($userKpi->kpi[$year][$month]) ? $userKpi->kpi[$year][$month] : array();
                         break;
                 }
+
                 $data[$user->username]['channels'][$channel->name]['kpi'] = $kpi;
+
+                // array kpi, actual follow channel
                 $actual = isset($db_data[$channel->name][$kpi_selection]) ?
                     $db_data[$channel->name][$kpi_selection] : array();
                 $data[$user->username]['channels'][$channel->name]['actual'] = $actual;
@@ -224,32 +229,90 @@ class KpiController extends Controller
 
                 for($i = 1; $i <= $days; $i++) {
                     if(isset($data[$user->username]['kpi'][$i])) {
-                        if(isset($kpi[$i])) {
-                            $data[$user->username]['kpi'][$i] = $data[$user->username]['kpi'][$i] + $kpi[$i];
-                        }
-                    } else if(isset($kpi[$i])) {
-                        $data[$user->username]['kpi'][$i] = $kpi[$i];
+                        $data[$user->username]['kpi'][$i] += isset($kpi[$i]) ? $kpi[$i] : 0;
+                    } else {
+                        $data[$user->username]['kpi'][$i] = isset($kpi[$i]) ? $kpi[$i] : 0;
                     }
-
-                    if(isset($data[$user->username]['actual'][$i])) {
-                        if(isset($actual[$i])) {
-                            $data[$user->username]['actual'][$i] = $data[$user->username]['actual'][$i] + $actual[$i];
-                        }
-                    } else if(isset($actual[$i])) {
-                        $data[$user->username]['actual'][$i] = $actual[$i];
+                    switch ($kpi_selection) {
+                        case "c3b_cost":
+                            if(isset($data[$user->username]['spent'][$i])) {
+                                $data[$user->username]['spent'][$i] +=
+                                    isset($db_data[$channel->name]['spent'][$i]) ? $db_data[$channel->name]['spent'][$i] :0;
+                            } else {
+                                $data[$user->username]['spent'][$i] =
+                                    isset($db_data[$channel->name]['spent'][$i]) ? $db_data[$channel->name]['spent'][$i] :0;
+                            }
+                            if(isset($data[$user->username]['c3b'][$i])) {
+                                $data[$user->username]['c3b'][$i] +=
+                                    isset($db_data[$channel->name]['c3b'][$i]) ? $db_data[$channel->name]['c3b'][$i] :0;
+                            } else {
+                                $data[$user->username]['c3b'][$i] =
+                                    isset($db_data[$channel->name]['c3b'][$i]) ? $db_data[$channel->name]['c3b'][$i] :0;
+                            }
+                           break;
+                        case "l3_c3bg":
+                            if(isset($data[$user->username]['l3'][$i])) {
+                                $data[$user->username]['l3'][$i] +=
+                                    isset($db_data[$channel->name]['l3'][$i]) ? $db_data[$channel->name]['l3'][$i] :0;
+                            } else {
+                                $data[$user->username]['l3'][$i] =
+                                    isset($db_data[$channel->name]['l3'][$i]) ? $db_data[$channel->name]['l3'][$i] :0;
+                            }
+                            if(isset($data[$user->username]['c3bg'][$i])) {
+                                $data[$user->username]['c3bg'][$i] +=
+                                    isset($db_data[$channel->name]['c3bg'][$i]) ? $db_data[$channel->name]['c3bg'][$i] : 0;
+                            } else {
+                                $data[$user->username]['c3bg'][$i] =
+                                    isset($db_data[$channel->name]['c3bg'][$i]) ? $db_data[$channel->name]['c3bg'][$i] : 0;
+                            }
+                            break;
+                        case "c3b":
+                        default:
+                            if(isset($data[$user->username]['c3b'][$i])) {
+                                $data[$user->username]['c3b'][$i] +=
+                                    isset($db_data[$channel->name]['c3b'][$i]) ? $db_data[$channel->name]['c3b'][$i] : 0;
+                            } else {
+                                $data[$user->username]['c3b'][$i] =
+                                    isset($db_data[$channel->name]['c3b'][$i]) ? $db_data[$channel->name]['c3b'][$i] : 0;
+                            }
+                            break;
                     }
                 }
-                $data[$user->username]['total_kpi'] += array_sum($kpi);
-                $data[$user->username]['total_actual'] += array_sum($actual);
+                $data[$user->username]['count'] += 1;
             }
-            switch ($kpi_selection) {
+            if (!$userKpis->isEmpty()) {
+                for($i = 1; $i <= $days; $i++) {
+                    switch ($kpi_selection) {
+                        case "c3b_cost":
+                            $data[$user->username]['kpi'][$i] =
+                                $data[$user->username]['count'] != 0 ? round($data[$user->username]['kpi'][$i]/$data[$user->username]['count'],2) : 0;
+                            $data[$user->username]['actual'][$i] = $data[$user->username]['c3b'][$i] != 0 ?
+                                round($data[$user->username]['spent'][$i]/$data[$user->username]['c3b'][$i], 2) : 0;
+                            break;
+                        case "l3_c3bg":
+                            $data[$user->username]['kpi'][$i] =
+                                $data[$user->username]['count'] != 0 ? round($data[$user->username]['kpi'][$i]/$data[$user->username]['count'],2) : 0;
+                            $data[$user->username]['actual'][$i] = $data[$user->username]['c3bg'][$i] != 0 ?
+                                round($data[$user->username]['l3'][$i]/$data[$user->username]['c3bg'][$i], 2) : 0;
+                            break;
+                        case "c3b":
+                        default:
+                            $data[$user->username]['actual'][$i] = $data[$user->username]['c3b'][$i];
+                            break;
+                    }
+                }
+            }
+
+            switch ($kpi_selection){
                 case "c3b_cost":
                 case "l3_c3bg":
-                    $data[$user->username]['total_kpi'] = round($data[$user->username]['total_kpi']/$days, 2);
-                    $data[$user->username]['total_actual'] = round($data[$user->username]['total_actual']/$days, 2);
+                    $data[$user->username]['total_kpi'] = round(array_sum($data[$user->username]['kpi'])/$days, 2);
+                    $data[$user->username]['total_actual'] = round(array_sum($data[$user->username]['actual'])/$days, 2);
                     break;
                 case "c3b":
                 default:
+                    $data[$user->username]['total_kpi'] = array_sum($data[$user->username]['kpi']);
+                    $data[$user->username]['total_actual'] = array_sum($data[$user->username]['actual']);
                     break;
             }
 
@@ -272,6 +335,7 @@ class KpiController extends Controller
 
     }
 
+    // get data c3b, c3bg, spent, l3 follow user, channel
     function get_db_data($userId){
         $request = request();
         $month = date('m'); /* thang hien tai */
@@ -295,21 +359,28 @@ class KpiController extends Controller
                 ->get();
 
             foreach ($adResults as $adResult){
-                $day = explode("-", $adResult->date);
-                $key = intval($day[2]);
+                $date = explode("-", $adResult->date);
+                $day = intval($date[2]);
                 $spent = $adResult->spent;
                 $c3b = $adResult->c3b + $adResult->c3bg;
                 $c3bg = $adResult->c3bg;
                 $l3 = $adResult->l3;
 
-                $data[$channel->name]['c3b'][$key] =
-                    isset($data[$channel->name]['c3b'][$key]) ? ($data[$channel->name]['c3b'][$key] + $c3b) : $c3b;
+                $data[$channel->name]['c3b'][$day] =
+                    isset($data[$channel->name]['c3b'][$day]) ? ($data[$channel->name]['c3b'][$day] + $c3b) : $c3b;
+                $data[$channel->name]['c3bg'][$day] =
+                    isset($data[$channel->name]['c3bg'][$day]) ? ($data[$channel->name]['c3bg'][$day] + $c3bg) : $c3bg;
+                $data[$channel->name]['l3'][$day] =
+                    isset($data[$channel->name]['l3'][$day]) ? ($data[$channel->name]['l3'][$day] + $l3) : $l3;
+                $data[$channel->name]['spent'][$day] =
+                    isset($data[$channel->name]['spent'][$day]) ? ($data[$channel->name]['spent'][$day] + $spent) : $spent;
+
                 $c3b_cost = $c3b != 0 ? round($spent/$c3b,2) : 0;
-                $data[$channel->name]['c3b_cost'][$key] =
-                    isset($data[$channel->name]['c3b_cost'][$key]) ? ($data[$channel->name]['c3b_cost'][$key] + $c3b_cost) : $c3b_cost;
+                $data[$channel->name]['c3b_cost'][$day] =
+                    isset($data[$channel->name]['c3b_cost'][$day]) ? ($data[$channel->name]['c3b_cost'][$day] + $c3b_cost) : $c3b_cost;
                 $l3_c3bg = $c3bg != 0 ? round($l3/$c3bg,2) : 0;
-                $data[$channel->name]['l3_c3bg'][$key] =
-                    isset($data[$channel->name]['l3_c3bg'][$key]) ? ($data[$channel->name]['l3_c3bg'][$key] + $l3_c3bg) : $l3_c3bg;
+                $data[$channel->name]['l3_c3bg'][$day] =
+                    isset($data[$channel->name]['l3_c3bg'][$day]) ? ($data[$channel->name]['l3_c3bg'][$day] + $l3_c3bg) : $l3_c3bg;
             }
         }
         return $data;
