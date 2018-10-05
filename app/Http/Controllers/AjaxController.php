@@ -13,6 +13,7 @@ use App\Subcampaign;
 use App\Team;
 use App\User;
 use App\Config;
+use App\UserKpi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Expr\Cast\Object_;
@@ -796,7 +797,7 @@ class AjaxController extends Controller
         if($request->marketer_id && $request->channel_id){
             $ads    = array();
             $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
-            $kpi = $this->get_kpi();
+            $kpi = $this->getTotalKpi($request->marketer_id, $request->channel_id);
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
                 ['$match' => ['creator_id' => $request->marketer_id]],
@@ -811,7 +812,7 @@ class AjaxController extends Controller
                 ]
             ];
         }elseif($request->marketer_id){
-            $kpi = $this->get_kpi();
+            $kpi = $this->getTotalKpi($request->marketer_id);
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
                 ['$match' => ['creator_id' => $request->marketer_id]],
@@ -825,7 +826,7 @@ class AjaxController extends Controller
                 ]
             ];
         }elseif($request->channel_id){
-            $kpi = $this->getTotalKpi();
+            $kpi = $this->getTotalKpi($request->channel_id);
             $ads    = array();
             $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
 
@@ -1260,16 +1261,22 @@ class AjaxController extends Controller
         return json_encode($channel);
     }
 
-    private function getTotalKpi(){
+    private function getTotalKpi($user_id = null, $channel_id = null){
         $request = request();
-        $users  = User::all();
+        if($user_id && !$channel_id){
+            $users  = UserKpi::where('user_id', $user_id)->get();
+        }else if($user_id && $channel_id){
+            $users  = UserKpi::where('user_id', $user_id)->where('channel_id', $channel_id)->get();
+        }else{
+            $users  = UserKpi::all();
+        }
+
         $month  = date('m');
         if($request->month){
             $month = $request->month;
         }
         $year   = date('Y');
         $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-
 
         $total_kpi = array();
         foreach ($users as $user){
@@ -1293,16 +1300,6 @@ class AjaxController extends Controller
         return $total_kpi;
     }
 
-    private function get_kpi(){
-        $request = request();
-        $kpi = array();
-        if($request->marketer_id){
-            $user   = User::find($request->marketer_id);
-            $kpi    = @$user->kpi;
-        }
-        return $kpi;
-    }
-
     private function get_kpi_dashboard($start, $end){
         $request    = request();
         $rs         = array();
@@ -1319,16 +1316,29 @@ class AjaxController extends Controller
         $endMonth   = $end[1];
         $endYear    = $end[0];
 
-        if($request->marketer_id){
-            $users   = User::where('role', 'Marketer')
-                ->where('_id', $request->marketer_id)
-                ->where('is_active', 1)
-                ->get();
+        $request = request();
+        if($request->marketer_id && !$request->channel_id){
+            $users  = UserKpi::where('user_id', $request->marketer_id)->get();
+        }else if($request->marketer_id && $request->channel_id){
+            $users  = UserKpi::where('user_id', $request->marketer_id)->where('channel_id', $request->channel_id)->get();
         }else{
-            $users = User::where('role', 'Marketer')
+            $users  = UserKpi::all();
+        }
+
+//        if($request->marketer_id){
+//            $users   = User::where('role', 'Marketer')
+//                ->where('_id', $request->marketer_id)
+//                ->where('is_active', 1)
+//                ->get();
+//        }else{
+//            $users = User::where('role', 'Marketer')
+//                ->where('is_active', 1)
+//                ->get();
+//        }
+
+        $users_active = User::where('role', 'Marketer')
                 ->where('is_active', 1)
                 ->get();
-        }
 
         foreach ($users as $user){
 
@@ -1338,7 +1348,7 @@ class AjaxController extends Controller
 
             foreach ($day_between as $date){
                 $date   = explode('-', $date);
-                $day    = $date[2];
+                $day    = (int)$date[2];
                 $month  = $date[1];
                 $year   = $date[0];
 
@@ -1348,8 +1358,8 @@ class AjaxController extends Controller
             }
         }
 
-        if(count($users) > 1){
-            $cnt = count($users);
+        if(count($users_active) > 1){
+            $cnt = count($users_active);
             @$rs['kpi_cost']     = round(@$rs['kpi_cost'] / $cnt, 2);
             @$rs['kpi_l3_c3bg']  = round(@$rs['kpi_l3_c3bg'] / $cnt, 2);
         }

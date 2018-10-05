@@ -13,6 +13,7 @@ use App\Dm_contact;
 use App\HotelBooking;
 use App\TourBooking;
 use App\User;
+use App\UserKpi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -49,7 +50,6 @@ class DashboardController extends Controller
         $user_id    = auth()->user()->_id;
 
         $users      = $users = User::where('role', 'Marketer')->where('is_active', 1)->get();
-        $kpi        = array();
 
         $array_month = array();
         for ($i = 1; $i <= $d; $i++) {
@@ -59,9 +59,7 @@ class DashboardController extends Controller
         }
 
         if($user_role == 'Marketer'){
-            if(auth()->user()->kpi){
-                $kpi = auth()->user()->kpi;
-            }
+            $kpi        = $this->getTotalKpi($user_id);
             $channels   = $this->get_channel($user_id);
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
@@ -198,8 +196,13 @@ class DashboardController extends Controller
         ));
     }
 
-    private function getTotalKpi(){
-        $users  = User::all();
+    private function getTotalKpi($user_id = null){
+        if($user_id){
+            $users  = UserKpi::where('user_id', $user_id)->get();
+        }else{
+            $users  = UserKpi::all();
+        }
+
         $month  = date('m');
         $year   = date('Y');
         $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year);
