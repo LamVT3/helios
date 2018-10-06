@@ -261,7 +261,7 @@ class KpiController extends Controller
                                 $data[$user->username]['channels'][$channel->name]['l3'][$i] +=
                                     isset($db_data[$channel->name]['l3'][$i]) ? $db_data[$channel->name]['l3'][$i] :0;
                             } else {
-                                $data[$user->username]['channels'][$channel->name]['c3b'][$i] =
+                                $data[$user->username]['channels'][$channel->name]['l3'][$i] =
                                     isset($db_data[$channel->name]['l3'][$i]) ? $db_data[$channel->name]['l3'][$i] :0;
                             }
 
