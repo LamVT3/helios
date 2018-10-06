@@ -337,8 +337,6 @@
             var tr_parent = $(this).parent().parent();
             var userId = tr_parent.attr('data-tt-id');
             var tr_child = tr_parent.parent().find('tr[data-tt-parent-id='+userId+']');
-            console.log(userId);
-            console.log(tr_child);
 
             tr_child.removeClass('channel_hidden');
 
@@ -351,8 +349,6 @@
             var tr_parent = $(this).parent().parent();
             var userId = tr_parent.attr('data-tt-id');
             var tr_child = tr_parent.parent().find('tr[data-tt-parent-id='+userId+']');
-            console.log(userId);
-            console.log(tr_child);
 
             tr_child.addClass('channel_hidden');
 
