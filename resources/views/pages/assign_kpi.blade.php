@@ -246,7 +246,6 @@
             var user    = $('select#username').val();
 
             initFormKPI(user, null, month, year);
-            initChannelOfUser(user);
         });
 
         $('select#channel_name').change(function(e){
@@ -273,7 +272,6 @@
             var year    = $('#selected_year').val();
 
             initFormKPI(user, null, month, year);
-            initChannelOfUser(user);
         });
 
         $('li#month').click(function() {
@@ -378,17 +376,17 @@
     }
 
     function initChannelOfUser(userId) {
-        var url  = $('input#get_channel_user_url').val();
+        var url = $('input#get_channel_user_url').val();
 
         var d = {};
         d.user_id = userId;
         $.get(url, d, function (data) {
             var channel_options = '';
-            var disable = true;
+            var no_has_channel = true;
             for (var i in data) {
                 var channel = data[i];
                 if ('name' in channel) {
-                    disable = false;
+                    no_has_channel = false;
                     channel_options += '<option value="'+channel['_id']+'">'+ channel['name'] +'</option>';
                 }
             }
@@ -399,7 +397,7 @@
 
             $("select#channel_name").html(channel_options);
 
-            if (disable) {
+            if (no_has_channel) {
                 $("div.lst_days input").attr('disabled', true);
                 $("button[name='assign']").attr('disabled', true);
             } else {
@@ -505,9 +503,9 @@
                     '           placeholder="" max="" min="0" step="0.01" data-toggle="tooltip" title="Enter KPIs...">' +
                     '   </section>' +
                     '</div>';
-
                 $("div.lst_days").append(item);
             }
+            initChannelOfUser(d.user_id);
         }).fail(
             function (err) {
                 alert('Cannot connect to server. Please try again later.');
