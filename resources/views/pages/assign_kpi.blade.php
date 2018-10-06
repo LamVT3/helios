@@ -480,10 +480,10 @@
             '       <label class="label">C3B</lable>' +
             '   </section>'+
             '   <section class="col col-2">' +
-            '       <label class="label">C3B Cost</lable>' +
+            '       <label class="label">C3B Cost (USD)</lable>' +
             '   </section>'+
             '   <section class="col col-2">' +
-            '       <label class="label">L3/C3BG</lable>' +
+            '       <label class="label">L3/C3BG (%)</lable>' +
             '   </section>' +
             '</div>');
             for (i = 1; i <= days; i++) {
