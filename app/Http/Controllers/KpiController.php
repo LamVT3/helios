@@ -169,7 +169,7 @@ class KpiController extends Controller
             $month = $request->month;
         }
 
-        $kpi_selection = isset($request->kpi_selection) ? $request->kpi_selection : "c3b_cost";
+        $kpi_selection = isset($request->kpi_selection) ? $request->kpi_selection : "c3b";
 
         // only get for marketers was activated
         $users = User::getMarketerActive();
@@ -191,9 +191,8 @@ class KpiController extends Controller
             $data[$user->username]['count'] = 0;
             foreach ($userKpis as $userKpi) {
                 $channel = Channel::find($userKpi->channel_id);
-//                $kpi = isset($userKpi->kpi[$year][$month]) ? $userKpi->kpi[$year][$month] : array();
-//                $kpi_cost = isset($userKpi->kpi_cost[$year][$month]) ? $userKpi->kpi_cost[$year][$month] : array();
-//                $kpi_l3_c3bg = isset($userKpi->kpi_l3_c3bg[$year][$month]) ? $userKpi->kpi_l3_c3bg[$year][$month] : array();
+
+                // prepare data to calc kpi each channel
                 switch ($kpi_selection) {
                     case "c3b_cost":
                         $kpi = isset($userKpi->kpi_cost[$year][$month]) ? $userKpi->kpi_cost[$year][$month] : array();
@@ -207,26 +206,8 @@ class KpiController extends Controller
                         break;
                 }
 
-                $data[$user->username]['channels'][$channel->name]['kpi'] = $kpi;
-
-                // array kpi, actual follow channel
-                $actual = isset($db_data[$channel->name][$kpi_selection]) ?
-                    $db_data[$channel->name][$kpi_selection] : array();
-                $data[$user->username]['channels'][$channel->name]['actual'] = $actual;
-
-                switch ($kpi_selection) {
-                    case "c3b_cost":
-                    case "l3_c3bg":
-                        $data[$user->username]['channels'][$channel->name]['total_kpi'] = round(array_sum($kpi)/$days, 2);
-                        $data[$user->username]['channels'][$channel->name]['total_actual'] = round(array_sum($actual)/$days, 2);
-                        break;
-                    case "c3b":
-                    default:
-                        $data[$user->username]['channels'][$channel->name]['total_kpi'] = array_sum($kpi);
-                        $data[$user->username]['channels'][$channel->name]['total_actual'] = array_sum($actual);
-                        break;
-                }
-
+                // kpi each channel
+                // prepare data to calc actual each channel
                 for($i = 1; $i <= $days; $i++) {
                     if(isset($data[$user->username]['kpi'][$i])) {
                         $data[$user->username]['kpi'][$i] += isset($kpi[$i]) ? $kpi[$i] : 0;
@@ -242,11 +223,28 @@ class KpiController extends Controller
                                 $data[$user->username]['spent'][$i] =
                                     isset($db_data[$channel->name]['spent'][$i]) ? $db_data[$channel->name]['spent'][$i] :0;
                             }
+
+                            if(isset($data[$user->username]['channels'][$channel->name]['spent'][$i])) {
+                                $data[$user->username]['channels'][$channel->name]['spent'][$i] +=
+                                    isset($db_data[$channel->name]['spent'][$i]) ? $db_data[$channel->name]['spent'][$i] :0;
+                            } else {
+                                $data[$user->username]['channels'][$channel->name]['spent'][$i] =
+                                    isset($db_data[$channel->name]['spent'][$i]) ? $db_data[$channel->name]['spent'][$i] :0;
+                            }
+
                             if(isset($data[$user->username]['c3b'][$i])) {
                                 $data[$user->username]['c3b'][$i] +=
                                     isset($db_data[$channel->name]['c3b'][$i]) ? $db_data[$channel->name]['c3b'][$i] :0;
                             } else {
                                 $data[$user->username]['c3b'][$i] =
+                                    isset($db_data[$channel->name]['c3b'][$i]) ? $db_data[$channel->name]['c3b'][$i] :0;
+                            }
+
+                            if(isset($data[$user->username]['channels'][$channel->name]['c3b'][$i])) {
+                                $data[$user->username]['channels'][$channel->name]['c3b'][$i] +=
+                                    isset($db_data[$channel->name]['c3b'][$i]) ? $db_data[$channel->name]['c3b'][$i] :0;
+                            } else {
+                                $data[$user->username]['channels'][$channel->name]['c3b'][$i] =
                                     isset($db_data[$channel->name]['c3b'][$i]) ? $db_data[$channel->name]['c3b'][$i] :0;
                             }
                            break;
@@ -258,12 +256,29 @@ class KpiController extends Controller
                                 $data[$user->username]['l3'][$i] =
                                     isset($db_data[$channel->name]['l3'][$i]) ? $db_data[$channel->name]['l3'][$i] :0;
                             }
+
+                            if(isset($data[$user->username]['channels'][$channel->name]['l3'][$i])) {
+                                $data[$user->username]['channels'][$channel->name]['l3'][$i] +=
+                                    isset($db_data[$channel->name]['l3'][$i]) ? $db_data[$channel->name]['l3'][$i] :0;
+                            } else {
+                                $data[$user->username]['channels'][$channel->name]['c3b'][$i] =
+                                    isset($db_data[$channel->name]['l3'][$i]) ? $db_data[$channel->name]['l3'][$i] :0;
+                            }
+
                             if(isset($data[$user->username]['c3bg'][$i])) {
                                 $data[$user->username]['c3bg'][$i] +=
                                     isset($db_data[$channel->name]['c3bg'][$i]) ? $db_data[$channel->name]['c3bg'][$i] : 0;
                             } else {
                                 $data[$user->username]['c3bg'][$i] =
                                     isset($db_data[$channel->name]['c3bg'][$i]) ? $db_data[$channel->name]['c3bg'][$i] : 0;
+                            }
+
+                            if(isset($data[$user->username]['channels'][$channel->name]['c3bg'][$i])) {
+                                $data[$user->username]['channels'][$channel->name]['c3bg'][$i] +=
+                                    isset($db_data[$channel->name]['c3bg'][$i]) ? $db_data[$channel->name]['c3bg'][$i] :0;
+                            } else {
+                                $data[$user->username]['channels'][$channel->name]['c3bg'][$i] =
+                                    isset($db_data[$channel->name]['c3bg'][$i]) ? $db_data[$channel->name]['c3bg'][$i] :0;
                             }
                             break;
                         case "c3b":
@@ -275,11 +290,66 @@ class KpiController extends Controller
                                 $data[$user->username]['c3b'][$i] =
                                     isset($db_data[$channel->name]['c3b'][$i]) ? $db_data[$channel->name]['c3b'][$i] : 0;
                             }
+
+                            if(isset($data[$user->username]['channels'][$channel->name]['c3b'][$i])) {
+                                $data[$user->username]['channels'][$channel->name]['c3b'][$i] +=
+                                    isset($db_data[$channel->name]['c3b'][$i]) ? $db_data[$channel->name]['c3b'][$i] :0;
+                            } else {
+                                $data[$user->username]['channels'][$channel->name]['c3b'][$i] =
+                                    isset($db_data[$channel->name]['c3b'][$i]) ? $db_data[$channel->name]['c3b'][$i] :0;
+                            }
                             break;
                     }
                 }
+
+                // actual each channel
+                $actual = array();
+                for($i = 1; $i <= $days; $i++) {
+                    switch ($kpi_selection) {
+                        case "c3b_cost":
+                            $actual[$i] = $data[$user->username]['channels'][$channel->name]['c3b'][$i] > 0 ?
+                                round($data[$user->username]['channels'][$channel->name]['spent'][$i] /
+                                    $data[$user->username]['channels'][$channel->name]['c3b'][$i], 2) : 0;
+                            break;
+                        case "l3_c3bg":
+                            $actual[$i] = $data[$user->username]['channels'][$channel->name]['c3bg'][$i] > 0 ?
+                                round($data[$user->username]['channels'][$channel->name]['l3'][$i] /
+                                    $data[$user->username]['channels'][$channel->name]['c3bg'][$i], 2) : 0;
+                            break;
+                        case "c3b":
+                        default:
+                            $actual[$i] = $data[$user->username]['channels'][$channel->name]['c3b'][$i];
+                            break;
+                    }
+                }
+
+                // total each channel
+                switch ($kpi_selection) {
+                    case "c3b_cost":
+                        $kpi = isset($userKpi->kpi_cost[$year][$month]) ? $userKpi->kpi_cost[$year][$month] : array();
+                        $data[$user->username]['channels'][$channel->name]['total_kpi'] = round(array_sum($kpi)/$days, 2);
+                        $data[$user->username]['channels'][$channel->name]['total_actual'] = round(array_sum($actual)/$days, 2);
+                        break;
+                    case "l3_c3bg":
+                        $kpi = isset($userKpi->kpi_l3_c3bg[$year][$month]) ? $userKpi->kpi_l3_c3bg[$year][$month] : array();
+                        $data[$user->username]['channels'][$channel->name]['total_kpi'] = round(array_sum($kpi)/$days, 2);
+                        $data[$user->username]['channels'][$channel->name]['total_actual'] = round(array_sum($actual)/$days, 2);
+                        break;
+                    case "c3b":
+                    default:
+                        $kpi = isset($userKpi->kpi[$year][$month]) ? $userKpi->kpi[$year][$month] : array();
+                        $data[$user->username]['channels'][$channel->name]['total_kpi'] = array_sum($kpi);
+                        $data[$user->username]['channels'][$channel->name]['total_actual'] = array_sum($actual);
+                        break;
+                }
+
+                $data[$user->username]['channels'][$channel->name]['kpi'] = $kpi;
+                $data[$user->username]['channels'][$channel->name]['actual'] = $actual;
+
                 $data[$user->username]['count'] += 1;
             }
+
+            // kpi, actual each user
             if (!$userKpis->isEmpty()) {
                 for($i = 1; $i <= $days; $i++) {
                     switch ($kpi_selection) {
@@ -303,6 +373,7 @@ class KpiController extends Controller
                 }
             }
 
+            // total each user
             switch ($kpi_selection){
                 case "c3b_cost":
                 case "l3_c3bg":
@@ -374,13 +445,6 @@ class KpiController extends Controller
                     isset($data[$channel->name]['l3'][$day]) ? ($data[$channel->name]['l3'][$day] + $l3) : $l3;
                 $data[$channel->name]['spent'][$day] =
                     isset($data[$channel->name]['spent'][$day]) ? ($data[$channel->name]['spent'][$day] + $spent) : $spent;
-
-                $c3b_cost = $c3b != 0 ? round($spent/$c3b,2) : 0;
-                $data[$channel->name]['c3b_cost'][$day] =
-                    isset($data[$channel->name]['c3b_cost'][$day]) ? ($data[$channel->name]['c3b_cost'][$day] + $c3b_cost) : $c3b_cost;
-                $l3_c3bg = $c3bg != 0 ? round($l3/$c3bg,2) : 0;
-                $data[$channel->name]['l3_c3bg'][$day] =
-                    isset($data[$channel->name]['l3_c3bg'][$day]) ? ($data[$channel->name]['l3_c3bg'][$day] + $l3_c3bg) : $l3_c3bg;
             }
         }
         return $data;
