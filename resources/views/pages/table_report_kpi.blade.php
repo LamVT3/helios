@@ -24,16 +24,6 @@
     </tr>
     </thead>
     <tbody>
-    <?php
-        $total_kpi = $total_actual = 0;
-        $noMarketer = sizeof($data_maketer);
-    ?>
-    @foreach($data_maketer as $user => $item)
-        <?php
-            $total_kpi += @$item['total_kpi'];
-            $total_actual += @$item['total_actual'];
-        ?>
-    @endforeach
     <tr style="font-weight: bold; color: #3276b1; font-size: medium;">
         <td class="no-border-right" style="border-left: none"></td>
         <td class="no-border-right"><span>Total</span></td>
@@ -43,8 +33,8 @@
                {{--data-original-title='Edit Row'><i class='fa fa-pencil'></i></a>--}}
         </td>
         <?php
-            $total_kpi = $kpi_selection == "c3b" ? $total_kpi : ($noMarketer != 0 ? round($total_kpi/$noMarketer,2) : 0);
-            $total_actual = $kpi_selection == "c3b" ? $total_actual : ($noMarketer != 0 ? round($total_actual/$noMarketer,2) : 0);
+            $total_kpi = $data_maketer['total']['total_kpi'];
+            $total_actual = $data_maketer['total']['total_actual'];
             $total_gap = $kpi_selection == "c3b_cost" ? ($total_kpi - $total_actual) : ($total_actual - $total_kpi) ;
         ?>
         <td class="border-bold-right total_text">{{ $total_kpi }}</td>
@@ -52,19 +42,12 @@
         <td class="border-bold-right total_text">{{ $total_gap }}</td>
 
         @for ($i = 1; $i <= $days; $i++)
-            <?php $kpi = $actual = 0; ?>
-            @foreach($data_maketer as $user => $item)
-                <?php
-                    $kpi += @$item['kpi'][$i];
-                    $actual += @$item['actual'][$i];
-                ?>
-            @endforeach
-
-            <td>{{ $kpi_selection == "c3b" ? $kpi : ($noMarketer != 0 ? round($kpi/$noMarketer,2) : 0) }}</td>
-            <td class="border-bold-right act">{{ $kpi_selection == "c3b" ? $actual : ($noMarketer != 0 ? round($actual/$noMarketer,2) : 0) }}</td>
+            <td>{{ $data_maketer['total']['kpi'][$i] }}</td>
+            <td class="border-bold-right act">{{ $data_maketer['total']['actual'][$i] }}</td>
         @endfor
     </tr>
     @foreach($data_maketer as $user => $item)
+        @if($user == "total") @continue @endif
         <tr data-tt-id="{{@$item['user_id']}}">
             <?php $gap = $kpi_selection == "c3b_cost" ? @$item['total_kpi'] - @$item['total_actual'] : @$item['total_actual'] - @$item['total_kpi'] ?>
             <td class="no-border-right" style="border-left: none">
@@ -126,7 +109,9 @@
                         <?php
                             $value['kpi'][$i] = isset($value['kpi'][$i]) ? $value['kpi'][$i] : 0;
                             $value['actual'][$i] = isset($value['actual'][$i]) ? $value['actual'][$i] : 0;
-                            $gap_day = $kpi_selection == "c3b_cost" ? $value['kpi'][$i] - $value['actual'][$i] : $value['actual'][$i] - $value['kpi'][$i];
+                            $gap_day = $kpi_selection == "c3b_cost" ?
+                                ($value['kpi'][$i] - $value['actual'][$i]) :
+                                ($value['actual'][$i] - $value['kpi'][$i]);
                         ?>
                         <td>{{ $value['kpi'][$i] }}</td>
                         @if($gap_day < 0)
