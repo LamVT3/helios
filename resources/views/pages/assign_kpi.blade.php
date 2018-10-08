@@ -180,8 +180,9 @@
 
             $('input#day').each(function() {
                 var value = $(this).val();
-                if (!value){
-                    value = 0;
+                if (!value || value <= 0){
+                    isValid = false;
+                    return false;
                 }
                 if (serial === 1) {
                     kpi[cnt] = parseInt(value);
@@ -193,6 +194,7 @@
                     kpi_l3_c3bg[cnt] = parseFloat(value);
                     if (kpi_l3_c3bg[cnt] > 100) {
                         isValid = false;
+                        return false;
                     }
                     serial = 1;
                     cnt++;
@@ -200,7 +202,9 @@
             });
 
             if (!isValid) {
-                alert("L3/C3BG isn't allowed greater than 100%!");
+                alert("Please check issues below :\n" +
+                    "- There is value less than 1 !\n" +
+                    "- A L3/C3BG value greater than 100% !");
                 return false;
             }
 
@@ -508,15 +512,15 @@
                     '   </section>'+
                     '   <section class="col col-2">' +
                     '       <input class="form-control" id="day" type="number" value="'+ kpi_val +'"' +
-                    '           placeholder="" max="" min="0" data-toggle="tooltip" title="Enter KPIs...">' +
+                    '           placeholder="" max="" min="1" data-toggle="tooltip" title="Enter KPIs...">' +
                     '   </section>'+
                     '   <section class="col col-2">' +
                     '       <input class="form-control" id="day" type="number" value="'+ kpi_cost_val +'"' +
-                    '           placeholder="" max="" min="0" step="0.01" data-toggle="tooltip" title="Enter KPIs...">' +
+                    '           placeholder="" max="" min="0.01" step="0.01" data-toggle="tooltip" title="Enter KPIs...">' +
                     '   </section>'+
                     '   <section class="col col-2">' +
                     '       <input class="form-control" id="day" type="number" value="'+ kpi_l3_c3bg_val +'"' +
-                    '           placeholder="" max="100" min="0" data-toggle="tooltip" title="Enter KPIs...">' +
+                    '           placeholder="" max="100" min="1" data-toggle="tooltip" title="Enter KPIs...">' +
                     '   </section>' +
                     '</div>';
                 $("div.lst_days").append(item);

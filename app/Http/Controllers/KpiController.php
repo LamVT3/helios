@@ -480,7 +480,7 @@ class KpiController extends Controller
             $data[$user->username]['team'] = $team_name;
         }
 
-        if (isset($data['total']['actual'])){
+        if (isset($data['total']['kpi'])){
             // total kpi, actual each day
             for ($i = 1; $i <= $days; $i++) {
                 switch ($kpi_selection) {
