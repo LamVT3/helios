@@ -144,10 +144,6 @@
         text-align: left;
         white-space: normal;
     }
-
-    .channel_hidden {
-        display: none;
-    }
 </style>
 
 
@@ -180,6 +176,8 @@
 
             var serial = 1;
 
+            var isValid = true;
+
             $('input#day').each(function() {
                 var value = $(this).val();
                 if (!value){
@@ -193,10 +191,18 @@
                     serial++;
                 } else {
                     kpi_l3_c3bg[cnt] = parseFloat(value);
+                    if (kpi_l3_c3bg[cnt] > 100) {
+                        isValid = false;
+                    }
                     serial = 1;
                     cnt++;
                 }
             });
+
+            if (!isValid) {
+                alert("L3/C3BG isn't allowed greater than 100%!");
+                return false;
+            }
 
             var data ={};
             data.kpi         = kpi;
@@ -213,10 +219,15 @@
                 }
                 initDataKPI(month);
                 initDataKPIByteam(month);
+                $('label#success').removeClass('hidden');
             }).fail(
                 function (err) {
                     alert('Cannot connect to server. Please try again later.');
                 });
+        });
+
+        $(window).click(function () {
+            $('label#success').addClass('hidden');
         });
 
         $('select#month').change(function(e){
@@ -331,26 +342,26 @@
         });
 
         $(document).on('click', '.channel__show', function () {
-            $(this).addClass('channel_hidden');
-            $(this).parent().find('a[class="channel__hide channel_hidden"]').removeClass('channel_hidden');
+            $(this).addClass('hidden');
+            $(this).parent().find('a[class="channel__hide hidden"]').removeClass('hidden');
 
             var tr_parent = $(this).parent().parent();
             var userId = tr_parent.attr('data-tt-id');
             var tr_child = tr_parent.parent().find('tr[data-tt-parent-id='+userId+']');
 
-            tr_child.removeClass('channel_hidden');
+            tr_child.removeClass('hidden');
 
         });
 
         $(document).on('click', '.channel__hide', function () {
-            $(this).addClass('channel_hidden');
-            $(this).parent().find('a[class="channel__show channel_hidden"]').removeClass('channel_hidden');
+            $(this).addClass('hidden');
+            $(this).parent().find('a[class="channel__show hidden"]').removeClass('hidden');
 
             var tr_parent = $(this).parent().parent();
             var userId = tr_parent.attr('data-tt-id');
             var tr_child = tr_parent.parent().find('tr[data-tt-parent-id='+userId+']');
 
-            tr_child.addClass('channel_hidden');
+            tr_child.addClass('hidden');
 
         });
 
@@ -473,13 +484,16 @@
             '<div class="row">' +
             '   <section class="col col-2"></section>'+
             '   <section class="col col-2">' +
-            '       <label class="label">C3B</lable>' +
+            '       <label class="label title">C3B</lable>' +
             '   </section>'+
             '   <section class="col col-2">' +
-            '       <label class="label">C3B Cost (USD)</lable>' +
+            '       <label class="label title">C3B Cost (USD)</lable>' +
             '   </section>'+
             '   <section class="col col-2">' +
-            '       <label class="label">L3/C3BG (%)</lable>' +
+            '       <label class="label title">L3/C3BG (%)</lable>' +
+            '   </section>' +
+            '   <section class="col col-4">' +
+            '       <label id="success" class="label hidden" style="color: limegreen !important;">Updated successful!</label>' +
             '   </section>' +
             '</div>');
             for (i = 1; i <= days; i++) {
@@ -502,7 +516,7 @@
                     '   </section>'+
                     '   <section class="col col-2">' +
                     '       <input class="form-control" id="day" type="number" value="'+ kpi_l3_c3bg_val +'"' +
-                    '           placeholder="" max="" min="0" step="0.01" data-toggle="tooltip" title="Enter KPIs...">' +
+                    '           placeholder="" max="100" min="0" data-toggle="tooltip" title="Enter KPIs...">' +
                     '   </section>' +
                     '</div>';
                 $("div.lst_days").append(item);
