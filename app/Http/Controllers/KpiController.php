@@ -85,7 +85,9 @@ class KpiController extends Controller
         $channelId = $request->channel_id;
         $month     = $request->month;
         $year      = $request->year;
-        $userKpi   = UserKpi::firstOrNew(['user_id' => $userId, 'channel_id'=> $channelId]); // find first or create new row
+
+        // find first or create new row
+        $userKpi   = UserKpi::firstOrNew(['user_id' => $userId, 'channel_id'=> $channelId]);
 
         $kpi = $userKpi->kpi;
         $kpi[$year][$month] = $request->kpi;
@@ -100,6 +102,13 @@ class KpiController extends Controller
         $kpi_l3_c3bg = $userKpi->kpi_l3_c3bg ;
         $kpi_l3_c3bg[$year][$month] = $request->kpi_l3_c3bg;
         ksort($kpi_l3_c3bg[$year]);
+
+        $size_l3_c3bg = sizeof($kpi_l3_c3bg[$year][$month]);
+        if($size_l3_c3bg>0){
+            for ($i = 1; $i <= $size_l3_c3bg; $i++) {
+                $kpi_l3_c3bg[$year][$month][$i] /= 100;
+            }
+        }
         $userKpi->kpi_l3_c3bg = $kpi_l3_c3bg;
 
         $userKpi->save();
@@ -136,6 +145,11 @@ class KpiController extends Controller
         $data = array();
         $data['kpi'] = $kpi;
         $data['kpi_cost'] = $kpi_cost;
+
+        $size_l3_c3bg = sizeof($kpi_l3_c3bg);
+        for ($i = 1; $i <= $size_l3_c3bg; $i++) {
+            $kpi_l3_c3bg[$i] *= 100;
+        }
         $data['kpi_l3_c3bg'] = $kpi_l3_c3bg;
 
         return @$data;
@@ -356,22 +370,22 @@ class KpiController extends Controller
                 }
 
                 // day actual each channel
-                $actual = array();
+                $actual_channel = array();
                 for($i = 1; $i <= $days; $i++) {
                     switch ($kpi_selection) {
                         case "c3b_cost":
-                            $actual[$i] = $data[$user->username]['channels'][$channel->name]['c3b'][$i] > 0 ?
+                            $actual_channel[$i] = $data[$user->username]['channels'][$channel->name]['c3b'][$i] > 0 ?
                                 round($data[$user->username]['channels'][$channel->name]['spent'][$i] /
-                                    $data[$user->username]['channels'][$channel->name]['c3b'][$i], 2) : 0;
+                                    $data[$user->username]['channels'][$channel->name]['c3b'][$i],2) : 0;
                             break;
                         case "l3_c3bg":
-                            $actual[$i] = $data[$user->username]['channels'][$channel->name]['c3bg'][$i] > 0 ?
-                                round($data[$user->username]['channels'][$channel->name]['l3'][$i] /
-                                    $data[$user->username]['channels'][$channel->name]['c3bg'][$i], 2) : 0;
+                            $actual_channel[$i] = $data[$user->username]['channels'][$channel->name]['c3bg'][$i] > 0 ?
+                                round($data[$user->username]['channels'][$channel->name]['l3'][$i]*100 /
+                                    $data[$user->username]['channels'][$channel->name]['c3bg'][$i],2) : 0;
                             break;
                         case "c3b":
                         default:
-                            $actual[$i] = $data[$user->username]['channels'][$channel->name]['c3b'][$i];
+                        $actual_channel[$i] = $data[$user->username]['channels'][$channel->name]['c3b'][$i];
                             break;
                     }
                 }
@@ -379,33 +393,41 @@ class KpiController extends Controller
                 // total kpi, actual each channel
                 switch ($kpi_selection) {
                     case "c3b_cost":
-                        $kpi = isset($userKpi->kpi_cost[$year][$month]) ? $userKpi->kpi_cost[$year][$month] : array();
-                        $data[$user->username]['channels'][$channel->name]['total_kpi'] = round(array_sum($kpi)/$days, 2);
+                        $kpi_channel = isset($userKpi->kpi_cost[$year][$month]) ? $userKpi->kpi_cost[$year][$month] : array();
+                        $data[$user->username]['channels'][$channel->name]['total_kpi'] = round(array_sum($kpi)/$days,2);
                         $data[$user->username]['channels'][$channel->name]['total_actual'] =
                             array_sum($data[$user->username]['channels'][$channel->name]['c3b']) > 0 ?
                             round(array_sum($data[$user->username]['channels'][$channel->name]['spent']) /
-                                array_sum($data[$user->username]['channels'][$channel->name]['c3b']), 2) : 0;
+                                array_sum($data[$user->username]['channels'][$channel->name]['c3b']),2) : 0;
                         break;
                     case "l3_c3bg":
-                        $kpi = isset($userKpi->kpi_l3_c3bg[$year][$month]) ? $userKpi->kpi_l3_c3bg[$year][$month] : array();
-                        $data[$user->username]['channels'][$channel->name]['total_kpi'] = round(array_sum($kpi)/$days, 2);
+                        $kpi_channel = isset($userKpi->kpi_l3_c3bg[$year][$month]) ? $userKpi->kpi_l3_c3bg[$year][$month] : array();
+                        $data[$user->username]['channels'][$channel->name]['total_kpi'] = round(array_sum($kpi)*100/$days,2);
                         $data[$user->username]['channels'][$channel->name]['total_actual'] =
                             array_sum($data[$user->username]['channels'][$channel->name]['c3bg']) > 0 ?
-                            round(array_sum($data[$user->username]['channels'][$channel->name]['l3']) /
-                                array_sum($data[$user->username]['channels'][$channel->name]['c3bg']), 2) :0;
+                            round(array_sum($data[$user->username]['channels'][$channel->name]['l3'])*100 /
+                                array_sum($data[$user->username]['channels'][$channel->name]['c3bg']),2) :0;
                         break;
                     case "c3b":
                     default:
-                        $kpi = isset($userKpi->kpi[$year][$month]) ? $userKpi->kpi[$year][$month] : array();
+                        $kpi_channel = isset($userKpi->kpi[$year][$month]) ? $userKpi->kpi[$year][$month] : array();
                         $data[$user->username]['channels'][$channel->name]['total_kpi'] = array_sum($kpi);
-                        $data[$user->username]['channels'][$channel->name]['total_actual'] = array_sum($actual);
+                        $data[$user->username]['channels'][$channel->name]['total_actual'] = array_sum($actual_channel);
                         break;
                 }
 
-                $data[$user->username]['channels'][$channel->name]['kpi'] = $kpi;
-                $data[$user->username]['channels'][$channel->name]['actual'] = $actual;
+                if($kpi_selection == "l3_c3bg"){
+                    for($i = 1; $i <= $days; $i++) {
+                        $data[$user->username]['channels'][$channel->name]['kpi'][$i] =
+                             isset($kpi_channel[$i]) ? $kpi_channel[$i] * 100 : 0;
+                    }
+                } else {
+                    $data[$user->username]['channels'][$channel->name]['kpi'] = $kpi_channel;
+                }
+                $data[$user->username]['channels'][$channel->name]['actual'] = $actual_channel;
 
                 $data[$user->username]['count']++;
+                $data['total']['count']++;
             }
 
             if (!$userKpis->isEmpty()) {
@@ -413,17 +435,17 @@ class KpiController extends Controller
                 for($i = 1; $i <= $days; $i++) {
                     switch ($kpi_selection) {
                         case "c3b_cost":
-                            $data[$user->username]['kpi'][$i] =
-                                $data[$user->username]['count'] > 0 ? round($data[$user->username]['kpi'][$i]/$data[$user->username]['count'],2) : 0;
+                            $data[$user->username]['kpi'][$i] = $data[$user->username]['count'] > 0 ?
+                                round($data[$user->username]['kpi'][$i]/$data[$user->username]['count'],2) : 0;
                             $data[$user->username]['actual'][$i] = $data[$user->username]['c3b'][$i] > 0 ?
-                                round($data[$user->username]['spent'][$i]/$data[$user->username]['c3b'][$i], 2) : 0;
+                                round($data[$user->username]['spent'][$i]/$data[$user->username]['c3b'][$i],2) : 0;
                             break;
                         case "l3_c3bg":
-                            $data[$user->username]['kpi'][$i] =
-                                $data[$user->username]['count'] > 0 ? round($data[$user->username]['kpi'][$i]/$data[$user->username]['count'],2) : 0;
+                            $data[$user->username]['kpi'][$i] = $data[$user->username]['count'] > 0 ?
+                                round($data[$user->username]['kpi'][$i]*100/$data[$user->username]['count'],2) : 0;
 
                             $data[$user->username]['actual'][$i] = $data[$user->username]['c3bg'][$i] > 0 ?
-                                round($data[$user->username]['l3'][$i]/$data[$user->username]['c3bg'][$i], 2) : 0;
+                                round($data[$user->username]['l3'][$i]*100/$data[$user->username]['c3bg'][$i],2) : 0;
                             break;
                         case "c3b":
                         default:
@@ -441,10 +463,10 @@ class KpiController extends Controller
                                 round(array_sum($data[$user->username]['spent']) / (array_sum($data[$user->username]['c3b'])), 2) : 0;
                         break;
                     case "l3_c3bg":
-                        $data[$user->username]['total_kpi'] = round(array_sum($data[$user->username]['kpi'])/$days, 2);
+                        $data[$user->username]['total_kpi'] = round(array_sum($data[$user->username]['kpi'])/$days,2);
                         $data[$user->username]['total_actual'] =
                             array_sum($data[$user->username]['c3bg']) > 0 ?
-                                round(array_sum($data[$user->username]['l3']) / (array_sum($data[$user->username]['c3bg'])), 2) : 0;
+                                round(array_sum($data[$user->username]['l3'])*100 / (array_sum($data[$user->username]['c3bg'])),2) : 0;
                         break;
                     case "c3b":
                     default:
@@ -456,19 +478,22 @@ class KpiController extends Controller
 
             $team_name = $this->get_team($userId);
             $data[$user->username]['team'] = $team_name;
-            $data['total']['count']++;
         }
 
         // total kpi, actual each day
         for ($i = 1; $i <= $days; $i++) {
             switch ($kpi_selection) {
                 case "c3b_cost":
-                    $data['total']['kpi'][$i] = $data['total']['count'] > 0 ? round($data['total']['kpi'][$i]/$data['total']['count'],2) : 0 ;
-                    $data['total']['actual'][$i] = $data['total']['c3b'][$i] > 0 ? round($data['total']['spent'][$i]/$data['total']['c3b'][$i],2) : 0;
+                    $data['total']['kpi'][$i] = $data['total']['count'] > 0 ?
+                        round($data['total']['kpi'][$i]/$data['total']['count'],2) : 0 ;
+                    $data['total']['actual'][$i] = $data['total']['c3b'][$i] > 0 ?
+                        round($data['total']['spent'][$i]/$data['total']['c3b'][$i],2) : 0;
                     break;
                 case "l3_c3bg":
-                    $data['total']['kpi'][$i] = $data['total']['count'] > 0 ? round($data['total']['kpi'][$i]/$data['total']['count'],2) : 0 ;
-                    $data['total']['actual'][$i] = $data['total']['c3bg'][$i] > 0 ? round($data['total']['l3'][$i]/$data['total']['c3bg'][$i],2) : 0;
+                    $data['total']['kpi'][$i] = $data['total']['count'] > 0 ?
+                        round($data['total']['kpi'][$i]*100/$data['total']['count'],2) : 0 ;
+                    $data['total']['actual'][$i] = $data['total']['c3bg'][$i] > 0 ?
+                        round($data['total']['l3'][$i]*100/$data['total']['c3bg'][$i],2) : 0;
                     break;
                 case "c3b":
                 default:
@@ -481,15 +506,15 @@ class KpiController extends Controller
         switch ($kpi_selection) {
             case "c3b_cost":
                 $data['total']['total_kpi'] = $data['total']['count'] > 0 ?
-                    round(array_sum($data['total']['kpi'])/($data['total']['count']*$days),2) : 0;
+                    round(array_sum($data['total']['kpi'])/$days,2) : 0;
                 $data['total']['total_actual'] = $data['total']['count'] > 0 ? array_sum($data['total']['c3b']) > 0 ?
                     round(array_sum($data['total']['spent'])/array_sum($data['total']['c3b']),2) : 0 : 0;
                 break;
             case "l3_c3bg":
                 $data['total']['total_kpi'] = $data['total']['count'] > 0 ?
-                    round(array_sum($data['total']['kpi'])/($data['total']['count']*$days),2) : 0;
+                    round(array_sum($data['total']['kpi'])/$days,2) : 0;
                 $data['total']['total_actual'] = $data['total']['count'] > 0 ? array_sum($data['total']['c3bg']) > 0 ?
-                    round(array_sum($data['total']['l3'])/array_sum($data['total']['c3bg']),2) : 0 : 0;
+                    round(array_sum($data['total']['l3'])*100/array_sum($data['total']['c3bg']),2) : 0 : 0;
                 break;
             case "c3b":
             default:
