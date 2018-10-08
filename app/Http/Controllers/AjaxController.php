@@ -1265,8 +1265,10 @@ class AjaxController extends Controller
         $request = request();
         if($user_id && !$channel_id){
             $users  = UserKpi::where('user_id', $user_id)->get();
-        }else if($user_id && $channel_id){
+        }else if(!$user_id && $channel_id){
             $users  = UserKpi::where('user_id', $user_id)->where('channel_id', $channel_id)->get();
+        }else if($user_id && $channel_id){
+            $users  = UserKpi::where('channel_id', $channel_id)->get();
         }else{
             $users  = UserKpi::all();
         }
