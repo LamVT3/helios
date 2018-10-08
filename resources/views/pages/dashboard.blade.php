@@ -269,7 +269,7 @@
                             <div class="panel-body status">
                                 <div class="who clearfix widget-title">
                                     <h4>
-                                        <i class="fa fa-lg fa-fw fa-money"></i><strong>L1/C3BG</strong>
+                                        <i class="fa fa-lg fa-fw fa-child"></i><strong>L1/C3BG</strong>
                                         <span class="widget-unit">(%)</span>
                                     </h4>
                                 </div>
@@ -298,7 +298,7 @@
 
                                 <div class="who clearfix widget-title">
                                     <h4>
-                                        <i class="fa fa-lg fa-fw fa-credit-card"></i><strong>L8/L1</strong>
+                                        <i class="fa fa-lg fa-fw fa-child"></i><strong>L8/L1</strong>
                                         <span class="widget-unit">(%)</span>
                                     </h4>
                                 </div>
@@ -596,7 +596,7 @@
         .widget-me-re .widget-actual.text {
             padding: 0 14px;
             font-weight: bold;
-            color: #4CAF50;
+            color: #CCCC00;
         }
 
         .widget-l8-l1 .progress-bar {
@@ -736,11 +736,11 @@
                 }).done(function (response) {
                     var select_channel = "<option value='' selected>All</option>";
                     $.each(response, function (index, item) {
-                        select_channel += "<option value=" + item.id + "> " + item.name + " </option>";
+                        select_channel += "<option value=" + item._id + "> " + item.name + " </option>";
                     });
 
                     $('#channel').html(select_channel);
-                    $("#subcampaign_id").select2();
+                    $("#channel").select2();
                 });
             })
 
@@ -777,6 +777,9 @@
             var endDate = formatDate(date[1]);
 
             dashboard(startDate, endDate, unit);
+
+            $c3ac3b_month = $('input[name="C3AC3B_month"]').val();
+            $('h2#C3A-C3B').html('C3A-C3B Report in ' + __arr_month[$c3ac3b_month - 1]);
 
         }
 

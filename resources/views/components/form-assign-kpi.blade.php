@@ -25,6 +25,14 @@
                                 </label>
                             </section>
                             <section class="col col-sm-3">
+                                <label class="label">Channel</label>
+                                <label class="select">
+                                    <select id="channel_name">
+                                    </select>
+                                    <i></i>
+                                </label>
+                            </section>
+                            <section class="col col-sm-3">
                                 <label class="label">Month</label>
                                 <label class="select">
                                     <select id="month">
@@ -59,10 +67,10 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="assign_kpi" type="submit" class="btn btn-primary">
+                    <button name="assign" id="assign_kpi" type="submit" class="btn btn-primary">
                         Assign
                     </button>
-                    <button id="assign_close_kpi" type="submit" class="btn btn-default" data-dismiss="modal">
+                    <button name="assign" id="assign_close_kpi" type="submit" class="btn btn-default" data-dismiss="modal">
                         Assign & Close
                     </button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">

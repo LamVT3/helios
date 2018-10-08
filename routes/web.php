@@ -188,6 +188,7 @@ Route::group(['prefix' => 'sub_report'], function () {
 
     Route::get('/assign-kpi', 'KpiController@assign_kpi')->name('assign-kpi');
     Route::get('/get-kpi', 'KpiController@get_kpi')->name('get-kpi');
+    Route::get('/get-channel-user', 'KpiController@get_channel_user')->name('get-channel-user');
     Route::get('/save-kpi', 'KpiController@save_kpi')->name('save-kpi');
     Route::get('/kpi-by-maketer', 'KpiController@kpi_by_maketer')->name('kpi-by-maketer');
     Route::get('/kpi-by-team', 'KpiController@kpi_by_team')->name('kpi-by-team');
