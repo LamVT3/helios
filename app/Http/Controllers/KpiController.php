@@ -609,6 +609,11 @@ class KpiController extends Controller
 
         if($request->maketer){
             $arr_maketer = explode(',',$request->maketer);
+
+            if(isset($data_maketer["total"])) {
+                unset($data_maketer["total"]);
+            }
+            
             foreach ($data_maketer as $key => $item ){
                 if(isset($item['user_id'])) {
                     if(!in_array($item['user_id'], $arr_maketer)){
