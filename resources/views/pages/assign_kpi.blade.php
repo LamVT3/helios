@@ -246,6 +246,7 @@
             var user    = $('select#username').val();
 
             initFormKPI(user, null, month, year);
+            initChannelOfUser(user);
         });
 
         $('select#channel_name').change(function(e){
@@ -272,6 +273,7 @@
             var year    = $('#selected_year').val();
 
             initFormKPI(user, null, month, year);
+            initChannelOfUser(user);
         });
 
         $('li#month').click(function() {
@@ -505,7 +507,6 @@
                     '</div>';
                 $("div.lst_days").append(item);
             }
-            initChannelOfUser(d.user_id);
         }).fail(
             function (err) {
                 alert('Cannot connect to server. Please try again later.');
