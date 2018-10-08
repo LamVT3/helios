@@ -610,8 +610,10 @@ class KpiController extends Controller
         if($request->maketer){
             $arr_maketer = explode(',',$request->maketer);
             foreach ($data_maketer as $key => $item ){
-                if(!in_array($item['user_id'], $arr_maketer)){
-                    unset($data_maketer[$key]);
+                if(isset($item['user_id'])) {
+                    if(!in_array($item['user_id'], $arr_maketer)){
+                        unset($data_maketer[$key]);
+                    }
                 }
             }
         }
