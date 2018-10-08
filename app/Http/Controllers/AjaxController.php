@@ -443,6 +443,7 @@ class AjaxController extends Controller
         $dashboard['kpi_cost']      = number_format($dashboard['kpi_cost'], 2);
         $dashboard['kpi']           = number_format($dashboard['kpi']);
         $dashboard['c3']            = number_format($dashboard['c3']);
+        $dashboard['kpi_l3_c3bg']   = number_format($dashboard['kpi_l3_c3bg'],2);
 
         /* end Dashboard */
 
@@ -1320,18 +1321,18 @@ class AjaxController extends Controller
 
         $request = request();
         if($request->marketer_id && !$request->channel_id){
-            $users  = UserKpi::where('user_id', $request->marketer_id)->get();
+            $users      = UserKpi::where('user_id', $request->marketer_id)->get();
+            $channel    = UserKpi::where('user_id', $request->marketer_id)->groupBy('channel_id')->get();
         }else if(!$request->marketer_id && $request->channel_id){
-            $users  = UserKpi::where('channel_id', $request->channel_id)->get();
+            $users      = UserKpi::where('channel_id', $request->channel_id)->get();
+            $channel    = UserKpi::where('channel_id', $request->channel_id)->groupBy('channel_id')->get();
         }else if($request->marketer_id && $request->channel_id){
-            $users  = UserKpi::where('user_id', $request->marketer_id)->where('channel_id', $request->channel_id)->get();
+            $users      = UserKpi::where('user_id', $request->marketer_id)->where('channel_id', $request->channel_id)->get();
+            $channel    = UserKpi::where('user_id', $request->marketer_id)->where('channel_id', $request->channel_id)->get();
         }else{
-            $users  = UserKpi::all();
+            $users      = UserKpi::all();
+            $channel    = UserKpi::groupBy('channel_id')->get();
         }
-
-        $users_active = User::where('role', 'Marketer')
-                ->where('is_active', 1)
-                ->get();
 
         foreach ($users as $user){
 
@@ -1351,18 +1352,17 @@ class AjaxController extends Controller
             }
         }
 
-        if(count($users_active) > 1){
-            $cnt = count($users_active);
+        if(count($channel) > 1){
+            $cnt = count($channel);
             @$rs['kpi_cost']     = round(@$rs['kpi_cost'] / $cnt, 2);
-            @$rs['kpi_l3_c3bg']  = round(@$rs['kpi_l3_c3bg'] / $cnt, 2);
+            @$rs['kpi_l3_c3bg']  = round(@$rs['kpi_l3_c3bg'] / $cnt, 4);
         }
 
         if(count($day_between) > 1){
             $cnt = count($day_between);
             @$rs['kpi_cost']     = round(@$rs['kpi_cost'] / $cnt, 2);
-            @$rs['kpi_l3_c3bg']  = round(@$rs['kpi_l3_c3bg'] / $cnt, 2);
+            @$rs['kpi_l3_c3bg']  = round(@$rs['kpi_l3_c3bg'] / $cnt, 4);
         }
-
         return $rs;
     }
 

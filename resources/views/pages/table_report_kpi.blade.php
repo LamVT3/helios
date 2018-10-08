@@ -24,6 +24,7 @@
     </tr>
     </thead>
     <tbody>
+    @if(isset($data_maketer['total']))
     <tr style="font-weight: bold; color: #3276b1; font-size: medium;">
         <td class="no-border-right" style="border-left: none"></td>
         <td class="no-border-right"><span>Total</span></td>
@@ -46,6 +47,7 @@
             <td class="border-bold-right act">{{ $data_maketer['total']['actual'][$i].($kpi_selection == 'l3_c3bg' ? '%' : '')  }}</td>
         @endfor
     </tr>
+    @endif
     @foreach($data_maketer as $user => $item)
         @if($user == "total") @continue @endif
         <tr data-tt-id="{{@$item['user_id']}}">
