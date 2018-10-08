@@ -797,7 +797,7 @@ class AjaxController extends Controller
         if($request->marketer_id && $request->channel_id){
             $ads    = array();
             $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
-            $kpi = $this->getTotalKpi($request->marketer_id, $request->channel_id);
+            $kpi = $this->getTotalKpi();
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
                 ['$match' => ['creator_id' => $request->marketer_id]],
@@ -811,8 +811,8 @@ class AjaxController extends Controller
                     ]
                 ]
             ];
-        }elseif($request->marketer_id){
-            $kpi = $this->getTotalKpi($request->marketer_id);
+        }elseif($request->marketer_id && !$request->channel_id){
+            $kpi = $this->getTotalKpi();
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
                 ['$match' => ['creator_id' => $request->marketer_id]],
@@ -825,8 +825,8 @@ class AjaxController extends Controller
                     ]
                 ]
             ];
-        }elseif($request->channel_id){
-            $kpi = $this->getTotalKpi($request->channel_id);
+        }elseif($request->channel_id && !$request->marketer_id){
+            $kpi = $this->getTotalKpi();
             $ads    = array();
             $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
 
@@ -1261,12 +1261,14 @@ class AjaxController extends Controller
         return json_encode($channel);
     }
 
-    private function getTotalKpi($user_id = null, $channel_id = null){
+    private function getTotalKpi(){
         $request = request();
-        if($user_id && !$channel_id){
-            $users  = UserKpi::where('user_id', $user_id)->get();
-        }else if($user_id && $channel_id){
-            $users  = UserKpi::where('user_id', $user_id)->where('channel_id', $channel_id)->get();
+        if($request->marketer_id && !$request->channel_id){
+            $users  = UserKpi::where('user_id', $request->marketer_id)->get();
+        }else if(!$request->marketer_id && $request->channel_id){
+            $users  = UserKpi::where('channel_id', $request->channel_id)->get();
+        }else if($request->marketer_id && $request->channel_id){
+            $users  = UserKpi::where('user_id',  $request->marketer_id)->where('channel_id', $request->channel_id)->get();
         }else{
             $users  = UserKpi::all();
         }
@@ -1319,22 +1321,13 @@ class AjaxController extends Controller
         $request = request();
         if($request->marketer_id && !$request->channel_id){
             $users  = UserKpi::where('user_id', $request->marketer_id)->get();
+        }else if(!$request->marketer_id && $request->channel_id){
+            $users  = UserKpi::where('channel_id', $request->channel_id)->get();
         }else if($request->marketer_id && $request->channel_id){
             $users  = UserKpi::where('user_id', $request->marketer_id)->where('channel_id', $request->channel_id)->get();
         }else{
             $users  = UserKpi::all();
         }
-
-//        if($request->marketer_id){
-//            $users   = User::where('role', 'Marketer')
-//                ->where('_id', $request->marketer_id)
-//                ->where('is_active', 1)
-//                ->get();
-//        }else{
-//            $users = User::where('role', 'Marketer')
-//                ->where('is_active', 1)
-//                ->get();
-//        }
 
         $users_active = User::where('role', 'Marketer')
                 ->where('is_active', 1)
