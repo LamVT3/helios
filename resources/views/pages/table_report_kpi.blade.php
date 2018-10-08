@@ -34,8 +34,8 @@
                {{--data-original-title='Edit Row'><i class='fa fa-pencil'></i></a>--}}
         </td>
         <?php
-            $total_kpi = isset($data_maketer['total']['total_kpi']) ? $data_maketer['total']['total_kpi'] : 0;
-            $total_actual = isset($data_maketer['total']['total_actual']) ? $data_maketer['total']['total_actual'] : 0;
+            $total_kpi = @$data_maketer['total']['total_kpi'] ? $data_maketer['total']['total_kpi'] : 0;
+            $total_actual = @$data_maketer['total']['total_actual'] ? $data_maketer['total']['total_actual'] : 0;
             $total_gap = @$kpi_selection == "c3b_cost" ? ($total_kpi - $total_actual) : ($total_actual - $total_kpi) ;
         ?>
         <td class="border-bold-right total_text">{{ $total_kpi.(@$kpi_selection == 'l3_c3bg' ? '%' : '') }}</td>
@@ -43,8 +43,8 @@
         <td class="border-bold-right total_text">{{ $total_gap.(@$kpi_selection == 'l3_c3bg' ? '%' : '')  }}</td>
 
         @for ($i = 1; $i <= $days; $i++)
-            <td>{{ (isset($data_maketer['total']['kpi'][$i]) ? $data_maketer['total']['kpi'][$i] : 0).(@$kpi_selection == 'l3_c3bg' ? '%' : '')  }}</td>
-            <td class="border-bold-right act">{{ (isset($data_maketer['total']['actual'][$i]) ? $data_maketer['total']['actual'][$i] : 0).(@$kpi_selection == 'l3_c3bg' ? '%' : '')  }}</td>
+            <td>{{ (@$data_maketer['total']['kpi'][$i] ? $data_maketer['total']['kpi'][$i] : 0).(@$kpi_selection == 'l3_c3bg' ? '%' : '')  }}</td>
+            <td class="border-bold-right act">{{ (@$data_maketer['total']['actual'][$i] ? $data_maketer['total']['actual'][$i] : 0).(@$kpi_selection == 'l3_c3bg' ? '%' : '')  }}</td>
         @endfor
     </tr>
     @endif
