@@ -40,7 +40,7 @@ class KpiController extends Controller
         $page_css       = array('selectize.default.css');
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active         = 'assign_kpi';
-        $breadcrumbs    = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> KPI Report </span>";
+        $breadcrumbs    = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> KPI Setting";
 
         $users  = User::getMarketerActive();
         $teams  = Team::all();
