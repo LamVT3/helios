@@ -202,8 +202,9 @@
             });
 
             if (!isValid) {
-                alert("Please check issues below :\n" +
-                    "- There is value less than 1 !\n" +
+                alert("Please check issues below :\n\n" +
+                    "- There is a value less than 1 !\n" +
+                    "or\n" +
                     "- A L3/C3BG value greater than 100% !");
                 return false;
             }

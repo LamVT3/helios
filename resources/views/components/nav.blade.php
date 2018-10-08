@@ -97,15 +97,17 @@
                         <a href="{{ route('channel-report') }}"><i class="fa fa-lg fa-fw fa-calendar"></i> Channel Report</a>
                     </li>
 
-                    <li class="{{ $active == 'assign_kpi' ? 'active' : '' }}">
-                        <a href="{{ route('assign-kpi') }}"><i class="fa fa-lg fa-fw fa-map-signs"></i> KPI Report</a>
-                    </li>
-
                     <li class="{{ $active == 'inventory-report' ? 'active' : '' }}">
                         <a href="{{ route('inventory-report') }}"><i class="fa fa-lg fa-fw fa-empire"></i> Inventory Report</a>
                     </li>
                 </ul>
             </li>
+
+            @if(auth()->user()->role == "Manager" || auth()->user()->role == "Admin")
+                <li class="{{ $active == 'assign_kpi' ? 'active' : '' }}">
+                    <a href="{{ route('assign-kpi') }}"><i class="fa fa-lg fa-fw fa-map-signs"></i> KPI Setting</a>
+                </li>
+            @endif
 
             <li class="{{ $active == 'contacts' ? 'active' : '' }}">
                 <a href="{{ route('contacts-c3') }}"><i class="fa fa-lg fa-fw fa-child"></i> <span
@@ -137,6 +139,7 @@
                     {{--</li>--}}
                 {{--</ul>--}}
             </li>
+
             {{--2018-04-18 LamVT [HEL_9] Add more setting for VND/USD conversion--}}
             @if(auth()->user()->role == "Manager" || auth()->user()->role == "Admin")
             <li class="{{ $active == 'config' ? 'active' : '' }}">
