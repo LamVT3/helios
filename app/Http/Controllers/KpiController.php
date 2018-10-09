@@ -40,7 +40,7 @@ class KpiController extends Controller
         $page_css       = array('selectize.default.css');
         $no_main_header = FALSE; //set true for lock.php and login.php
         $active         = 'assign_kpi';
-        $breadcrumbs    = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> Report <span>> KPI Report </span>";
+        $breadcrumbs    = "<i class=\"fa-fw fa fa-bar-chart-o\"></i> KPI Setting";
 
         $users  = User::getMarketerActive();
         $teams  = Team::all();
@@ -72,8 +72,8 @@ class KpiController extends Controller
 
     function get_data_by_maketer($data){
         uasort($data, function ($item1, $item2) {
-            if ($item1['total_actual'] == $item2['total_actual']) return 0;
-            return $item2['total_actual'] < $item1['total_actual'] ? -1 : 1;
+            if (@$item1['total_actual'] == @$item2['total_actual']) return 0;
+            return @$item2['total_actual'] < @$item1['total_actual'] ? -1 : 1;
         });
         return $data;
     }
@@ -480,47 +480,49 @@ class KpiController extends Controller
             $data[$user->username]['team'] = $team_name;
         }
 
-        // total kpi, actual each day
-        for ($i = 1; $i <= $days; $i++) {
+        if (isset($data['total']['kpi'])){
+            // total kpi, actual each day
+            for ($i = 1; $i <= $days; $i++) {
+                switch ($kpi_selection) {
+                    case "c3b_cost":
+                        $data['total']['kpi'][$i] = @$data['total']['count'] > 0 ?
+                            round(@$data['total']['kpi'][$i]/@$data['total']['count'],2) : 0 ;
+                        $data['total']['actual'][$i] = @$data['total']['c3b'][$i] > 0 ?
+                            round(@$data['total']['spent'][$i]/@$data['total']['c3b'][$i],2) : 0;
+                        break;
+                    case "l3_c3bg":
+                        $data['total']['kpi'][$i] = @$data['total']['count'] > 0 ?
+                            round(@$data['total']['kpi'][$i]*100/@$data['total']['count'],2) : 0 ;
+                        $data['total']['actual'][$i] = $data['total']['c3bg'][$i] > 0 ?
+                            round(@$data['total']['l3'][$i]*100/@$data['total']['c3bg'][$i],2) : 0;
+                        break;
+                    case "c3b":
+                    default:
+                        $data['total']['actual'][$i] = @$data['total']['c3b'][$i];
+                        break;
+                }
+            }
+
+            // total kpi, actual
             switch ($kpi_selection) {
                 case "c3b_cost":
-                    $data['total']['kpi'][$i] = $data['total']['count'] > 0 ?
-                        round($data['total']['kpi'][$i]/$data['total']['count'],2) : 0 ;
-                    $data['total']['actual'][$i] = $data['total']['c3b'][$i] > 0 ?
-                        round($data['total']['spent'][$i]/$data['total']['c3b'][$i],2) : 0;
+                    $data['total']['total_kpi'] = @$data['total']['count'] > 0 ?
+                        round(array_sum(@$data['total']['kpi'])/$days,2) : 0;
+                    $data['total']['total_actual'] = @$data['total']['count'] > 0 ? array_sum(@$data['total']['c3b']) > 0 ?
+                        round(array_sum(@$data['total']['spent'])/array_sum(@$data['total']['c3b']),2) : 0 : 0;
                     break;
                 case "l3_c3bg":
-                    $data['total']['kpi'][$i] = $data['total']['count'] > 0 ?
-                        round($data['total']['kpi'][$i]*100/$data['total']['count'],2) : 0 ;
-                    $data['total']['actual'][$i] = $data['total']['c3bg'][$i] > 0 ?
-                        round($data['total']['l3'][$i]*100/$data['total']['c3bg'][$i],2) : 0;
+                    $data['total']['total_kpi'] = @$data['total']['count'] > 0 ?
+                        round(array_sum(@$data['total']['kpi'])/$days,2) : 0;
+                    $data['total']['total_actual'] = @$data['total']['count'] > 0 ? array_sum(@$data['total']['c3bg']) > 0 ?
+                        round(array_sum(@$data['total']['l3'])*100/array_sum(@$data['total']['c3bg']),2) : 0 : 0;
                     break;
                 case "c3b":
                 default:
-                    $data['total']['actual'][$i] = $data['total']['c3b'][$i];
+                    $data['total']['total_kpi'] = array_sum(@$data['total']['kpi']);
+                    $data['total']['total_actual'] = array_sum(@$data['total']['c3b']);
                     break;
             }
-        }
-
-        // total kpi, actual
-        switch ($kpi_selection) {
-            case "c3b_cost":
-                $data['total']['total_kpi'] = $data['total']['count'] > 0 ?
-                    round(array_sum($data['total']['kpi'])/$days,2) : 0;
-                $data['total']['total_actual'] = $data['total']['count'] > 0 ? array_sum($data['total']['c3b']) > 0 ?
-                    round(array_sum($data['total']['spent'])/array_sum($data['total']['c3b']),2) : 0 : 0;
-                break;
-            case "l3_c3bg":
-                $data['total']['total_kpi'] = $data['total']['count'] > 0 ?
-                    round(array_sum($data['total']['kpi'])/$days,2) : 0;
-                $data['total']['total_actual'] = $data['total']['count'] > 0 ? array_sum($data['total']['c3bg']) > 0 ?
-                    round(array_sum($data['total']['l3'])*100/array_sum($data['total']['c3bg']),2) : 0 : 0;
-                break;
-            case "c3b":
-            default:
-                $data['total']['total_kpi'] = array_sum($data['total']['kpi']);
-                $data['total']['total_actual'] = array_sum($data['total']['c3b']);
-                break;
         }
         return $data;
     }
@@ -609,6 +611,11 @@ class KpiController extends Controller
 
         if($request->maketer){
             $arr_maketer = explode(',',$request->maketer);
+
+            if(isset($data_maketer["total"])) {
+                unset($data_maketer["total"]);
+            }
+            
             foreach ($data_maketer as $key => $item ){
                 if(isset($item['user_id'])) {
                     if(!in_array($item['user_id'], $arr_maketer)){
