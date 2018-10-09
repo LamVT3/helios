@@ -70,12 +70,11 @@
             <td class="no-border-right"><span style="font-weight: bold">{{ $team }}</span></td>
             <td class="border-bold-right"></td>
 
+            <td class="border-bold-right bolder_text total_text">{{ @$item['total_kpi'] }}</td>
             @if($gap < 0)
-                <td class="border-bold-right gap_text bolder_text total_text">{{ @$item['total_kpi'] }}</td>
                 <td class="border-bold-right gap_text bolder_text total_text">{{ @$item['total_actual'] }}</td>
                 <td class="border-bold-right gap_text bolder_text total_text">{{ $gap }}</td>
             @else
-                <td class="border-bold-right bolder_text total_text">{{ @$item['total_kpi'] }}</td>
                 <td class="border-bold-right bolder_text total_text">{{ @$item['total_actual'] }}</td>
                 <td class="border-bold-right bolder_text total_text">{{ $gap }}</td>
             @endif
