@@ -858,18 +858,17 @@
                         if(parseFloat(kpi.replace(/\,/g, '')) < parseFloat(actual.replace(/\,/g, ''))){
                             $(this).parent().addClass('kpi-gap');
                         }
+                    }else if($(this).parent().hasClass('widget-budget')){
+                        if(parseFloat(kpi.replace(/\,/g, '')) < 0){
+                            $(this).parent().addClass('kpi-gap');
+                        }
                     }else{
                         if(parseFloat(kpi.replace(/\,/g, '')) > parseFloat(actual.replace(/\,/g, ''))){
                             $(this).parent().addClass('kpi-gap');
                         }
                     }
 
-                    if($(this).parent().hasClass('widget-budget')){
-                        var int = parseFloat(kpi.replace(/\,/g, ''));
-                        if(int < 0){
-                            $(this).parent().addClass('kpi-gap');
-                        }
-                    }
+
 
                     if((kpi.length + actual.length) > 12
                         && (kpi.length + actual.length) < 24){
