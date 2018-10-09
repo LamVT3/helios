@@ -854,12 +854,18 @@
                     var kpi = $(this).find('.widget-kpi').text();
                     var actual = $(this).find('.widget-actual').text();
 
-                    if($(this).parent().hasClass('widget-budget') || $(this).parent().hasClass('widget-c3b-cost')){
+                    if($(this).parent().hasClass('widget-c3b-cost')){
                         if(parseFloat(kpi.replace(/\,/g, '')) < parseFloat(actual.replace(/\,/g, ''))){
                             $(this).parent().addClass('kpi-gap');
                         }
                     }else{
                         if(parseFloat(kpi.replace(/\,/g, '')) > parseFloat(actual.replace(/\,/g, ''))){
+                            $(this).parent().addClass('kpi-gap');
+                        }
+                    }
+
+                    if($(this).parent().hasClass('widget-budget')){
+                        if(parseFloat(kpi.replace(/\,/g, '')) < 0){
                             $(this).parent().addClass('kpi-gap');
                         }
                     }
