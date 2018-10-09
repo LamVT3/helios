@@ -558,8 +558,7 @@ class KpiController extends Controller
         foreach ($channels as $channel) {
             $ads = $this->get_ad_ids_channel($channel->_id);
 
-            $adResults = AdResult::where('creator_id', $userId)
-                ->whereIn('ad_id', $ads)
+            $adResults = AdResult::whereIn('ad_id', $ads)
                 ->whereBetween('date', [$first_day_this_month, $last_day_this_month])
                 ->get();
 
