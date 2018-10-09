@@ -399,11 +399,12 @@ div#wrapper_kpi, div#wrapper_kpi_by_team{
 }
 .total_text{
     font-weight: bold;
-    background: #d5d5d5;
+    color: white;
+    background: #3176b1;
 }
 .gap_text{
     color: white;
-    background: red;
+    background: #eb5a47;
 }
 #table_kpi td.act, #table_kpi_by_team td.act{
     width: auto;

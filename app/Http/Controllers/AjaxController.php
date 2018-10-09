@@ -395,12 +395,16 @@ class AjaxController extends Controller
         $query_dashboard = AdResult::where('date', '>=', $startDate)
             ->where('date', '<=', $endDate);
 
-        $kpi = array();
+        $kpi = $this->get_kpi_dashboard($startDate, $endDate);
+
         if($request->marketer_id){
             $query_dashboard->where('creator_id', $request->marketer_id);
+            $channel    = UserKpi::where('user_id', $request->marketer_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
+            $ads        = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+            $query_dashboard->whereIn('ad_id', $ads);
         }
+
         if($request->channel_id){
-            $ads    = array();
             $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
             $query_dashboard->whereIn('ad_id', $ads);
         }
@@ -412,8 +416,6 @@ class AjaxController extends Controller
         $l1         = $query_dashboard->sum('l1');
         $l8         = $query_dashboard->sum('l8');
         $l3         = $query_dashboard->sum('l3');
-
-        $kpi = $this->get_kpi_dashboard($startDate, $endDate);
 
         $dashboard['c3']        = $c3b + $c3bg;
 
@@ -468,9 +470,13 @@ class AjaxController extends Controller
             $endDate    = date('Y-m-t');
         }
 
-        $query = AdResult::raw(function ($collection) use ($startDate, $endDate) {
+        $channel    = UserKpi::groupBy('channel_id')->pluck('channel_id')->toArray();
+        $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+
+        $query = AdResult::raw(function ($collection) use ($startDate, $endDate, $ads_kpi) {
             return $collection->aggregate([
                 ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]],
+                ['$match' => ['ad_id' => ['$in' => $ads_kpi]]],
                 [
                     '$group' => [
                         '_id' => '$creator_id',
@@ -480,7 +486,6 @@ class AjaxController extends Controller
                 ['$sort' => ['c3b' => -1]]
             ]);
         });
-
 
         $table = '<table id="c3_leaderboard" class="table table-bordered table-hover no-boder-top" width="100%">
                             <thead>
@@ -552,9 +557,12 @@ class AjaxController extends Controller
             $endDate    = date('Y-m-t');
         }
 
-        $query = AdResult::raw(function ($collection) use ($startDate, $endDate) {
+        $channel    = UserKpi::groupBy('channel_id')->pluck('channel_id')->toArray();
+        $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+        $query = AdResult::raw(function ($collection) use ($startDate, $endDate, $ads_kpi) {
             return $collection->aggregate([
                 ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]],
+                ['$match' => ['ad_id' => ['$in' => $ads_kpi]]],
                 [
                     '$group' => [
                         '_id'       => '$creator_id',
@@ -682,10 +690,12 @@ class AjaxController extends Controller
             $startDate  = date('Y-m-01');
             $endDate    = date('Y-m-t');
         }
-
-        $query = AdResult::raw(function ($collection) use ($startDate, $endDate) {
+        $channel    = UserKpi::groupBy('channel_id')->pluck('channel_id')->toArray();
+        $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+        $query = AdResult::raw(function ($collection) use ($startDate, $endDate, $ads_kpi) {
             return $collection->aggregate([
                 ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]],
+                ['$match' => ['ad_id' => ['$in' => $ads_kpi]]],
                 [
                     '$group' => [
                         '_id'   => '$creator_id',
@@ -798,11 +808,14 @@ class AjaxController extends Controller
         if($request->marketer_id && $request->channel_id){
             $ads    = array();
             $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
+            $channel    = UserKpi::where('user_id', $request->marketer_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
+            $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
             $kpi = $this->getTotalKpi();
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
                 ['$match' => ['creator_id' => $request->marketer_id]],
                 ['$match' => ['ad_id' => ['$in' => $ads]]],
+                ['$match' => ['ad_id' => ['$in' => $ads_kpi]]],
                 [
                     '$group' => [
                         '_id' => '$date',
@@ -814,9 +827,12 @@ class AjaxController extends Controller
             ];
         }elseif($request->marketer_id && !$request->channel_id){
             $kpi = $this->getTotalKpi();
+            $channel    = UserKpi::where('user_id', $request->marketer_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
+            $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
                 ['$match' => ['creator_id' => $request->marketer_id]],
+                ['$match' => ['ad_id' => ['$in' => $ads_kpi]]],
                 [
                     '$group' => [
                         '_id' => '$date',
@@ -1322,18 +1338,17 @@ class AjaxController extends Controller
         $request = request();
         if($request->marketer_id && !$request->channel_id){
             $users      = UserKpi::where('user_id', $request->marketer_id)->get();
-            $channel    = UserKpi::where('user_id', $request->marketer_id)->groupBy('channel_id')->get();
+            $channel    = UserKpi::where('user_id', $request->marketer_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
         }else if(!$request->marketer_id && $request->channel_id){
             $users      = UserKpi::where('channel_id', $request->channel_id)->get();
-            $channel    = UserKpi::where('channel_id', $request->channel_id)->groupBy('channel_id')->get();
+            $channel    = UserKpi::where('channel_id', $request->channel_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
         }else if($request->marketer_id && $request->channel_id){
             $users      = UserKpi::where('user_id', $request->marketer_id)->where('channel_id', $request->channel_id)->get();
-            $channel    = UserKpi::where('user_id', $request->marketer_id)->where('channel_id', $request->channel_id)->get();
+            $channel    = UserKpi::where('user_id', $request->marketer_id)->where('channel_id', $request->channel_id)->pluck('channel_id')->toArray();
         }else{
             $users      = UserKpi::all();
-            $channel    = UserKpi::groupBy('channel_id')->get();
+            $channel    = UserKpi::groupBy('channel_id')->pluck('channel_id')->toArray();
         }
-
         foreach ($users as $user){
 
             $kpi            = @$user->kpi;
@@ -1363,6 +1378,10 @@ class AjaxController extends Controller
             @$rs['kpi_cost']     = round(@$rs['kpi_cost'] / $cnt, 2);
             @$rs['kpi_l3_c3bg']  = round(@$rs['kpi_l3_c3bg'] / $cnt, 4);
         }
+
+        @$rs['channel'] = $channel;
+        @$rs['total_channel'] = count($channel);
+
         return $rs;
     }
 
