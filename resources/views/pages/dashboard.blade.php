@@ -530,12 +530,12 @@
         .widget-c3 .widget-actual.text {
             padding: 0 14px;
             font-weight: bold;
-            color: #3F51B5;
+            /*color: #3F51B5;*/
         }
 
         .widget-kpi.text {
             padding: 0 14px;
-            color: #F44336;
+            /*color: #4CAF50;*/
             font-style: italic;
         }
         /*
@@ -551,7 +551,7 @@
         .widget-c3b-cost .widget-actual.text {
             padding: 0 14px;
             font-weight: bold;
-            color: #4CAF50;
+            /*color: #4CAF50;*/
         }
 
         /*.widget-budget .widget-title {
@@ -566,7 +566,7 @@
         .widget-l3-c3bg .widget-actual.text {
             padding: 0 14px;
             font-weight: bold;
-            color: #FF9800;
+            /*color: #FF9800;*/
         }
 
         .widget-c3bg-c3b .progress-bar {
@@ -576,7 +576,7 @@
         .widget-c3bg-c3b .widget-actual.text {
             padding: 0 14px;
             font-weight: bold;
-            color: #FF66FF;
+            /*color: #FF66FF;*/
         }
 
         .widget-budget .progress-bar {
@@ -586,7 +586,7 @@
         .widget-budget .widget-actual.text {
             padding: 0 14px;
             font-weight: bold;
-            color: #FF9800;
+            /*color: #FF9800;*/
         }
 
         .widget-me-re .progress-bar {
@@ -596,7 +596,7 @@
         .widget-me-re .widget-actual.text {
             padding: 0 14px;
             font-weight: bold;
-            color: #CCCC00;
+            /*color: #CCCC00;*/
         }
 
         .widget-l8-l1 .progress-bar {
@@ -606,7 +606,7 @@
         .widget-l8-l1 .widget-actual.text {
             padding: 0 14px;
             font-weight: bold;
-            color: #9999FF;
+            /*color: #9999FF;*/
         }
 
         .widget-l1-c3bg .progress-bar {
@@ -616,7 +616,7 @@
         .widget-l1-c3bg .widget-actual.text {
             padding: 0 14px;
             font-weight: bold;
-            color: #3F51B5;
+            /*color: #3F51B5;*/
         }
 
         /*.widget-c3 .widget-title {
@@ -632,6 +632,11 @@
         .line-height-sm{
             font-size: 95%!important;
             line-height: 3.82em!important;
+        }
+
+        .kpi-gap{
+            border: 1px solid red !important;
+            color: #F44336!important;
         }
 
     </style>
@@ -815,6 +820,8 @@
             $('.widget-l1-c3bg .widget-actual').html('...');
             $('.widget-l8-l1 .widget-actual').html('...');
 
+            $('div.panel-default').removeClass('kpi-gap');
+
             $marketer_id = $('#marketer').val();
             $channel_id  = $('#channel').val();
 
@@ -842,6 +849,16 @@
                 $('.panel-body').each(function( index ) {
                     var kpi = $(this).find('.widget-kpi').text();
                     var actual = $(this).find('.widget-actual').text();
+
+                    if($(this).parent().hasClass('widget-budget')){
+                        if(parseFloat(kpi) < parseFloat(actual)){
+                            $(this).parent().addClass('kpi-gap');
+                        }
+                    }else{
+                        if(parseFloat(kpi) > parseFloat(actual)){
+                            $(this).parent().addClass('kpi-gap');
+                        }
+                    }
 
                     if((kpi.length + actual.length) > 12
                         && (kpi.length + actual.length) < 24){
