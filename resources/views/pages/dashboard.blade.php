@@ -637,10 +637,18 @@
         }
         .kpi-gap{
             border: 1px solid red !important;
-            color: #F44336 !important;
+            color: #f44336 !important;
         }
         .kpi-gap .widget-actual.text{
-            color: #F44336 !important;
+            color: #f44336 !important;
+        }
+
+        .kpi-archived {
+            /*border: 1px solid #3176b1 !important;*/
+            color: #3176b1 !important;
+        }
+        .kpi-archived .widget-actual.text{
+            color: #3176b1 !important;
         }
 
     </style>
@@ -825,6 +833,7 @@
             $('.widget-l8-l1 .widget-actual').html('...');
 
             $('div.panel-default').removeClass('kpi-gap');
+            $('div.panel-default').addClass('kpi-archived');
 
             $marketer_id = $('#marketer').val();
             $channel_id  = $('#channel').val();
@@ -856,19 +865,20 @@
 
                     if($(this).parent().hasClass('widget-c3b-cost')){
                         if(parseFloat(kpi.replace(/\,/g, '')) < parseFloat(actual.replace(/\,/g, ''))){
+                            $(this).parent().removeClass('kpi-archived');
                             $(this).parent().addClass('kpi-gap');
                         }
                     }else if($(this).parent().hasClass('widget-budget')){
                         if(parseFloat(kpi.replace(/\,/g, '')) < 0){
+                            $(this).parent().removeClass('kpi-archived');
                             $(this).parent().addClass('kpi-gap');
                         }
                     }else{
                         if(parseFloat(kpi.replace(/\,/g, '')) > parseFloat(actual.replace(/\,/g, ''))){
+                            $(this).parent().removeClass('kpi-archived');
                             $(this).parent().addClass('kpi-gap');
                         }
                     }
-
-
 
                     if((kpi.length + actual.length) > 12
                         && (kpi.length + actual.length) < 24){
