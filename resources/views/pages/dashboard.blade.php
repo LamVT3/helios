@@ -64,16 +64,11 @@
                                 <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
                                 <span></span> <b class="caret"></b>
                             </div>
-                            <i></i>
-                        </section>
-                    </div>
-                    <div class="row">
-                        <section class="col col-sm-6 col-lg-3">
-                            <div id="" class="pull-left"
-                                 style="margin: 10px 0px 0px 0px; padding: 10px px 7px 10px;">
+                            <div id="" class="pull-right"
+                                 style="">
                                 <button id="filter" class="btn btn-primary btn-sm" type="button" style="float: right" >
-                                    <i class="fa fa-filter"></i>
-                                    Filter
+                                    <i class="fa fa-search"></i>
+
                                 </button>
                             </div>
                         </section>
@@ -531,6 +526,7 @@
             padding: 0 14px;
             font-weight: bold;
             /*color: #3F51B5;*/
+            color: #3b3f52;
         }
 
         .widget-kpi.text {
@@ -552,6 +548,7 @@
             padding: 0 14px;
             font-weight: bold;
             /*color: #4CAF50;*/
+            color: #3b3f52;
         }
 
         /*.widget-budget .widget-title {
@@ -567,6 +564,7 @@
             padding: 0 14px;
             font-weight: bold;
             /*color: #FF9800;*/
+            color: #3b3f52;
         }
 
         .widget-c3bg-c3b .progress-bar {
@@ -577,6 +575,7 @@
             padding: 0 14px;
             font-weight: bold;
             /*color: #FF66FF;*/
+            color: #3b3f52;
         }
 
         .widget-budget .progress-bar {
@@ -587,6 +586,7 @@
             padding: 0 14px;
             font-weight: bold;
             /*color: #FF9800;*/
+            color: #3b3f52;
         }
 
         .widget-me-re .progress-bar {
@@ -597,6 +597,7 @@
             padding: 0 14px;
             font-weight: bold;
             /*color: #CCCC00;*/
+            color: #3b3f52;
         }
 
         .widget-l8-l1 .progress-bar {
@@ -607,6 +608,7 @@
             padding: 0 14px;
             font-weight: bold;
             /*color: #9999FF;*/
+            color: #3b3f52;
         }
 
         .widget-l1-c3bg .progress-bar {
@@ -617,6 +619,7 @@
             padding: 0 14px;
             font-weight: bold;
             /*color: #3F51B5;*/
+            color: #3b3f52;
         }
 
         /*.widget-c3 .widget-title {
@@ -628,15 +631,16 @@
             font-size: 130%!important;
             line-height: 2.82em!important;
         }
-
         .line-height-sm{
             font-size: 95%!important;
             line-height: 3.82em!important;
         }
-
         .kpi-gap{
             border: 1px solid red !important;
-            color: #F44336!important;
+            color: #F44336 !important;
+        }
+        .kpi-gap .widget-actual.text{
+            color: #F44336 !important;
         }
 
     </style>
@@ -850,7 +854,7 @@
                     var kpi = $(this).find('.widget-kpi').text();
                     var actual = $(this).find('.widget-actual').text();
 
-                    if($(this).parent().hasClass('widget-budget')){
+                    if($(this).parent().hasClass('widget-budget') || $(this).parent().hasClass('widget-c3b-cost')){
                         if(parseFloat(kpi.replace(/\,/g, '')) < parseFloat(actual.replace(/\,/g, ''))){
                             $(this).parent().addClass('kpi-gap');
                         }
