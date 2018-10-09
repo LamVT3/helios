@@ -180,22 +180,22 @@
 
             $('input#day').each(function() {
                 var value = $(this).val();
-                if (!value || value <= 0){
-                    isValid = false;
-                    return false;
-                }
                 if (serial === 1) {
+                    if (!value || value <= 0){
+                        isValid = false;
+                        return false;
+                    }
                     kpi[cnt] = parseInt(value);
                     serial++;
                 } else if (serial === 2) {
                     kpi_cost[cnt] = parseFloat(value);
                     serial++;
                 } else {
-                    kpi_l3_c3bg[cnt] = parseFloat(value);
-                    if (kpi_l3_c3bg[cnt] > 100) {
+                    if (!value || value <= 0 || parseFloat(value) > 100){
                         isValid = false;
                         return false;
                     }
+                    kpi_l3_c3bg[cnt] = parseFloat(value);
                     serial = 1;
                     cnt++;
                 }
