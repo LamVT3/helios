@@ -67,12 +67,7 @@
         <tr>
             <?php $gap = $kpi_selection == "c3b_cost" ? @$item['total_kpi'] - @$item['total_actual'] : @$item['total_actual'] - @$item['total_kpi'] ?>
 
-            @if($gap < 0)
-                <td class="no-border-right gap_text"><span style="font-weight: bold">{{ $team }}</span></td>
-            @else
-                <td class="no-border-right"><span style="font-weight: bold">{{ $team }}</span></td>
-            @endif
-
+            <td class="no-border-right"><span style="font-weight: bold">{{ $team }}</span></td>
             <td class="border-bold-right"></td>
 
             @if($gap < 0)
