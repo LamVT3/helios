@@ -865,7 +865,8 @@
                     }
 
                     if($(this).parent().hasClass('widget-budget')){
-                        if(parseFloat(kpi.replace(/\,/g, '')) < 0){
+                        var int = parseFloat(kpi.replace(/\,/g, ''));
+                        if(int < 0){
                             $(this).parent().addClass('kpi-gap');
                         }
                     }
