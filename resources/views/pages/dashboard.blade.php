@@ -851,11 +851,11 @@
                     var actual = $(this).find('.widget-actual').text();
 
                     if($(this).parent().hasClass('widget-budget')){
-                        if(parseFloat(kpi) < parseFloat(actual)){
+                        if(parseFloat(kpi.replace(/\,/g, '')) < parseFloat(actual.replace(/\,/g, ''))){
                             $(this).parent().addClass('kpi-gap');
                         }
                     }else{
-                        if(parseFloat(kpi) > parseFloat(actual)){
+                        if(parseFloat(kpi.replace(/\,/g, '')) > parseFloat(actual.replace(/\,/g, ''))){
                             $(this).parent().addClass('kpi-gap');
                         }
                     }
