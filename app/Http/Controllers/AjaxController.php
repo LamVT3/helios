@@ -470,8 +470,15 @@ class AjaxController extends Controller
             $endDate    = date('Y-m-t');
         }
 
-        $channel    = UserKpi::groupBy('channel_id')->pluck('channel_id')->toArray();
-        $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+        $channel    = UserKpi::pluck('user_id', 'channel_id')->toArray();
+        $ads_kpi = [];
+        foreach ($channel as $channel_id => $user_id){
+            $ads    = Ad::where('channel_id', $channel_id)
+                ->where('creator_id', $user_id)
+                ->pluck('_id')->toArray();
+
+            $ads_kpi = array_merge($ads ,$ads_kpi );
+        }
 
         $query = AdResult::raw(function ($collection) use ($startDate, $endDate, $ads_kpi) {
             return $collection->aggregate([
@@ -557,8 +564,16 @@ class AjaxController extends Controller
             $endDate    = date('Y-m-t');
         }
 
-        $channel    = UserKpi::groupBy('channel_id')->pluck('channel_id')->toArray();
-        $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+        $channel    = UserKpi::pluck('user_id', 'channel_id')->toArray();
+        $ads_kpi = [];
+        foreach ($channel as $channel_id => $user_id){
+            $ads    = Ad::where('channel_id', $channel_id)
+                ->where('creator_id', $user_id)
+                ->pluck('_id')->toArray();
+
+            $ads_kpi = array_merge($ads ,$ads_kpi );
+        }
+
         $query = AdResult::raw(function ($collection) use ($startDate, $endDate, $ads_kpi) {
             return $collection->aggregate([
                 ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]],
@@ -690,8 +705,17 @@ class AjaxController extends Controller
             $startDate  = date('Y-m-01');
             $endDate    = date('Y-m-t');
         }
-        $channel    = UserKpi::groupBy('channel_id')->pluck('channel_id')->toArray();
-        $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+
+        $channel    = UserKpi::pluck('user_id', 'channel_id')->toArray();
+        $ads_kpi = [];
+        foreach ($channel as $channel_id => $user_id){
+            $ads    = Ad::where('channel_id', $channel_id)
+                ->where('creator_id', $user_id)
+                ->pluck('_id')->toArray();
+
+            $ads_kpi = array_merge($ads ,$ads_kpi );
+        }
+
         $query = AdResult::raw(function ($collection) use ($startDate, $endDate, $ads_kpi) {
             return $collection->aggregate([
                 ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]],
