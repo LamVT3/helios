@@ -12,6 +12,7 @@ use App\Source;
 use App\Team;
 use App\User;
 use App\Subcampaign;
+use App\UserKpi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -1436,8 +1437,15 @@ class SubReportController extends Controller
 			$ad_id              = $query->pluck('_id')->toArray();
 		}
 		else {
-			$channels           = Channel::all();
-			$query              = Ad::where($data_where);
+			if (request()->marketer_id){
+				$arr_channels_id = UserKpi::where('user_id', request()->marketer_id)->pluck('channel_id')->toArray();
+				$channels           = Channel::whereIn('_id', $arr_channels_id)->get();
+				$query              = Ad::where($data_where)->whereIn('channel_id', $arr_channels_id);
+			}
+			else{
+				$channels           = Channel::all();
+				$query              = Ad::where($data_where);
+			}
 			$arr_ad             = $query->pluck('channel_id','_id');
 			$ad_id              = $query->pluck('_id')->toArray();
 		}
@@ -2137,10 +2145,9 @@ class SubReportController extends Controller
 
 		$channels_arr       = explode(',', request()->channel_name);
 		$channels_id        = Channel::whereIn('name', $channels_arr)->get()->pluck('_id');
+		$data_where         = $this->getWhereDataByCreatorID();
 
 		if (count($channels_id) > 0){
-			$data_where = $this->getWhereDataByCreatorID();
-
 			if (count($data_where) >= 1) {
 				$ad_id = Ad::where($data_where)->whereIn('channel_id', $channels_id)->pluck('_id')->toArray();
 			}
@@ -2149,7 +2156,14 @@ class SubReportController extends Controller
 			}
 		}
 		else{
-			$ad_id  = $this->getAds();
+			if (request()->marketer_id){
+				$arr_channels_id    = UserKpi::where('user_id', request()->marketer_id)->pluck('channel_id')->toArray();
+				$ad_id              = Ad::where($data_where)->whereIn('channel_id', $arr_channels_id)->pluck('_id')->toArray();
+
+			}
+			else{
+				$ad_id              = $this->getAds();
+			}
 		}
 
 		$array_reason = [ 'C3A_Duplicated', 'C3B_Under18', 'C3B_Duplicated15Days', 'C3A_Test' , 'C3B_SMS_Error'];
