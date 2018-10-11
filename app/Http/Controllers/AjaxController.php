@@ -400,14 +400,15 @@ class AjaxController extends Controller
         $channel = [];
         if($request->marketer_id){
             $channel    = UserKpi::where('user_id', $request->marketer_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
+            $ads        = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+            $query_dashboard->whereIn('ad_id', $ads);
         }
 
         if($request->channel_id){
             $channel = [$request->channel_id];
+            $ads        = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+            $query_dashboard->whereIn('ad_id', $ads);
         }
-
-        $ads        = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
-        $query_dashboard->whereIn('ad_id', $ads);
 
         $c3b        = $query_dashboard->sum('c3b');
         $c3bg       = $query_dashboard->sum('c3bg');
