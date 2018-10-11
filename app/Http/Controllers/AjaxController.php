@@ -758,15 +758,10 @@ class AjaxController extends Controller
         $request    = request();
 
         if($request->marketer_id && $request->channel_id){
-            $ads    = array();
-            $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
-            $channel    = UserKpi::where('user_id', $request->marketer_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
-            $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+            $ads_kpi    = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
             $kpi = $this->getTotalKpi();
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
-                ['$match' => ['creator_id' => $request->marketer_id]],
-                ['$match' => ['ad_id' => ['$in' => $ads]]],
                 ['$match' => ['ad_id' => ['$in' => $ads_kpi]]],
                 [
                     '$group' => [
@@ -783,7 +778,6 @@ class AjaxController extends Controller
             $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
-                ['$match' => ['creator_id' => $request->marketer_id]],
                 ['$match' => ['ad_id' => ['$in' => $ads_kpi]]],
                 [
                     '$group' => [
@@ -795,13 +789,11 @@ class AjaxController extends Controller
                 ]
             ];
         }elseif($request->channel_id && !$request->marketer_id){
+            $ads_kpi    = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
             $kpi = $this->getTotalKpi();
-            $ads    = array();
-            $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
-
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
-                ['$match' => ['ad_id' => ['$in' => $ads]]],
+                ['$match' => ['ad_id' => ['$in' => $ads_kpi]]],
                 [
                     '$group' => [
                         '_id' => '$date',

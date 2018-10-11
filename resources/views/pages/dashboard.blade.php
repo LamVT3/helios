@@ -461,7 +461,7 @@
         <input type="hidden" name="C3AC3B_month" id="C3AC3B_month" value="{{$month}}">
         <input type="hidden" name="get-channel-url" id="get-channel-url" value="{{route('dashboard-get-channel')}}">
         <input type="hidden" id="c3_total" value="{{ $dashboard['c3a_c3b']["c3"] }}">
-        <input type="hidden" name="C3AC3B_url" value="{{route('get-C3AC3B')}}">
+        <input type="hidden" name="C3AC3B_url" value="{{route('dashboard-get-c3a-c3b')}}">
 
     </div>
     <!-- END MAIN PANEL -->
