@@ -562,9 +562,9 @@ class SubReportController extends Controller
         if ($request->team_id) {
             $data_where['team_id']          = $request->team_id;
         }
-        if ($request->marketer_id) {
-            $data_where['creator_id']      = $request->marketer_id;
-        }
+//        if ($request->marketer_id) {
+//            $data_where['creator_id']      = $request->marketer_id;
+//        }
         if ($request->campaign_id) {
             $data_where['campaign_id']      = $request->campaign_id;
         }
