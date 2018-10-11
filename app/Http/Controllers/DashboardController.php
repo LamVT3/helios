@@ -2,16 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\ActivityBooking;
-use App\Admin_account;
 use App\AdResult;
-use App\CarBooking;
 use App\Channel;
-use App\Customer;
-use App\CustomerActivity;
-use App\Dm_contact;
-use App\HotelBooking;
-use App\TourBooking;
 use App\User;
 use App\UserKpi;
 use Carbon\Carbon;
@@ -49,7 +41,7 @@ class DashboardController extends Controller
         $user_role  = auth()->user()->role;
         $user_id    = auth()->user()->_id;
 
-        $users      = $users = User::where('role', 'Marketer')->where('is_active', 1)->get();
+        $users = User::where('role', 'Marketer')->where('is_active', 1)->get();
 
         $array_month = array();
         for ($i = 1; $i <= $d; $i++) {
@@ -61,9 +53,10 @@ class DashboardController extends Controller
         if($user_role == 'Marketer'){
             $kpi        = $this->getTotalKpi($user_id);
             $channels   = $this->get_channel($user_id);
+            $ads_kpi    = $this->get_ad_kpi($user_id);
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
-                ['$match' => ['creator_id' => $user_id]],
+                ['$match' => ['ad_id' => $ads_kpi]],
                 [
                     '$group' => [
                         '_id' => '$date',
@@ -244,4 +237,16 @@ class DashboardController extends Controller
         }
         return $channel;
     }
+
+    private function get_ad_kpi($marketer_id = null){
+        $request = request();
+
+        $channel    = UserKpi::where('user_id', $marketer_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
+        $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+
+        return $ads_kpi;
+    }
+
+
+
 }
