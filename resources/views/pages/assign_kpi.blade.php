@@ -203,9 +203,9 @@
 
             if (!isValid) {
                 alert("Please check issues below :\n\n" +
-                    "- There is a value less than 1 !\n" +
+                    "- C3B or L3/C3BG value less than or equal to 0 (%) !\n" +
                     "or\n" +
-                    "- A L3/C3BG value greater than 100% !");
+                    "- L3/C3BG value greater than 100% !");
                 return false;
             }
 

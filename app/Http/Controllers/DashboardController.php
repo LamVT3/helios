@@ -2,16 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\ActivityBooking;
-use App\Admin_account;
 use App\AdResult;
-use App\CarBooking;
 use App\Channel;
-use App\Customer;
-use App\CustomerActivity;
-use App\Dm_contact;
-use App\HotelBooking;
-use App\TourBooking;
 use App\User;
 use App\UserKpi;
 use Carbon\Carbon;
@@ -49,7 +41,7 @@ class DashboardController extends Controller
         $user_role  = auth()->user()->role;
         $user_id    = auth()->user()->_id;
 
-        $users      = $users = User::where('role', 'Marketer')->where('is_active', 1)->get();
+        $users = User::where('role', 'Marketer')->where('is_active', 1)->get();
 
         $array_month = array();
         for ($i = 1; $i <= $d; $i++) {
@@ -61,9 +53,10 @@ class DashboardController extends Controller
         if($user_role == 'Marketer'){
             $kpi        = $this->getTotalKpi($user_id);
             $channels   = $this->get_channel($user_id);
+            $ads_kpi    = $this->get_ad_kpi($user_id);
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
-                ['$match' => ['creator_id' => $user_id]],
+                ['$match' => ['ad_id' => $ads_kpi]],
                 [
                     '$group' => [
                         '_id' => '$date',
@@ -244,4 +237,164 @@ class DashboardController extends Controller
         }
         return $channel;
     }
+
+    private function get_ad_kpi($marketer_id = null){
+        $request = request();
+
+        $channel    = UserKpi::where('user_id', $marketer_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
+        $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+
+        return $ads_kpi;
+    }
+
+    private function getDate($month = null){
+        $request = request();
+        if($month){
+            $year   = date('Y'); /* nam hien tai*/
+            $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+            $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
+            $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+        }else if($request->month){
+            $month  = request('month');
+            $year   = date('Y'); /* nam hien tai*/
+            $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+            $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
+            $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+        }else {
+            $month  = date('m'); /* thang hien tai */
+            $year   = date('Y'); /* nam hien tai*/
+            $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
+            $first_day_this_month = date('Y-m-01'); /* ngày đàu tiên của tháng */
+            $last_day_this_month = date('Y-m-t'); /* ngày cuối cùng của tháng */
+        }
+
+        return [$year, $month, $d, $first_day_this_month, $last_day_this_month];
+    }
+
+    public function getC3AC3B(){
+        $request = request();
+        // get start date and end date
+        list($year, $month, $d, $first_day_this_month, $last_day_this_month) = $this->getDate();
+
+        $source_id = request()->source_id;
+        $marketer_id = request()->marketer_id;
+        $team_id = request()->team_id;
+        $campaign_id = request()->campaign_id;
+        $subcampaign_id = request()->subcampaign_id;
+        $channel_name = request()->channel_name;
+        $channel_id = request()->channel_id;
+
+        $isEmpy = false;
+        if($channel_name != "" || $source_id != "" || $marketer_id != "" ||$team_id != "" ||$campaign_id != "" ||$subcampaign_id != "" || $channel_id!= ""){
+            $isEmpy =true;
+        }
+
+        $channel = [];
+        if($request->marketer_id){
+            $channel    = UserKpi::where('user_id', $request->marketer_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
+        }
+
+        if($request->channel_id){
+            $channel = [$request->channel_id];
+        }
+
+        $ad_id  = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+
+        $array_month = array();
+        for ($i = 1; $i <= $d; $i++) {
+            //$array_month[date($i)] = 0;
+            $timestamp = strtotime($year . "-" . $month . "-" . $i) * 1000;
+            $array_month[$i] = $timestamp;
+        }
+
+        $array_reason = [ 'C3A_Duplicated', 'C3B_Under18', 'C3B_Duplicated15Days', 'C3A_Test' ];
+        $rs = [];
+
+        if(count($ad_id) >= 0 && $isEmpy){
+            $match = [
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                ['$match' => ['ad_id' => ['$in' => $ad_id]]],
+                [
+                    '$group' => [
+                        '_id'                  => '$date',
+                        'c3'                   => [ '$sum' => '$c3' ],
+                        'C3A_Duplicated'       => [ '$sum' => '$C3A_Duplicated' ],
+                        'C3B_Under18'          => [ '$sum' => '$C3B_Under18' ],
+                        'C3B_Duplicated15Days' => [ '$sum' => '$C3B_Duplicated15Days' ],
+                        'C3A_Test'             => [ '$sum' => '$C3A_Test' ],
+                    ]
+                ]
+            ];
+        }else{
+            $match = [
+                ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
+                [
+                    '$group' => [
+                        '_id'                  => '$date',
+                        'c3'                   => [ '$sum' => '$c3' ],
+                        'C3A_Duplicated'       => [ '$sum' => '$C3A_Duplicated' ],
+                        'C3B_Under18'          => [ '$sum' => '$C3B_Under18' ],
+                        'C3B_Duplicated15Days' => [ '$sum' => '$C3B_Duplicated15Days' ],
+                        'C3A_Test'             => [ '$sum' => '$C3A_Test' ],
+                    ]
+                ]
+            ];
+        }
+
+        $chart = [];
+        $result = [];
+
+        $query_chart = AdResult::raw(function ($collection) use ($match) {
+            return $collection->aggregate($match);
+        });
+
+        foreach ( $array_month as $key => $timestamp ) {
+            $rs['c3'][$key] = 0;
+            $rs['C3A_Duplicated'][$key] = 0;
+            $rs['C3B_Under18'][$key] = 0;
+            $rs['C3B_Duplicated15Days'][$key] = 0;
+            $rs['C3A_Test'][$key] = 0;
+        }
+
+        foreach ( $query_chart as $item_result ) {
+            $day = explode( '-', $item_result['_id'] );
+
+            $rs['c3'][ (int) ( $day[2] ) ]                   += $item_result['c3'];
+            $rs['C3A_Duplicated'][ (int) ( $day[2] ) ]       += $item_result['C3A_Duplicated'];
+            $rs['C3B_Under18'][ (int) ( $day[2] ) ]          += $item_result['C3B_Under18'];
+            $rs['C3B_Duplicated15Days'][ (int) ( $day[2] ) ] += $item_result['C3B_Duplicated15Days'];
+            $rs['C3A_Test'][ (int) ( $day[2] ) ]             += $item_result['C3A_Test'];
+        }
+
+        foreach ( $array_month as $key => $timestamp ) {
+            $chart['C3A_Duplicated'][] = [
+                $timestamp,
+                isset( $rs['C3A_Duplicated'][ $key ] ) ? $rs['C3A_Duplicated'][ $key ] : 0,
+            ];
+
+            $chart['C3B_Under18'][] = [
+                $timestamp,
+                isset( $rs['C3B_Under18'][ $key ] ) ? $rs['C3B_Under18'][ $key ] : 0,
+            ];
+
+            $chart['C3B_Duplicated15Days'][] = [
+                $timestamp,
+                isset( $rs['C3B_Duplicated15Days'][ $key ] ) ? $rs['C3B_Duplicated15Days'][ $key ] : 0,
+            ];
+
+            $chart['C3A_Test'][] = [
+                $timestamp,
+                isset( $rs['C3A_Test'][ $key ] ) ? $rs['C3A_Test'][ $key ] : 0,
+            ];
+        }
+
+        $result['C3A_Duplicated']       = json_encode( $chart['C3A_Duplicated'] );
+        $result['C3B_Under18']          = json_encode( $chart['C3B_Under18'] );
+        $result['C3B_Duplicated15Days'] = json_encode( $chart['C3B_Duplicated15Days'] );
+        $result['C3A_Test']             = json_encode( $chart['C3A_Test'] );
+        $result['c3']                   = json_encode($rs['c3']);
+
+        return $result;
+    }
+
 }

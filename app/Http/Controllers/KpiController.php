@@ -127,7 +127,7 @@ class KpiController extends Controller
             $channelId = sizeof($channels) > 0 ? $channels[0]->_id : 0;
         }
 
-        $userKpi = UserKpi::getKpiTwoParam($userId, $channelId); // get kpi follow user and channel
+        $userKpi = UserKpi::getKpiUserChannelId($userId, $channelId); // get kpi follow user and channel
 
         $kpi = $kpi_cost = $kpi_l3_c3bg = array();
         if($userId) {
@@ -204,7 +204,7 @@ class KpiController extends Controller
             $data[$user->username]['total_actual'] = 0;
 
             $db_data = $this->get_db_data($userId);
-            $userKpis = UserKpi::getKpiOneParam($user->_id);
+            $userKpis = UserKpi::getKpiUserId($user->_id, $year, $month);
 
             // count number of channels of user
             $data[$user->username]['count'] = 0;
