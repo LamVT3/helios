@@ -1294,11 +1294,18 @@ class AjaxController extends Controller
             $users      = UserKpi::all();
             $channel    = UserKpi::groupBy('channel_id')->pluck('channel_id')->toArray();
         }
-        foreach ($users as $user){
 
+        $user_active = User::where('role', 'Marketer')->where('is_active', 1)->pluck('_id')->toArray();
+
+        foreach ($users as $user){
             $kpi            = @$user->kpi;
             $kpi_cost       = @$user->kpi_cost;
             $kpi_l3_c3bg    = @$user->kpi_l3_c3bg;
+            $id             = @$user->user_id;
+
+            if(!in_array($id, $user_active)){
+                continue;
+            }
 
             foreach ($day_between as $date){
                 $date   = explode('-', $date);
