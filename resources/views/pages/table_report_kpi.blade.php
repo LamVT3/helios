@@ -37,7 +37,7 @@
         <td class="border-bold-right total_text index3">{{ $total_kpi.(@$kpi_selection == 'l3_c3bg' ? '%' : '') }}</td>
         <td class="border-bold-right total_text index3" id="act">
             {{ $total_actual.(@$kpi_selection == 'l3_c3bg' ? '%' : '') }}
-            <div class="hidden details index4">
+            <div class="hidden details_total index4">
                 {{@$kpi_selection == 'c3b_cost' ? "spent: ".array_sum(@$data_maketer['total']['spent'] ? $data_maketer['total']['spent'] : array()).
                 "\rc3b: ".array_sum(@$data_maketer['total']['c3b'] ? $data_maketer['total']['c3b'] : array()) :
                  (@$kpi_selection == 'l3_c3bg' ? "l3: ".array_sum(@$data_maketer['total']['l3'] ? $data_maketer['total']['l3'] : array()).
@@ -84,7 +84,7 @@
             @if($gap < 0)
                 <td class="border-bold-right total_text gap_text index3" id="act">
                     {{ @$item['total_actual'].(@$kpi_selection == 'l3_c3bg' ? '%' : '')  }}
-                    <div class="hidden details index4">
+                    <div class="hidden details_total index4">
                         {{@$kpi_selection == 'c3b_cost' ? "spent: ".array_sum(@$item['spent'] ? $item['spent'] : array()).
                         "\rc3b: ".array_sum(@$item['c3b'] ? $item['c3b'] : array()) :
                          (@$kpi_selection == 'l3_c3bg' ? "l3: ".array_sum(@$item['l3'] ? $item['l3'] : array()).
@@ -95,7 +95,7 @@
             @else
                 <td class="border-bold-right total_text index3" id="act">
                     {{ @$item['total_actual'].(@$kpi_selection == 'l3_c3bg' ? '%' : '') }}
-                    <div class="hidden details index4">
+                    <div class="hidden details_total index4">
                         {{@$kpi_selection == 'c3b_cost' ? "spent: ".array_sum(@$item['spent'] ? $item['spent'] : array()).
                         "\rc3b: ".array_sum(@$item['c3b'] ? $item['c3b'] : array()) :
                          (@$kpi_selection == 'l3_c3bg' ? "l3: ".array_sum(@$item['l3'] ? $item['l3'] : array()).
@@ -139,7 +139,7 @@
                     @if($gap < 0)
                         <td class="border-bold-right total_text gap_text index3" id="act">
                             {{ $value['total_actual'].(@$kpi_selection == 'l3_c3bg' ? '%' : '') }}
-                            <div class="hidden details index4">
+                            <div class="hidden details_total index4">
                                 {{@$kpi_selection == 'c3b_cost' ? "spent: ".array_sum(@$value['spent'] ? $value['spent'] : array()).
                                 "\rc3b: ".array_sum(@$value['c3b'] ? $value['c3b'] : array()) :
                                  (@$kpi_selection == 'l3_c3bg' ? "l3: ".array_sum(@$value['l3'] ? $value['l3'] : array()).
@@ -150,7 +150,7 @@
                     @else
                         <td class="border-bold-right total_text index3" id="act">
                             {{ $value['total_actual'].(@$kpi_selection == 'l3_c3bg' ? '%' : '') }}
-                            <div class="hidden details index4">
+                            <div class="hidden details_total index4">
                                 {{@$kpi_selection == 'c3b_cost' ? "spent: ".array_sum(@$value['spent'] ? $value['spent'] : array()).
                                 "\rc3b: ".array_sum(@$value['c3b'] ? $value['c3b'] : array()) :
                                  (@$kpi_selection == 'l3_c3bg' ? "l3: ".array_sum(@$value['l3'] ? $value['l3'] : array()).

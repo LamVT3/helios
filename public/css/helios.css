@@ -415,6 +415,17 @@ div#wrapper_kpi, div#wrapper_kpi_by_team{
     z-index: 2;
     padding: 3px 6px !important;
     border-radius: 3px;
+    left: 0;
+    bottom: 0;
+    white-space: nowrap;
+}
+.details_total{
+    color: #fff;
+    position: absolute !important;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 2;
+    padding: 3px 6px !important;
+    border-radius: 3px;
     right: 0;
     bottom: 0;
     white-space: nowrap;
