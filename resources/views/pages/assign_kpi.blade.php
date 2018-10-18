@@ -370,6 +370,16 @@
 
         });
 
+        $(document).on({
+            mouseover: function () {
+                console.log($(this).find('div'));
+                $(this).find('div').removeClass('hidden');
+            },
+            mouseleave: function () {
+                $(this).find('div').addClass('hidden');
+            }
+        },'#act');
+
         /* END BASIC */
     });
 

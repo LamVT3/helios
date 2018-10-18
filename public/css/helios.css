@@ -364,10 +364,12 @@ div.chart{
     width: 20%!important;
     /*min-width: 30px!important;*/
 }
+#table_kpi th {
+    z-index: 2;
+}
 #table_kpi th, #table_kpi_by_team th{
     font-size: 15px;
     color: white;
-    /*border: none;*/
     background-color: #3276b1;
     font-weight: lighter;
     text-align: center;
@@ -405,6 +407,35 @@ div#wrapper_kpi, div#wrapper_kpi_by_team{
 .gap_text{
     color: white;
     background: #eb5a47;
+}
+.details{
+    color: #fff;
+    position: absolute !important;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 2;
+    padding: 3px 6px !important;
+    border-radius: 3px;
+    right: 0;
+    bottom: 0;
+    white-space: nowrap;
+}
+.index2 {
+    z-index: 2 !important;
+}
+.index3 {
+    z-index: 3 !important;
+}
+.index4 {
+    z-index: 4 !important;
+}
+.index5 {
+    z-index: 5 !important;
+}
+.index6 {
+    z-index: 6 !important;
+}
+#table_kpi td {
+    position: relative;
 }
 #table_kpi td.act, #table_kpi_by_team td.act{
     width: auto;
