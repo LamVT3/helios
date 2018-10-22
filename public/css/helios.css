@@ -398,8 +398,11 @@ div#wrapper_kpi, div#wrapper_kpi_by_team{
 #table_kpi td {
     position: relative;
 }
+#table_kpi td:hover {
+    color: white;
+}
 #table_kpi td a:hover {
-    color: #3b3f52 !important;
+    color: #bdbbbd !important;
     cursor: auto;
 }
 #table_kpi td.act, #table_kpi_by_team td.act{

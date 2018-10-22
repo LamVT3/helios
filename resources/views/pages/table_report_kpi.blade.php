@@ -25,7 +25,7 @@
     </thead>
     <tbody>
     @if(isset($data_maketer['total']))
-    <tr style="font-weight: bold; font-size: medium;">
+    <tr style="font-weight: bolder; font-size: medium;">
         <td class="no-border-right total_text index3" style="border-left: none;"></td>
         <td class="no-border-right total_text index3"><span>Total</span></td>
         <td class="border-bold-right total_text index3"></td>
@@ -131,15 +131,15 @@
     @endif
     @foreach($data_maketer as $user => $item)
         @if($user == "total") @continue @endif
-        <tr data-tt-id="{{@$user}}">
+        <tr data-tt-id="{{@$user}}" style="font-weight: bold;">
             <?php $gap = @$kpi_selection == "c3b_cost" ? @$item['total_kpi'] - @$item['total_actual'] : @$item['total_actual'] - @$item['total_kpi'] ?>
             <td class="no-border-right total_text index3" style="border-left: none;">
                 <a href="javascript:void(0)" title="Show detail" class="channel__show" style="color: white;"><i class="fa fa-plus-circle"></i></a>
                 <a href="javascript:void(0)" title="Hide detail" class="channel__hide hidden" style="color: white;"><i class="fa fa-minus-circle"></i></a>
             </td>
 
-            <td class="no-border-right total_text index3" style="text-align: left;">
-                <span style="font-weight: bold; white-space: nowrap;">{{ @$user }}</span>
+            <td class="no-border-right total_text index3" style="text-align: left; white-space: nowrap;">
+                <span>{{ @$user }}</span>
             </td>
 
             <td class="border-bold-right total_text index3">
@@ -250,13 +250,15 @@
             @foreach($item['channels'] as $key => $value)
                 <?php $gap = @$kpi_selection == "c3b_cost" ? ($value['total_kpi'] - $value['total_actual']) :
                     ($value['total_actual'] - $value['total_kpi']) ?>
-                <tr class="hidden" data-tt-parent-id="{{$user}}" id="{{$key}}">
-                    <td class="no-border-right index3" style="border-left: none;"></td>
-                    <td class="no-border-right index3" style="text-align: left; white-space: nowrap;"><span>{{$key}}</span></td>
-                    <td class="border-bold-right index3"></td>
-                    <td class="border-bold-right total_text index3">{{ $value['total_kpi'].(@$kpi_selection == 'l3_c3bg' ? '%' : '') }}</td>
+                <tr class="hidden" data-tt-parent-id="{{$user}}" id="{{$key}}" style="font-weight: lighter;">
+                    <td class="no-border-right total_text index3" style="border-left: none;"></td>
+                    <td class="no-border-right total_text index3" style="text-align: left; white-space: nowrap; font-weight: lighter;">
+                        <span>{{$key}}</span>
+                    </td>
+                    <td class="border-bold-right total_text index3"></td>
+                    <td class="border-bold-right kpi_text index3">{{ $value['total_kpi'].(@$kpi_selection == 'l3_c3bg' ? '%' : '') }}</td>
                     @if($gap < 0)
-                        <td class="border-bold-right total_text gap_text index3" id="act">
+                        <td class="border-bold-right total_text gap_text index3" id="act" style="font-weight: lighter;">
                             {{ $value['total_actual'].(@$kpi_selection == 'l3_c3bg' ? '%' : '') }}
                             <div class="hidden details" style="top:29px;">
                                 @if(@$kpi_selection == 'c3b_cost')
@@ -276,9 +278,9 @@
                                 @endif
                             </div>
                         </td>
-                        <td class="border-bold-right total_text gap_text index3">{{ $gap.(@$kpi_selection == 'l3_c3bg' ? '%' : '') }}</td>
+                        <td class="border-bold-right total_text gap_text index3" style="font-weight: lighter;">{{ $gap.(@$kpi_selection == 'l3_c3bg' ? '%' : '') }}</td>
                     @else
-                        <td class="border-bold-right total_text achieved_text index3" id="act">
+                        <td class="border-bold-right total_text achieved_text index3" id="act" style="font-weight: lighter;">
                             {{ $value['total_actual'].(@$kpi_selection == 'l3_c3bg' ? '%' : '') }}
                             <div class="hidden details" style="top:29px;">
                                 @if(@$kpi_selection == 'c3b_cost')
@@ -298,7 +300,7 @@
                                 @endif
                             </div>
                         </td>
-                        <td class="border-bold-right total_text achieved_text index3">{{ $gap.(@$kpi_selection == 'l3_c3bg' ? '%' : '') }}</td>
+                        <td class="border-bold-right total_text achieved_text index3" style="font-weight: lighter;">{{ $gap.(@$kpi_selection == 'l3_c3bg' ? '%' : '') }}</td>
                     @endif
 
                     @for ($i = 1; $i <= $days; $i++)

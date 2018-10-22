@@ -383,17 +383,17 @@
             }
         },'#act');
 
-        $(document).on({
-            mouseover: function () {
-                // $(this).closest('tbody').find('tr').find('td:eq('+$(this).index()+')').css('color', 'white');
-                $(this).closest('tr').find('td').css('color', 'white');
-            },
-            mouseleave: function () {
-                // $(this).closest('tbody').find('tr').find('td:eq('+$(this).index()+')').css('color', '#3b3f52');
-                $(this).closest('tr').find('td').css('color', '#3b3f52');
-                $(this).closest('tr').find('td:eq(1)').css('color', 'white');
-            }
-        },'#table_kpi td');
+        // $(document).on({
+        //     mouseover: function () {
+        //         // $(this).closest('tbody').find('tr').find('td:eq('+$(this).index()+')').css('color', 'white');
+        //         $(this).closest('tr').find('td').css('color', 'white');
+        //     },
+        //     mouseleave: function () {
+        //         // $(this).closest('tbody').find('tr').find('td:eq('+$(this).index()+')').css('color', '#3b3f52');
+        //         $(this).closest('tr').find('td').css('color', '#3b3f52');
+        //         $(this).closest('tr').find('td:eq(1)').css('color', 'white');
+        //     }
+        // },'#table_kpi td');
 
         /* END BASIC */
     });
