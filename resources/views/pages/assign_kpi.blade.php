@@ -355,7 +355,6 @@
             var tr_child = tr_parent.parent().find('tr[data-tt-parent-id='+userId+']');
 
             tr_child.removeClass('hidden');
-
         });
 
         $(document).on('click', '.channel__hide', function () {
@@ -367,18 +366,34 @@
             var tr_child = tr_parent.parent().find('tr[data-tt-parent-id='+userId+']');
 
             tr_child.addClass('hidden');
-
         });
 
         $(document).on({
             mouseover: function () {
-                console.log($(this).find('div'));
+                $('#table_kpi').css('margin-bottom','50px');
+                if($(this).hasClass('total_text')){
+                    $(this).closest('tr').nextAll('tr').css('opacity','0.99');
+                }
                 $(this).find('div').removeClass('hidden');
             },
             mouseleave: function () {
+                $('#table_kpi').removeAttr('style');
+                $(this).closest('tr').nextAll('tr').css('opacity','1');
                 $(this).find('div').addClass('hidden');
             }
         },'#act');
+
+        $(document).on({
+            mouseover: function () {
+                // $(this).closest('tbody').find('tr').find('td:eq('+$(this).index()+')').css('color', 'white');
+                $(this).closest('tr').find('td').css('color', 'white');
+            },
+            mouseleave: function () {
+                // $(this).closest('tbody').find('tr').find('td:eq('+$(this).index()+')').css('color', '#3b3f52');
+                $(this).closest('tr').find('td').css('color', '#3b3f52');
+                $(this).closest('tr').find('td:eq(1)').css('color', 'white');
+            }
+        },'#table_kpi td');
 
         /* END BASIC */
     });
