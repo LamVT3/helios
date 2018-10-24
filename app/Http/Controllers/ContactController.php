@@ -922,7 +922,8 @@ class ContactController extends Controller
     }
 
     public function exportToOLM(){
-        $url = 'http://58.187.9.138/api/OlmInsert/InsertContactOLM';
+//        $url = 'http://58.187.9.138/api/OlmInsert/InsertContactOLM';
+        $url = 'http://210.245.115.55:8081/api/OlmInsert/InsertContactOLM';
 
         $data_where = $this->getWhereData();
         $request = request();
