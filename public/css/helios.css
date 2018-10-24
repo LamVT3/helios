@@ -367,11 +367,15 @@ div.chart{
 #table_kpi th, #table_kpi_by_team th{
     font-size: 15px;
     color: white;
-    /*border: none;*/
     background-color: #3276b1;
-    font-weight: lighter;
+    font-weight: bold;
     text-align: center;
     border-bottom: 3px solid #ccc!important;
+}
+#table_kpi th {
+    z-index: 2;
+    color: white;
+    background: #3b3f52;
 }
 div#wrapper_kpi, div#wrapper_kpi_by_team{
     overflow-x:auto;
@@ -388,27 +392,82 @@ div#wrapper_kpi, div#wrapper_kpi_by_team{
     border-left: none!important;
     border-top: none!important;
     text-align: center;
-    border-bottom: 3px solid #ccc!important;
+    /*border-bottom: 3px solid #ccc !important;*/
+    margin-bottom: 20px;
+}
+#table_kpi td {
+    position: relative;
+}
+#table_kpi td:hover {
+    color: white;
+}
+#table_kpi td a:hover {
+    color: #bdbbbd !important;
+    cursor: auto;
+}
+#table_kpi td.act, #table_kpi_by_team td.act{
+    width: auto;
+    white-space:nowrap;
 }
 .border-bold-right{
-    border-right: 3px solid #ccc!important;
+    border-right: 3px solid #ccc !important;
+}
+.border-left{
+    border-left: 1px solid #fff !important;
 }
 .no-border-right{
     border-right: none!important;
     border-left: none!important;
 }
+.kpi_text{
+    color: #3b3f52;
+    background: #3176b1;
+}
 .total_text{
     font-weight: bold;
     color: white;
-    background: #3176b1;
+    background: #3b3f52;
 }
 .gap_text{
-    color: white;
+    color: #3b3f52;
     background: #eb5a47;
 }
-#table_kpi td.act, #table_kpi_by_team td.act{
-    width: auto;
-    white-space:nowrap;
+.achieved_text{
+    color: #3b3f52;
+    background: #7fff00;
+}
+.details{
+    color: #3b3f52;
+    position: absolute !important;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1;
+    padding: 3px 6px !important;
+    border-radius: 3px;
+    left: 45px;
+    top: 30px;
+    white-space: nowrap;
+    text-align: left;
+}
+.pink_color{
+    color: hotpink;
+}
+.yellow_color{
+    color: yellow;
+}
+.index2 {
+    z-index: 2;
+}
+.index3 {
+    z-index: 3;
+}
+.index4 {
+    z-index: 4;
+}
+.index5 {
+    z-index: 5 !important;
+}
+.index6 {
+    z-index: 6 !important;
 }
 #maketer, #team{
     width: 100%;
