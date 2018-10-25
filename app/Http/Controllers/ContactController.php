@@ -1079,7 +1079,7 @@ class ContactController extends Controller
         if (strtolower($apiStatus) == "ok"){
             $dateFromContactID = date('Y-m-d', $contact->submit_time/1000);
 
-            $contact->handover_date = date("Y-m-d");
+            $contact->handover_date = date("Y-m-d h:m:s");
             $contact->current_level = "l1";
             $contact->olm_status    = 0;
             $contact->l1_time = date("Y-m-d");
