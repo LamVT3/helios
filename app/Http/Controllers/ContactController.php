@@ -1089,7 +1089,7 @@ class ContactController extends Controller
             $ad_result  = AdResult::where("ad_id",$contact->ad_id)->where("date",$dateFromContactID)->get();
             $countL1    = 1;
             foreach($ad_result as $item){
-                $countL1 = $countL1 + @$item["l1"];
+                $countL1 = $countL1 + @$item->l1;
             }
             $ad_result = AdResult::where("ad_id",$contact->ad_id)->where("date",$dateFromContactID)->first();
             $ad_result->l1 = $countL1;
