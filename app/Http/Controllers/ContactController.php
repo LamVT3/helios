@@ -1086,9 +1086,9 @@ class ContactController extends Controller
 
             // Update ad_results
             // Get data base on date contact submited
-            $ad_result  = AdResult::where("ad_id",$contact->ad_id)->where("date",$dateFromContactID)->get();
+            $ad_results  = AdResult::where("ad_id",$contact->ad_id)->where("date",$dateFromContactID)->get();
             $countL1    = 1;
-            foreach($ad_result as $item){
+            foreach($ad_results as $item){
                 $countL1 = $countL1 + @$item->l1;
             }
             $ad_result = AdResult::where("ad_id",$contact->ad_id)->where("date",$dateFromContactID)->first();
