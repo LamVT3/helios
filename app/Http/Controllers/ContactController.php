@@ -1001,9 +1001,9 @@ class ContactController extends Controller
         if($request->export_sale_date){
             $export_sale_date = str_replace('/', '-', $request->export_sale_date);
         }
-            
-        $query->chunk( 1000, function ( $contacts ) use ( $url , &$result, $export_sale_date, $limit) {
-            $count = 0;
+
+        $count = 0;
+        $query->chunk( 1000, function ( $contacts ) use ( $url , &$result, $export_sale_date, $limit, &$count) {
             foreach ($contacts as $contact)
             {
                 if($count >= $limit){
@@ -1052,7 +1052,7 @@ class ContactController extends Controller
                 } else {
                     $result['cnt_error']    += 1;
                 }
-                
+
                 $result['cnt_total'] += 1;
                 
                 $LogExportToSale = new LogExportToSale();
@@ -1072,6 +1072,7 @@ class ContactController extends Controller
                 $count++;
             }
         });
+
         return $result;
     }
 
