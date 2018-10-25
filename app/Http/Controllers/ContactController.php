@@ -1015,12 +1015,12 @@ class ContactController extends Controller
                 }
 
                 $source_type = '';
-                if($contact->source_name){
-                    $source_type = $contact->source_name;
-                }else if($contact->source_id){
+                if(@$contact->source_name){
+                    $source_type = @$contact->source_name;
+                }else if(@$contact->source_id){
                     $source_id      = $contact->source_id;
                     $source         = Source::find($source_id);
-                    $source_type    = $source->name;
+                    $source_type    = @$source->name;
                 }
 
                 $data_array =  array(
@@ -1029,7 +1029,7 @@ class ContactController extends Controller
                     "fullname"          => @$contact->name,
                     "phone"             => @$contact->phone,
                     "contact_channel"   => @$contact->channel_name,
-                    "source_type"       => @$source_type,
+                    "source_type"       => $source_type,
                     "registereddate"    => @$contact->submit_time,
                     "submit_time"       => @$contact->submit_time,
                     "code"              => @$contact->contact_id
