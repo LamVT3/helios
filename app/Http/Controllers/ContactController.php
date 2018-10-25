@@ -1092,7 +1092,7 @@ class ContactController extends Controller
                 $countL1 = $countL1 + @$item->l1;
             }
             $ad_result = AdResult::where("ad_id",$contact->ad_id)->where("date",$dateFromContactID)->first();
-            $ad_result->l1 = $countL1;
+            @$ad_result->l1 = $countL1;
             $ad_result->save();
         } else if (strtolower($apiStatus) == "duplicated"){
             $contact->olm_status = 1;
