@@ -1024,15 +1024,15 @@ class ContactController extends Controller
                 }
 
                 $data_array =  array(
-                    "ads_link"          => $contact->ads_link,
-                    "email"             => $contact->email,
-                    "fullname"          => $contact->name,
-                    "phone"             => $contact->phone,
-                    "contact_channel"   => $contact->channel_name,
-                    "source_type"       => $source_type,
-                    "registereddate"    => $contact->submit_time,
-                    "submit_time"       => $contact->submit_time,
-                    "code"              => $contact->contact_id
+                    "ads_link"          => @$contact->ads_link,
+                    "email"             => @$contact->email,
+                    "fullname"          => @$contact->name,
+                    "phone"             => @$contact->phone,
+                    "contact_channel"   => @$contact->channel_name,
+                    "source_type"       => @$source_type,
+                    "registereddate"    => @$contact->submit_time,
+                    "submit_time"       => @$contact->submit_time,
+                    "code"              => @$contact->contact_id
                 );
 
                 $make_call  = $this->callAPI('POST', $url, json_encode($data_array));
