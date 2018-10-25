@@ -1053,6 +1053,8 @@ class ContactController extends Controller
                     $result['cnt_error']    += 1;
                 }
                 
+                $result['cnt_total'] += 1;
+                
                 $LogExportToSale = new LogExportToSale();
                 $LogExportToSale->ads_link =  $contact->ads_link;
                 $LogExportToSale->email =  $contact->email;
@@ -1069,7 +1071,6 @@ class ContactController extends Controller
                 
                 $count++;
             }
-            $result['cnt_total'] = $count;
         });
         return $result;
     }
