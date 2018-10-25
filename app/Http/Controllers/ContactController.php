@@ -1003,13 +1003,11 @@ class ContactController extends Controller
         }
 
         $count = 0;
-        if($limit < 5000){
-            $chunk = $limit;
-        }else{
-            $chunk = 1000;
-        }
+        $query->chunk( 1000, function ( $contacts ) use ( $url , &$result, $export_sale_date, &$limit, &$count) {
+            if($count >= $limit){
+                return false;
+            }
 
-        $query->chunk( $chunk, function ( $contacts ) use ( $url , &$result, $export_sale_date, &$limit, &$count) {
             foreach ($contacts as $contact)
             {
                 if($count >= $limit){
@@ -1077,11 +1075,6 @@ class ContactController extends Controller
                 
                 $count++;
             }
-
-            if($count >= $limit){
-                return false;
-            }
-
         });
 
         return $result;
