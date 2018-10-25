@@ -1096,7 +1096,7 @@ class ContactController extends Controller
             $ad_result->save();
         } else if (strtolower($apiStatus) == "duplicated"){
             $contact->olm_status = 1;
-        } else if (strtolower($apiStatus) == "error"){
+        } else if (strpos($apiStatus, 'error') !== false){
             $contact->olm_status = 2;
         } else {
             $contact->olm_status = 3;
