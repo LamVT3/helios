@@ -1002,8 +1002,7 @@ class ContactController extends Controller
             $export_sale_date = str_replace('/', '-', $request->export_sale_date);
         }
 
-        $count = 0;
-        $query->chunk( 1000, function ( $contacts ) use ( $url , &$result, $export_sale_date, &$limit, &$count) {
+        $query->chunk( 1000, function ( $contacts ) use ( $url , &$result, $export_sale_date, $limit) {
             if($count >= $limit){
                 return false;
             }
