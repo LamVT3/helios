@@ -290,7 +290,6 @@ $(document).ready(function () {
         e.preventDefault();
         var limit = $('input#export_sale_limit').val();
         if(limit > 0){
-            $('#myExportToOLMModal').modal('hide');
             $('.loading').show();
             var is_update_all   = $('input[id=update_all]').is(':checked');
             var id      = {};
@@ -303,6 +302,11 @@ $(document).ready(function () {
                     id[$(this).val()] = $(this).val();
                 });
             }
+
+            $('.loading_modal').show();
+            $('#confirm_export_to_olm').prop('disabled', true);
+            $('#close_modal_export_to_olm').prop('disabled', true);
+
             exportToOLM(id);
             // updateStatusExport(id);
         }else{
@@ -1081,7 +1085,10 @@ function exportToOLM(id) {
             $('input#update_all').prop('checked', false); // Unchecks checkbox all
 
             $('div#update_success').hide();
-            $('div#export_success').show();
+            $('div#export_success').hide();
+            $('.loading_modal').hide();
+            $('#confirm_export_to_olm').prop('disabled', false);
+            $('#close_modal_export_to_olm').prop('disabled', false);
 
         }, 1000);
     }).fail(
@@ -1096,7 +1103,7 @@ function showModalExportToOLM(data){
         $('#contact_success').html('- ' + data.cnt_success + ' contacts success');
         $('#contact_duplicate').html('- ' + data.cnt_duplicate + ' contacts duplicated');
         $('#contact_error').html('- ' + data.cnt_error + ' contacts error');
-
+        $('#myExportToOLMModal').modal('hide');
         $('#myCountExportToOLMModal').modal('show');
 }
 

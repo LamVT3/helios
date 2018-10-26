@@ -939,7 +939,6 @@ class ContactController extends Controller
         }
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
-        $query->whereNotIn('olm_status', ['0','1']);
 
         // HoaTV fix multiple select channel
         $arrChannelName = array();
@@ -973,8 +972,16 @@ class ContactController extends Controller
         //     $query->whereNotIn('olm_status', [0, 1, 2]);
         //     unset($data_where['olm_status']);
         // }
-        $query->whereNotIn('olm_status', [0, 1, '0', '1']);
-        unset($data_where['olm_status']);
+        if(@$data_where['olm_status'] === 0){
+            $query->whereIn('olm_status', [0, '0']);
+            unset($data_where['olm_status']);
+        }else if(@$data_where['olm_status'] === 1){
+            $query->whereIn('olm_status', [1, '1']);
+            unset($data_where['olm_status']);
+        }else if(@$data_where['olm_status'] == -1){
+            $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
+            unset($data_where['olm_status']);
+        }
 
         $query->where($data_where);
 
@@ -990,11 +997,7 @@ class ContactController extends Controller
         $result['cnt_error']        = 0;
         $result['cnt_total']        = 0;
 
-        if($request->export_sale_sort){
-            $query->orderBy('submit_time', $request->export_sale_sort);
-        }else{
-            $query->orderBy('submit_time', 'desc');
-        }
+        $query->orderBy('submit_time', $request->export_sale_sort);
 
         $limit = (int)$request->limit;
         $export_sale_date = '';
