@@ -154,9 +154,14 @@
                                 class="menu-item-parent">Diff Contacts</span></a>
                 </li>
             @endif
+
+            <li class="{{ $active == 'phone_check_result' ? 'active' : '' }}">
+                <a href="{{ route('phone_check_result') }}"><i class="fa fa-lg fa-fw fa-check-square-o"></i> <span
+                            class="menu-item-parent">Phone Check Result</span></a>
+            </li>
+
             {{-- end 2018-04-18 LamVT [HEL_9] Add more setting for VND/USD conversion--}}
             {{--@endpermission
-
             @permission('view-report')
             <li class="{{ $active == 'reports' ? 'active' : '' }}">
                 <a href="javascript:void(0)"><i class="fa fa-lg fa-fw fa-bar-chart"></i> <span
