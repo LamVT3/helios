@@ -923,7 +923,7 @@ class ContactController extends Controller
 
     public function exportToOLM(){
 //        $url = 'http://58.187.9.138/api/OlmInsert/InsertContactOLM';
-        $url = 'http://210.245.115.55:8081/api/OlmInsert/InsertContactOLM';
+        $url = 'http://210.245.115.55:8081/api/OlmInsert/insert_contact_olm';
 
         $data_where = $this->getWhereData();
         $request = request();
@@ -954,42 +954,20 @@ class ContactController extends Controller
             $query->where('clevel','c3bg');
             unset($data_where['clevel']);
         }
-        if(@$data_where['current_level'] == 'l0'){
-            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
-            unset($data_where['current_level']);
-        }
 
-        // HoaTV - Only get contact not export and error
-        // if(@$data_where['olm_status'] === 0){
-        //     $query->where('olm_status', 0);
-        //     unset($data_where['olm_status']);
-        // }
-        // if(@$data_where['olm_status'] === 1){
-        //     $query->where('olm_status', 0);
-        //     unset($data_where['olm_status']);
-        // }
-        // if(@$data_where['olm_status'] == -1){
-        //     $query->whereNotIn('olm_status', [0, 1, 2]);
-        //     unset($data_where['olm_status']);
-        // }
-        if(@$data_where['olm_status'] === 0){
-            $query->whereIn('olm_status', [0, '0']);
-            unset($data_where['olm_status']);
-        }else if(@$data_where['olm_status'] === 1){
-            $query->whereIn('olm_status', [1, '1']);
-            unset($data_where['olm_status']);
-        }else if(@$data_where['olm_status'] == -1){
-            $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
-            unset($data_where['olm_status']);
-        }
-
-        $query->where($data_where);
+        $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+        unset($data_where['current_level']);
 
         if($request->id){
             if($request->id != 'All' && count($request->id) > 0){
                 $query->whereIn('_id', array_keys($request->id));
             }
         }
+
+        $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
+        unset($data_where['olm_status']);
+
+        $query->where($data_where);
 
         $result = array();
         $result['cnt_success']      = 0;
