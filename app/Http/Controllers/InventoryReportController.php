@@ -300,9 +300,21 @@ class InventoryReportController extends Controller
         $startDate  = strtotime($start)*1000;
         $endDate    = strtotime("+1 day", strtotime($end))*1000;
 
+        $time_1 = microtime(true);
         $c3_produce     = $this->get_c3_produce($startDate, $endDate);
         $c3_transfer    = $this->get_c3_transfer($startDate, $endDate);
         $c3_inventory   = $this->get_c3_inventory($startDate, $endDate);
+
+        $time_2 = microtime(true);
+        $time = $time_2 - $time_1;
+        $hours = (int)($time / 60 / 60);
+        $minutes = (int)($time / 60) - $hours * 60;
+        $seconds = (int)$time - $hours * 60 * 60 - $minutes * 60;
+        $timeShow = ($hours == 0 ? "00" : $hours) . ":" . ($minutes == 0 ? "00" : ($minutes < 10 ? "0" . $minutes : $minutes)) . ":" . ($seconds == 0 ? "00" : ($seconds < 10 ? "0" . $seconds : $seconds));
+
+        echo 'mongo ' . $timeShow . PHP_EOL;
+
+
 
         $c3_produce_channel     = @$c3_produce['channel'];
         $c3_produce_source      = @$c3_produce['source'];
@@ -353,6 +365,8 @@ class InventoryReportController extends Controller
             }
         }
 
+
+
         foreach ($channels as $key => $channel){
             $channel_name   = $channel->name;
             $source_id      = $channel->source_id;
@@ -384,6 +398,15 @@ class InventoryReportController extends Controller
             unset($label['Unknown']);
             $label['Unknown'] = $temp;
         }
+
+        $time_3 = microtime(true);
+        $time = $time_3 - $time_2;
+        $hours = (int)($time / 60 / 60);
+        $minutes = (int)($time / 60) - $hours * 60;
+        $seconds = (int)$time - $hours * 60 * 60 - $minutes * 60;
+        $timeShow = ($hours == 0 ? "00" : $hours) . ":" . ($minutes == 0 ? "00" : ($minutes < 10 ? "0" . $minutes : $minutes)) . ":" . ($seconds == 0 ? "00" : ($seconds < 10 ? "0" . $seconds : $seconds));
+
+        echo 'else ' . $timeShow . PHP_EOL;
 
         $result['lable'] = $label;
 
