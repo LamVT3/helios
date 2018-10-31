@@ -61,7 +61,7 @@
                                 </div>
                             </div>
                             <hr>
-                            <div class="wrapper_report">
+                            <div id="wrapper_report">
                                 @include('pages.table_phone_check')
                             </div>
 
@@ -144,17 +144,17 @@
             $.ajax({
                 url: url,
                 type: 'GET',
-                contentType: "application/json",
-                dataType: "json",
                 data: {
                     result: result,
                     registered_date: registered_date
                 }
             }).done(function (response) {
+                console.log(1111);
                 $('#wrapper_report').html(response);
                 init_table();
                 $('.loading').hide();
             }).fail(function (response) {
+                console.log(22222);
                 $('.loading').hide();
             });
         })

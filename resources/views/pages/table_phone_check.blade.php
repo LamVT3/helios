@@ -11,11 +11,11 @@
     </thead>
     <tbody>
     @foreach ($data as $item)
-        <tr id="">
+        <tr>
             <td>{{ $item->name }}</td>
             <td>{{ $item->phone }}</td>
-            <td>{{ $item->date}}</td>
-            <td>{{ $item->created_date->toDateTimeString() }}</td>
+            <td>{{date_format(date_create( $item->date),"d/m/Y")}}</td>
+            <td>{{ date_format(date_create($item->created_date),"d/m/Y") }}</td>
             <td>
                 @if($item->result == "1")
                     OK
