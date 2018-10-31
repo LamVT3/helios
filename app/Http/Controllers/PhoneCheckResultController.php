@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Config;
-use App\PhoneCheckResult;
+use App\ApiPhoneCheckResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -50,7 +50,7 @@ class PhoneCheckResultController extends Controller
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
 
-        $query = PhoneCheckResult::where('created_date', '>=', $startDate);
+        $query = ApiPhoneCheckResult::where('created_date', '>=', $startDate);
         $query->where('created_date', '<', $endDate);
 
         if($request->result){

@@ -14,10 +14,10 @@
         <tr id="">
             <td>{{ $item->name }}</td>
             <td>{{ $item->phone }}</td>
-            <td>{{ $item->date->toDateTimeString()}}</td>
+            <td>{{ $item->date}}</td>
             <td>{{ $item->created_date->toDateTimeString() }}</td>
             <td>
-                @if($item->date == "1")
+                @if($item->result == "1")
                     OK
                     @else
                     Fail
