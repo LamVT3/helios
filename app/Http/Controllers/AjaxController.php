@@ -760,7 +760,7 @@ class AjaxController extends Controller
         $year   = date('Y'); /* nam hien tai*/
         $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
         $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-        $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+        $last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
         /* end date */
 
         $request    = request();
@@ -873,7 +873,7 @@ class AjaxController extends Controller
         $year   = date('Y'); /* nam hien tai*/
         $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
         $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-        $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+        $last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
 
         $request    = request();
 
@@ -978,7 +978,7 @@ class AjaxController extends Controller
 		$year   = date('Y'); /* nam hien tai*/
 		$d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
 		$first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-		$last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+		$last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
 		/* end date */
 
 		$array_month = array();
@@ -1056,7 +1056,7 @@ class AjaxController extends Controller
 		$year   = date('Y'); /* nam hien tai*/
 		$d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
 		$first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-		$last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+		$last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
 		/* end date */
 
 		$array_month = array();
@@ -1134,7 +1134,7 @@ class AjaxController extends Controller
 		$year   = date('Y'); /* nam hien tai*/
 		$d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
 		$first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-		$last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+		$last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
 		/* end date */
 
 		$array_month = array();

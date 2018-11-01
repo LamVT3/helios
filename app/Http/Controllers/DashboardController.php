@@ -253,19 +253,19 @@ class DashboardController extends Controller
             $year   = date('Y'); /* nam hien tai*/
             $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
             $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-            $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+            $last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
         }else if($request->month){
             $month  = request('month');
             $year   = date('Y'); /* nam hien tai*/
             $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
             $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-            $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+            $last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
         }else {
             $month  = date('m'); /* thang hien tai */
             $year   = date('Y'); /* nam hien tai*/
             $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
             $first_day_this_month = date('Y-m-01'); /* ngày đàu tiên của tháng */
-            $last_day_this_month = date('Y-m-t'); /* ngày cuối cùng của tháng */
+            $last_day_this_month = date('Y-m-'.$d); /* ngày cuối cùng của tháng */
         }
 
         return [$year, $month, $d, $first_day_this_month, $last_day_this_month];

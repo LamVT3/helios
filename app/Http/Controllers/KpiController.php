@@ -549,8 +549,11 @@ class KpiController extends Controller
             $month = $request->month;
         }
 
+        $year   = date('Y'); /* nam hien tai*/
+
+        $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
         $first_day_this_month = date('Y-'.$month.'-01'); /* ngày đàu tiên của tháng */
-        $last_day_this_month = date('Y-'.$month.'-t'); /* ngày cuối cùng của tháng */
+        $last_day_this_month = date('Y-'.$month.'-'.$d); /* ngày cuối cùng của tháng */
 
         $channels = $this->get_channel_user($userId);
 
