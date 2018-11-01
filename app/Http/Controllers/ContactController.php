@@ -775,7 +775,7 @@ class ContactController extends Controller
 
                 // match ad_id
                 $uri_query = "utm_source={$item->utm_source}&utm_team={$item->utm_team}&utm_agent={$item->utm_agent}&utm_campaign={$item->utm_campaign}&utm_medium={$item->utm_medium}&utm_subcampaign={$item->utm_subcampaign}&utm_ad={$item->utm_ad}";
-                $ad = Ad::where('uri_query', $uri_query)->first();
+                $ad = Ad::where('name', 'TK100.eGentic')->first();
                 if($ad === null){
                     $contact->ad_id = 'unknown';
                     $contact->marketer_id = 'unknown';
@@ -792,6 +792,16 @@ class ContactController extends Controller
                     $contact->marketer_id = $ad->creator_id;
                     $contact->campaign_id = $ad->campaign_id;
                     $contact->subcampaign_id = $ad->subcampaign_id;
+	                $contact->source_name = $ad->source_name;
+	                $contact->team_name = $ad->team_name;
+	                $contact->marketer_name = $ad->creator_name;
+	                $contact->utm_medium = $ad->utm_medium;
+	                $contact->campaign_name = $ad->campaign_name;
+	                $contact->subcampaign_name = $ad->subcampaign_name;
+	                $contact->ad_name = $ad->ad_name;
+	                $contact->landing_page_id = $ad->landing_page_id;
+	                $contact->landing_page_name = $ad->landing_page_name;
+
                 }
                 $contact->contact_id = $this->gen_contact_id();
 
