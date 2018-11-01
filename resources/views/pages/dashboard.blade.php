@@ -652,7 +652,7 @@
         }
 
         #site-stats-c3, #C3A-C3B_chart{
-            padding-right: 30xp !important;
+            padding-right: 30px !important;
         }
 
     </style>
