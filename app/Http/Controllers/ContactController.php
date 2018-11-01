@@ -1009,6 +1009,18 @@ class ContactController extends Controller
                     $source_type    = @$source->name;
                 }
 
+                if($source_type != ''){
+                    if($source_type == 'Facebook'){
+                        $source_type = 'Facebook';
+                    }elseif ($source_type == 'Google'){
+                        $source_type = 'Google';
+                    }elseif ($source_type == 'Engentic'){
+                        $source_type = 'Adnet';
+                    }else{
+                        $source_type = 'Social';
+                    }
+                }
+
                 $data_array =  array(
                     "ads_link"          => @$contact->ads_link,
                     "email"             => @$contact->email,
