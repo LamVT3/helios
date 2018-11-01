@@ -331,7 +331,7 @@
                                 {{--<div class="widget-body-toolbar bg-color-white smart-form" id="rev-toggles">--}}
 
                                 {{--</div>--}}
-                                <div id="site-stats-c3" class="chart has-legend" style="padding-right: 30px"></div>
+                                <div id="site-stats-c3" class="chart has-legend" style="padding-right: 30px !important;"></div>
                             </div>
                         @endcomponent
                     </article>
