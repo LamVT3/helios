@@ -331,7 +331,7 @@
                                 {{--<div class="widget-body-toolbar bg-color-white smart-form" id="rev-toggles">--}}
 
                                 {{--</div>--}}
-                                <div id="site-stats-c3" class="chart has-legend" style="padding-right: 30px !important;"></div>
+                                <div id="site-stats-c3" class="chart has-legend"></div>
                             </div>
                         @endcomponent
                     </article>
@@ -649,6 +649,10 @@
         }
         .kpi-archived .widget-actual.text{
             color: #3176b1 !important;
+        }
+
+        #site-stats-c3, #C3A-C3B_chart{
+            padding-right: 30xp !important;
         }
 
     </style>
