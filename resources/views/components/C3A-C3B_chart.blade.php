@@ -34,4 +34,4 @@
         </div>
     </div>
 </div>
-<div id="{{$id}}" class="chart has-legend"></div>
+<div id="{{$id}}" class="chart has-legend" style="padding-right: 30px"></div>
