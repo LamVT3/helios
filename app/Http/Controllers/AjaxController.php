@@ -397,15 +397,16 @@ class AjaxController extends Controller
 
         $kpi = $this->get_kpi_dashboard($startDate, $endDate);
 
+        $channel = [];
         if($request->marketer_id){
-            $query_dashboard->where('creator_id', $request->marketer_id);
             $channel    = UserKpi::where('user_id', $request->marketer_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
             $ads        = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
             $query_dashboard->whereIn('ad_id', $ads);
         }
 
         if($request->channel_id){
-            $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
+            $channel = [$request->channel_id];
+            $ads        = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
             $query_dashboard->whereIn('ad_id', $ads);
         }
 
@@ -470,28 +471,36 @@ class AjaxController extends Controller
             $endDate    = date('Y-m-t');
         }
 
-        $channel    = UserKpi::pluck('user_id', 'channel_id')->toArray();
-        $ads_kpi = [];
-        foreach ($channel as $channel_id => $user_id){
-            $ads    = Ad::where('channel_id', $channel_id)
-                ->where('creator_id', $user_id)
-                ->pluck('_id')->toArray();
+        $user_active = User::where('role', 'Marketer')->where('is_active', 1)->get();
 
-            $ads_kpi = array_merge($ads ,$ads_kpi );
+        $total  = 0;
+        foreach ($user_active as $user){
+            $ads_kpi = [];
+            $channel    = UserKpi::where('user_id', $user->_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
+            if(count($channel) < 1){
+                continue;
+            }
+
+            $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+
+            $query = AdResult::where('date', '>=', $startDate)
+                ->where('date', '<=', $endDate)
+                ->whereIn('ad_id', $ads_kpi);
+
+            $c3b        = $query->sum('c3b');
+            $c3bg       = $query->sum('c3bg');
+
+            $c3b_c3bg   = $c3b + $c3bg;
+
+            $rs[$user->_id]['username'] = $user->username;
+            $rs[$user->_id]['c3b']      = $c3b_c3bg;
+
+            $total += $c3b_c3bg;
         }
 
-        $query = AdResult::raw(function ($collection) use ($startDate, $endDate, $ads_kpi) {
-            return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['ad_id' => ['$in' => $ads_kpi]]],
-                [
-                    '$group' => [
-                        '_id' => '$creator_id',
-                        'c3b' => ['$sum' => ['$sum' => ['$c3b', '$c3bg']]],
-                    ]
-                ],
-                ['$sort' => ['c3b' => -1]]
-            ]);
+        uasort($rs, function ($item1, $item2) {
+            if ($item1['c3b'] == $item2['c3b']) return 0;
+            return $item2['c3b'] < $item1['c3b'] ? -1 : 1;
         });
 
         $table = '<table id="c3_leaderboard" class="table table-bordered table-hover no-boder-top" width="100%">
@@ -505,31 +514,9 @@ class AjaxController extends Controller
                             </thead>
                             <tbody>';
 
-        $data = array();
-        $total = 0;
-        foreach ($query as $i => $item) {
-//            if($i > 4) break;
-//            if(!$item->c3) continue;  // not show if c3 = 0
+        $no     = 0;
 
-            $user = User::find($item->_id);
-            if(!$user){ // if not found user
-                $unknown            = config('constants.UNKNOWN');
-                $user['username']   = $unknown;
-                $user['rank']       = $unknown;
-            }
-
-            if(isset($data[$user['username']])){
-                $data[$user['username']]['c3b'] += $item->c3b;
-            }else{
-                $data[$user['username']]['username']    = $user['username'];
-                $data[$user['username']]['rank']        = $user['rank'];
-                $data[$user['username']]['c3b']         = $item->c3b;
-            }
-            $total += $item->c3b;
-        }
-
-        $no = 0;
-        foreach ($data as $item){
+        foreach ($rs as $item){
             $no++;
             $rate = $total ? round($item['c3b'] * 100 / $total, 2) : 0;
 
@@ -564,30 +551,32 @@ class AjaxController extends Controller
             $endDate    = date('Y-m-t');
         }
 
-        $channel    = UserKpi::pluck('user_id', 'channel_id')->toArray();
-        $ads_kpi = [];
-        foreach ($channel as $channel_id => $user_id){
-            $ads    = Ad::where('channel_id', $channel_id)
-                ->where('creator_id', $user_id)
-                ->pluck('_id')->toArray();
+        $user_active = User::where('role', 'Marketer')->where('is_active', 1)->get();
 
-            $ads_kpi = array_merge($ads ,$ads_kpi );
+        $total  = 0;
+        foreach ($user_active as $user){
+            $ads_kpi    = [];
+            $channel    = UserKpi::where('user_id', $user->_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
+            if(count($channel) < 1){
+                continue;
+            }
+
+            $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+
+            $query = AdResult::where('date', '>=', $startDate)
+                ->where('date', '<=', $endDate)
+                ->whereIn('ad_id', $ads_kpi);
+
+            $revenue    = $query->sum('revenue');
+            $revenue    = $this->convert_revenue($revenue);
+
+            $rs[$user->_id]['username'] = $user->username;
+            $rs[$user->_id]['revenue']  = $revenue;
         }
 
-        $query = AdResult::raw(function ($collection) use ($startDate, $endDate, $ads_kpi) {
-            return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['ad_id' => ['$in' => $ads_kpi]]],
-                [
-                    '$group' => [
-                        '_id'       => '$creator_id',
-                        'revenue'   => [
-                            '$sum'  => '$revenue'
-                        ]
-                    ]
-                ],
-                ['$sort' => ['revenue' => -1]]
-            ]);
+        uasort($rs, function ($item1, $item2) {
+            if ($item1['revenue'] == $item2['revenue']) return 0;
+            return $item2['revenue'] < $item1['revenue'] ? -1 : 1;
         });
 
         $table = '<table id="revenue_leaderboard" class="table table-striped table-bordered table-hover no-boder-top" width="100%">
@@ -601,39 +590,8 @@ class AjaxController extends Controller
                             </thead>
                             <tbody>';
 
-        $data = array();
-        $total = 0;
-        foreach ($query as $i => $item) {
-//            if($i > 4) break;
-//            if(!$item->revenue) continue;
-            if($item->_id == config('constants.SALE_CRM')){
-                $sale_crm           = config('constants.SALE_CRM');
-                $user['username']   = $sale_crm;
-                $user['rank']       = $sale_crm;
-            }else{
-                $user = User::find($item->_id);
-                if(!$user){
-                    $unknown            = config('constants.UNKNOWN');
-                    $user['username']   = $unknown;
-                    $user['rank']       = $unknown;
-                }
-            }
-
-            $revenue = $this->convert_revenue($item->revenue);
-
-            if(isset($data[$user['username']])){
-                $data[$user['username']]['revenue'] += $revenue;
-            }else{
-                $data[$user['username']]['username']    = $user['username'];
-                $data[$user['username']]['rank']        = $user['rank'];
-                $data[$user['username']]['revenue']     = $revenue;
-            }
-
-            $total += $revenue;
-        }
-
-        $no = 0;
-        foreach ($data as $item){
+        $no     = 0;
+        foreach ($rs as $item){
             $revenue = number_format($item['revenue'], 2);
             $rate = $total ? round($item['revenue'] * 100 / $total, 2) : 0;
             $no++;
@@ -706,30 +664,33 @@ class AjaxController extends Controller
             $endDate    = date('Y-m-t');
         }
 
-        $channel    = UserKpi::pluck('user_id', 'channel_id')->toArray();
-        $ads_kpi = [];
-        foreach ($channel as $channel_id => $user_id){
-            $ads    = Ad::where('channel_id', $channel_id)
-                ->where('creator_id', $user_id)
-                ->pluck('_id')->toArray();
+        $user_active = User::where('role', 'Marketer')->where('is_active', 1)->get();
 
-            $ads_kpi = array_merge($ads ,$ads_kpi );
+        $total  = 0;
+        foreach ($user_active as $user){
+            $ads_kpi    = [];
+            $channel    = UserKpi::where('user_id', $user->_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
+            if(count($channel) < 1){
+                continue;
+            }
+
+            $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+
+            $query = AdResult::where('date', '>=', $startDate)
+                ->where('date', '<=', $endDate)
+                ->whereIn('ad_id', $ads_kpi);
+
+            $spent    = $query->sum('spent');
+            $spent    = $this->convert_spent($spent);
+
+            $rs[$user->_id]['username'] = $user->username;
+            $rs[$user->_id]['spent']    = $spent;
+            $total += $spent;
         }
 
-        $query = AdResult::raw(function ($collection) use ($startDate, $endDate, $ads_kpi) {
-            return $collection->aggregate([
-                ['$match' => ['date' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['ad_id' => ['$in' => $ads_kpi]]],
-                [
-                    '$group' => [
-                        '_id'   => '$creator_id',
-                        'spent' => [
-                            '$sum' => '$spent'
-                        ]
-                    ]
-                ],
-                ['$sort' => ['spent' => -1]]
-            ]);
+        uasort($rs, function ($item1, $item2) {
+            if ($item1['spent'] == $item2['spent']) return 0;
+            return $item2['spent'] < $item1['spent'] ? -1 : 1;
         });
 
         $table = '<table id="spent_leaderboard" class="table table-striped table-bordered table-hover no-boder-top" width="100%">
@@ -743,33 +704,8 @@ class AjaxController extends Controller
                             </thead>
                             <tbody>';
 
-        $data = array();
-        $total = 0;
-        foreach ($query as $i => $item) {
-//            if($i > 4) break;
-//            if(!$item->spent) continue;
-
-            $user = User::find($item->_id);
-            if(!$user){ // if not found user
-                $unknown            = config('constants.UNKNOWN');
-                $user['username']   = $unknown;
-                $user['rank']       = $unknown;
-            }
-
-            $spent = $this->convert_spent($item->spent);
-
-            if(isset($data[$user['username']])){
-                $data[$user['username']]['spent'] += $spent;
-            }else{
-                $data[$user['username']]['username']    = $user['username'];
-                $data[$user['username']]['rank']        = $user['rank'];
-                $data[$user['username']]['spent']       = $spent;
-            }
-            $total += $spent;
-        }
-
-        $no = 0;
-        foreach ($data as $item){
+        $no     = 0;
+        foreach ($rs as $item){
             $spent = number_format($item['spent'], 2);
             $rate = $total ? round($item['spent'] * 100 / $total, 2) : 0;
             $no++;
@@ -824,21 +760,16 @@ class AjaxController extends Controller
         $year   = date('Y'); /* nam hien tai*/
         $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
         $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-        $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+        $last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
         /* end date */
 
         $request    = request();
 
         if($request->marketer_id && $request->channel_id){
-            $ads    = array();
-            $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
-            $channel    = UserKpi::where('user_id', $request->marketer_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
-            $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
+            $ads_kpi    = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
             $kpi = $this->getTotalKpi();
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
-                ['$match' => ['creator_id' => $request->marketer_id]],
-                ['$match' => ['ad_id' => ['$in' => $ads]]],
                 ['$match' => ['ad_id' => ['$in' => $ads_kpi]]],
                 [
                     '$group' => [
@@ -855,7 +786,6 @@ class AjaxController extends Controller
             $ads_kpi    = Ad::whereIn('channel_id', $channel)->pluck('_id')->toArray();
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
-                ['$match' => ['creator_id' => $request->marketer_id]],
                 ['$match' => ['ad_id' => ['$in' => $ads_kpi]]],
                 [
                     '$group' => [
@@ -867,13 +797,11 @@ class AjaxController extends Controller
                 ]
             ];
         }elseif($request->channel_id && !$request->marketer_id){
+            $ads_kpi    = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
             $kpi = $this->getTotalKpi();
-            $ads    = array();
-            $ads = Ad::where('channel_id', $request->channel_id)->pluck('_id')->toArray();
-
             $match = [
                 ['$match' => ['date' => ['$gte' => $first_day_this_month, '$lte' => $last_day_this_month]]],
-                ['$match' => ['ad_id' => ['$in' => $ads]]],
+                ['$match' => ['ad_id' => ['$in' => $ads_kpi]]],
                 [
                     '$group' => [
                         '_id' => '$date',
@@ -945,7 +873,7 @@ class AjaxController extends Controller
         $year   = date('Y'); /* nam hien tai*/
         $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
         $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-        $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+        $last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
 
         $request    = request();
 
@@ -1050,7 +978,7 @@ class AjaxController extends Controller
 		$year   = date('Y'); /* nam hien tai*/
 		$d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
 		$first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-		$last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+		$last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
 		/* end date */
 
 		$array_month = array();
@@ -1128,7 +1056,7 @@ class AjaxController extends Controller
 		$year   = date('Y'); /* nam hien tai*/
 		$d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
 		$first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-		$last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+		$last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
 		/* end date */
 
 		$array_month = array();
@@ -1206,7 +1134,7 @@ class AjaxController extends Controller
 		$year   = date('Y'); /* nam hien tai*/
 		$d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
 		$first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-		$last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+		$last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
 		/* end date */
 
 		$array_month = array();
@@ -1373,11 +1301,18 @@ class AjaxController extends Controller
             $users      = UserKpi::all();
             $channel    = UserKpi::groupBy('channel_id')->pluck('channel_id')->toArray();
         }
-        foreach ($users as $user){
 
+        $user_active = User::where('role', 'Marketer')->where('is_active', 1)->pluck('_id')->toArray();
+
+        foreach ($users as $user){
             $kpi            = @$user->kpi;
             $kpi_cost       = @$user->kpi_cost;
             $kpi_l3_c3bg    = @$user->kpi_l3_c3bg;
+            $id             = @$user->user_id;
+
+            if(!in_array($id, $user_active)){
+                continue;
+            }
 
             foreach ($day_between as $date){
                 $date   = explode('-', $date);

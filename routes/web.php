@@ -20,6 +20,7 @@ Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 Route::get('/home', 'DashboardController@index')->name('dashboard');
 Route::group(['prefix' => 'dashboard'], function () {
     Route::get('/get_channel', 'DashboardController@get_channel')->name('dashboard-get-channel');
+    Route::get('/get_c3a_c3b', 'DashboardController@getC3AC3B')->name('dashboard-get-c3a-c3b');
 });
 
 Route::group(['prefix' => 'source'], function () {
@@ -217,3 +218,9 @@ Route::group(['prefix' => 'inventory-report'], function () {
     Route::get('/', 'InventoryReportController@index')->name('inventory-report');
     Route::get('/filter-inventory-report', 'InventoryReportController@filter')->name('filter-inventory-report');
 });
+
+Route::group(['prefix' => 'phone_check_result'], function () {
+    Route::get('/', 'PhoneCheckResultController@index')->name('phone_check_result');
+    Route::get('/filter', 'PhoneCheckResultController@filter')->name('phone_check_result_filter');
+});
+

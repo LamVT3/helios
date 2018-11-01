@@ -932,7 +932,8 @@ class ContactController extends Controller
     }
 
     public function exportToOLM(){
-        $url = 'http://58.187.9.138/api/OlmInsert/InsertContactOLM';
+//        $url = 'http://58.187.9.138/api/OlmInsert/InsertContactOLM';
+        $url = 'http://210.245.115.55:8081/api/OlmInsert/insert_contact_olm';
 
         $data_where = $this->getWhereData();
         $request = request();
@@ -948,7 +949,6 @@ class ContactController extends Controller
         }
         $query = Contact::where('submit_time', '>=', $startDate);
         $query->where('submit_time', '<', $endDate);
-        $query->whereNotIn('olm_status', ['0','1']);
 
         // HoaTV fix multiple select channel
         $arrChannelName = array();
@@ -964,28 +964,9 @@ class ContactController extends Controller
             $query->where('clevel','c3bg');
             unset($data_where['clevel']);
         }
-        if(@$data_where['current_level'] == 'l0'){
-            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
-            unset($data_where['current_level']);
-        }
 
-        // HoaTV - Only get contact not export and error
-        // if(@$data_where['olm_status'] === 0){
-        //     $query->where('olm_status', 0);
-        //     unset($data_where['olm_status']);
-        // }
-        // if(@$data_where['olm_status'] === 1){
-        //     $query->where('olm_status', 0);
-        //     unset($data_where['olm_status']);
-        // }
-        // if(@$data_where['olm_status'] == -1){
-        //     $query->whereNotIn('olm_status', [0, 1, 2]);
-        //     unset($data_where['olm_status']);
-        // }
-        $query->whereNotIn('olm_status', [0, 1, '0', '1']);
-        unset($data_where['olm_status']);
-
-        $query->where($data_where);
+        $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+        unset($data_where['current_level']);
 
         if($request->id){
             if($request->id != 'All' && count($request->id) > 0){
@@ -993,26 +974,32 @@ class ContactController extends Controller
             }
         }
 
+        $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
+        unset($data_where['olm_status']);
+
+        $query->where($data_where);
+
         $result = array();
         $result['cnt_success']      = 0;
         $result['cnt_duplicate']    = 0;
         $result['cnt_error']        = 0;
         $result['cnt_total']        = 0;
 
-        if($request->export_sale_sort){
-            $query->orderBy('submit_time', $request->export_sale_sort);
-        }else{
-            $query->orderBy('submit_time', 'desc');
-        }
+        $query->orderBy('submit_time', $request->export_sale_sort);
 
         $limit = (int)$request->limit;
         $export_sale_date = '';
         if($request->export_sale_date){
             $export_sale_date = str_replace('/', '-', $request->export_sale_date);
         }
-            
-        $query->chunk( 1000, function ( $contacts ) use ( $url , &$result, $export_sale_date, $limit) {
-            $count = 0;
+
+        $count = 0;
+        $query->chunk( 1000, function ( $contacts ) use ( $url , &$result, $export_sale_date, $limit, &$count) {
+
+            if($count >= $limit){
+                return false;
+            }
+
             foreach ($contacts as $contact)
             {
                 if($count >= $limit){
@@ -1024,24 +1011,36 @@ class ContactController extends Controller
                 }
 
                 $source_type = '';
-                if($contact->source_name){
-                    $source_type = $contact->source_name;
-                }else if($contact->source_id){
+                if(@$contact->source_name){
+                    $source_type = @$contact->source_name;
+                }else if(@$contact->source_id){
                     $source_id      = $contact->source_id;
                     $source         = Source::find($source_id);
-                    $source_type    = $source->name;
+                    $source_type    = @$source->name;
+                }
+
+                if($source_type != ''){
+                    if($source_type == 'Facebook'){
+                        $source_type = 'Facebook';
+                    }elseif ($source_type == 'Google'){
+                        $source_type = 'Google';
+                    }elseif ($source_type == 'Engentic'){
+                        $source_type = 'Adnet';
+                    }else{
+                        $source_type = 'Social';
+                    }
                 }
 
                 $data_array =  array(
-                    "ads_link"          => $contact->ads_link,
-                    "email"             => $contact->email,
-                    "fullname"          => $contact->name,
-                    "phone"             => $contact->phone,
-                    "contact_channel"   => $contact->channel_name,
+                    "ads_link"          => @$contact->ads_link,
+                    "email"             => @$contact->email,
+                    "fullname"          => @$contact->name,
+                    "phone"             => @$contact->phone,
+                    "contact_channel"   => @$contact->channel_name,
                     "source_type"       => $source_type,
-                    "registereddate"    => $contact->submit_time,
-                    "submit_time"       => $contact->submit_time,
-                    "code"              => $contact->contact_id
+                    "registereddate"    => @$contact->submit_time,
+                    "submit_time"       => @$contact->submit_time,
+                    "code"              => @$contact->contact_id
                 );
 
                 $make_call  = $this->callAPI('POST', $url, json_encode($data_array));
@@ -1061,6 +1060,8 @@ class ContactController extends Controller
                 } else {
                     $result['cnt_error']    += 1;
                 }
+
+                $result['cnt_total'] += 1;
                 
                 $LogExportToSale = new LogExportToSale();
                 $LogExportToSale->ads_link =  $contact->ads_link;
@@ -1078,8 +1079,8 @@ class ContactController extends Controller
                 
                 $count++;
             }
-            $result['cnt_total'] = $count;
         });
+
         return $result;
     }
 
@@ -1088,24 +1089,24 @@ class ContactController extends Controller
         if (strtolower($apiStatus) == "ok"){
             $dateFromContactID = date('Y-m-d', $contact->submit_time/1000);
 
-            $contact->handover_date = date("Y-m-d");
+            $contact->handover_date = date("Y-m-d h:m:s");
             $contact->current_level = "l1";
             $contact->olm_status    = 0;
             $contact->l1_time = date("Y-m-d");
 
             // Update ad_results
             // Get data base on date contact submited
-            $ad_result  = AdResult::where("ad_id",$contact->ad_id)->where("date",$dateFromContactID)->get();
+            $ad_results  = AdResult::where("ad_id",$contact->ad_id)->where("date",$dateFromContactID)->get();
             $countL1    = 1;
-            foreach($ad_result as $item){
-                $countL1 = $countL1 + $item["l1"];
+            foreach($ad_results as $item){
+                $countL1 = $countL1 + @$item->l1;
             }
             $ad_result = AdResult::where("ad_id",$contact->ad_id)->where("date",$dateFromContactID)->first();
-            $ad_result->l1 = $countL1;
+            @$ad_result->l1 = $countL1;
             $ad_result->save();
         } else if (strtolower($apiStatus) == "duplicated"){
             $contact->olm_status = 1;
-        } else if (strtolower($apiStatus) == "error"){
+        } else if (strpos($apiStatus, 'error') !== false){
             $contact->olm_status = 2;
         } else {
             $contact->olm_status = 3;
