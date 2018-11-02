@@ -1020,12 +1020,11 @@ class ContactController extends Controller
                 }
 
                 if($source_type != ''){
-                    $source_type = strtolower($source_type);
-                    if($source_type == 'facebook'){
+                    if($source_type == 'Facebook'){
                         $source_type = 'Facebook';
-                    }elseif ($source_type == 'google'){
+                    }elseif ($source_type == 'Google'){
                         $source_type = 'Google';
-                    }elseif ($source_type == 'engentic'){
+                    }elseif ($source_type == 'Engentic'){
                         $source_type = 'Adnetwork';
                     }elseif ($source_type == 'adnet'){
                         $source_type = 'Adnetwork';
