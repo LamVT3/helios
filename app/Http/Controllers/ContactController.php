@@ -1024,7 +1024,7 @@ class ContactController extends Controller
                         $source_type = 'Facebook';
                     }elseif ($source_type == 'Google'){
                         $source_type = 'Google';
-                    }elseif ($source_type == 'Engentic'){
+                    }elseif ($source_type == 'Engentic' || $source_type == 'Adnet'){
                         $source_type = 'Adnet';
                     }else{
                         $source_type = 'Social';
