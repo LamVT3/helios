@@ -19,6 +19,14 @@
         @endfor
 
     </tr>
+    <tr style="background-color: #F5F5F5">
+        <th colspan="2" class="border-bold-bot-right" style="text-align: right;">Total</th>
+        @for ($i = 1; $i <= $days; $i++)
+            <td class="border-bold-bot" style="font-size: 15px; font-weight: bold">{{$data['total'][$i]['produce']}}</td>
+            <td class="border-bold-bot" style="font-size: 15px; font-weight: bold">{{$data['total'][$i]['transfer']}}</td>
+            <td class="border-bold-bot-right" style="font-size: 15px; font-weight: bold">{{$data['total'][$i]['inventory']}}</td>
+        @endfor
+    </tr>
     </thead>
     <tbody>
     @foreach($data['lable'] as $source => $channel)

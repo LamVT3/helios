@@ -651,6 +651,10 @@
             color: #3176b1 !important;
         }
 
+        #site-stats-c3, #C3A-C3B_chart{
+            padding-right: 30px !important;
+        }
+
     </style>
 
     <script type="text/javascript">

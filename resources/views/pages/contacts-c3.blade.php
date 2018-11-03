@@ -376,13 +376,13 @@
 </div>
 
 <!-- Export To OLM Modal -->
-<div class="modal fade" id="myExportToOLMModal" role="dialog">
+<div class="modal fade" id="myExportToOLMModal" role="dialog" data-keyboard="false" data-backdrop="static">
     <div class="modal-dialog">
 
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                {{--<button type="button" class="close" data-dismiss="modal">&times;</button>--}}
                 <h3 class="modal-title">Export To Sales</h3>
             </div>
             <div class="modal-body">
@@ -405,7 +405,12 @@
             </div>
             <div class="modal-footer">
                 <button id="confirm_export_to_olm" type="button" class="btn btn-primary">Yes</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <button id="close_modal_export_to_olm" type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <div class="loading_modal" style="display: none">
+                    <div class="col-md-12 text-center">
+                        <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 5%;"/>
+                    </div>
+                </div>
             </div>
         </div>
 

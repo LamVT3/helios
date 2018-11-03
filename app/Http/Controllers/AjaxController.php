@@ -473,6 +473,7 @@ class AjaxController extends Controller
 
         $user_active = User::where('role', 'Marketer')->where('is_active', 1)->get();
 
+        $total  = 0;
         foreach ($user_active as $user){
             $ads_kpi = [];
             $channel    = UserKpi::where('user_id', $user->_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
@@ -489,8 +490,12 @@ class AjaxController extends Controller
             $c3b        = $query->sum('c3b');
             $c3bg       = $query->sum('c3bg');
 
+            $c3b_c3bg   = $c3b + $c3bg;
+
             $rs[$user->_id]['username'] = $user->username;
-            $rs[$user->_id]['c3b']      = $c3b + $c3bg;
+            $rs[$user->_id]['c3b']      = $c3b_c3bg;
+
+            $total += $c3b_c3bg;
         }
 
         uasort($rs, function ($item1, $item2) {
@@ -509,7 +514,6 @@ class AjaxController extends Controller
                             </thead>
                             <tbody>';
 
-        $total  = 0;
         $no     = 0;
 
         foreach ($rs as $item){
@@ -549,6 +553,7 @@ class AjaxController extends Controller
 
         $user_active = User::where('role', 'Marketer')->where('is_active', 1)->get();
 
+        $total  = 0;
         foreach ($user_active as $user){
             $ads_kpi    = [];
             $channel    = UserKpi::where('user_id', $user->_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
@@ -563,9 +568,10 @@ class AjaxController extends Controller
                 ->whereIn('ad_id', $ads_kpi);
 
             $revenue    = $query->sum('revenue');
+            $revenue    = $this->convert_revenue($revenue);
 
             $rs[$user->_id]['username'] = $user->username;
-            $rs[$user->_id]['revenue']  = $this->convert_revenue($revenue);
+            $rs[$user->_id]['revenue']  = $revenue;
         }
 
         uasort($rs, function ($item1, $item2) {
@@ -584,7 +590,6 @@ class AjaxController extends Controller
                             </thead>
                             <tbody>';
 
-        $total  = 0;
         $no     = 0;
         foreach ($rs as $item){
             $revenue = number_format($item['revenue'], 2);
@@ -661,6 +666,7 @@ class AjaxController extends Controller
 
         $user_active = User::where('role', 'Marketer')->where('is_active', 1)->get();
 
+        $total  = 0;
         foreach ($user_active as $user){
             $ads_kpi    = [];
             $channel    = UserKpi::where('user_id', $user->_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
@@ -675,9 +681,11 @@ class AjaxController extends Controller
                 ->whereIn('ad_id', $ads_kpi);
 
             $spent    = $query->sum('spent');
+            $spent    = $this->convert_spent($spent);
 
             $rs[$user->_id]['username'] = $user->username;
-            $rs[$user->_id]['spent']    = $this->convert_spent($spent);
+            $rs[$user->_id]['spent']    = $spent;
+            $total += $spent;
         }
 
         uasort($rs, function ($item1, $item2) {
@@ -696,7 +704,6 @@ class AjaxController extends Controller
                             </thead>
                             <tbody>';
 
-        $total  = 0;
         $no     = 0;
         foreach ($rs as $item){
             $spent = number_format($item['spent'], 2);
@@ -753,7 +760,7 @@ class AjaxController extends Controller
         $year   = date('Y'); /* nam hien tai*/
         $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
         $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-        $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+        $last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
         /* end date */
 
         $request    = request();
@@ -866,7 +873,7 @@ class AjaxController extends Controller
         $year   = date('Y'); /* nam hien tai*/
         $d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
         $first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-        $last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+        $last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
 
         $request    = request();
 
@@ -971,7 +978,7 @@ class AjaxController extends Controller
 		$year   = date('Y'); /* nam hien tai*/
 		$d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
 		$first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-		$last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+		$last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
 		/* end date */
 
 		$array_month = array();
@@ -1049,7 +1056,7 @@ class AjaxController extends Controller
 		$year   = date('Y'); /* nam hien tai*/
 		$d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
 		$first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-		$last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+		$last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
 		/* end date */
 
 		$array_month = array();
@@ -1127,7 +1134,7 @@ class AjaxController extends Controller
 		$year   = date('Y'); /* nam hien tai*/
 		$d      = cal_days_in_month(CAL_GREGORIAN, $month, $year); /* số ngày trong tháng */
 		$first_day_this_month   = date('Y-' . $month .'-01'); /* ngày đàu tiên của tháng */
-		$last_day_this_month    = date('Y-' . $month .'-t'); /* ngày cuối cùng của tháng */
+		$last_day_this_month    = date('Y-' . $month .'-'.$d); /* ngày cuối cùng của tháng */
 		/* end date */
 
 		$array_month = array();
