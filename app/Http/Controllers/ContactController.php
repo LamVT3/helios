@@ -953,7 +953,7 @@ class ContactController extends Controller
         // HoaTV fix multiple select channel
         $arrChannelName = array();
         if ($request->channel) {
-            $arrChannelName    = explode(',',$request->channel);
+            $arrChannelName = explode(',',$request->channel);
             $query->whereIn('channel_name',$arrChannelName);
         }
 
@@ -1014,7 +1014,7 @@ class ContactController extends Controller
                 if(@$contact->source_name){
                     $source_type = @$contact->source_name;
                 }else if(@$contact->source_id){
-                    $source_id      = $contact->source_id;
+                    $source_id      = @$contact->source_id;
                     $source         = Source::find($source_id);
                     $source_type    = @$source->name;
                 }
@@ -1033,6 +1033,8 @@ class ContactController extends Controller
                     }
                 }
 
+                $current_time = strtotime("now")*1000;
+
                 $data_array =  array(
                     "ads_link"          => @$contact->ads_link,
                     "email"             => @$contact->email,
@@ -1041,7 +1043,7 @@ class ContactController extends Controller
                     "contact_channel"   => @$contact->channel_name,
                     "source_type"       => $source_type,
                     "registereddate"    => @$contact->submit_time,
-                    "submit_time"       => strtotime("now")*1000,
+                    "submit_time"       => $current_time,
                     "code"              => @$contact->contact_id
                 );
 
