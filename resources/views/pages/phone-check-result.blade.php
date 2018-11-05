@@ -23,38 +23,32 @@
 
                         @component('components.jarviswidget',
                                                     ['id' => 1, 'icon' => 'fa-table', 'title' => 'Results'])
-                            <form id="search-form" class="smart-form" action="#"
-                                  url="">
-                                <div class="row">
-                                    <section class="col col-sm-6 col-lg-3">
-                                        <label class="label">Result</label>
-                                        <select name="type" id="result" class="select2"
-                                                style="width: 280px"
-                                                data-url="">
-                                            <option value="">All</option>
-                                            <option value="1">OK</option>
-                                            <option value="0">Fail</option>
-                                        </select>
-                                        <i></i>
-                                    </section>
-                                    <section class="col col-sm-6 col-lg-3">
-                                        <label class="label">Time</label>
-                                        <div id="reportrange" class="pull-left"
-                                             style="background: #fff; cursor: pointer; padding: 8px; border: 1px solid #ccc;">
-                                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp
-                                            <span class=""></span> <b class="caret"></b>
-                                        </div>
-                                        <div id="" class="pull-right"
-                                             style="">
-                                            <button id="filter" class="btn btn-primary btn-sm" type="button" style="float: right" >
-                                                <i class="fa fa-search"></i>
-
-                                            </button>
-                                        </div>
-                                        <i></i>
-                                    </section>
+                            <form class="form-inline" action="#">
+                                <div class="form-group" style="margin-right:20px;">
+                                    <label for="result" style="font-weight: bold">Result:</label>
+                                    <select name="result" id="result" class="form-control"
+                                            style="width: 280px"
+                                            data-url="">
+                                        <option value="">All</option>
+                                        <option value="1">OK</option>
+                                        <option value="0">Fail</option>
+                                    </select>
                                 </div>
+                                <div class="form-group">
+                                    <label for="reportrange" style="padding-top: 7px; font-weight: bold">Time:</label>
+                                    <div id="reportrange" class="pull-right form-control" name="reportrange"
+                                         style="background: #fff; cursor: pointer; padding: 8px; border: 1px solid #ccc;">
+                                        <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp
+                                        <span class=""></span> <b class="caret"></b>
+                                    </div>
+                                </div>
+                                <button id="filter" class="btn btn-primary btn-sm" type="button" style=" padding: 6px; margin-left: 30px" >
+                                    <i class="fa fa-filter"></i>
+                                    Filter
+                                </button>
+
                             </form>
+
                             <div class="loading" style="display: none; padding: 15px">
                                 <div class="col-md-12 text-center">
                                     <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 2%;"/>
@@ -82,7 +76,7 @@
 
     </div>
     <input type="hidden" name="page_size" value="{{$page_size}}">
-    <input type="hidden" name="filter_url" value="{{route('phone_check_result_filter')}}">
+    <input type="hidden" name="filter_url" value="{{route('phone_check_report_filter')}}">
 
     <!-- END MAIN PANEL -->
 

@@ -16,11 +16,11 @@ class PhoneCheckResultController extends Controller
 
     public function index()
     {
-        $page_title = "Phone Check Result | Helios";
+        $page_title = "Phone Check Report | Helios";
         $page_css = array();
         $no_main_header = FALSE;
-        $active = 'phone_check_result';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-check-square-o\"></i> Phone Check Result <span>> Results </span>";
+        $active = 'phone_check_report';
+        $breadcrumbs = "<i class=\"fa-fw fa fa-check-square-o\"></i> Phone Check Report <span>> Home </span>";
         $page_size  = Config::getByKey('PAGE_SIZE');
 
         $data = $this->get_data();

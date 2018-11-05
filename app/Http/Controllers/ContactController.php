@@ -1041,7 +1041,7 @@ class ContactController extends Controller
                     "contact_channel"   => @$contact->channel_name,
                     "source_type"       => $source_type,
                     "registereddate"    => @$contact->submit_time,
-                    "submit_time"       => @$contact->submit_time,
+                    "submit_time"       => strtotime("now")*1000,
                     "code"              => @$contact->contact_id
                 );
 
