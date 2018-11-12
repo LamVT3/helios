@@ -144,7 +144,7 @@ class InventoryReportController extends Controller
             $match = [
                 ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
                 ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
-                ['$match' => ['olm_status' => ['$nin' => [0, 1]]]],
+                ['$match' => ['olm_status' => ['$nin' => [0, 1, 2]]]],
                 ['$match' => ['channel_name' => ['$in' => $channel]]],
                 ['$match' => ['current_level' => ['$nin' => \config('constants.CURRENT_LEVEL')]]],
                 [
@@ -163,7 +163,7 @@ class InventoryReportController extends Controller
             $match = [
                 ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
                 ['$match' => ['clevel' => ['$in' => ['c3bg']]]],
-                ['$match' => ['olm_status' => ['$nin' => [0, 1]]]],
+                ['$match' => ['olm_status' => ['$nin' => [0, 1, 2]]]],
                 ['$match' => ['current_level' => ['$nin' => \config('constants.CURRENT_LEVEL')]]],
                 [
                     '$group' => [
@@ -222,7 +222,7 @@ class InventoryReportController extends Controller
             $match = [
                 ['$match' => ['export_sale_date' => ['$gte' => $startDate, '$lte' => $endDate]]],
                 ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
-                ['$match' => ['olm_status' => ['$in' => [0, 1]]]],
+                ['$match' => ['olm_status' => ['$in' => [0, 1, 2]]]],
                 ['$match' => ['channel_name' => ['$in' => $channel]]],
                 [
                     '$group' => [
@@ -240,7 +240,7 @@ class InventoryReportController extends Controller
             $match = [
                 ['$match' => ['export_sale_date' => ['$gte' => $startDate, '$lte' => $endDate]]],
                 ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
-                ['$match' => ['olm_status' => ['$in' => [0, 1]]]],
+                ['$match' => ['olm_status' => ['$in' => [0, 1, 2]]]],
                 [
                     '$group' => [
                         '_id' => ['export_sale_date' => '$export_sale_date', 'channel_name' => '$channel_name', 'source_id' => '$source_id'],
