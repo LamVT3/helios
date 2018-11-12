@@ -1049,7 +1049,7 @@ class ContactController extends Controller
 
                 $make_call  = $this->callAPI('POST', $url, json_encode($data_array));
                 $response   = json_decode($make_call, true);
-                $status     = $response['results'][0]['Status'];
+                $status     = @$response['results'][0]['Status'];
 
                 $contactUpdate    = $this->handleHandover($contact,$status);
                 $contactUpdate->export_sale_date = strtotime($export_sale_date) * 1000;

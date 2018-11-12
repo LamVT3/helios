@@ -146,6 +146,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
                 ['$match' => ['olm_status' => ['$nin' => [0, 1]]]],
                 ['$match' => ['channel_name' => ['$in' => $channel]]],
+                ['$match' => ['current_level' => ['$nin' => \config('constants.CURRENT_LEVEL')]]],
                 [
                     '$group' => [
                         '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_id' => '$source_id'],
@@ -163,6 +164,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
                 ['$match' => ['clevel' => ['$in' => ['c3bg']]]],
                 ['$match' => ['olm_status' => ['$nin' => [0, 1]]]],
+                ['$match' => ['current_level' => ['$nin' => \config('constants.CURRENT_LEVEL')]]],
                 [
                     '$group' => [
                         '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_id' => '$source_id'],
