@@ -112,10 +112,11 @@ class ContactController extends Controller
             unset($data_where['olm_status']);
         }else if(@$data_where['olm_status'] === 1){
             $query->whereIn('olm_status', [1, '1']);
+            $query->orWhereIn('current_level', \config('constants.CURRENT_LEVEL'));
             unset($data_where['olm_status']);
         }else if(@$data_where['olm_status'] == -1){
-            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
             $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
+            $query->orWhereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
             unset($data_where['olm_status']);
         }
         $query->where($data_where);
@@ -148,7 +149,7 @@ class ContactController extends Controller
             $date_place = str_replace('-', ' ', $request->registered_date);
             $date_arr   = explode(' ', str_replace('/', '-', $date_place));
 
-            $startDate  = date("Y-m-d h:m:s", $date_arr[0]);
+            $startDate  = date("Y-m-d h:m:s", strtotime($date_arr[0]));
             $endDate    = date("Y-m-d h:m:s", strtotime("+1 day", strtotime($date_arr[1])));
 
             $query->where('handover_date', '>=', $startDate);
@@ -386,7 +387,7 @@ class ContactController extends Controller
                     $date_place = str_replace('-', ' ', $request->registered_date);
                     $date_arr   = explode(' ', str_replace('/', '-', $date_place));
 
-                    $startDate  = date("Y-m-d h:m:s", $date_arr[0]);
+                    $startDate  = date("Y-m-d h:m:s", strtotime($date_arr[0]));
                     $endDate    = date("Y-m-d h:m:s", strtotime("+1 day", strtotime($date_arr[1])));
 
                     $query->where('handover_date', '>=', $startDate);
@@ -571,7 +572,7 @@ class ContactController extends Controller
             $date_place = str_replace('-', ' ', $request->registered_date);
             $date_arr   = explode(' ', str_replace('/', '-', $date_place));
 
-            $startDate  = date("Y-m-d 00:00:00", $date_arr[0]);
+            $startDate  = date("Y-m-d 00:00:00", strtotime($date_arr[0]));
             $endDate    = date("Y-m-d 00:00:00", strtotime("+1 day", strtotime($date_arr[1])));
 
             $query->where('handover_date', '>=', $startDate);
@@ -1016,14 +1017,14 @@ class ContactController extends Controller
             $date_place = str_replace('-', ' ', $request->registered_date);
             $date_arr   = explode(' ', str_replace('/', '-', $date_place));
 
-            $startDate  = date("Y-m-d h:m:s", $date_arr[0]);
+            $startDate  = date("Y-m-d h:m:s", strtotime($date_arr[0]));
             $endDate    = date("Y-m-d h:m:s", strtotime("+1 day", strtotime($date_arr[1])));
 
             $query->where('handover_date', '>=', $startDate);
             $query->where('handover_date', '<=', $endDate);
         }
 
-        $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
+        $query->whereNotIn('olm_status', [0, 1, '0', '1']);
         unset($data_where['olm_status']);
 
         $query->where($data_where);
