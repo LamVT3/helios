@@ -220,12 +220,8 @@ class ContactController extends Controller
         }else if(@$data_where['olm_status'] === 1){
             $query->whereIn('olm_status', [1, '1']);
             unset($data_where['olm_status']);
-        }else if(@$data_where['olm_status'] === 2){
-            $query->whereIn('olm_status', [2, 3, '2', '3']);
-            unset($data_where['olm_status']);
-        }else if(@$data_where['olm_status'] == -1){
-            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
-            unset($data_where['olm_status']);
+        }else{
+            return 0;
         }
 
         if($request->tranfer_date) {
