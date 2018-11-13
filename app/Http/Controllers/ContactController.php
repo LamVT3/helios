@@ -235,7 +235,8 @@ class ContactController extends Controller
             return 0;
             unset($data_where['olm_status']);
         }else{
-            $query->whereIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
+            $query->whereIn('current_level', \config('constants.CURRENT_LEVEL'));
+            unset($data_where['olm_status']);
         }
 
         if($request->tranfer_date) {
