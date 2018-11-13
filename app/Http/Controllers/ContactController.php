@@ -114,6 +114,7 @@ class ContactController extends Controller
             $query->whereIn('olm_status', [1, '1']);
             unset($data_where['olm_status']);
         }else if(@$data_where['olm_status'] == -1){
+            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
             $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
             unset($data_where['olm_status']);
         }
@@ -141,6 +142,17 @@ class ContactController extends Controller
                 array_push($phoneArr, $contact['phone']);
             }
             $query->whereNotIn('phone', $phoneArr);
+        }
+
+        if($request->tranfer_date) {
+            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+
+            $startDate  = date("Y-m-d h:m:s", $date_arr[0]);
+            $endDate    = date("Y-m-d h:m:s", strtotime("+1 day", strtotime($date_arr[1])));
+
+            $query->where('handover_date', '>=', $startDate);
+            $query->where('handover_date', '<=', $endDate);
         }
 
         if($data_search != ''){
@@ -365,9 +377,22 @@ class ContactController extends Controller
                     $query->whereIn('olm_status', [1, '1']);
                     unset($data_where['olm_status']);
                 }else if(@$data_where['olm_status'] == -1){
+                    $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
                     $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
                     unset($data_where['olm_status']);
                 }
+
+                if($request->tranfer_date) {
+                    $date_place = str_replace('-', ' ', $request->registered_date);
+                    $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+
+                    $startDate  = date("Y-m-d h:m:s", $date_arr[0]);
+                    $endDate    = date("Y-m-d h:m:s", strtotime("+1 day", strtotime($date_arr[1])));
+
+                    $query->where('handover_date', '>=', $startDate);
+                    $query->where('handover_date', '<=', $endDate);
+                }
+
                 $query->where($data_where);
 
                 if($data_search != ''){
@@ -537,9 +562,22 @@ class ContactController extends Controller
             $query->whereIn('olm_status', [1, '1']);
             unset($data_where['olm_status']);
         }else if(@$data_where['olm_status'] == -1){
+            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
             $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
             unset($data_where['olm_status']);
         }
+
+        if($request->tranfer_date) {
+            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+
+            $startDate  = date("Y-m-d 00:00:00", $date_arr[0]);
+            $endDate    = date("Y-m-d 00:00:00", strtotime("+1 day", strtotime($date_arr[1])));
+
+            $query->where('handover_date', '>=', $startDate);
+            $query->where('handover_date', '<=', $endDate);
+        }
+
         $query->where('is_export', '<>', 1);
         $query->where($data_where);
 
@@ -974,6 +1012,17 @@ class ContactController extends Controller
             }
         }
 
+        if($request->tranfer_date) {
+            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+
+            $startDate  = date("Y-m-d h:m:s", $date_arr[0]);
+            $endDate    = date("Y-m-d h:m:s", strtotime("+1 day", strtotime($date_arr[1])));
+
+            $query->where('handover_date', '>=', $startDate);
+            $query->where('handover_date', '<=', $endDate);
+        }
+
         $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
         unset($data_where['olm_status']);
 
@@ -1224,6 +1273,7 @@ class ContactController extends Controller
             $contact['ad_name']             = $contact['ad_name'] ? $contact['ad_name'] : "-";
             $contact['landing_page']        = $contact['landing_page'] ? $contact['landing_page'] : "-";
             $contact['channel_name']        = $contact['channel_name'] ? $contact['channel_name'] : "-";
+            $contact['handover_date']       = $contact['handover_date'] ? date("d-m-Y h:m:s", strtotime($contact['handover_date'])) : "-";
         }
 
         return $contacts;

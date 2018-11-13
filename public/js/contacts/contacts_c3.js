@@ -51,6 +51,31 @@ $(document).ready(function () {
         }
     }, c3range_span);
 
+    function tranfer_date_span(start, end) {
+        if(start == null && end == null){
+            $('#tranfer_date span').html('');
+        }else
+        $('#tranfer_date span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
+    }
+
+    tranfer_date_span(null, null);
+
+    $('#tranfer_date').daterangepicker({
+        startDate: start,
+        endDate: end,
+        opens: 'right',
+        ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            "This Week":[moment().startOf("isoWeek"),moment().endOf("isoWeek")],
+            "Last Week": [moment().subtract(1, "week").startOf("isoWeek"), moment().subtract(1, "week").endOf("isoWeek")],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+    }, tranfer_date_span)
+
 });
 
 $(document).ready(function () {
@@ -474,6 +499,7 @@ function initDataTable() {
     // var channel         = $('select[name="channel_id"]').val();
     var channel         = $('input[name="channel_id"]').val();
     var olm_status      = $('select[name="olm_status"]').val();
+    var tranfer_date    = $('.tranfer_date_span').text();
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -564,7 +590,8 @@ function initDataTable() {
                     d.landing_page      = landing_page,
                     d.channel           = channel,
                     d.search_text       = search,
-                    d.olm_status        = olm_status ? parseInt(olm_status) : '';
+                    d.olm_status        = olm_status ? parseInt(olm_status) : '',
+                    d.tranfer_date      = tranfer_date
             }
         },
         "columns": [
@@ -654,6 +681,7 @@ function initDataTable() {
                     return status;
                 }
             },
+            { "data" : 'handover_date',      "defaultContent": "-"},
         ],
         'scrollY'       : '55vh',
         "scrollX"       : true,
