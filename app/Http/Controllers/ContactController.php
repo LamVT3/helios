@@ -232,8 +232,10 @@ class ContactController extends Controller
             $query->whereIn('olm_status', [2, 3, '2', '3']);
             unset($data_where['olm_status']);
         }else if(@$data_where['olm_status'] == -1){
-            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'))->orWhereNotIn('olm_status', [0, 1, '0', '1']);
+            return 0;
             unset($data_where['olm_status']);
+        }else{
+            $query->whereIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
         }
 
         if($request->tranfer_date) {
