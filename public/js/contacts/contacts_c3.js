@@ -691,7 +691,7 @@ function initDataTable() {
                     return status;
                 }
             },
-            { "data" : 'handover_date',      "defaultContent": "-"},
+            { "data" : 'export_sale_date',      "defaultContent": "-"},
         ],
         'scrollY'       : '55vh',
         "scrollX"       : true,

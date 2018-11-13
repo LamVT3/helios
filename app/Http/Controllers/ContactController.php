@@ -108,7 +108,7 @@ class ContactController extends Controller
             unset($data_where['current_level']);
         }
         if(@$data_where['olm_status'] === 0){
-            $query->whereIn('current_level', \config('constants.CURRENT_LEVEL'))->orWhereIn('olm_status', [0, '0']);
+            $query->whereIn('current_level', \config('constants.CURRENT_LEVEL'));
             unset($data_where['olm_status']);
         }else if(@$data_where['olm_status'] === 1){
             $query->whereIn('olm_status', [1, '1']);
@@ -220,8 +220,12 @@ class ContactController extends Controller
         }else if(@$data_where['olm_status'] === 1){
             $query->whereIn('olm_status', [1, '1']);
             unset($data_where['olm_status']);
-        }else{
-            return 0;
+        }else if(@$data_where['olm_status'] === 2){
+            $query->whereIn('olm_status', [2, 3, '2', '3']);
+            unset($data_where['olm_status']);
+        }else if(@$data_where['olm_status'] == -1){
+            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'))->orWhereNotIn('olm_status', [0, 1, '0', '1']);
+            unset($data_where['olm_status']);
         }
 
         if($request->tranfer_date) {
@@ -316,7 +320,7 @@ class ContactController extends Controller
             $query->whereIn('olm_status', [2, 3, '2', '3']);
             unset($data_where['olm_status']);
         }else if(@$data_where['olm_status'] == -1){
-            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'))->orWhereNotIn('olm_status', [0, 1, '0', '1']);
             unset($data_where['olm_status']);
         }
 
@@ -403,7 +407,7 @@ class ContactController extends Controller
                     $query->whereIn('olm_status', [2, 3, '2', '3']);
                     unset($data_where['olm_status']);
                 }else if(@$data_where['olm_status'] == -1){
-                    $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+                    $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'))->orWhereNotIn('olm_status', [0, 1, '0', '1']);
                     unset($data_where['olm_status']);
                 }
 
@@ -590,7 +594,7 @@ class ContactController extends Controller
             $query->whereIn('olm_status', [2, 3, '2', '3']);
             unset($data_where['olm_status']);
         }else if(@$data_where['olm_status'] == -1){
-            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'))->orWhereNotIn('olm_status', [0, 1, '0', '1']);
             unset($data_where['olm_status']);
         }
 
@@ -1242,22 +1246,25 @@ class ContactController extends Controller
     private function setColumns(){
         //define index of column
         $columns = array(
-            0   =>'name',
-            1   =>'email',
-            2   =>'phone',
-            3   =>'age',
-            4   =>'submit_time',
-            5   =>'clevel',
-            6   =>'current_level',
-            7   =>'source_name',
-            8   =>'team_name',
-            9   =>'marketer_name',
-            10  =>'campaign_name',
-            11  =>'subcampaign_name',
-            12  =>'ad_name',
-            13  =>'landing_page',
-            14  =>'channel_name',
-            15  =>'olm_status'
+            1   =>'name',
+            2   =>'email',
+            3   =>'phone',
+            4   =>'age',
+            5   =>'submit_time',
+            6   =>'clevel',
+            7   =>'current_level',
+            8   =>'ad_name',
+            9   =>'channel_name',
+            10   =>'source_name',
+            11   =>'team_name',
+            12  =>'marketer_name',
+            13  =>'campaign_name',
+            14  =>'subcampaign_name',
+            15  =>'landing_page',
+            16  =>'invalid_reason',
+            17  =>'is_export',
+            18  =>'olm_status',
+            19  =>'export_sale_date'
         );
 
         return $columns;
@@ -1288,7 +1295,7 @@ class ContactController extends Controller
             $contact['ad_name']             = $contact['ad_name'] ? $contact['ad_name'] : "-";
             $contact['landing_page']        = $contact['landing_page'] ? $contact['landing_page'] : "-";
             $contact['channel_name']        = $contact['channel_name'] ? $contact['channel_name'] : "-";
-            $contact['handover_date']       = $contact['handover_date'] ? date("d-m-Y h:m:s", strtotime($contact['handover_date'])) : "-";
+            $contact['export_sale_date']    = $contact['export_sale_date'] ? date("d-m-Y h:m:s", $contact['export_sale_date'] / 1000) : "-";
         }
 
         return $contacts;
