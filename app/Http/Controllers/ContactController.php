@@ -146,14 +146,13 @@ class ContactController extends Controller
         }
 
         if($request->tranfer_date) {
-            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_place = str_replace('-', ' ', $request->tranfer_date);
             $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
 
-            $startDate  = date("Y-m-d h:m:s", strtotime($date_arr[0]));
-            $endDate    = date("Y-m-d h:m:s", strtotime("+1 day", strtotime($date_arr[1])));
-
-            $query->where('handover_date', '>=', $startDate);
-            $query->where('handover_date', '<=', $endDate);
+            $query->where('export_sale_date', '>=', $startDate);
+            $query->where('export_sale_date', '<', $endDate);
         }
 
         if($data_search != ''){
@@ -219,13 +218,22 @@ class ContactController extends Controller
             unset($data_where['olm_status']);
         }else if(@$data_where['olm_status'] === 1){
             $query->whereIn('olm_status', [1, '1']);
+            $query->orWhereIn('current_level', \config('constants.CURRENT_LEVEL'));
             unset($data_where['olm_status']);
         }else if(@$data_where['olm_status'] == -1){
-            return 0;
+            $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
+            $query->orWhereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
             unset($data_where['olm_status']);
-        }else{
-            $query->whereIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
-            unset($data_where['olm_status']);
+        }
+
+        if($request->tranfer_date) {
+            $date_place = str_replace('-', ' ', $request->tranfer_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+
+            $query->where('export_sale_date', '>=', $startDate);
+            $query->where('export_sale_date', '<', $endDate);
         }
 
         $status = @$request->is_export;
@@ -304,11 +312,24 @@ class ContactController extends Controller
             unset($data_where['olm_status']);
         }else if(@$data_where['olm_status'] === 1){
             $query->whereIn('olm_status', [1, '1']);
+            $query->orWhereIn('current_level', \config('constants.CURRENT_LEVEL'));
             unset($data_where['olm_status']);
         }else if(@$data_where['olm_status'] == -1){
             $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
+            $query->orWhereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
             unset($data_where['olm_status']);
         }
+
+        if($request->tranfer_date) {
+            $date_place = str_replace('-', ' ', $request->tranfer_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+
+            $query->where('export_sale_date', '>=', $startDate);
+            $query->where('export_sale_date', '<', $endDate);
+        }
+
         $query->where($data_where);
 
         if($data_search != ''){
@@ -376,22 +397,22 @@ class ContactController extends Controller
                     unset($data_where['olm_status']);
                 }else if(@$data_where['olm_status'] === 1){
                     $query->whereIn('olm_status', [1, '1']);
+                    $query->orWhereIn('current_level', \config('constants.CURRENT_LEVEL'));
                     unset($data_where['olm_status']);
                 }else if(@$data_where['olm_status'] == -1){
-                    $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
                     $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
+                    $query->orWhereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
                     unset($data_where['olm_status']);
                 }
 
                 if($request->tranfer_date) {
-                    $date_place = str_replace('-', ' ', $request->registered_date);
+                    $date_place = str_replace('-', ' ', $request->tranfer_date);
                     $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+                    $startDate  = strtotime($date_arr[0])*1000;
+                    $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
 
-                    $startDate  = date("Y-m-d h:m:s", strtotime($date_arr[0]));
-                    $endDate    = date("Y-m-d h:m:s", strtotime("+1 day", strtotime($date_arr[1])));
-
-                    $query->where('handover_date', '>=', $startDate);
-                    $query->where('handover_date', '<=', $endDate);
+                    $query->where('export_sale_date', '>=', $startDate);
+                    $query->where('export_sale_date', '<', $endDate);
                 }
 
                 $query->where($data_where);
@@ -561,22 +582,22 @@ class ContactController extends Controller
             unset($data_where['olm_status']);
         }else if(@$data_where['olm_status'] === 1){
             $query->whereIn('olm_status', [1, '1']);
+            $query->orWhereIn('current_level', \config('constants.CURRENT_LEVEL'));
             unset($data_where['olm_status']);
         }else if(@$data_where['olm_status'] == -1){
-            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
             $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
+            $query->orWhereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
             unset($data_where['olm_status']);
         }
 
         if($request->tranfer_date) {
-            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_place = str_replace('-', ' ', $request->tranfer_date);
             $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
 
-            $startDate  = date("Y-m-d 00:00:00", strtotime($date_arr[0]));
-            $endDate    = date("Y-m-d 00:00:00", strtotime("+1 day", strtotime($date_arr[1])));
-
-            $query->where('handover_date', '>=', $startDate);
-            $query->where('handover_date', '<=', $endDate);
+            $query->where('export_sale_date', '>=', $startDate);
+            $query->where('export_sale_date', '<', $endDate);
         }
 
         $query->where('is_export', '<>', 1);
@@ -1011,17 +1032,6 @@ class ContactController extends Controller
             if($request->id != 'All' && count($request->id) > 0){
                 $query->whereIn('_id', array_keys($request->id));
             }
-        }
-
-        if($request->tranfer_date) {
-            $date_place = str_replace('-', ' ', $request->registered_date);
-            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
-
-            $startDate  = date("Y-m-d h:m:s", strtotime($date_arr[0]));
-            $endDate    = date("Y-m-d h:m:s", strtotime("+1 day", strtotime($date_arr[1])));
-
-            $query->where('handover_date', '>=', $startDate);
-            $query->where('handover_date', '<=', $endDate);
         }
 
         $query->whereNotIn('olm_status', [0, 1, '0', '1']);

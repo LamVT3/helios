@@ -268,6 +268,7 @@
                                 <input type="hidden" name="search_text" value="">
                                 <input type="hidden" name="olm_status" value="">
                                 <input type="hidden" name="contact_id" value="">
+                                <input type="hidden" name="tranfer_date" value="">
                             </form>
                         </div>
 
