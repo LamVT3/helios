@@ -108,8 +108,7 @@ class ContactController extends Controller
             unset($data_where['current_level']);
         }
         if(@$data_where['olm_status'] === 0){
-            $query->whereIn('olm_status', [0, '0'])
-                    ->orWhereIn('current_level', \config('constants.CURRENT_LEVEL'));
+            $query->whereIn('current_level', \config('constants.CURRENT_LEVEL'));
             unset($data_where['olm_status']);
         }else if(@$data_where['olm_status'] === 1){
             $query->whereIn('olm_status', [1, '1']);
@@ -118,8 +117,7 @@ class ContactController extends Controller
             $query->whereIn('olm_status', [2, 3, '2', '3']);
             unset($data_where['olm_status']);
         }else if(@$data_where['olm_status'] == -1){
-            $query->whereNotIn('olm_status', [0, 1, 2, 3, '0', '1', '2', '3']);
-            $query->orWhereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
             unset($data_where['olm_status']);
         }
         $query->where($data_where);
