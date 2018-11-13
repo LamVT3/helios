@@ -214,6 +214,14 @@ class ContactController extends Controller
             $query->whereIn('channel_name',$arrChannelName);
         }
 
+        if(@$data_where['clevel'] == 'c3b'){
+            $query->where('clevel', 'like', '%c3b%');
+            unset($data_where['clevel']);
+        }elseif (@$data_where['clevel'] == 'c3b_only'){
+            $query->where('clevel', 'c3b');
+            unset($data_where['clevel']);
+        }
+
         if(@$data_where['olm_status'] === 0){
             $query->whereIn('current_level', \config('constants.CURRENT_LEVEL'));
             unset($data_where['olm_status']);
