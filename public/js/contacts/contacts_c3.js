@@ -77,7 +77,7 @@ $(document).ready(function () {
     }, tranfer_date_span);
 
     $('#tranfer_date').on('apply.daterangepicker', function(ev, picker) {
-        $('#tranfer_date span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
+        $('#tranfer_date span').html(picker.startDate.format('D/M/Y') + '-' + picker.endDate.format('D/M/Y'));
         $('input[name=tranfer_date]').val(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
     });
 
