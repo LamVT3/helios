@@ -1131,7 +1131,8 @@ class ContactController extends Controller
                 $status     = @$response['results'][0]['Status'];
 
                 $contactUpdate    = $this->handleHandover($contact,$status);
-                $contactUpdate->export_sale_date = strtotime($export_sale_date) * 1000;
+                $hour = date('H:m:s');
+                $contactUpdate->export_sale_date = strtotime($export_sale_date . ' ' . $hour) * 1000;
                 $contactUpdate->save();
 
                 if (strtolower($status) == "ok"){
@@ -1172,7 +1173,7 @@ class ContactController extends Controller
         if (strtolower($apiStatus) == "ok"){
             $dateFromContactID = date('Y-m-d', $contact->submit_time/1000);
 
-            $contact->handover_date = date("Y-m-d h:m:s");
+            $contact->handover_date = date("Y-m-d H:m:s");
             $contact->current_level = "l1";
             $contact->olm_status    = 0;
             $contact->l1_time = date("Y-m-d");
@@ -1306,7 +1307,7 @@ class ContactController extends Controller
             $contact['ad_name']             = $contact['ad_name'] ? $contact['ad_name'] : "-";
             $contact['landing_page']        = $contact['landing_page'] ? $contact['landing_page'] : "-";
             $contact['channel_name']        = $contact['channel_name'] ? $contact['channel_name'] : "-";
-            $contact['export_sale_date']    = $contact['export_sale_date'] ? date("d-m-Y h:m:s", $contact['export_sale_date'] / 1000) : "-";
+            $contact['export_sale_date']    = $contact['export_sale_date'] ? date("d-m-Y H:m:s", $contact['export_sale_date'] / 1000) : "-";
         }
 
         return $contacts;
