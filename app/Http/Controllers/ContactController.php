@@ -1131,8 +1131,10 @@ class ContactController extends Controller
                 $status     = @$response['results'][0]['Status'];
 
                 $contactUpdate    = $this->handleHandover($contact,$status);
-                $hour = date('H:m:s');
-                $contactUpdate->export_sale_date = strtotime($export_sale_date . ' ' . $hour) * 1000;
+                $hour   = date('H:m:s');
+                $export_sale_date = $export_sale_date . ' ' . $hour;
+                $date   = date_create($export_sale_date);
+                $contactUpdate->export_sale_date = date_timestamp_get($date) * 1000;
                 $contactUpdate->save();
 
                 if (strtolower($status) == "ok"){
