@@ -1152,11 +1152,12 @@ $(function() {
     $('#export_sale_date').daterangepicker({
         "singleDatePicker": true,
         "timePicker24Hour": true,
+        timePicker: true,
         "alwaysShowCalendars": true,
-        "startDate": start,
-        "endDate": end,
+        "startDate": moment().startOf('second'),
+        "endDate": moment().startOf('second'),
         locale: {
-            format: 'DD/MM/YYYY'
+            format: 'DD/MM/YYYY HH:mm'
         }
     }, function(start, end, label) {
 
