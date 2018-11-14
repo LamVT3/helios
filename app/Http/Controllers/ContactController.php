@@ -688,7 +688,7 @@ class ContactController extends Controller
                 $contact->submit_time = $submit_time;
                 $contact->submit_hour = (int) date( "H", $submit_time / 1000 );
 	            $contact->submit_date = (int) strtotime(date('Y-m-d',$submit_time / 1000)) * 1000;
-                $contact->created_date = date('Y-m-d H:m:s');
+                $contact->created_date = date('Y-m-d H:i:s');
                 $contact->source_name = $item->utm_source;
                 $contact->team_name = $item->utm_team;
                 $contact->marketer_name = $item->utm_agent;
@@ -834,7 +834,7 @@ class ContactController extends Controller
                 $contact->submit_time = $submit_time;
                 $contact->submit_hour = (int) date( "H", $submit_time / 1000 );
 	            $contact->submit_date = (int) strtotime(date('Y-m-d',$submit_time / 1000)) * 1000;
-                $contact->created_date = date('Y-m-d H:m:s');
+                $contact->created_date = date('Y-m-d H:i:s');
                 $contact->source_name = "";
                 $contact->team_name = "";
                 $contact->marketer_name = "";
@@ -1175,7 +1175,7 @@ class ContactController extends Controller
         if (strtolower($apiStatus) == "ok"){
             $dateFromContactID = date('Y-m-d', $contact->submit_time/1000);
 
-            $contact->handover_date = date("Y-m-d H:m:s");
+            $contact->handover_date = date("Y-m-d H:i:s");
             $contact->current_level = "l1";
             $contact->olm_status    = 0;
             $contact->l1_time = date("Y-m-d");
@@ -1276,9 +1276,9 @@ class ContactController extends Controller
             14  =>'subcampaign_name',
             15  =>'landing_page',
             16  =>'invalid_reason',
-            17  =>'is_export',
-            18  =>'olm_status',
-            19  =>'export_sale_date'
+            18  =>'is_export',
+            19  =>'olm_status',
+            20  =>'export_sale_date'
         );
 
         return $columns;
@@ -1309,7 +1309,7 @@ class ContactController extends Controller
             $contact['ad_name']             = $contact['ad_name'] ? $contact['ad_name'] : "-";
             $contact['landing_page']        = $contact['landing_page'] ? $contact['landing_page'] : "-";
             $contact['channel_name']        = $contact['channel_name'] ? $contact['channel_name'] : "-";
-            $contact['export_sale_date']    = $contact['export_sale_date'] ? date("d-m-Y H:m:s", $contact['export_sale_date'] / 1000) : "-";
+            $contact['export_sale_date']    = $contact['export_sale_date'] ? date("d-m-Y H:i:s", $contact['export_sale_date'] / 1000) : "-";
         }
 
         return $contacts;
