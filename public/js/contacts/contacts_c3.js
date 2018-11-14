@@ -1157,7 +1157,7 @@ $(function() {
         "startDate": moment().startOf('second'),
         "endDate": moment().startOf('second'),
         locale: {
-            format: 'DD/MM/YYYY HH:mm'
+            format: 'DD/MM/YYYY HH:mm:ss'
         }
     }, function(start, end, label) {
 
