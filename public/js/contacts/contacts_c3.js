@@ -1149,21 +1149,21 @@ function showModalExportToOLM(data){
 }
 
 $(function() {
-    $('#export_sale_date').daterangepicker({
-        "singleDatePicker": true,
-        "timePicker24Hour": true,
-        timePicker: true,
-        "alwaysShowCalendars": true,
-        "startDate": moment().startOf('second'),
-        "endDate": moment().startOf('second'),
-        locale: {
-            format: 'DD/MM/YYYY HH:mm:ss'
-        }
-    }, function(start, end, label) {
-
-    });
-
     $('#myExportToOLMModal').on('shown.bs.modal', function () {
+        $('#export_sale_date').daterangepicker({
+            "singleDatePicker": true,
+            "timePicker24Hour": true,
+            timePicker: true,
+            "alwaysShowCalendars": true,
+            "startDate": moment().startOf('second'),
+            "endDate": moment().startOf('second'),
+            locale: {
+                format: 'DD/MM/YYYY HH:mm:ss'
+            }
+        }, function(start, end, label) {
+
+        });
+
         var checked = $("input:checkbox[id=is_update]:checked").length;
         if(checked > 0){
             $('input#export_sale_limit').val(checked);
