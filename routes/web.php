@@ -224,3 +224,9 @@ Route::group(['prefix' => 'phone_check_report'], function () {
     Route::get('/filter', 'PhoneCheckResultController@filter')->name('phone_check_report_filter');
 });
 
+Route::group(['prefix' => 'phone-test'], function () {
+    Route::get('/', 'PhoneTestController@index')->name('phone_test');
+    Route::get('/filter', 'PhoneTestController@filter')->name('phone_test_filter');
+    Route::get('/create', 'PhoneTestController@create')->name('phone_test_create');
+});
+

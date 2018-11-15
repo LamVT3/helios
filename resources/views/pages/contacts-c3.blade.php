@@ -202,8 +202,8 @@
                                         <label class="label">Export</label>
                                         <label class="checkbox">
                                             <input type="checkbox" id="mark_exported"/>
-                                            <i></i>Mark contact as “Exported”</label>
-                                        <div class="col-xs-4">
+                                            <i></i>Mark as “Exported”</label>
+                                        <div class="col-xs-8">
                                             <input class="form-control" id="limit" type="number"
                                                    placeholder="Export..." max="" min="1" data-placement="bottom" data-toggle="tooltip" title="Enter number to export...">
                                         </div>
@@ -214,7 +214,7 @@
                                     <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Tranfer Date</label>
                                         <div id="tranfer_date" class="pull-left"
-                                             style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; min-width: 220px">
+                                             style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; min-width: 170px">
                                             <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
                                             <span class="tranfer_date_span"></span> <b class="caret"></b>
                                         </div>
