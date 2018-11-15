@@ -47,14 +47,14 @@ class PhoneTestController extends Controller
         foreach ($phones as $phone){
             $phone_test = new PhoneTest();
             $phone      = preg_replace("/[^0-9]/", "", $phone );
-            $phone      = ltrim($phone,"0");
 
-            if(strlen($phone) != 9){
-                $phone_test->status = '0';
-            }else{
+            if(strlen($phone) == 10 && strlen(ltrim($phone,"0")) == 9){
                 $phone_test->status = '1';
+            }else{
+                $phone_test->status = '0';
             }
-            $phone_test->phone      = $phone;
+            
+            $phone_test->phone      = ltrim($phone,"0");
             $phone_test->creator    = auth()->user()->username;
             $date   = date('Y-m-d H:i:s');
             $phone_test->created_date   = strtotime($date) * 1000;
