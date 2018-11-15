@@ -56,8 +56,8 @@
             <td>{{ $item->l8 }}</td>
             <td>{{ $item->l3_l1 }}</td>
             <td>{{ $item->l8_l1 }}</td>
-            <td>{{ number_format($item->spent) }}</td>
-            <td>{{ number_format($item->revenue) }}</td>
+            <td>{{ number_format($item->spent, 2) }}</td>
+            <td>{{ number_format($item->revenue, 2) }}</td>
             <td>{{ $item->me_re }}</td>
         </tr>
 

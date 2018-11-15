@@ -49,8 +49,8 @@ class PhoneCheckResultController extends Controller
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
 
-        $query = ApiPhoneCheckResult::where('date', '>=', date('Y-m-d', $startDate/1000));
-        $query->where('date', '<', date('Y-m-d', $endDate/1000));
+        $query = ApiPhoneCheckResult::where('created_date', '>=', date('Y-m-d', $startDate/1000));
+        $query->where('created_date', '<', date('Y-m-d', $endDate/1000));
 
         if($request->result != ''){
             $query->where('result', $request->result);
