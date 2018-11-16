@@ -203,7 +203,7 @@ class DashboardController extends Controller
         $total_kpi = array();
         foreach ($users as $user){
             $kpi = @$user->kpi[$year][$month];
-            if(count($kpi) < 1){
+            if($kpi && count($kpi) < 1){
                 continue;
             }
             if(isset($total_kpi[$year][$month])){

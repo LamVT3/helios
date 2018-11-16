@@ -542,7 +542,7 @@ class SubReportController extends Controller
             $data_where['team_id']          = $request->team_id;
         }
         if ($request->marketer_id) {
-            $data_where['marketer_id']      = $request->marketer_id;
+            $data_where['creator_id']      = $request->marketer_id;
         }
         if ($request->campaign_id) {
             $data_where['campaign_id']      = $request->campaign_id;
@@ -587,6 +587,15 @@ class SubReportController extends Controller
         }
         return $ads;
     }
+
+	private function getAdsWhereData(){
+		$data_where = $this->getWhereData();
+		$ads    = array();
+		if (count($data_where) >= 1) {
+			$ads = Ad::where($data_where)->pluck('_id')->toArray();
+		}
+		return $ads;
+	}
 
     private function getDate($month){
         $request = request();
@@ -969,7 +978,12 @@ class SubReportController extends Controller
 		$data_where = $this->getWhereData();
 		$request        = request();
 		$date_time   = $request->date_time;
-		$ad_id  = $this->getAds();
+		$ad_id  = $this->getAdsWhereData();
+
+		$isEmpy = false;
+		if(count($data_where) > 0){
+			$isEmpy =true;
+		}
 
 		foreach ($array_month as $key => $timestamp){
 			$temp['c3'][$timestamp] = 0;
@@ -982,8 +996,8 @@ class SubReportController extends Controller
 			}
 		}
 
-		$_contacts_c3 = Contact::raw( function ( $collection ) use ($ad_id, $first_day_this_month, $last_day_this_month) {
-			if (count($ad_id) > 0){
+		$_contacts_c3 = Contact::raw( function ( $collection ) use ($ad_id, $first_day_this_month, $last_day_this_month, $isEmpy) {
+			if (count($ad_id) >= 0 && $isEmpy){
 				$match = [
 					['$match' => ['ad_id' => ['$in' => $ad_id]]],
 					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
@@ -1009,8 +1023,8 @@ class SubReportController extends Controller
 			}
 			return $collection->aggregate( $match );
 		} );
-		$_contacts_c3b = Contact::raw( function ( $collection ) use ($ad_id, $first_day_this_month, $last_day_this_month) {
-			if (count($ad_id) > 0){
+		$_contacts_c3b = Contact::raw( function ( $collection ) use ($ad_id, $first_day_this_month, $last_day_this_month, $isEmpy) {
+			if (count($ad_id) >= 0 && $isEmpy){
 				$match = [
 					['$match' => ['ad_id' => ['$in' => $ad_id]]],
 					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
@@ -1036,8 +1050,8 @@ class SubReportController extends Controller
 			}
 			return $collection->aggregate( $match );
 		} );
-		$_contacts_c3bg = Contact::raw( function ( $collection ) use ($ad_id, $first_day_this_month, $last_day_this_month) {
-			if (count($ad_id) > 0){
+		$_contacts_c3bg = Contact::raw( function ( $collection ) use ($ad_id, $first_day_this_month, $last_day_this_month, $isEmpy) {
+			if (count($ad_id) >= 0 && $isEmpy){
 				$match = [
 					['$match' => ['ad_id' => ['$in' => $ad_id]]],
 					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $first_day_this_month ) * 1000, '$lte' => strtotime( $last_day_this_month ) * 1000 ] ] ],
@@ -1106,8 +1120,8 @@ class SubReportController extends Controller
 			$table['c3_week'][ $i ]   = 0;
 		}
 
-		$contacts_c3 = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
-			if (count($ad_id) > 0){
+		$contacts_c3 = Contact::raw( function ( $collection ) use ($ad_id, $date_time, $isEmpy) {
+			if (count($ad_id) >= 0 && $isEmpy){
 				$match = [
 					['$match' => ['ad_id' => ['$in' => $ad_id]]],
 					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
@@ -1134,8 +1148,8 @@ class SubReportController extends Controller
 			}
 			return $collection->aggregate( $match );
 		} );
-		$contacts_c3b = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
-			if (count($ad_id) > 0){
+		$contacts_c3b = Contact::raw( function ( $collection ) use ($ad_id, $date_time, $isEmpy) {
+			if (count($ad_id) >= 0 && $isEmpy){
 				$match = [
 					['$match' => ['ad_id' => ['$in' => $ad_id]]],
 					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
@@ -1162,8 +1176,8 @@ class SubReportController extends Controller
 			}
 			return $collection->aggregate( $match );
 		} );
-		$contacts_c3bg = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
-			if (count($ad_id) > 0){
+		$contacts_c3bg = Contact::raw( function ( $collection ) use ($ad_id, $date_time, $isEmpy) {
+			if (count($ad_id) >= 0 && $isEmpy){
 				$match = [
 					['$match' => ['ad_id' => ['$in' => $ad_id]]],
 					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
@@ -1190,8 +1204,8 @@ class SubReportController extends Controller
 			}
 			return $collection->aggregate( $match );
 		} );
-		$contacts_c3_week = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
-			if (count($ad_id) > 0){
+		$contacts_c3_week = Contact::raw( function ( $collection ) use ($ad_id, $date_time, $isEmpy) {
+			if (count($ad_id) >= 0 && $isEmpy){
 				$match = [
 					['$match' => ['ad_id' => ['$in' => $ad_id]]],
 					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000  - 7 * 86400000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
@@ -1218,8 +1232,8 @@ class SubReportController extends Controller
 			}
 			return $collection->aggregate( $match );
 		} );
-		$contacts_c3b_week = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
-			if (count($ad_id) > 0){
+		$contacts_c3b_week = Contact::raw( function ( $collection ) use ($ad_id, $date_time, $isEmpy) {
+			if (count($ad_id) >= 0 && $isEmpy){
 				$match = [
 					['$match' => ['ad_id' => ['$in' => $ad_id]]],
 					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000  - 7 * 86400000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
@@ -1246,8 +1260,8 @@ class SubReportController extends Controller
 			}
 			return $collection->aggregate( $match );
 		} );
-		$contacts_c3bg_week = Contact::raw( function ( $collection ) use ($ad_id, $date_time) {
-			if (count($ad_id) > 0){
+		$contacts_c3bg_week = Contact::raw( function ( $collection ) use ($ad_id, $date_time, $isEmpy) {
+			if (count($ad_id) >= 0 && $isEmpy){
 				$match = [
 					['$match' => ['ad_id' => ['$in' => $ad_id]]],
 					[ '$match' => [ 'submit_time' => [ '$gte' => strtotime( $date_time ) * 1000  - 7 * 86400000, '$lte' => strtotime( $date_time ) * 1000 + 86400000 ] ] ],
