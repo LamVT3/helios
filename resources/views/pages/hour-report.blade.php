@@ -58,7 +58,7 @@
                                                     data-url="{!! route('ajax-getFilterMaketer') !!}" tabindex="3">
                                                 <option value="">All</option>
                                                 @foreach($marketers as $item)
-                                                    <option value="{{ $item->id }}" @if( $item->id == @$data_where['marketer_id']) Selected @endif>{{ $item->username }}</option>
+                                                    <option value="{{ $item->id }}" @if( $item->id == @$data_where['creator_id']) Selected @endif>{{ $item->username }}</option>
                                                 @endforeach
                                             </select>
                                             <i></i>

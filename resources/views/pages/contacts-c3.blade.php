@@ -198,21 +198,25 @@
                                     </section>
                                 </div>
                                 <div class="row" id="filter">
-                                    <section class="col col-lg-2 col-sm-4" style="margin: 0px;">
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Export</label>
-                                    </section>
-                                </div>
-                                <div class="row" id="filter">
-                                    <section class="col col-lg-4 col-sm-8">
                                         <label class="checkbox">
                                             <input type="checkbox" id="mark_exported"/>
-                                            <i></i>Mark contact as “Exported”</label>
-                                        <div class="col-xs-4">
+                                            <i></i>Mark as “Exported”</label>
+                                        <div class="col-xs-8">
                                             <input class="form-control" id="limit" type="number"
                                                    placeholder="Export..." max="" min="1" data-placement="bottom" data-toggle="tooltip" title="Enter number to export...">
                                         </div>
                                         <div class="col-xs-4 export_label" id="">
                                             <label class="export_label" for="limit"> entries</label>
+                                        </div>
+                                    </section>
+                                    <section class="col col-lg-2 col-sm-4">
+                                        <label class="label">Tranfer Date</label>
+                                        <div id="tranfer_date" class="pull-left"
+                                             style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; min-width: 170px">
+                                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                                            <span class="tranfer_date_span"></span> <b class="caret"></b>
                                         </div>
                                     </section>
                                 </div>
@@ -264,6 +268,7 @@
                                 <input type="hidden" name="search_text" value="">
                                 <input type="hidden" name="olm_status" value="">
                                 <input type="hidden" name="contact_id" value="">
+                                <input type="hidden" name="tranfer_date" value="">
                             </form>
                         </div>
 
@@ -309,6 +314,7 @@
                                         <th>Action</th>
                                         <th class="long">Status export</th>
                                         <th class="long">Status Sale</th>
+                                        <th class="long">Tranfer Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>

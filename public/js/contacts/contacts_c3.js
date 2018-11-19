@@ -51,6 +51,41 @@ $(document).ready(function () {
         }
     }, c3range_span);
 
+    function tranfer_date_span(start, end) {
+        if(start == null && end == null){
+            $('#tranfer_date span').html('');
+        }else
+        $('#tranfer_date span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
+    }
+
+    tranfer_date_span(null, null);
+
+    $('#tranfer_date').daterangepicker({
+        startDate: start,
+        endDate: end,
+        opens: 'right',
+        ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            "This Week":[moment().startOf("isoWeek"),moment().endOf("isoWeek")],
+            "Last Week": [moment().subtract(1, "week").startOf("isoWeek"), moment().subtract(1, "week").endOf("isoWeek")],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+    }, tranfer_date_span);
+
+    $('#tranfer_date').on('apply.daterangepicker', function(ev, picker) {
+        $('#tranfer_date span').html(picker.startDate.format('D/M/Y') + '-' + picker.endDate.format('D/M/Y'));
+        $('input[name=tranfer_date]').val(picker.startDate.format('D/M/Y') + '-' + picker.endDate.format('D/M/Y'));
+    });
+
+    $('#tranfer_date').on('cancel.daterangepicker', function(ev, picker) {
+        $('#tranfer_date span').html('');
+        $('input[name=tranfer_date]').val('');
+    });
+
 });
 
 $(document).ready(function () {
@@ -474,6 +509,7 @@ function initDataTable() {
     // var channel         = $('select[name="channel_id"]').val();
     var channel         = $('input[name="channel_id"]').val();
     var olm_status      = $('select[name="olm_status"]').val();
+    var tranfer_date    = $('.tranfer_date_span').text();
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -564,7 +600,8 @@ function initDataTable() {
                     d.landing_page      = landing_page,
                     d.channel           = channel,
                     d.search_text       = search,
-                    d.olm_status        = olm_status ? parseInt(olm_status) : '';
+                    d.olm_status        = olm_status ? parseInt(olm_status) : '',
+                    d.tranfer_date      = tranfer_date
             }
         },
         "columns": [
@@ -654,6 +691,7 @@ function initDataTable() {
                     return status;
                 }
             },
+            { "data" : 'export_sale_date',      "defaultContent": "-"},
         ],
         'scrollY'       : '55vh',
         "scrollX"       : true,
@@ -707,6 +745,7 @@ function countExported() {
     // var channel         = $('select[name="channel_id"]').val();
     var channel         = $('input[name="channel_id"]').val();
     var olm_status      = $('select[name="olm_status"]').val();
+    var tranfer_date    = $('.tranfer_date_span').text();
 
     if(is_export === '0'){
         $('input[name="exported"]').val(0);
@@ -727,6 +766,7 @@ function countExported() {
     data.search_text        = search;
     data.channel            = channel;
     data.olm_status         = olm_status ? parseInt(olm_status) : '';
+    data.tranfer_date       = tranfer_date;
 
     $.get(url, data, function (data) {
         $('input[name="exported"]').val(data.to_excel);
@@ -1056,6 +1096,7 @@ function exportToOLM(id) {
     var limit           = $('input#export_sale_limit').val();
     var export_sale_date = $('input#export_sale_date').val();
     var export_sale_sort = $("input[name='export_sale_sort']:checked"). val();
+    var tranfer_date    = $('.tranfer_date_span').text();
 
 
     var data = {};
@@ -1108,20 +1149,21 @@ function showModalExportToOLM(data){
 }
 
 $(function() {
-    $('#export_sale_date').daterangepicker({
-        "singleDatePicker": true,
-        "timePicker24Hour": true,
-        "alwaysShowCalendars": true,
-        "startDate": start,
-        "endDate": end,
-        locale: {
-            format: 'DD/MM/YYYY'
-        }
-    }, function(start, end, label) {
-
-    });
-
     $('#myExportToOLMModal').on('shown.bs.modal', function () {
+        $('#export_sale_date').daterangepicker({
+            "singleDatePicker": true,
+            "timePicker24Hour": true,
+            timePicker: true,
+            "alwaysShowCalendars": true,
+            "startDate": moment().startOf('second'),
+            "endDate": moment().startOf('second'),
+            locale: {
+                format: 'DD/MM/YYYY HH:mm:ss'
+            }
+        }, function(start, end, label) {
+
+        });
+
         var checked = $("input:checkbox[id=is_update]:checked").length;
         if(checked > 0){
             $('input#export_sale_limit').val(checked);

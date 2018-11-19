@@ -16,11 +16,11 @@ class PhoneCheckResultController extends Controller
 
     public function index()
     {
-        $page_title = "Phone Check Result | Helios";
+        $page_title = "Phone Check Report | Helios";
         $page_css = array();
         $no_main_header = FALSE;
-        $active = 'phone_check_result';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-check-square-o\"></i> Phone Check Result <span>> Results </span>";
+        $active = 'phone_check_report';
+        $breadcrumbs = "<i class=\"fa-fw fa fa-check-square-o\"></i> Phone Check Report <span>> Home </span>";
         $page_size  = Config::getByKey('PAGE_SIZE');
 
         $data = $this->get_data();
@@ -49,8 +49,8 @@ class PhoneCheckResultController extends Controller
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
 
-        $query = ApiPhoneCheckResult::where('date', '>=', date('Y-m-d', $startDate/1000));
-        $query->where('date', '<', date('Y-m-d', $endDate/1000));
+        $query = ApiPhoneCheckResult::where('created_date', '>=', date('Y-m-d', $startDate/1000));
+        $query->where('created_date', '<', date('Y-m-d', $endDate/1000));
 
         if($request->result != ''){
             $query->where('result', $request->result);

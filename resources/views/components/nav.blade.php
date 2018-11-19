@@ -100,6 +100,11 @@
                     <li class="{{ $active == 'inventory-report' ? 'active' : '' }}">
                         <a href="{{ route('inventory-report') }}"><i class="fa fa-lg fa-fw fa-empire"></i> Inventory Report</a>
                     </li>
+
+                    <li class="{{ $active == 'phone_check_report' ? 'active' : '' }}">
+                        <a href="{{ route('phone_check_report') }}"><i class="fa fa-lg fa-fw fa-check-square-o"></i> <span
+                                    class="menu-item-parent">Phone Check Report</span></a>
+                    </li>
                 </ul>
             </li>
 
@@ -155,9 +160,9 @@
                 </li>
             @endif
 
-            <li class="{{ $active == 'phone_check_result' ? 'active' : '' }}">
-                <a href="{{ route('phone_check_result') }}"><i class="fa fa-lg fa-fw fa-check-square-o"></i> <span
-                            class="menu-item-parent">Phone Check Result</span></a>
+            <li class="{{ $active == 'mktmanager-phone-test' ? 'active' : '' }}">
+                <a href="{{ route('phone_test') }}"><i class="fa fa-lg fa-fw fa-phone-square"></i> <span
+                            class="menu-item-parent">Phone Test</span></a>
             </li>
 
             {{-- end 2018-04-18 LamVT [HEL_9] Add more setting for VND/USD conversion--}}

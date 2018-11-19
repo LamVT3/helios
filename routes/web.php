@@ -219,8 +219,14 @@ Route::group(['prefix' => 'inventory-report'], function () {
     Route::get('/filter-inventory-report', 'InventoryReportController@filter')->name('filter-inventory-report');
 });
 
-Route::group(['prefix' => 'phone_check_result'], function () {
-    Route::get('/', 'PhoneCheckResultController@index')->name('phone_check_result');
-    Route::get('/filter', 'PhoneCheckResultController@filter')->name('phone_check_result_filter');
+Route::group(['prefix' => 'phone_check_report'], function () {
+    Route::get('/', 'PhoneCheckResultController@index')->name('phone_check_report');
+    Route::get('/filter', 'PhoneCheckResultController@filter')->name('phone_check_report_filter');
+});
+
+Route::group(['prefix' => 'phone-test'], function () {
+    Route::get('/', 'PhoneTestController@index')->name('phone_test');
+    Route::get('/filter', 'PhoneTestController@filter')->name('phone_test_filter');
+    Route::get('/create', 'PhoneTestController@create')->name('phone_test_create');
 });
 
