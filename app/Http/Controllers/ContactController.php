@@ -1181,7 +1181,7 @@ class ContactController extends Controller
 
     private function handleDuplicate($contact, $response){
         $phone          = @$response['PhoneNumber'];
-        $level          = @$response['Level'];
+        $level          = substr(@$response['Level'], 0, 2);
         $old_contact_id = @$response['ContactId'];
 
         $new_contact_id         = $contact->contact_id;
@@ -1199,7 +1199,7 @@ class ContactController extends Controller
         $contact->handover_date = date("Y-m-d H:i:s");
         $contact->handover_time = date("Y-m-d H:i:s");
         $contact->sale_person   = '';
-        $cnt = (int)substr($level, -1);
+        $cnt = (int)preg_replace('/[^0-9]/', '', $level);
 
         $dateFromContact    = date('Y-m-d', $contact->submit_time/1000);
         $ad_result          = AdResult::where("ad_id",$contact->ad_id)->where("date", $dateFromContact)->first();
