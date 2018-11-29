@@ -336,11 +336,15 @@ class InventoryReportController extends Controller
             $source_name    = $source->name;
             $source_id      = $source->_id;
             for($i = 1; $i <= $days; $i++){
-                @$result[$source_name][$i]['produce']      = @$c3_produce_source[$i][$source_id]['c3b_produce']        ? @$c3_produce_source[$i][$source_id]['c3b_produce']        : 0;
-                @$result[$source_name][$i]['transfer']     = @$c3_transfer_source[$i][$source_id]['c3b_transfer']      ? @$c3_transfer_source[$i][$source_id]['c3b_transfer']      : 0;
-                @$result[$source_name][$i]['inventory']    = @$c3_inventory_source[$i][$source_id]['c3b_inventory']    ? @$c3_inventory_source[$i][$source_id]['c3b_inventory']    : 0;
+                @$result[$source_name][$i]['produce']   = @$c3_produce_source[$i][$source_id]['c3b_produce']        ? @$c3_produce_source[$i][$source_id]['c3b_produce']        : 0;
+                @$result[$source_name][$i]['transfer']  = @$c3_transfer_source[$i][$source_id]['c3b_transfer']      ? @$c3_transfer_source[$i][$source_id]['c3b_transfer']      : 0;
+                @$result[$source_name][$i]['inventory'] = @$c3_inventory_source[$i][$source_id]['c3b_inventory']    ? @$c3_inventory_source[$i][$source_id]['c3b_inventory']    : 0;
 
-                @$result['total_source'][$source_name]    +=  @$result[$source_name][$i]['inventory'];
+                @$result['Unknown'][$i]['produce']      = @$c3_inventory_source[$i]['Unknown']['c3b_produce']   ? @$c3_inventory_source[$i]['Unknown']['c3b_produce']   : 0;
+                @$result['Unknown'][$i]['transfer']     = @$c3_inventory_source[$i]['Unknown']['c3b_transfer']  ? @$c3_inventory_source[$i]['Unknown']['c3b_transfer']  : 0;
+                @$result['Unknown'][$i]['inventory']    = @$c3_inventory_source[$i]['Unknown']['c3b_inventory'] ? @$c3_inventory_source[$i]['Unknown']['c3b_inventory'] : 0;
+
+                @$result['total_source'][$source_name]  +=  @$result[$source_name][$i]['inventory'] + @$result['Unknown'][$i]['inventory'];
             }
         }
 

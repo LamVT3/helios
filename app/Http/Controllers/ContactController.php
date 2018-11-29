@@ -1132,15 +1132,8 @@ class ContactController extends Controller
                 $response   = json_decode($make_call, true);
 
                 $status     = @$response['Status'];
-                $is_update_all = @$response['Is_Update_All'];
 
-                if(strtolower($status) == "duplicated"){
-                    if($is_update_all){
-                        $contactUpdate = $this->handleDuplicate($contact, $response);
-                    }
-                }
-
-                $contactUpdate    = $this->handleHandover($contact,$status);
+                $contactUpdate    = $this->handleHandover($contact, $status, $response);
 
                 $date   = date_create($export_sale_date);
                 $contactUpdate->export_sale_date = date_timestamp_get($date) * 1000;
@@ -1204,7 +1197,6 @@ class ContactController extends Controller
         $dateFromContact    = date('Y-m-d', $contact->submit_time/1000);
         $ad_result          = AdResult::where("ad_id",$contact->ad_id)->where("date", $dateFromContact)->first();
 
-
         if(@$contact->call_history){
             $call_history = @$contact->call_history;
         }else{
@@ -1238,7 +1230,8 @@ class ContactController extends Controller
         return $contact;
     }
 
-    private function handleHandover($contact, $apiStatus){
+    private function handleHandover($contact, $apiStatus, $response){
+        $is_update_all = @$response['Is_Update_All'];
 
         if (strtolower($apiStatus) == "ok"){
             $dateFromContactID = date('Y-m-d', $contact->submit_time/1000);
@@ -1259,7 +1252,12 @@ class ContactController extends Controller
             @$ad_result->l1 = $countL1;
             $ad_result->save();
         } else if (strtolower($apiStatus) == "duplicated"){
-            $contact->olm_status = 1;
+            if($is_update_all){
+                $contactUpdate = $this->handleDuplicate($contact, $response);
+                $contact->olm_status = 0;
+            }else{
+                $contact->olm_status = 1;
+            }
         } else if (strpos($apiStatus, 'error') !== false){
             $contact->olm_status = 2;
         } else {
