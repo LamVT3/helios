@@ -1258,7 +1258,7 @@ class ContactController extends Controller
             }else{
                 $contact->olm_status = 1;
             }
-        } else if (strpos($apiStatus, 'error') !== false){
+        } else if (strpos(strtolower($apiStatus), 'error') !== false){
             $contact->olm_status = 2;
         } else {
             $contact->olm_status = 3;
