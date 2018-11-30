@@ -1183,9 +1183,9 @@ class ContactController extends Controller
         $old_contacts = Contact::where('contact_id', $old_contact_id)
             ->orderBy('submit_time')->get();
 
-        foreach ($old_contacts as $contact){
-            $contact->contact_id = $contact->contact_id . '_'. $new_contact_id;
-            $contact->save();
+        foreach ($old_contacts as $item){
+            $item->contact_id = @$item->contact_id . '_'. $new_contact_id;
+            $item->save();
         }
 
         $contact->current_level = strtolower($level);
