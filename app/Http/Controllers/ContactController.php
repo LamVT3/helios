@@ -1142,7 +1142,11 @@ class ContactController extends Controller
                 if (strtolower($status) == "ok"){
                     $result['cnt_success']  += 1;
                 } else if (strtolower($status) == "duplicated"){
-                    $result['cnt_duplicate'] += 1;
+                    if(@$response['Is_Update_All']){
+                        $result['cnt_success']  += 1;
+                    }else{
+                        $result['cnt_duplicate'] += 1;
+                    }
                 } else if (strtolower($status) == "error"){
                     $result['cnt_error']    += 1;
                 } else {
