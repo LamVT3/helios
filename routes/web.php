@@ -17,6 +17,9 @@ Route::get('login', 'HomeController@index')->name('login');
 Route::post('login', 'Auth\LoginController@login');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
+Route::get('/auth/google', 'Auth\LoginController@redirectToProvider');
+Route::get('/callback', 'Auth\LoginController@handleProviderCallback');
+
 Route::get('/home', 'DashboardController@index')->name('dashboard');
 Route::group(['prefix' => 'dashboard'], function () {
     Route::get('/get_channel', 'DashboardController@get_channel')->name('dashboard-get-channel');
