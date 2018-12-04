@@ -42,51 +42,51 @@
                 <h1><img src="{{ URL::to('img/logo.png') }}" alt="Logo"/></h1>
             </div>
             <form method="post" action="{{ route('login') }}" id="login-form" class="smart-form client-form">
-                {{--<header>--}}
-                    {{--Sign In--}}
-                {{--</header>--}}
+                <header>
+                    Sign In
+                </header>
 
-                {{--<fieldset>--}}
-                    {{--{{ csrf_field() }}--}}
-                    {{--<section class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">--}}
-                        {{--<label class="label">E-mail</label>--}}
-                        {{--<label class="input"> <i class="icon-append fa fa-user"></i>--}}
-                            {{--<input type="email" name="email" value="{{ old('email') }}" required autofocus>--}}
-                            {{--<b class="tooltip tooltip-top-right"><i class="fa fa-user txt-color-teal"></i> Please enter--}}
-                                {{--email address/username</b></label>--}}
-                            {{--@if ($errors->has('email'))--}}
-                                {{--<span class="help-block">--}}
-                                    {{--<strong>{{ $errors->first('email') }}</strong>--}}
-                                {{--</span>--}}
-                            {{--@endif--}}
-                    {{--</section>--}}
+                <fieldset>
+                    {{ csrf_field() }}
+                    <section class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+                        <label class="label">E-mail</label>
+                        <label class="input"> <i class="icon-append fa fa-user"></i>
+                            <input type="email" name="email" value="{{ old('email') }}" required autofocus>
+                            <b class="tooltip tooltip-top-right"><i class="fa fa-user txt-color-teal"></i> Please enter
+                                email address/username</b></label>
+                            @if ($errors->has('email'))
+                                <span class="help-block">
+                                    <strong>{{ $errors->first('email') }}</strong>
+                                </span>
+                            @endif
+                    </section>
 
-                    {{--<section class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">--}}
-                        {{--<label class="label">Password</label>--}}
-                        {{--<label class="input"> <i class="icon-append fa fa-lock"></i>--}}
-                            {{--<input type="password" name="password" required>--}}
-                            {{--<b class="tooltip tooltip-top-right"><i class="fa fa-lock txt-color-teal"></i> Enter your--}}
-                                {{--password</b> </label>--}}
-                        {{--@if ($errors->has('password'))--}}
-                            {{--<span class="help-block">--}}
-                                {{--<strong>{{ $errors->first('password') }}</strong>--}}
-                            {{--</span>--}}
-                        {{--@endif--}}
-                        {{--<div class="note">--}}
-                            {{--<a href="forgotpassword.php">Forgot password?</a>--}}
-                        {{--</div>--}}
-                    {{--</section>--}}
+                    <section class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
+                        <label class="label">Password</label>
+                        <label class="input"> <i class="icon-append fa fa-lock"></i>
+                            <input type="password" name="password" required>
+                            <b class="tooltip tooltip-top-right"><i class="fa fa-lock txt-color-teal"></i> Enter your
+                                password</b> </label>
+                        @if ($errors->has('password'))
+                            <span class="help-block">
+                                <strong>{{ $errors->first('password') }}</strong>
+                            </span>
+                        @endif
+                        <div class="note">
+                            <a href="forgotpassword.php">Forgot password?</a>
+                        </div>
+                    </section>
 
-                    {{--<section>--}}
-                        {{--<label class="checkbox">--}}
-                            {{--<input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>--}}
-                            {{--<i></i>Stay signed in</label>--}}
-                    {{--</section>--}}
-                {{--</fieldset>--}}
+                    <section>
+                        <label class="checkbox">
+                            <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
+                            <i></i>Stay signed in</label>
+                    </section>
+                </fieldset>
                 <footer>
-                    {{--<button type="submit" class="btn btn-primary">--}}
-                        {{--Sign in--}}
-                    {{--</button>--}}
+                    <button type="submit" class="btn btn-primary">
+                        Sign in
+                    </button>
                     <div class="form-group">
                         <div class="col-md-8">
                             <a class="btn btn-link" href="{{ URL::to('auth/google') }}">
