@@ -166,14 +166,14 @@
     @if($contact->call_history)
         @foreach ($contact->call_history as $item)
             <tr id="">
-                <td>{{ $item["date"] }}</td>
-                <td>{{ $item["level_old"] }}</td>
-                <td>{{ $item["level_new"] }}</td>
-                <td>{{ $item["comment"] }}</td>
-                <td>{{ $item["call_status_new_desc"] }}</td>
+                <td>{{ @$item["date"] }}</td>
+                <td>{{ @$item["level_old"] }}</td>
+                <td>{{ @$item["level_new"] }}</td>
+                <td>{{ @$item["comment"] }}</td>
+                <td>{{ @$item["call_status_new_desc"] }}</td>
                 <td>
-                    @if($item["link_record"])
-                    <a class="btn btn-xs btn-danger" href="{{ $item["link_record"] }}" target="_blank"><i class="fa fa-play-circle-o"></i></a>
+                    @if(@$item["link_record"])
+                    <a class="btn btn-xs btn-danger" href="{{ @$item["link_record"] }}" target="_blank"><i class="fa fa-play-circle-o"></i></a>
                         @endif
                 </td>
             </tr>
