@@ -72,9 +72,9 @@
                                 <strong>{{ $errors->first('password') }}</strong>
                             </span>
                         @endif
-                        {{--<div class="note">
+                        <div class="note">
                             <a href="forgotpassword.php">Forgot password?</a>
-                        </div>--}}
+                        </div>
                     </section>
 
                     <section>
@@ -87,6 +87,13 @@
                     <button type="submit" class="btn btn-primary">
                         Sign in
                     </button>
+                    {{--<div class="form-group">--}}
+                        {{--<div class="col-md-8">--}}
+                            {{--<a class="btn btn-link" href="{{ URL::to('auth/google') }}">--}}
+                                {{--<i class="fa fa-google-plus-square" aria-hidden="true"></i> Đăng nhập bằng Google--}}
+                            {{--</a>--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
                 </footer>
             </form>
         </div>

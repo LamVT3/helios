@@ -1130,9 +1130,11 @@ class ContactController extends Controller
 
                 $make_call  = $this->callAPI('POST', $url, json_encode($data_array));
                 $response   = json_decode($make_call, true);
-                $status     = @$response['results'][0]['Status'];
 
-                $contactUpdate    = $this->handleHandover($contact,$status);
+                $status     = @$response['Status'];
+
+                $contactUpdate    = $this->handleHandover($contact, $status, $response);
+
                 $date   = date_create($export_sale_date);
                 $contactUpdate->export_sale_date = date_timestamp_get($date) * 1000;
                 $contactUpdate->save();
@@ -1140,7 +1142,11 @@ class ContactController extends Controller
                 if (strtolower($status) == "ok"){
                     $result['cnt_success']  += 1;
                 } else if (strtolower($status) == "duplicated"){
-                    $result['cnt_duplicate'] += 1;
+                    if(@$response['Is_Update_All']){
+                        $result['cnt_success']  += 1;
+                    }else{
+                        $result['cnt_duplicate'] += 1;
+                    }
                 } else if (strtolower($status) == "error"){
                     $result['cnt_error']    += 1;
                 } else {
@@ -1170,7 +1176,66 @@ class ContactController extends Controller
         return $result;
     }
 
-    private function handleHandover($contact, $apiStatus){
+    private function handleDuplicate($contact, $response){
+        $phone          = @$response['PhoneNumber'];
+        $level          = substr(@$response['Level'], 0, 2);
+        $old_contact_id = @$response['ContactId'];
+
+        $new_contact_id         = $contact->contact_id;
+        $contact->contact_id    = $old_contact_id;
+
+        $old_contacts = Contact::where('contact_id', $old_contact_id)
+            ->orderBy('submit_time')->get();
+
+        foreach ($old_contacts as $item){
+            $item->contact_id = @$item->contact_id . '_'. $new_contact_id;
+            $item->save();
+        }
+
+        $contact->current_level = strtolower($level);
+        $contact->handover_date = date("Y-m-d H:i:s");
+        $contact->handover_time = date("Y-m-d H:i:s");
+        $contact->sale_person   = '';
+        $cnt = (int)preg_replace('/[^0-9]/', '', $level);
+
+        $dateFromContact    = date('Y-m-d', $contact->submit_time/1000);
+        $ad_result          = AdResult::where("ad_id",$contact->ad_id)->where("date", $dateFromContact)->first();
+
+        if(@$contact->call_history){
+            $call_history = @$contact->call_history;
+        }else{
+            $call_history = [];
+        }
+
+        for($i = 1; $i <= $cnt; $i++){
+            $field = 'l'.$i.'_time';
+            $contact->{$field} = date("Y-m-d");
+            if($cnt > 1 && $i > 1){
+                $old_lv = $i - 1;
+                $data = [
+                    'level_new'  => 'L'.$i,
+                    'comment'   => 'Duplicate contact',
+                    'level_old'  => 'L'.$old_lv,
+                    'date'       => date("Y-m-d H:i:s"),
+                    'link_record'            => '',
+                    'call_status_new_desc'   => 'Duplicate contact',
+                    'call_status_old_desc'   => 'Duplicate contact',
+                ];
+                array_push($call_history, $data);
+            }
+            $ad_result_field = 'l'.$i;
+            @$ad_result->{$ad_result_field} += 1;
+        }
+
+        @$contact->call_history = $call_history;
+
+        $ad_result->save();
+
+        return $contact;
+    }
+
+    private function handleHandover($contact, $apiStatus, $response){
+        $is_update_all = @$response['Is_Update_All'];
 
         if (strtolower($apiStatus) == "ok"){
             $dateFromContactID = date('Y-m-d', $contact->submit_time/1000);
@@ -1191,8 +1256,13 @@ class ContactController extends Controller
             @$ad_result->l1 = $countL1;
             $ad_result->save();
         } else if (strtolower($apiStatus) == "duplicated"){
-            $contact->olm_status = 1;
-        } else if (strpos($apiStatus, 'error') !== false){
+            if($is_update_all){
+                $contactUpdate = $this->handleDuplicate($contact, $response);
+                $contact->olm_status = 0;
+            }else{
+                $contact->olm_status = 1;
+            }
+        } else if (strpos(strtolower($apiStatus), 'error') !== false){
             $contact->olm_status = 2;
         } else {
             $contact->olm_status = 3;

@@ -123,17 +123,23 @@ class InventoryReportController extends Controller
             }
 
             $source_id    = @$item['_id']['source_id'];
-            $source = Source::find($source_id);
-            if($source) {
-                if (isset($result['source'][$date][$source->name])) {
-                    @$result['source'][$date][$source->name]['c3b_produce'] += @$item['c3b_produce'];
+//            $source = Source::find($source_id);
+            if($source_id) {
+                if (isset($result['source'][$date][$source_id])) {
+                    @$result['source'][$date][$source_id]['c3b_produce'] += @$item['c3b_produce'];
                 } else {
-                    @$result['source'][$date][$source->name]['c3b_produce'] = @$item['c3b_produce'];
+                    @$result['source'][$date][$source_id]['c3b_produce'] = @$item['c3b_produce'];
+                }
+            }else{
+                if (isset($result['source'][$date]['Unknown'])) {
+                    @$result['source'][$date]['Unknown']['c3b_produce'] += @$item['c3b_produce'];
+                } else {
+                    @$result['source'][$date]['Unknown']['c3b_produce'] = @$item['c3b_produce'];
                 }
             }
         }
-        return $result;
 
+        return $result;
     }
 
     private function get_c3_inventory($startDate, $endDate){
@@ -194,12 +200,11 @@ class InventoryReportController extends Controller
             }
 
             $source_id    = @$item['_id']['source_id'];
-            $source = Source::find($source_id);
-            if($source) {
-                if (isset($result['source'][$date][$source->name])) {
-                    @$result['source'][$date][$source->name]['c3b_inventory'] += @$item['c3b_inventory'];
+            if($source_id) {
+                if (isset($result['source'][$date][$source_id])) {
+                    @$result['source'][$date][$source_id]['c3b_inventory'] += @$item['c3b_inventory'];
                 } else {
-                    @$result['source'][$date][$source->name]['c3b_inventory'] = @$item['c3b_inventory'];
+                    @$result['source'][$date][$source_id]['c3b_inventory'] = @$item['c3b_inventory'];
                 }
             }else{
                 if (isset($result['source'][$date]['Unknown'])) {
@@ -211,7 +216,6 @@ class InventoryReportController extends Controller
         }
 
         return $result;
-
     }
 
     private function get_c3_transfer($startDate, $endDate){
@@ -271,19 +275,22 @@ class InventoryReportController extends Controller
             }
 
             $source_id    = @$item['_id']['source_id'];
-            $source = Source::find($source_id);
-            if($source){
-
-                if(isset($result['source'][$date][$source->name])){
-                    @$result['source'][$date][$source->name]['c3b_transfer'] += @$item['c3b_transfer'];
+            if($source_id){
+                if(isset($result['source'][$date][$source_id])){
+                    @$result['source'][$date][$source_id]['c3b_transfer'] += @$item['c3b_transfer'];
                 }else{
-                    @$result['source'][$date][$source->name]['c3b_transfer'] = @$item['c3b_transfer'];
+                    @$result['source'][$date][$source_id]['c3b_transfer'] = @$item['c3b_transfer'];
+                }
+            }else{
+                if (isset($result['source'][$date]['Unknown'])) {
+                    @$result['source'][$date]['Unknown']['c3b_transfer'] += @$item['c3b_transfer'];
+                } else {
+                    @$result['source'][$date]['Unknown']['c3b_transfer'] = @$item['c3b_transfer'];
                 }
             }
         }
 
         return $result;
-
     }
 
     public function prepare_data(){
@@ -326,13 +333,18 @@ class InventoryReportController extends Controller
         $label  = array();
 
         foreach ($sources as $source){
-            $source_name = $source->name;
+            $source_name    = $source->name;
+            $source_id      = $source->_id;
             for($i = 1; $i <= $days; $i++){
-                @$result[$source_name][$i]['produce']      = @$c3_produce_source[$i][$source_name]['c3b_produce']        ? @$c3_produce_source[$i][$source_name]['c3b_produce']        : 0;
-                @$result[$source_name][$i]['transfer']     = @$c3_transfer_source[$i][$source_name]['c3b_transfer']      ? @$c3_transfer_source[$i][$source_name]['c3b_transfer']      : 0;
-                @$result[$source_name][$i]['inventory']    = @$c3_inventory_source[$i][$source_name]['c3b_inventory']    ? @$c3_inventory_source[$i][$source_name]['c3b_inventory']    : 0;
+                @$result[$source_name][$i]['produce']   = @$c3_produce_source[$i][$source_id]['c3b_produce']        ? @$c3_produce_source[$i][$source_id]['c3b_produce']        : 0;
+                @$result[$source_name][$i]['transfer']  = @$c3_transfer_source[$i][$source_id]['c3b_transfer']      ? @$c3_transfer_source[$i][$source_id]['c3b_transfer']      : 0;
+                @$result[$source_name][$i]['inventory'] = @$c3_inventory_source[$i][$source_id]['c3b_inventory']    ? @$c3_inventory_source[$i][$source_id]['c3b_inventory']    : 0;
 
-                @$result['total_source'][$source_name]    +=  @$result[$source_name][$i]['inventory'];
+                @$result['Unknown'][$i]['produce']      = @$c3_inventory_source[$i]['Unknown']['c3b_produce']   ? @$c3_inventory_source[$i]['Unknown']['c3b_produce']   : 0;
+                @$result['Unknown'][$i]['transfer']     = @$c3_inventory_source[$i]['Unknown']['c3b_transfer']  ? @$c3_inventory_source[$i]['Unknown']['c3b_transfer']  : 0;
+                @$result['Unknown'][$i]['inventory']    = @$c3_inventory_source[$i]['Unknown']['c3b_inventory'] ? @$c3_inventory_source[$i]['Unknown']['c3b_inventory'] : 0;
+
+                @$result['total_source'][$source_name]  +=  @$result[$source_name][$i]['inventory'] + @$result['Unknown'][$i]['inventory'];
             }
         }
 
