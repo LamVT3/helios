@@ -87,13 +87,14 @@
                     <button type="submit" class="btn btn-primary">
                         Sign in
                     </button>
-                    {{--<div class="form-group">--}}
-                        {{--<div class="col-md-8">--}}
-                            {{--<a class="btn btn-link" href="{{ URL::to('auth/google') }}">--}}
-                                {{--<i class="fa fa-google-plus-square" aria-hidden="true"></i> Đăng nhập bằng Google--}}
-                            {{--</a>--}}
-                        {{--</div>--}}
-                    {{--</div>--}}
+                    <!-- thienlh login google -->
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <a class="btn btn-link" href="{{ URL::to('auth/google') }}">
+                                <i class="fa fa-google-plus-square" aria-hidden="true"></i> Login with Google Account
+                            </a>
+                        </div>
+                    </div>
                 </footer>
             </form>
         </div>
