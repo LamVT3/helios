@@ -89,13 +89,16 @@
                     </button>
                     <!-- thienlh login google -->
                     <div class="form-group">
-                        <div class="col-md-8">
+                        <div style="float: left">
                             <a class="btn btn-link" href="{{ URL::to('auth/google') }}">
                                 <i class="fa fa-google-plus-square" aria-hidden="true"></i> Login with Google Account
                             </a>
                         </div>
                     </div>
                 </footer>
+                <div id="label-error" class="bg-color-red txt-color-white padding-5 hidden">
+                    User haven't created in Helios System yet !
+                </div>
             </form>
         </div>
 
@@ -117,6 +120,11 @@
         $("body").css('background', 'transparent');
         function getRandomInt (min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        var params = (new URL(document.location)).searchParams;
+        if (params.has("error") && params.get("error") === "100") {
+            document.getElementById("label-error").classList.remove("hidden");
         }
     </script>
 @endsection
