@@ -79,6 +79,6 @@ class LoginController extends Controller
             // log them in
             auth()->login($existingUser, true);
         }
-        return redirect()->to('/home');
+        return redirect()->to('/');
     }
 }
