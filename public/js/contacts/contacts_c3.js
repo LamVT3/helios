@@ -269,6 +269,16 @@ $(document).ready(function () {
         }
     });
 
+    $('input#send_sms_limit').change(function (e) {
+        if($(this).val() > 0){
+            $('input#send_sms_limit').removeClass('input_error');
+            $('em#send_sms_limit').hide();
+        }else{
+            $('input#send_sms_limit').addClass('input_error');
+            $('em#send_sms_limit').show();
+        }
+    });
+
 });
 
 $(document).ready(function () {
@@ -484,6 +494,36 @@ $(document).ready(function () {
         $("input:checkbox[id=is_update]").each(function () {
             edit(this);
         });
+    });
+
+    $('button#confirm_send_sms').click(function (e) {
+        e.preventDefault();
+        var limit = $('input#send_sms_limit').val();
+        if(limit > 0){
+            if (confirm('Are you sure you want to send SMS for these contacts ?')) {
+                $('.loading').show();
+                var is_update_all   = $('input[id=update_all]').is(':checked');
+                var id  = {};
+
+                if(is_update_all){
+                    id = 'All';
+                }
+                else{
+                    $("input:checkbox[id=is_update]:checked").each(function () {
+                        id[$(this).val()] = $(this).val();
+                    });
+                }
+
+                $('.loading_modal').show();
+                $('#confirm_send_sms').prop('disabled', true);
+                $('#close_modal_send_sms').prop('disabled', true);
+
+                sendSMS(id);
+            }
+        }else{
+            $('input#send_sms_limit').addClass('input_error');
+            $('em#send_sms_limit-error').show();
+        }
     });
 
 });
@@ -1167,9 +1207,89 @@ $(function() {
         var checked = $("input:checkbox[id=is_update]:checked").length;
         if(checked > 0){
             $('input#export_sale_limit').val(checked);
+            $('input#send_sms_limit').val(checked);
         }else{
             var total =  $('input[name=total_contacts]').val();
             $('input#export_sale_limit').val(total);
+            $('input#send_sms_limit').val(total);
         }
-    })
+    });
+
+    $('#mySendSMSModal').on('shown.bs.modal', function () {
+        var checked = $("input:checkbox[id=is_update]:checked").length;
+        if(checked > 0){
+            $('input#send_sms_limit').val(checked);
+        }else{
+            var total =  $('input[name=total_contacts]').val();
+            $('input#send_sms_limit').val(total);
+        }
+
+        var url = $('input[name="get_balance_url"]').val();
+
+        $.get(url, function (data) {
+            $('span#standard_balance').text(data.standard_balance);
+            $('span#premium_balance').text(data.premium_balance);
+        }).fail(
+            function (err) {
+                alert('Cannot connect to server. Please try again later.');
+            });
+    });
+
 });
+
+function sendSMS(id) {
+    var url             = $('input[name="send_sms_url"]').val();
+    var source_id       = $('input[name="source_id"]').val();
+    var team_id         = $('input[name="team_id"]').val();
+    var marketer_id     = $('input[name="marketer_id"]').val();
+    var campaign_id     = $('input[name="campaign_id"]').val();
+    var clevel          = $('input[name="clevel"]').val();
+    var current_level   = $('input[name="current_level"]').val();
+    var registered_date = $('.registered_date').text();
+    var subcampaign_id  = $('input[name="subcampaign_id"]').val();
+    var old_status      = $('input[name="status"]').val();
+    var landing_page    = $('select[name="landing_page"]').val();
+    var channel         = $('input[name="channel_id"]').val();
+    var olm_status      = $('select[name="olm_status"]').val();
+    var limit           = $('input#send_sms_limit').val();
+    var export_sale_sort = $("input[name='send_sms_sort']:checked"). val();
+    var tranfer_date    = $('.tranfer_date_span').text();
+
+    var data = {};
+    data._token             = $('#form-send-sms').find('[name=_token]').val();
+    data.id                 = id;
+    data.source_id          = source_id;
+    data.team_id            = team_id;
+    data.marketer_id        = marketer_id;
+    data.campaign_id        = campaign_id;
+    data.clevel             = clevel;
+    data.current_level      = current_level;
+    data.subcampaign_id     = subcampaign_id;
+    data.registered_date    = registered_date;
+    data.old_status         = old_status;
+    data.new_status         = status;
+    data.landing_page       = landing_page;
+    data.channel            = channel;
+    data.olm_status         = olm_status ? parseInt(olm_status) : '';
+    data.limit              = limit;
+    data.export_sale_sort   = export_sale_sort;
+    data.tranfer_date       = tranfer_date;
+
+    $.post(url, data, function (data) {
+        setTimeout(function(){
+            initDataTable();
+            $('input#update_all').prop('checked', false); // Unchecks checkbox all
+
+            $('div#update_success').hide();
+            $('div#export_success').hide();
+            $('.loading_modal').hide();
+            $('#confirm_send_sms').prop('disabled', false);
+            $('#close_modal_send_sms').prop('disabled', false);
+
+            $('#mySendSMSModal').modal('hide');
+        }, 1000);
+    }).fail(
+        function (err) {
+            alert('Cannot connect to server. Please try again later.');
+        });
+}
