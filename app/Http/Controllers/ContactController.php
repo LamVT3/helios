@@ -1613,7 +1613,7 @@ class ContactController extends Controller
 
                 $sms_result = new ApiSmsResult();
                 $sms_result->status         = '';
-                $sms_result->send_result    = '1';
+                $sms_result->send_result    = @$response['QUEUE']['Status'];
                 $sms_result->created_date   = date('Y-m-d');
                 $sms_result->phone          = @$contact->phone;
                 $sms_result->time           = '';
