@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Ad;
 use App\AdResult;
-use App\ApiSMSResult;
+use App\ApiSmsResult;
 use App\Campaign;
 use App\Channel;
 use App\Contact;

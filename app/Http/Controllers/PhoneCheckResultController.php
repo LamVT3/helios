@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ApiSmsResult;
 use App\Config;
 use App\ApiPhoneCheckResult;
 use Illuminate\Http\Request;
@@ -49,7 +50,7 @@ class PhoneCheckResultController extends Controller
             $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
         }
 
-        $query = ApiPhoneCheckResult::where('created_date', '>=', date('Y-m-d', $startDate/1000));
+        $query = ApiSmsResult::where('created_date', '>=', date('Y-m-d', $startDate/1000));
         $query->where('created_date', '<', date('Y-m-d', $endDate/1000));
 
         if($request->result != ''){
