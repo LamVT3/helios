@@ -272,6 +272,10 @@ class InventoryReportController extends Controller
             $channel    = $ad->channel_name;
             $ad_id      = $ad->_id;
 
+            if(strtolower($source) == 'unknown' || strtolower($channel) == 'unknown'){
+                $ad_id      = 'unknown';
+            }
+
             for($i = 1; $i <= $days; $i++){
                 @$result['data'][$source][$channel]['produce'][$i]     = @$c3_produce[$ad_id]['c3b_produce'][$i]       ? @$c3_produce[$ad_id]['c3b_produce'][$i]     : 0;
                 @$result['data'][$source][$channel]['transfer'][$i]    = @$c3_transfer[$ad_id]['c3b_transfer'][$i]     ? @$c3_transfer[$ad_id]['c3b_transfer'][$i]   : 0;
