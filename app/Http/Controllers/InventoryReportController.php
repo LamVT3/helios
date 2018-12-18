@@ -150,7 +150,7 @@ class InventoryReportController extends Controller
         }else{
             $match = [
                 ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['clevel' => ['$in' => ['c3bg']]]],
+                ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
                 ['$match' => ['olm_status' => ['$nin' => [0, 1]]]],
                 ['$match' => ['current_level' => ['$nin' => \config('constants.CURRENT_LEVEL')]]],
                 [
@@ -273,6 +273,8 @@ class InventoryReportController extends Controller
             $ad_id      = $ad->_id;
 
             if(strtolower($source) == 'unknown' || strtolower($channel) == 'unknown'){
+                $source     = 'Unknown';
+                $channel    = 'Unknown';
                 $ad_id      = 'unknown';
             }
 
