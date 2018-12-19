@@ -731,7 +731,8 @@ function initDataTable() {
                     return status;
                 }
             },
-            { "data" : 'export_sale_date',      "defaultContent": "-"},
+            { "data" : 'export_sale_date',  "defaultContent": "-"},
+            { "data" : 'send_sms',          "defaultContent": "-"},
         ],
         'scrollY'       : '55vh',
         "scrollX"       : true,
@@ -1179,13 +1180,22 @@ function exportToOLM(id) {
 
 }
 
+function showSendSMSResultModal(data){
+        $('#total_send').html('<h2 style="font-weight:800">Total: ' + data.total +'</h2' );
+        $('#send_pass').html('- Contacts success: ' + data.send_pass);
+        $('#send_fail').html('- Contacts fail:' + data.send_fail);
+        $('#used_credit').html('- Used credit: ' + data.used_credit);
+        $('#mySendSMSModal').modal('hide');
+        $('#mySendSMSResultModal').modal('show');
+}
+
 function showModalExportToOLM(data){
-        $('#total_contact').html('<h2 style="font-weight:800">Total: ' + data.cnt_total +'</h2' );
-        $('#contact_success').html('- ' + data.cnt_success + ' contacts success');
-        $('#contact_duplicate').html('- ' + data.cnt_duplicate + ' contacts duplicated');
-        $('#contact_error').html('- ' + data.cnt_error + ' contacts error');
-        $('#myExportToOLMModal').modal('hide');
-        $('#myCountExportToOLMModal').modal('show');
+    $('#total_contact').html('<h2 style="font-weight:800">Total: ' + data.cnt_total +'</h2' );
+    $('#contact_success').html('- ' + data.cnt_success + ' contacts success');
+    $('#contact_duplicate').html('- ' + data.cnt_duplicate + ' contacts duplicated');
+    $('#contact_error').html('- ' + data.cnt_error + ' contacts error');
+    $('#myExportToOLMModal').modal('hide');
+    $('#myCountExportToOLMModal').modal('show');
 }
 
 $(function() {
@@ -1277,6 +1287,7 @@ function sendSMS(id) {
 
     $.post(url, data, function (data) {
         setTimeout(function(){
+            showSendSMSResultModal(data);
             initDataTable();
             $('input#update_all').prop('checked', false); // Unchecks checkbox all
 

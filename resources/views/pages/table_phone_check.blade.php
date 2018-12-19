@@ -6,6 +6,7 @@
         <th>Phone</th>
         <th>Date Submit</th>
         <th>Date Check</th>
+        <th>Send Status</th>
         <th>Result</th>
     </tr>
     </thead>
@@ -23,6 +24,7 @@
                     Fail
                 @endif
             </td>
+            <td>{{$item->status}}</td>
         </tr>
 
     @endforeach

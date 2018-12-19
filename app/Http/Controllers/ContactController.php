@@ -1348,7 +1348,8 @@ class ContactController extends Controller
             16  =>'invalid_reason',
             18  =>'is_export',
             19  =>'olm_status',
-            20  =>'export_sale_date'
+            20  =>'export_sale_date',
+            21  =>'send_sms'
         );
 
         return $columns;
@@ -1380,6 +1381,7 @@ class ContactController extends Controller
             $contact['landing_page']        = $contact['landing_page'] ? $contact['landing_page'] : "-";
             $contact['channel_name']        = $contact['channel_name'] ? $contact['channel_name'] : "-";
             $contact['export_sale_date']    = $contact['export_sale_date'] ? date("d-m-Y H:i:s", $contact['export_sale_date'] / 1000) : "-";
+            $contact['send_sms']            = $contact['send_sms'] ? 'Yes' : 'No';
         }
 
         return $contacts;
@@ -1588,9 +1590,15 @@ class ContactController extends Controller
             $query->where('export_sale_date', '<', $endDate);
         }
 
+        $query->where('send_sms', '<>', '1');
+
         $query->where($data_where);
 
         $result = array();
+        $result['send_pass']    = 0;
+        $result['send_fail']    = 0;
+        $result['used_credit']  = 0;
+        $result['total']        = 0;
 
         $query->orderBy('submit_time', $request->export_sale_sort);
 
@@ -1611,6 +1619,15 @@ class ContactController extends Controller
 
                 $response   = $this->call_api_send_sms($url, @$contact->phone);
 
+                if(@$response['QUEUE']['Status']){
+                    $result['send_pass']++;
+                    $result['used_credit'] += @$response['QUEUE']['UsedCredit'];
+                }
+                else{
+                    $result['send_fail']++;
+                }
+                $result['total']++;
+
                 $sms_result = new ApiSmsResult();
                 $sms_result->status         = '';
                 $sms_result->send_result    = @$response['QUEUE']['Status'];
@@ -1621,6 +1638,9 @@ class ContactController extends Controller
                 $sms_result->transaction_id = @$response['QUEUE']['Transaction'];
                 $sms_result->name           = '';
                 $sms_result->save();
+
+                $contact->send_sms = '1';
+                $contact->save();
 
                 $count++;
             }

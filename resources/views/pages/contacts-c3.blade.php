@@ -320,6 +320,7 @@
                                         <th class="long">Status export</th>
                                         <th class="long">Status Sale</th>
                                         <th class="long">Tranfer Date</th>
+                                        <th class="long">Send SMS</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -475,6 +476,30 @@
     </div>
 </div>
 
+<!-- Send SMS Result Modal -->
+<div class="modal fade" id="mySendSMSResultModal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title">Send SMS Result</h3>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 25px" id="total_send">...</p>
+                <p class="text-primary" style="font-size: 25px" id="send_pass">...</p>
+                <p class="text-danger" style="font-size: 25px" id="send_fail">...</p>
+                <p class="text-warning" style="font-size: 25px" id="used_credit">...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 <!-- Count Export To OLM Modal -->
 <div class="modal fade" id="myCountExportToOLMModal" role="dialog">
     <div class="modal-dialog">
@@ -483,7 +508,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h3 class="modal-title">Export result</h3>
+                <h3 class="modal-title">Export Result</h3>
             </div>
             <div class="modal-body">
                 <!-- HoaTV - Add total contact -->
