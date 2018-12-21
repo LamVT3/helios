@@ -228,8 +228,13 @@
                                         </button>
                                         <button id="export_to_olm" class="btn btn-danger btn-sm" type="button"
                                                 style="margin-left: 10px" data-toggle="modal" data-target="#myExportToOLMModal">
-                                            <i class="fa fa-edit"></i>
+                                            <i class="fa fa-users"></i>
                                             Export to Sales
+                                        </button>
+                                        <button id="send_sms" class="btn btn-info btn-sm" type="button"
+                                                style="margin-left: 10px" data-toggle="modal" data-target="#mySendSMSModal">
+                                            <i class="fa fa-envelope-o"></i>
+                                            Send SMS
                                         </button>
                                         <button id="update_contact" class="btn btn-warning btn-sm" type="button"
                                                 style="margin-left: 10px; display: none" data-toggle="modal" data-target="#myUpdateModal">
@@ -315,6 +320,7 @@
                                         <th class="long">Status export</th>
                                         <th class="long">Status Sale</th>
                                         <th class="long">Tranfer Date</th>
+                                        <th class="long">Send SMS</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -403,7 +409,7 @@
                         <em id="export_sale_limit-error" class="error_require_field" style="display: none;">This field is required.</em>
                     </div>
                     <div class="form-group" style="padding-top: 10px">
-                        <label for="export_sale_limit" class="label require_field">Sort</label>
+                        <label for="export_sale_sort" class="label require_field">Sort</label>
                         <input type="radio" class="form-check-input" id="export_sale_sort" name="export_sale_sort" value="desc" checked><span style="padding: 5px 15px 5px 5px">Descending</span>
                         <input type="radio" class="form-check-input" id="export_sale_sort" name="export_sale_sort" value="asc" style="padding-left: 5px"><span style="padding: 5px">Ascending</span>
                     </div>
@@ -423,6 +429,77 @@
     </div>
 </div>
 
+<!-- Send SMS Modal -->
+<div class="modal fade" id="mySendSMSModal" role="dialog" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                {{--<button type="button" class="close" data-dismiss="modal">&times;</button>--}}
+                <h3 class="modal-title">Send SMS</h3>
+            </div>
+            <div class="modal-body">
+                <form class="smart-form" id="form-send-sms">
+                    {{ csrf_field() }}
+                    <div class="form-group">
+                        <span style="color: #333; font-weight: bold; font-size: 13px;">Credit balance: </span>
+                        <span id="standard_balance" class="form-control-static">0</span>
+                    </div>
+                    <div class="form-group">
+                        <span style="color: #333; font-weight: bold; font-size: 13px;">Credit premium balance: </span>
+                        <span id="premium_balance" class="form-control-static">0</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="send_sms_limit" class="label require_field">Send number</label>
+                        <input type="number" class="form-control" id="send_sms_limit" style="padding-left: 5px">
+                        <em id="send_sms_limit-error" class="error_require_field" style="display: none;">This field is required.</em>
+                    </div>
+                    <div class="form-group" style="padding-top: 10px">
+                        <label for="send_sms_sort" class="label require_field">Sort</label>
+                        <input type="radio" class="form-check-input" id="send_sms_sort" name="send_sms_sort" value="desc" checked><span style="padding: 5px 15px 5px 5px">Descending</span>
+                        <input type="radio" class="form-check-input" id="send_sms_sort" name="send_sms_sort" value="asc" style="padding-left: 5px"><span style="padding: 5px">Ascending</span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm_send_sms" type="button" class="btn btn-primary">Yes</button>
+                <button id="close_modal_send_sms" type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <div class="loading_modal" style="display: none">
+                    <div class="col-md-12 text-center">
+                        <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 5%;"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Send SMS Result Modal -->
+<div class="modal fade" id="mySendSMSResultModal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title">Send SMS Result</h3>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 25px" id="total_send">...</p>
+                <p class="text-primary" style="font-size: 25px" id="send_pass">...</p>
+                <p class="text-danger" style="font-size: 25px" id="send_fail">...</p>
+                <p class="text-warning" style="font-size: 25px" id="used_credit">...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 <!-- Count Export To OLM Modal -->
 <div class="modal fade" id="myCountExportToOLMModal" role="dialog">
     <div class="modal-dialog">
@@ -431,7 +508,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h3 class="modal-title">Export result</h3>
+                <h3 class="modal-title">Export Result</h3>
             </div>
             <div class="modal-body">
                 <!-- HoaTV - Add total contact -->
@@ -459,6 +536,8 @@
 <input type="hidden" name="get_all_channel_url" value="{{route("channel-get-all")}}">
 <input type="hidden" name="count-export-to-olm" value="{{route("contacts.count-export-to-OLM")}}">
 <input type="hidden" name="total_contacts" value="">
+<input type="hidden" name="send_sms_url" value="{{route("contacts.send_sms")}}">
+<input type="hidden" name="get_balance_url" value="{{route("contacts.get_balance")}}">
 @endsection
 
 @section('script')

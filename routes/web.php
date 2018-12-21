@@ -18,7 +18,7 @@ Route::post('login', 'Auth\LoginController@login');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
 Route::get('/auth/google', 'Auth\LoginController@redirectToProvider');
-Route::get('/callback', 'Auth\LoginController@handleProviderCallback');
+Route::get('/auth/callback', 'Auth\LoginController@handleProviderCallback');
 
 Route::get('/home', 'DashboardController@index')->name('dashboard');
 Route::group(['prefix' => 'dashboard'], function () {
@@ -75,6 +75,8 @@ Route::group(['prefix' => 'contacts'], function () {
     Route::get('count-export-to-OLM', 'ContactController@countContactOLM')->name('contacts.count-export-to-OLM');
     Route::get('/paginate', 'ContactController@getContactPaginate')->name('contacts-paginate');
     Route::get('/updateContacts', 'ContactController@updateContacts')->name('contacts-updateContacts');
+    Route::post('/send_sms', 'ContactController@send_sms')->name('contacts.send_sms');
+    Route::get('/get_balance', 'ContactController@get_send_sms_balance')->name('contacts.get_balance');
 });
 
 Route::get('/report', 'ReportController@index')->name('report');

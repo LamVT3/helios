@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Ad;
 use App\Contact;
 use App\Channel;
 use App\Source;
@@ -80,7 +81,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['channel_name' => ['$in' => $channel]]],
                 [
                     '$group' => [
-                        '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_id' => '$source_id'],
+                        '_id' => ['ad_id' => '$ad_id', 'submit_time' => '$submit_time'],
                         'c3b_produce' => ['$sum' => 1],
                     ]
                 ],
@@ -96,7 +97,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
                 [
                     '$group' => [
-                        '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_id' => '$source_id'],
+                        '_id' => ['ad_id' => '$ad_id', 'submit_time' => '$submit_time'],
                         'c3b_produce' => ['$sum' => 1],
                     ]
                 ],
@@ -114,29 +115,10 @@ class InventoryReportController extends Controller
 
         $result = array();
         foreach ($query as $item) {
-            $date       = (int)date('d', @$item['_id']['submit_time'] / 1000);
-            $channel    = @$item['_id']['channel_name'];
-            if (isset($result['channel'][$date][$channel])) {
-                @$result['channel'][$date][$channel]['c3b_produce'] += @$item['c3b_produce'];
-            } else {
-                @$result['channel'][$date][$channel]['c3b_produce'] = @$item['c3b_produce'];
-            }
+            $date   = (int)date('d', @$item['_id']['submit_time'] / 1000);
+            $ad_id  = @$item['_id']['ad_id'];
 
-            $source_id    = @$item['_id']['source_id'];
-//            $source = Source::find($source_id);
-            if($source_id) {
-                if (isset($result['source'][$date][$source_id])) {
-                    @$result['source'][$date][$source_id]['c3b_produce'] += @$item['c3b_produce'];
-                } else {
-                    @$result['source'][$date][$source_id]['c3b_produce'] = @$item['c3b_produce'];
-                }
-            }else{
-                if (isset($result['source'][$date]['Unknown'])) {
-                    @$result['source'][$date]['Unknown']['c3b_produce'] += @$item['c3b_produce'];
-                } else {
-                    @$result['source'][$date]['Unknown']['c3b_produce'] = @$item['c3b_produce'];
-                }
-            }
+            @$result[$ad_id]['c3b_produce'][$date] += @$item['c3b_produce'];
         }
 
         return $result;
@@ -155,7 +137,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['current_level' => ['$nin' => \config('constants.CURRENT_LEVEL')]]],
                 [
                     '$group' => [
-                        '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_id' => '$source_id'],
+                        '_id' => ['ad_id' => '$ad_id', 'submit_time' => '$submit_time'],
                         'c3b_inventory' => ['$sum' => 1],
                     ]
                 ],
@@ -168,12 +150,12 @@ class InventoryReportController extends Controller
         }else{
             $match = [
                 ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['clevel' => ['$in' => ['c3bg']]]],
+                ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
                 ['$match' => ['olm_status' => ['$nin' => [0, 1]]]],
                 ['$match' => ['current_level' => ['$nin' => \config('constants.CURRENT_LEVEL')]]],
                 [
                     '$group' => [
-                        '_id' => ['channel_name' => '$channel_name', 'submit_time' => '$submit_time', 'source_id' => '$source_id'],
+                        '_id' => ['ad_id' => '$ad_id', 'submit_time' => '$submit_time'],
                         'c3b_inventory' => ['$sum' => 1],
                     ]
                 ],
@@ -191,28 +173,10 @@ class InventoryReportController extends Controller
 
         $result = array();
         foreach ($query as $item){
-            $date       = (int)date('d', @$item['_id']['submit_time'] / 1000);
-            $channel    = @$item['_id']['channel_name'];
-            if(isset($result['channel'][$date][$channel])){
-                @$result['channel'][$date][$channel]['c3b_inventory'] += @$item['c3b_inventory'];
-            }else{
-                @$result['channel'][$date][$channel]['c3b_inventory'] = @$item['c3b_inventory'];
-            }
+            $date   = (int)date('d', @$item['_id']['submit_time'] / 1000);
+            $ad_id  = @$item['_id']['ad_id'];
 
-            $source_id    = @$item['_id']['source_id'];
-            if($source_id) {
-                if (isset($result['source'][$date][$source_id])) {
-                    @$result['source'][$date][$source_id]['c3b_inventory'] += @$item['c3b_inventory'];
-                } else {
-                    @$result['source'][$date][$source_id]['c3b_inventory'] = @$item['c3b_inventory'];
-                }
-            }else{
-                if (isset($result['source'][$date]['Unknown'])) {
-                    @$result['source'][$date]['Unknown']['c3b_inventory'] += @$item['c3b_inventory'];
-                } else {
-                    @$result['source'][$date]['Unknown']['c3b_inventory'] = @$item['c3b_inventory'];
-                }
-            }
+            @$result[$ad_id]['c3b_inventory'][$date] += @$item['c3b_inventory'];
         }
 
         return $result;
@@ -230,7 +194,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['channel_name' => ['$in' => $channel]]],
                 [
                     '$group' => [
-                        '_id' => ['export_sale_date' => '$export_sale_date', 'channel_name' => '$channel_name', 'source_id' => '$source_id'],
+                        '_id' => ['export_sale_date' => '$export_sale_date', 'ad_id' => '$ad_id'],
                         'c3b_transfer' => ['$sum' => 1],
                     ]
                 ],
@@ -247,7 +211,7 @@ class InventoryReportController extends Controller
                 ['$match' => ['olm_status' => ['$in' => [0, 1, 2, 3]]]],
                 [
                     '$group' => [
-                        '_id' => ['export_sale_date' => '$export_sale_date', 'channel_name' => '$channel_name', 'source_id' => '$source_id'],
+                        '_id' => ['export_sale_date' => '$export_sale_date', 'ad_id' => '$ad_id'],
                         'c3b_transfer' => ['$sum' => 1],
                     ]
                 ],
@@ -265,29 +229,10 @@ class InventoryReportController extends Controller
 
         $result = array();
         foreach ($query as $item){
-            $date       = (int)date('d', @$item['_id']['export_sale_date'] / 1000);
+            $date   = (int)date('d', @$item['_id']['export_sale_date'] / 1000);
+            $ad_id  = @$item['_id']['ad_id'];
 
-            $channel    = @$item['_id']['channel_name'];
-            if(isset($result['channel'][$date][$channel])){
-                @$result['channel'][$date][$channel]['c3b_transfer'] += @$item['c3b_transfer'];
-            }else{
-                @$result['channel'][$date][$channel]['c3b_transfer'] = @$item['c3b_transfer'];
-            }
-
-            $source_id    = @$item['_id']['source_id'];
-            if($source_id){
-                if(isset($result['source'][$date][$source_id])){
-                    @$result['source'][$date][$source_id]['c3b_transfer'] += @$item['c3b_transfer'];
-                }else{
-                    @$result['source'][$date][$source_id]['c3b_transfer'] = @$item['c3b_transfer'];
-                }
-            }else{
-                if (isset($result['source'][$date]['Unknown'])) {
-                    @$result['source'][$date]['Unknown']['c3b_transfer'] += @$item['c3b_transfer'];
-                } else {
-                    @$result['source'][$date]['Unknown']['c3b_transfer'] = @$item['c3b_transfer'];
-                }
-            }
+            @$result[$ad_id]['c3b_transfer'][$date] += @$item['c3b_transfer'];
         }
 
         return $result;
@@ -313,95 +258,44 @@ class InventoryReportController extends Controller
         $c3_transfer    = $this->get_c3_transfer($startDate, $endDate);
         $c3_inventory   = $this->get_c3_inventory($startDate, $endDate);
 
-        $c3_produce_channel     = @$c3_produce['channel'];
-        $c3_produce_source      = @$c3_produce['source'];
-
-        $c3_transfer_channel    = @$c3_transfer['channel'];
-        $c3_transfer_source     = @$c3_transfer['source'];
-
-        $c3_inventory_channel   = @$c3_inventory['channel'];
-        $c3_inventory_source    = @$c3_inventory['source'];
-
         if($request->channel){
-            $channels   = Channel::whereIn('name', explode(',', $request->channel))->get();
+            $ads = Ad::whereIn('channel_name', explode(',', $request->channel))->get();
         }else{
-            $channels   = Channel::all();
+            $ads = Ad::all();
         }
-        $sources    = Source::all();
 
         $result = array();
-        $label  = array();
 
-        foreach ($sources as $source){
-            $source_name    = $source->name;
-            $source_id      = $source->_id;
+        foreach ($ads as $ad){
+
+            $source     = $ad->source_name;
+            $channel    = $ad->channel_name;
+            $ad_id      = $ad->_id;
+
+            if(strtolower($source) == 'unknown' || strtolower($channel) == 'unknown'){
+                $source     = 'Unknown';
+                $channel    = 'Unknown';
+                $ad_id      = 'unknown';
+            }
+
             for($i = 1; $i <= $days; $i++){
-                @$result[$source_name][$i]['produce']   = @$c3_produce_source[$i][$source_id]['c3b_produce']        ? @$c3_produce_source[$i][$source_id]['c3b_produce']        : 0;
-                @$result[$source_name][$i]['transfer']  = @$c3_transfer_source[$i][$source_id]['c3b_transfer']      ? @$c3_transfer_source[$i][$source_id]['c3b_transfer']      : 0;
-                @$result[$source_name][$i]['inventory'] = @$c3_inventory_source[$i][$source_id]['c3b_inventory']    ? @$c3_inventory_source[$i][$source_id]['c3b_inventory']    : 0;
+                @$result['data'][$source][$channel]['produce'][$i]     = @$c3_produce[$ad_id]['c3b_produce'][$i]       ? @$c3_produce[$ad_id]['c3b_produce'][$i]     : 0;
+                @$result['data'][$source][$channel]['transfer'][$i]    = @$c3_transfer[$ad_id]['c3b_transfer'][$i]     ? @$c3_transfer[$ad_id]['c3b_transfer'][$i]   : 0;
+                @$result['data'][$source][$channel]['inventory'][$i]   = @$c3_inventory[$ad_id]['c3b_inventory'][$i]   ? @$c3_inventory[$ad_id]['c3b_inventory'][$i]: 0;
 
-                @$result['Unknown'][$i]['produce']      = @$c3_inventory_source[$i]['Unknown']['c3b_produce']   ? @$c3_inventory_source[$i]['Unknown']['c3b_produce']   : 0;
-                @$result['Unknown'][$i]['transfer']     = @$c3_inventory_source[$i]['Unknown']['c3b_transfer']  ? @$c3_inventory_source[$i]['Unknown']['c3b_transfer']  : 0;
-                @$result['Unknown'][$i]['inventory']    = @$c3_inventory_source[$i]['Unknown']['c3b_inventory'] ? @$c3_inventory_source[$i]['Unknown']['c3b_inventory'] : 0;
+                @$result['total_source'][$source]  += @$result['data'][$source][$channel]['inventory'][$i];
 
-                @$result['total_source'][$source_name]  +=  @$result[$source_name][$i]['inventory'] + @$result['Unknown'][$i]['inventory'];
+                @$result['total_channel'][$source][$channel]   += @$result['data'][$source][$channel]['inventory'][$i];
+
+                @$result['total']['produce'][$i]    += @$result['data'][$source][$channel]['produce'][$i];
+                @$result['total']['transfer'][$i]   += @$result['data'][$source][$channel]['transfer'][$i];
+                @$result['total']['inventory'][$i]  += @$result['data'][$source][$channel]['inventory'][$i];
+
+                @$result['grand_total']['produce']    += @$result['data'][$source][$channel]['produce'][$i];
+                @$result['grand_total']['transfer']   += @$result['data'][$source][$channel]['transfer'][$i];
+                @$result['grand_total']['inventory']  += @$result['data'][$source][$channel]['inventory'][$i];
             }
         }
-
-        foreach ($channels as $channel){
-            $channel_name = $channel->name;
-            for($i = 1; $i <= $days; $i++){
-                @$result[$channel_name][$i]['produce']      = @$c3_produce_channel[$i][$channel_name]['c3b_produce']        ? @$c3_produce_channel[$i][$channel_name]['c3b_produce']        : 0;
-                @$result[$channel_name][$i]['transfer']     = @$c3_transfer_channel[$i][$channel_name]['c3b_transfer']      ? @$c3_transfer_channel[$i][$channel_name]['c3b_transfer']      : 0;
-                @$result[$channel_name][$i]['inventory']    = @$c3_inventory_channel[$i][$channel_name]['c3b_inventory']    ? @$c3_inventory_channel[$i][$channel_name]['c3b_inventory']    : 0;
-
-                @$result['total_channel'][$channel_name]    +=  @$result[$channel_name][$i]['inventory'];
-
-                @$result['total'][$i]['produce']    +=  @$result[$channel_name][$i]['produce'];
-                @$result['total'][$i]['transfer']   +=  @$result[$channel_name][$i]['transfer'];
-                @$result['total'][$i]['inventory']  +=  @$result[$channel_name][$i]['inventory'];
-
-                @$result['grand_total']['produce']      +=  @$result[$channel_name][$i]['produce'];
-                @$result['grand_total']['transfer']     +=  @$result[$channel_name][$i]['transfer'];
-                @$result['grand_total']['inventory']    +=  @$result[$channel_name][$i]['inventory'];
-            }
-        }
-
-        foreach ($channels as $key => $channel){
-            $channel_name   = $channel->name;
-            $source_id      = $channel->source_id;
-            $source         = Source::find($source_id);
-
-            if($source){
-                $source_name = $source->name;
-                if(isset($label[$source_name])){
-                    array_push($label[$source_name], $channel_name);
-                }else{
-                    $label[$source_name] = [$channel_name];
-                }
-            }else{
-                if(isset($label['Unknown'])){
-                    array_push($label['Unknown'], $channel_name);
-                }else{
-                    $label['Unknown'] = [$channel_name];
-                }
-            }
-        }
-
-//        uasort($label, function ($item1, $item2) {
-//            if ($item1 == $item2) return 0;
-//            return $item2 < $item1 ? -1 : 1;
-//        });
-
-        if(isset($label['Unknown'])){
-            $temp = $label['Unknown'];
-            unset($label['Unknown']);
-            $label['Unknown'] = $temp;
-        }
-
-        $result['lable'] = $label;
-
         return $result;
     }
-
 }
