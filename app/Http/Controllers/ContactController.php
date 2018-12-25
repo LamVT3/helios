@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Ad;
 use App\AdResult;
+use App\ApiSmsResult;
 use App\Campaign;
 use App\Channel;
 use App\Contact;
@@ -1347,7 +1348,8 @@ class ContactController extends Controller
             16  =>'invalid_reason',
             18  =>'is_export',
             19  =>'olm_status',
-            20  =>'export_sale_date'
+            20  =>'export_sale_date',
+            21  =>'send_sms'
         );
 
         return $columns;
@@ -1379,6 +1381,7 @@ class ContactController extends Controller
             $contact['landing_page']        = $contact['landing_page'] ? $contact['landing_page'] : "-";
             $contact['channel_name']        = $contact['channel_name'] ? $contact['channel_name'] : "-";
             $contact['export_sale_date']    = $contact['export_sale_date'] ? date("d-m-Y H:i:s", $contact['export_sale_date'] / 1000) : "-";
+            $contact['send_sms']            = $contact['send_sms'] ? 'Yes' : 'No';
         }
 
         return $contacts;
@@ -1529,6 +1532,202 @@ class ContactController extends Controller
             $adResult->c3b = (int)$adResult->c3b - 1;
         }
         $adResult->save();
+    }
+
+    public function send_sms(){
+        date_default_timezone_set('Asia/Bangkok');
+        $url = 'http://www.thaibulksms.com/sms_api.php';
+
+        $data_where = $this->getWhereData();
+        $request = request();
+
+        $startDate = strtotime("midnight")*1000;
+        $endDate = strtotime("tomorrow")*1000;
+        if($request->registered_date){
+            $date_place = str_replace('-', ' ', $request->registered_date);
+            $date_arr = explode(' ', str_replace('/', '-', $date_place));
+            $startDate = strtotime($date_arr[0])*1000;
+            // $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
+            $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+        }
+        $query = Contact::where('submit_time', '>=', $startDate);
+        $query->where('submit_time', '<', $endDate);
+
+        // HoaTV fix multiple select channel
+        $arrChannelName = array();
+        if ($request->channel) {
+            $arrChannelName = explode(',',$request->channel);
+            $query->whereIn('channel_name',$arrChannelName);
+        }
+
+        if(@$data_where['clevel'] == 'c3bg'){
+            $query->where('clevel','c3bg');
+            unset($data_where['clevel']);
+        }else if (@$data_where['clevel'] == 'c3b' || @$data_where['clevel'] == 'c3a' || @$data_where['clevel'] == 'c3b_only'){
+            $query->where('clevel','c3bg');
+            unset($data_where['clevel']);
+        }
+
+        $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
+        unset($data_where['current_level']);
+
+        if($request->id){
+            if($request->id != 'All' && count($request->id) > 0){
+                $query->whereIn('_id', array_keys($request->id));
+            }
+        }
+
+        $query->whereNotIn('olm_status', [0, 1, '0', '1']);
+        unset($data_where['olm_status']);
+
+        if($request->tranfer_date) {
+            $date_place = str_replace('-', ' ', $request->tranfer_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
+
+            $query->where('export_sale_date', '>=', $startDate);
+            $query->where('export_sale_date', '<', $endDate);
+        }
+
+        $query->where('send_sms', '<>', '1');
+
+        $query->where($data_where);
+
+        $result = array();
+        $result['send_pass']    = 0;
+        $result['send_fail']    = 0;
+        $result['used_credit']  = 0;
+        $result['total']        = 0;
+
+        $query->orderBy('submit_time', $request->export_sale_sort);
+
+        $limit = (int)$request->limit;
+
+        $count = 0;
+        $query->chunk( 1000, function ( $contacts ) use ( $url , &$result, $limit, &$count) {
+
+            if($count >= $limit){
+                return false;
+            }
+
+            foreach ($contacts as $contact)
+            {
+                if($count >= $limit){
+                    break;
+                }
+
+                $response   = $this->call_api_send_sms($url, @$contact->phone);
+
+                if(@$response['QUEUE']['Status']){
+                    $result['send_pass']++;
+                    $result['used_credit'] += @$response['QUEUE']['UsedCredit'];
+                }
+                else{
+                    $result['send_fail']++;
+                }
+                $result['total']++;
+
+                $sms_result = new ApiSmsResult();
+                $sms_result->status         = '';
+                $sms_result->send_result    = @$response['QUEUE']['Status'];
+                $sms_result->created_date   = date('Y-m-d');
+                $sms_result->phone          = @$contact->phone;
+                $sms_result->time           = '';
+                $sms_result->date           = date('Y-m-d', @$contact->submit_time  / 1000);
+                $sms_result->transaction_id = @$response['QUEUE']['Transaction'];
+                $sms_result->name           = '';
+                $sms_result->save();
+
+                $contact->send_sms = '1';
+                $contact->save();
+
+                $count++;
+            }
+        });
+
+        return $result;
+    }
+
+    private function call_api_send_sms($url, $phone){
+        $config = Config::getByKeys(['sms_username', 'sms_password', 'sms_message', 'sms_sender', 'sms_scheduled_delivery', 'sms_force']);
+
+        $msisdn     = '0'.$phone;
+        $username   = @$config['sms_username'];
+        $password   = @$config['sms_password'];
+        $message    = @$config['sms_message'];
+        $sender     = @$config['sms_sender'];
+        $ScheduledDelivery = @$config['sms_scheduled_delivery'];
+        $SMStype    = @$config['sms_force'];
+
+        $data_string = "username=".$username."&password=".$password."&msisdn=".$msisdn."&message=".$message."&sender=".$sender."&ScheduledDelivery=".$ScheduledDelivery."&force=".$SMStype;
+
+        $agent = "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.4)Gecko/20030624 Netscape/7.1 (ax)";
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_USERAGENT, $agent);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+        $data = curl_exec ($ch);
+        curl_close ($ch);
+
+        $xml    = simplexml_load_string($data);
+        $json   = json_encode($xml);
+        $array  = json_decode($json,TRUE);
+
+        return $array;
+    }
+
+    public function get_send_sms_balance(){
+        $url = 'http://www.thaibulksms.com/sms_api.php';
+        $config = Config::getByKeys(['sms_username', 'sms_password']);
+
+        $username   = @$config['sms_username'];
+        $password   = @$config['sms_password'];
+
+        $data_string = "username=".$username."&password=".$password;
+
+        $standard_balance   = $this->get_standard_balance($url, $data_string);
+        $premium_balance    = $this->get_premium_balance($url, $data_string);
+
+        $result['standard_balance'] = $standard_balance;
+        $result['premium_balance']  = $premium_balance;
+
+        return $result;
+    }
+
+    private function get_standard_balance($url, $data_string){
+        $agent          = "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.4)Gecko/20030624 Netscape/7.1 (ax)";
+        $data_string    = $data_string.'&tag=credit_remain';
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_USERAGENT, $agent);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+        $result = curl_exec ($ch);
+        curl_close ($ch);
+
+        return $result;
+    }
+
+    private function get_premium_balance($url, $data_string){
+        $agent          = "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.4)Gecko/20030624 Netscape/7.1 (ax)";
+        $data_string    = $data_string.'&tag=credit_remain_premium';
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_USERAGENT, $agent);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+        $result = curl_exec ($ch);
+        curl_close ($ch);
+
+        return $result;
     }
 
 }
