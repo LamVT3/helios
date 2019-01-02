@@ -103,6 +103,8 @@ class LocationReportController extends Controller
         }
 
         $cnt = 0;
+        $location_key   = [];
+        $location_value = [];
         foreach ($result as $key => $value){
             $location_key[] = [$cnt, $key];
             $location_value[] = [$cnt, $value];
