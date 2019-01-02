@@ -143,12 +143,10 @@
                     registered_date: registered_date
                 }
             }).done(function (response) {
-                console.log(1111);
                 $('#wrapper_report').html(response);
                 init_table();
                 $('.loading').hide();
             }).fail(function (response) {
-                console.log(22222);
                 $('.loading').hide();
             });
         })

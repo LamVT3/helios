@@ -473,7 +473,7 @@ class ContactController extends Controller
                             $item->name,
                             $item->email,
                             $item->phone,
-                            Date('Y-m-d H:i:s', (int)$item->submit_time/1000),
+                            Date('Y-m-d H:i:s', $item->submit_time/1000),
                             $item->landing_page,
                             $item->channel_name,
                             $item->contact_id,
@@ -496,6 +496,7 @@ class ContactController extends Controller
 
                 $headings = \config('constants.TEMPLATE_EXPORT');
                 $sheet->prependRow(1, $headings);
+                $sheet->setAutoSize(false);
                 $sheet->cells('A1:P1', function ($cells) {
                     $cells->setBackground('#191919');
                     $cells->setFontColor('#DBAC69');
@@ -1380,7 +1381,7 @@ class ContactController extends Controller
             $contact['ad_name']             = $contact['ad_name'] ? $contact['ad_name'] : "-";
             $contact['landing_page']        = $contact['landing_page'] ? $contact['landing_page'] : "-";
             $contact['channel_name']        = $contact['channel_name'] ? $contact['channel_name'] : "-";
-            $contact['export_sale_date']    = $contact['export_sale_date'] ? date("d-m-Y H:i:s", $contact['export_sale_date'] / 1000) : "-";
+            $contact['export_sale_date']    = $contact['export_sale_date'] ? date("d-m-Y H:i:s", @$contact['export_sale_date'] / 1000) : "-";
             $contact['send_sms']            = $contact['send_sms'] ? 'Yes' : 'No';
         }
 
