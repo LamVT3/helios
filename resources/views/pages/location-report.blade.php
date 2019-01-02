@@ -25,7 +25,6 @@
 
                     <article class="col-sm-12 col-md-12">
 
-                        <div class="widget-body">
                         @component('components.jarviswidget', ['id' => 'location', 'icon' => 'fa-line-chart', 'title' => "Location ", 'dropdown' => 'false'])
                             <!-- widget content -->
                             <div class="widget-body no-padding flot_channel">
@@ -97,13 +96,18 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="import_contact_l8" type="button" class="btn btn-primary" data-dismiss="modal">
+                    <button id="import_contact_l8" type="button" class="btn btn-primary">
                         <i class="fa fa-upload"></i>
                         Import
                     </button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">
                         Cancel
                     </button>
+                    <div class="loading_modal" style="display: none">
+                        <div class="col-md-12 text-center">
+                            <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt="" style="width: 5%;"/>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div><!-- /.modal-content -->
@@ -143,8 +147,7 @@
                 return;
             }
 
-            $('div#import_success').hide();
-            $('div#loader').show();
+            $('div.loading_modal').show();
 
             var form = $('#form-import-contact-l8')[0];
             var data = new FormData(form);
@@ -160,11 +163,10 @@
                 timeout: 600000,
                 success: function(response){
                     $('#wrapper_report').html(response);
-                    // init_table();
-                    // console.log(response);
+                    $('div.loading_modal').hide();
+                    $('#importContactModal').modal('hide');
                 }
             });
-
         });
 
     });
