@@ -400,6 +400,7 @@ div#wrapper_kpi, div#wrapper_kpi_by_team{
 }
 #table_kpi td:hover {
     color: white;
+    background: #3b3f52 !important;
 }
 #table_kpi td a:hover {
     color: #bdbbbd !important;
@@ -420,7 +421,7 @@ div#wrapper_kpi, div#wrapper_kpi_by_team{
     border-left: none!important;
 }
 .kpi_text{
-    color: #3b3f52;
+    color: white;
     background: #3176b1;
 }
 .total_text{
@@ -429,7 +430,7 @@ div#wrapper_kpi, div#wrapper_kpi_by_team{
     background: #3b3f52;
 }
 .gap_text{
-    color: #3b3f52;
+    color: white;
     background: #eb5a47;
 }
 .achieved_text{
