@@ -86,7 +86,7 @@
                     <div class="form-group">
                         <label class="col-md-2 control-label">Input File</label>
                         <div class="col-md-10">
-                            <input type="file" style="width: 450px; text-align: left" name="import" class="btn btn-default" id="import">
+                            <input type="file" style="width: 450px; text-align: left" name="import" class="btn btn-default" id="import_file">
 
                         </div>
                     </div>
@@ -138,6 +138,11 @@
 
         $('button#import_contact_l8').click(function (e) {
             e.preventDefault();
+
+            if($('#import_file').val() == ''){
+                return;
+            }
+
             $('div#import_success').hide();
             $('div#loader').show();
 

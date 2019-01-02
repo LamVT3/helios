@@ -1638,6 +1638,8 @@ class ContactController extends Controller
                 $sms_result->date           = date('Y-m-d', @$contact->submit_time  / 1000);
                 $sms_result->transaction_id = @$response['QUEUE']['Transaction'];
                 $sms_result->name           = '';
+                $sms_result->ad_id          = @$contact->ad_id;
+                $sms_result->contact_id     = @$contact->contact_id;
                 $sms_result->save();
 
                 $contact->send_sms = '1';
