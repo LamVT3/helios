@@ -27,8 +27,8 @@
     </tbody>
 </table>
 
-<input id="location_key" type="hidden" value="{{$location_key}}">
-<input id="location_value" type="hidden" value="{{$location_value}}">
+<input id="location_key" type="hidden" value="{{@$location_key}}">
+<input id="location_value" type="hidden" value="{{@$location_value}}">
 
 <script type="text/javascript">
     $(document).ready(function () {
