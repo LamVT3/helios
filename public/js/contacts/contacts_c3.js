@@ -933,6 +933,7 @@ function addSelectInvalidReason(item){
         '<option value="C3B_SMS_Error">SMS Error</option>' +
         '<option value="C3B_Under18">Under 18</option>' +
         '<option value="C3B_Duplicated15Days">Duplicate in 15 days</option>' +
+        '<option value="Manual_Change">Manual Change</option>' +
         '</select>' +
         '');
 

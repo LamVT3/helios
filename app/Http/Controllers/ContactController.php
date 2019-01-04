@@ -1623,9 +1623,11 @@ class ContactController extends Controller
                 if(@$response['QUEUE']['Status']){
                     $result['send_pass']++;
                     $result['used_credit'] += @$response['QUEUE']['UsedCredit'];
+                    $contact->send_sms = '1';
                 }
                 else{
                     $result['send_fail']++;
+                    $contact->send_sms = '0';
                 }
                 $result['total']++;
 
@@ -1642,7 +1644,6 @@ class ContactController extends Controller
                 $sms_result->contact_id     = @$contact->contact_id;
                 $sms_result->save();
 
-                $contact->send_sms = '1';
                 $contact->save();
 
                 $count++;
