@@ -321,6 +321,7 @@
                                         <th class="long">Status Sale</th>
                                         <th class="long">Tranfer Date</th>
                                         <th class="long">Send SMS</th>
+                                        <th class="long">MailChimp export status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
