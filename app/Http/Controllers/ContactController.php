@@ -1350,7 +1350,8 @@ class ContactController extends Controller
             18  =>'is_export',
             19  =>'olm_status',
             20  =>'export_sale_date',
-            21  =>'send_sms'
+            21  =>'send_sms',
+            22  =>'mailchimp_expired'
         );
 
         return $columns;
@@ -1383,6 +1384,7 @@ class ContactController extends Controller
             $contact['channel_name']        = $contact['channel_name'] ? $contact['channel_name'] : "-";
             $contact['export_sale_date']    = $contact['export_sale_date'] ? date("d-m-Y H:i:s", @$contact['export_sale_date'] / 1000) : "-";
             $contact['send_sms']            = $contact['send_sms'] ? 'Yes' : 'No';
+            $contact['mailchimp_expired']            = $contact['mailchimp_expired'] ? 'Yes' : 'No';
         }
 
         return $contacts;

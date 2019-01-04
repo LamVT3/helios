@@ -733,6 +733,7 @@ function initDataTable() {
             },
             { "data" : 'export_sale_date',  "defaultContent": "-"},
             { "data" : 'send_sms',          "defaultContent": "-"},
+            { "data" : 'mailchimp_expired', "defaultContent": "-"},
         ],
         'scrollY'       : '55vh',
         "scrollX"       : true,
