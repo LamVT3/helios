@@ -449,6 +449,8 @@ $(document).ready(function () {
                 invalid_reason = "duplicated";
             }else if(invalid_reason_mode == "C3B_SMS_Error"){
                 invalid_reason = "SMS error";
+            }else if(invalid_reason_mode == "Manual_Change"){
+                invalid_reason = "Manual Change";
             }else{
                 invalid_reason_mode= "";
             }
