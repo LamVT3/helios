@@ -138,7 +138,7 @@
     text-indent: -100%;
     transform-origin: top right;
     text-align: right !important;
-    margin-bottom: 100px;
+    margin-bottom: 30px;
 }
 </style>
 
