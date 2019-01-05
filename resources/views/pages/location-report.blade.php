@@ -134,11 +134,11 @@
 <style>
     .flot_channel .flot-x-axis .flot-tick-label {
     white-space: nowrap;
-    transform: translate(-9px, 0) rotate(-35deg);
+    transform: translate(-9px, 0) rotate(-55deg);
     text-indent: -100%;
     transform-origin: top right;
     text-align: right !important;
-    margin-bottom: 30px;
+    margin-bottom: 60px;
 }
 </style>
 
@@ -304,7 +304,7 @@
             position: 'absolute',
             display: 'none',
             top: y - 40,
-            left: x - 40,
+            left: x - 60,
             border: '2px solid ' + color,
             padding: '3px',
             'font-size': '9px',
