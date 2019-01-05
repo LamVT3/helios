@@ -72,7 +72,7 @@ class LocationReportController extends Controller
             }
 
             $query = Contact::whereIn('contact_id', $contact_id)
-                        ->where('current_level', 'l8')
+//                        ->where('current_level', 'l8')
                         ->orderBy('submit_time')->get();
 
             foreach($query as $item){

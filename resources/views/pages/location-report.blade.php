@@ -131,6 +131,17 @@
 <script src="{{ asset('js/plugin/flot/jquery.flot.time.min.js') }}"></script>
 <script src="{{ asset('js/plugin/flot/jquery.flot.tooltip.min.js') }}"></script>
 
+<style>
+    .flot_channel .flot-x-axis .flot-tick-label {
+    white-space: nowrap;
+    transform: translate(-9px, 0) rotate(-65deg);
+    text-indent: -100%;
+    transform-origin: top right;
+    text-align: right !important;
+    margin-bottom: 100px;
+}
+</style>
+
 <script type="text/javascript">
 
     // DO NOT REMOVE : GLOBAL FUNCTIONS!
