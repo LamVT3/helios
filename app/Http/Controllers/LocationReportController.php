@@ -28,12 +28,19 @@ class LocationReportController extends Controller
         $file = FileImport::orderBy('created_at','desc')->first();
 	    $files = FileImport::all();
 	    $destinationPath = storage_path('app/upload');
-	    $filePath =  $destinationPath . '/' . $file->name;
+	    $contacts = [];
+	    $location_key = [];
+	    $location_value = [];
+	    $location_key   = json_encode($location_key);
+	    $location_value = json_encode($location_value);
 
-	    $rs = $this->loadFile($filePath);
-	    $contacts = $rs['contacts'];
-	    $location_key = $rs['location_key'];
-	    $location_value = $rs['location_value'];
+	    if ($file){
+		    $filePath =  $destinationPath . '/' . $file->name;
+		    $rs = $this->loadFile($filePath);
+		    $contacts = $rs['contacts'];
+		    $location_key = $rs['location_key'];
+		    $location_value = $rs['location_value'];
+	    }
 
 	    return view('pages.location-report', compact(
             'no_main_header',
