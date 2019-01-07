@@ -24,33 +24,75 @@
                 <div class="row">
 
                     <article class="col-sm-12 col-md-12">
+                        @component('components.jarviswidget',
+                        ['id' => 1, 'icon' => 'fa-table', 'title' => 'Location Report'])
+                            <div class="widget-body">
 
-                        @component('components.jarviswidget', ['id' => 'location', 'icon' => 'fa-line-chart', 'title' => "Location ", 'dropdown' => 'false'])
-                            <!-- widget content -->
-                            <div class="widget-body no-padding flot_channel">
-                                <div id="location_chart" class="chart has-legend"></div>
+                                <form id="search-form-location-report" class="smart-form" action="#" url="{!! route('location-report.filter') !!}">
+                                    <div class="row" id="filter">
+                                        <section class="col col-6">
+                                            <input style="" type="text" value="" name="file_name" id="file_name" placeholder="Select file name">
+                                        </section>
+                                        <section class="col col-2">
+                                            <button class="btn btn-primary btn-sm" type="submit"
+                                                    style="margin-right: 15px">
+                                                <i class="fa fa-filter"></i>
+                                                Filter
+                                            </button>
+                                        </section>
+                                    </div>
+                                </form>
+                                <div class="location-loading" style="display: none">
+                                    <div class="col-md-12 text-center">
+                                        <img id="img_ajax_upload" src="{{ url('/img/loading/rolling.gif') }}" alt=""
+                                             style="width: 2%;"/>
+                                    </div>
+                                </div>
+                                <hr>
+
+                            @component('components.jarviswidget', ['id' => 'location', 'icon' => 'fa-line-chart', 'title' => "Location ", 'dropdown' => 'false'])
+                                <!-- widget content -->
+                                    <div class="widget-body no-padding flot_channel">
+                                        <div id="location_chart" class="chart has-legend"></div>
+                                    </div>
+                                @endcomponent
+
+                                @component('components.jarviswidget', ['id' => 1, 'icon' => 'fa-table', 'title' => 'Report'])
+                                    <div id="wrapper_report">
+                                        <table id="table_location_report" class="table table-striped table-bordered table-hover"
+                                               width="100%">
+                                            <thead>
+                                            <tr>
+                                                <th>Contact ID</th>
+                                                <th>Location</th>
+                                                <th>IP</th>
+                                                <th>Name</th>
+                                                <th>Phone</th>
+                                                <th>Email</th>
+                                                <th>Registered at</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @foreach($contacts as $contact)
+                                                <tr>
+                                                    <td>{{@$contact['contact_id']}}</td>
+                                                    <td>{{@$contact['location']}}</td>
+                                                    <td>{{@$contact['ip']}}</td>
+                                                    <td>{{@$contact['name']}}</td>
+                                                    <td>{{@$contact['phone']}}</td>
+                                                    <td>{{@$contact['email']}}</td>
+                                                    <td>{{ Date('d-m-Y H:i:s', @$contact['submit_time'] / 1000) }}</td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                @endcomponent
                             </div>
                         @endcomponent
 
-                        @component('components.jarviswidget', ['id' => 1, 'icon' => 'fa-table', 'title' => 'Report'])
-                            <div id="wrapper_report">
-                                <table id="table_location_report" class="table table-striped table-bordered table-hover"
-                                       width="100%">
-                                    <thead>
-                                    <tr>
-                                        <th>Contact ID</th>
-                                        <th>Name</th>
-                                        <th>Phone</th>
-                                        <th>Email</th>
-                                        <th>Registered at</th>
-                                        <th>IP</th>
-                                        <th>Location</th>
-                                    </tr>
-                                    </thead>
-                                </table>
-                            </div>
 
-                        @endcomponent
                     </article>
                 </div>
                 <!-- end row -->
@@ -63,6 +105,8 @@
 
     </div>
     <input type="hidden" name="page_size" value="{{$page_size}}">
+    <input id="location_key" type="hidden" value="{{@$location_key}}">
+    <input id="location_value" type="hidden" value="{{@$location_value}}">
 
     <!-- END MAIN PANEL -->
 <div class="modal fade" id="importContactModal" tabindex="-1" role="dialog">
@@ -148,8 +192,9 @@
 
     $(document).ready(function () {
         init_table();
+        initLocationChart();
 
-        $('#importContactModal').modal('show');
+        // $('#importContactModal').modal('show');
 
         $('button#import_contact_l8').click(function (e) {
             e.preventDefault();
@@ -178,6 +223,39 @@
                     $('#importContactModal').modal('hide');
                 }
             });
+        });
+
+        $('#search-form-location-report').submit(function (e) {
+            e.preventDefault();
+            var url = $('#search-form-location-report').attr('url');
+            var file_name = $('input[name="file_name"]').val();
+
+            $('input[name="file_name"]').val(file_name);
+
+            if (file_name != '') {
+                $('.location-loading').show();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: {
+                        file_name       : file_name
+                    }
+                }).done(function (response) {
+                    $('.location-loading').hide();
+                    $('#wrapper_report').html(response);
+                });
+            }
+
+        });
+
+        $('input[name=file_name]').selectize({
+            delimiter: ',',
+            persist: false,
+            valueField: 'name',
+            labelField: 'name',
+            searchField: ['name'],
+            options: {!! $files !!}
+
         });
 
     });
@@ -233,42 +311,39 @@
     function initChart(item, value, key){
 
         if (item.length) {
-            $.plot(item, value,
-                {
-                    series : {
-                        lines : {
-                            show : true,
-                            lineWidth : 1,
-                            fill : true,
-                            fillColor : {
-                                colors : [{
-                                    opacity : 0.1
-                                }, {
-                                    opacity : 0.15
-                                }]
-                            }
-                        },
-                        points : {
-                            show : true
-                        },
-                        shadowSize : 0
-                    },
-                    xaxis : {
-                        ticks: key
-                    },
-
-                    yaxes : [{
-                        min : 0
-                    }],
-                    grid : {
-                        hoverable : true,
-                        clickable : true,
-                        tickColor : '#efefef',
-                        borderWidth : 0,
-                        borderColor : '#efefef',
-                    },
-                    colors : '#CC0099',
-                });
+            $.plot(item, value, {
+                series: {
+                    bars: {
+                        show: true,
+                        barWidth: 0.5,
+                        align: "center",
+                    }
+                },
+                xaxis: {
+                    mode: "categories",
+                    tickLength: 0,
+                    ticks: key,
+                    font:{
+                        size:14,
+                        color: "#333"
+                    }
+                },
+                yaxes : [{
+                    min : 0
+                }],
+                grid : {
+                    show : true,
+                    hoverable : true,
+                    clickable : false,
+                    borderColor : "#efefef",
+                },
+                tooltip : false,
+                tooltipOpts : {
+                    content : "<div>%y</div>",
+                    defaultTheme : false
+                },
+                colors: ["#FF8C00"]
+            });
         }
         /* end site stats */
     }
