@@ -4,24 +4,24 @@
     <thead>
     <tr>
         <th>Contact ID</th>
+        <th>Location</th>
+        <th>IP</th>
         <th>Name</th>
         <th>Phone</th>
         <th>Email</th>
         <th>Registered at</th>
-        <th>IP</th>
-        <th>Location</th>
     </tr>
     </thead>
     <tbody>
     @foreach($contacts as $contact)
         <tr>
             <td>{{@$contact['contact_id']}}</td>
+            <td>{{@$contact['location']}}</td>
+            <td>{{@$contact['ip']}}</td>
             <td>{{@$contact['name']}}</td>
             <td>{{@$contact['phone']}}</td>
             <td>{{@$contact['email']}}</td>
             <td>{{ Date('d-m-Y H:i:s', @$contact['submit_time'] / 1000) }}</td>
-            <td>{{@$contact['ip']}}</td>
-            <td>{{@$contact['location']}}</td>
         </tr>
     @endforeach
     </tbody>
