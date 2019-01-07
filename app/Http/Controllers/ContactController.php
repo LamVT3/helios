@@ -1660,7 +1660,7 @@ class ContactController extends Controller
         $query->orderBy('submit_time', $request->export_sale_sort);
 
         $limit = (int)$request->limit;
-        
+
         $count = 0;
         $query->chunk( 1000, function ( $contacts ) use ( $url , &$result, $limit, &$count) {
 

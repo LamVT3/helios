@@ -212,7 +212,7 @@
                                         </div>
                                     </section>
                                     <section class="col col-lg-2 col-sm-4">
-                                        <label class="label">MailChimp Status</label>
+                                        <label class="label">Status Mailchimp</label>
                                         <select name="mailchimp_expired" id="mailchimp_expired" class="select2"
                                                 style="width: 280px" data-url="">
                                             <option value="">All</option>
@@ -332,7 +332,7 @@
                                         <th class="long">Status Sale</th>
                                         <th class="long">Tranfer Date</th>
                                         <th class="long">Send SMS</th>
-                                        <th class="long">MailChimp export status</th>
+                                        <th class="long">Status Mailchimp</th>
                                     </tr>
                                 </thead>
                                 <tbody>
