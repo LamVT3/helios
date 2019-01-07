@@ -21,7 +21,7 @@ class PhoneCheckResultController extends Controller
         $page_css = array();
         $no_main_header = FALSE;
         $active = 'phone_check_report';
-        $breadcrumbs = "<i class=\"fa-fw fa fa-check-square-o\"></i> Phone Check Report <span>> Home </span>";
+        $breadcrumbs = "<i class=\"fa-fw fa fa-check-square-o\"></i> Report <span>> Phone Check Report </span>";
         $page_size  = Config::getByKey('PAGE_SIZE');
 
         $data = $this->get_data();

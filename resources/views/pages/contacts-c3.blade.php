@@ -212,6 +212,16 @@
                                         </div>
                                     </section>
                                     <section class="col col-lg-2 col-sm-4">
+                                        <label class="label">Status Mailchimp</label>
+                                        <select name="mailchimp_expired" id="mailchimp_expired" class="select2"
+                                                style="width: 280px" data-url="">
+                                            <option value="">All</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                        <i></i>
+                                    </section>
+                                    <section class="col col-lg-2 col-sm-4">
                                         <label class="label">Tranfer Date</label>
                                         <div id="tranfer_date" class="pull-left"
                                              style="background: #fff; cursor: pointer; padding: 10px; border: 1px solid #ccc; min-width: 170px">
@@ -274,6 +284,7 @@
                                 <input type="hidden" name="olm_status" value="">
                                 <input type="hidden" name="contact_id" value="">
                                 <input type="hidden" name="tranfer_date" value="">
+                                <input type="hidden" name="mailchimp_expired" value="">
                             </form>
                         </div>
 
@@ -321,6 +332,7 @@
                                         <th class="long">Status Sale</th>
                                         <th class="long">Tranfer Date</th>
                                         <th class="long">Send SMS</th>
+                                        <th class="long">Status Mailchimp</th>
                                     </tr>
                                 </thead>
                                 <tbody>

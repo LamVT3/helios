@@ -235,3 +235,8 @@ Route::group(['prefix' => 'phone-test'], function () {
     Route::get('/create', 'PhoneTestController@create')->name('phone_test_create');
 });
 
+Route::group(['prefix' => 'location-report'], function () {
+    Route::get('/', 'LocationReportController@index')->name('location-report');
+    Route::post('/import', 'LocationReportController@import')->name('location-report-import');
+});
+

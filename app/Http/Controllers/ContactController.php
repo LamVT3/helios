@@ -121,6 +121,7 @@ class ContactController extends Controller
             $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'))->orWhereNotIn('olm_status', [0, 1, '0', '1']);
             unset($data_where['olm_status']);
         }
+
         $query->where($data_where);
 
         if($status == '1'){
@@ -162,6 +163,13 @@ class ContactController extends Controller
                 $query->orWhere($value, 'like', "%{$data_search}%");
             }
         }
+
+        if($request->mailchimp_expired == '1'){
+            $query->where('mailchimp_expired', true);
+        }else if($request->mailchimp_expired == '0'){
+            $query->where('mailchimp_expired', '<>', true);
+        }
+
         if($order){
             $query->orderBy($columns[$order['column']], $order['type']);
         } else {
@@ -248,6 +256,12 @@ class ContactController extends Controller
 
             $query->where('export_sale_date', '>=', $startDate);
             $query->where('export_sale_date', '<', $endDate);
+        }
+
+        if($request->mailchimp_expired == '1'){
+            $query->where('mailchimp_expired', true);
+        }else if($request->mailchimp_expired == '0'){
+            $query->where('mailchimp_expired', '<>', true);
         }
 
         $status = @$request->is_export;
@@ -346,6 +360,12 @@ class ContactController extends Controller
             $query->where('export_sale_date', '<', $endDate);
         }
 
+        if($request->mailchimp_expired == '1'){
+            $query->where('mailchimp_expired', true);
+        }else if($request->mailchimp_expired == '0'){
+            $query->where('mailchimp_expired', '<>', true);
+        }
+
         $query->where($data_where);
 
         if($data_search != ''){
@@ -432,6 +452,11 @@ class ContactController extends Controller
                     $query->where('export_sale_date', '>=', $startDate);
                     $query->where('export_sale_date', '<', $endDate);
                 }
+                if($request->mailchimp_expired == '1'){
+                    $query->where('mailchimp_expired', true);
+                }else if($request->mailchimp_expired == '0'){
+                    $query->where('mailchimp_expired', '<>', true);
+                }
 
                 $query->where($data_where);
 
@@ -473,7 +498,7 @@ class ContactController extends Controller
                             $item->name,
                             $item->email,
                             $item->phone,
-                            Date('Y-m-d H:i:s', (int)$item->submit_time/1000),
+                            Date('Y-m-d H:i:s', $item->submit_time/1000),
                             $item->landing_page,
                             $item->channel_name,
                             $item->contact_id,
@@ -496,6 +521,7 @@ class ContactController extends Controller
 
                 $headings = \config('constants.TEMPLATE_EXPORT');
                 $sheet->prependRow(1, $headings);
+                $sheet->setAutoSize(false);
                 $sheet->cells('A1:P1', function ($cells) {
                     $cells->setBackground('#191919');
                     $cells->setFontColor('#DBAC69');
@@ -618,6 +644,11 @@ class ContactController extends Controller
 
             $query->where('export_sale_date', '>=', $startDate);
             $query->where('export_sale_date', '<', $endDate);
+        }
+        if($request->mailchimp_expired == '1'){
+            $query->where('mailchimp_expired', true);
+        }else if($request->mailchimp_expired == '0'){
+            $query->where('mailchimp_expired', '<>', true);
         }
 
         $query->where('is_export', '<>', 1);
@@ -1058,6 +1089,12 @@ class ContactController extends Controller
         $query->whereNotIn('olm_status', [0, 1, '0', '1']);
         unset($data_where['olm_status']);
 
+        if($request->mailchimp_expired == '1'){
+            $query->where('mailchimp_expired', true);
+        }else if($request->mailchimp_expired == '0'){
+            $query->where('mailchimp_expired', '<>', true);
+        }
+
         $query->where($data_where);
 
         $result = array();
@@ -1349,7 +1386,8 @@ class ContactController extends Controller
             18  =>'is_export',
             19  =>'olm_status',
             20  =>'export_sale_date',
-            21  =>'send_sms'
+            21  =>'send_sms',
+            22  =>'mailchimp_expired'
         );
 
         return $columns;
@@ -1380,8 +1418,9 @@ class ContactController extends Controller
             $contact['ad_name']             = $contact['ad_name'] ? $contact['ad_name'] : "-";
             $contact['landing_page']        = $contact['landing_page'] ? $contact['landing_page'] : "-";
             $contact['channel_name']        = $contact['channel_name'] ? $contact['channel_name'] : "-";
-            $contact['export_sale_date']    = $contact['export_sale_date'] ? date("d-m-Y H:i:s", $contact['export_sale_date'] / 1000) : "-";
+            $contact['export_sale_date']    = $contact['export_sale_date'] ? date("d-m-Y H:i:s", @$contact['export_sale_date'] / 1000) : "-";
             $contact['send_sms']            = $contact['send_sms'] ? 'Yes' : 'No';
+            $contact['mailchimp_expired']            = $contact['mailchimp_expired'] ? 'Yes' : 'No';
         }
 
         return $contacts;
@@ -1432,8 +1471,22 @@ class ContactController extends Controller
         $page_size  = Config::getByKey('PAGE_SIZE');
         $query->limit((int)$page_size);
 
-        $query->orderBy('submit_time', 'desc');
+        if($request->tranfer_date) {
+            $date_place = str_replace('-', ' ', $request->tranfer_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
 
+            $query->where('export_sale_date', '>=', $startDate);
+            $query->where('export_sale_date', '<', $endDate);
+        }
+        if($request->mailchimp_expired == '1'){
+            $query->where('mailchimp_expired', true);
+        }else if($request->mailchimp_expired == '0'){
+            $query->where('mailchimp_expired', '<>', true);
+        }
+
+        $query->orderBy('submit_time', 'desc');
         $contacts = $query->get();
         foreach ($contacts as $contact)
         {
@@ -1520,7 +1573,6 @@ class ContactController extends Controller
         return $data_where;
     }
 
-
     // HoaTV handle ad_result when changes level from c3bg down to c3b and vice versa
     private function handleCountAdResult($isDown, $adID, $submitTime){
         $adResult = AdResult::where('ad_id', $adID)->where('date',date('Y-m-d',$submitTime/1000))->first();
@@ -1589,6 +1641,11 @@ class ContactController extends Controller
             $query->where('export_sale_date', '>=', $startDate);
             $query->where('export_sale_date', '<', $endDate);
         }
+        if($request->mailchimp_expired == '1'){
+            $query->where('mailchimp_expired', true);
+        }else if($request->mailchimp_expired == '0'){
+            $query->where('mailchimp_expired', '<>', true);
+        }
 
         $query->where('send_sms', '<>', '1');
 
@@ -1622,9 +1679,11 @@ class ContactController extends Controller
                 if(@$response['QUEUE']['Status']){
                     $result['send_pass']++;
                     $result['used_credit'] += @$response['QUEUE']['UsedCredit'];
+                    $contact->send_sms = '1';
                 }
                 else{
                     $result['send_fail']++;
+                    $contact->send_sms = '0';
                 }
                 $result['total']++;
 
@@ -1637,9 +1696,10 @@ class ContactController extends Controller
                 $sms_result->date           = date('Y-m-d', @$contact->submit_time  / 1000);
                 $sms_result->transaction_id = @$response['QUEUE']['Transaction'];
                 $sms_result->name           = '';
+                $sms_result->ad_id          = @$contact->ad_id;
+                $sms_result->contact_id     = @$contact->contact_id;
                 $sms_result->save();
 
-                $contact->send_sms = '1';
                 $contact->save();
 
                 $count++;

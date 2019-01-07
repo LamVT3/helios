@@ -28,7 +28,7 @@
                     <ul class="dropdown-menu pull-right" style="z-index: 999;">
                         @for ($i = 1; $i <= 12; $i++)
                             <li id="month" value="{{$i}}">
-                                <a href="javascript:void(0);">{{date('F - Y', strtotime('2018-'.$i))}}</a>
+                                <a href="javascript:void(0);">{{date('F - Y', strtotime('Y-'.$i))}}</a>
                             </li>
                         @endfor
                     </ul>

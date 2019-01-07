@@ -105,6 +105,11 @@
                         <a href="{{ route('phone_check_report') }}"><i class="fa fa-lg fa-fw fa-check-square-o"></i> <span
                                     class="menu-item-parent">Phone Check Report</span></a>
                     </li>
+
+                    <li class="{{ $active == 'location-report' ? 'active' : '' }}">
+                        <a href="{{ route('location-report') }}"><i class="fa fa-lg fa-fw fa-map-marker"></i> <span
+                                    class="menu-item-parent">Location Report</span></a>
+                    </li>
                 </ul>
             </li>
 

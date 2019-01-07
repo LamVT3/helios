@@ -449,6 +449,8 @@ $(document).ready(function () {
                 invalid_reason = "duplicated";
             }else if(invalid_reason_mode == "C3B_SMS_Error"){
                 invalid_reason = "SMS error";
+            }else if(invalid_reason_mode == "Manual_Change"){
+                invalid_reason = "Manual Change";
             }else{
                 invalid_reason_mode= "";
             }
@@ -550,6 +552,7 @@ function initDataTable() {
     var channel         = $('input[name="channel_id"]').val();
     var olm_status      = $('select[name="olm_status"]').val();
     var tranfer_date    = $('.tranfer_date_span').text();
+    var mailchimp_expired = $('select[name="mailchimp_expired"]').val();
 
     $('input[name="source_id"]').val(source_id);
     $('input[name="team_id"]').val(team_id);
@@ -566,6 +569,7 @@ function initDataTable() {
     $('input[name="landing_page"]').val(landing_page);
     $('input[name="channel"]').val(channel);
     $('input[name="olm_status"]').val(olm_status);
+    $('input[name="mailchimp_expired"]').val(mailchimp_expired);
 
     /* BASIC ;*/
     var responsiveHelper_table_campaign = undefined;
@@ -641,7 +645,8 @@ function initDataTable() {
                     d.channel           = channel,
                     d.search_text       = search,
                     d.olm_status        = olm_status ? parseInt(olm_status) : '',
-                    d.tranfer_date      = tranfer_date
+                    d.tranfer_date      = tranfer_date,
+                    d.mailchimp_expired = mailchimp_expired
             }
         },
         "columns": [
@@ -733,6 +738,7 @@ function initDataTable() {
             },
             { "data" : 'export_sale_date',  "defaultContent": "-"},
             { "data" : 'send_sms',          "defaultContent": "-"},
+            { "data" : 'mailchimp_expired', "defaultContent": "-"},
         ],
         'scrollY'       : '55vh',
         "scrollX"       : true,
@@ -787,6 +793,7 @@ function countExported() {
     var channel         = $('input[name="channel_id"]').val();
     var olm_status      = $('select[name="olm_status"]').val();
     var tranfer_date    = $('.tranfer_date_span').text();
+    var mailchimp_expired = $('select[name="mailchimp_expired"]').val();
 
     if(is_export === '0'){
         $('input[name="exported"]').val(0);
@@ -808,56 +815,11 @@ function countExported() {
     data.channel            = channel;
     data.olm_status         = olm_status ? parseInt(olm_status) : '';
     data.tranfer_date       = tranfer_date;
+    data.mailchimp_expired  = mailchimp_expired;
 
     $.get(url, data, function (data) {
         $('input[name="exported"]').val(data.to_excel);
         $('input[name="export_to_olm"]').val(data.to_olm);
-    }).fail(
-        function (err) {
-            alert('Cannot connect to server. Please try again later.');
-        });
-}
-
-function countExportedWhenSearch() {
-    var status          = $('select[name="is_export"]').val();
-
-    var url             = $('input[name="exported_url"]').val();
-    var source_id       = $('select[name="source_id"]').val();
-    var team_id         = $('select[name="team_id"]').val();
-    var marketer_id     = $('select[name="marketer_id"]').val();
-    var campaign_id     = $('select[name="campaign_id"]').val();
-    var clevel          = $('select[name="clevel"]').val();
-    var current_level   = $('select[name="current_level"]').val();
-    var registered_date = $('.registered_date').text();
-    var subcampaign_id  = $('select[name="subcampaign_id"]').val();
-    var landing_page    = $('select[name="landing_page"]').val();
-    var is_export       = $('select[name="is_export"]').val();
-    var search          = $('input[type="search"]').val();
-    // HoaTV fix change to multiple select channel
-    // var channel         = $('select[name="channel_id"]').val();
-
-    if(is_export === '0'){
-        $('input[name="exported"]').val(0);
-        return;
-    }
-
-    var data = {};
-    data.source_id         = source_id;
-    data.team_id           = team_id;
-    data.marketer_id       = marketer_id;
-    data.campaign_id       = campaign_id;
-    data.clevel            = clevel;
-    data.current_level     = current_level;
-    data.subcampaign_id    = subcampaign_id;
-    data.registered_date   = registered_date;
-    data.landing_page      = landing_page;
-    data.is_export         = is_export;
-    data.search_text       = search;
-    data.channel           = channel;
-
-    $.get(url, data, function (data) {
-        $('input[name="exported"]').val(data);
-
     }).fail(
         function (err) {
             alert('Cannot connect to server. Please try again later.');
@@ -933,6 +895,7 @@ function addSelectInvalidReason(item){
         '<option value="C3B_SMS_Error">SMS Error</option>' +
         '<option value="C3B_Under18">Under 18</option>' +
         '<option value="C3B_Duplicated15Days">Duplicate in 15 days</option>' +
+        '<option value="Manual_Change">Manual Change</option>' +
         '</select>' +
         '');
 
@@ -1083,6 +1046,7 @@ function updateContacts(id) {
     // HoaTV fix change to multiple select channel
     // var channel         = $('select[name="channel_id"]').val();
     var channel         = $('input[name="channel_id"]').val();
+    var mailchimp_expired = $('select[name="mailchimp_expired"]').val();
 
     var data = {};
     data.id                = id;
@@ -1098,6 +1062,7 @@ function updateContacts(id) {
     data.new_status        = status;
     data.landing_page      = landing_page;
     data.channel           = channel;
+    data.mailchimp_expired = mailchimp_expired;
 
     $.get(url, data, function (data) {
         countExported();
@@ -1138,7 +1103,7 @@ function exportToOLM(id) {
     var export_sale_date = $('input#export_sale_date').val();
     var export_sale_sort = $("input[name='export_sale_sort']:checked"). val();
     var tranfer_date    = $('.tranfer_date_span').text();
-
+    var mailchimp_expired = $('select[name="mailchimp_expired"]').val();
 
     var data = {};
     data.id                 = id;
@@ -1158,6 +1123,7 @@ function exportToOLM(id) {
     data.limit              = limit;
     data.export_sale_date   = export_sale_date;
     data.export_sale_sort   = export_sale_sort;
+    data.mailchimp_expired  = mailchimp_expired;
 
     $.get(url, data, function (data) {
         countExported();
@@ -1264,6 +1230,7 @@ function sendSMS(id) {
     var limit           = $('input#send_sms_limit').val();
     var export_sale_sort = $("input[name='send_sms_sort']:checked"). val();
     var tranfer_date    = $('.tranfer_date_span').text();
+    var mailchimp_expired = $('select[name="mailchimp_expired"]').val();
 
     var data = {};
     data._token             = $('#form-send-sms').find('[name=_token]').val();
@@ -1284,6 +1251,7 @@ function sendSMS(id) {
     data.limit              = limit;
     data.export_sale_sort   = export_sale_sort;
     data.tranfer_date       = tranfer_date;
+    data.mailchimp_expired  = mailchimp_expired;
 
     $.post(url, data, function (data) {
         setTimeout(function(){
