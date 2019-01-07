@@ -121,6 +121,7 @@ class ContactController extends Controller
             $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'))->orWhereNotIn('olm_status', [0, 1, '0', '1']);
             unset($data_where['olm_status']);
         }
+
         $query->where($data_where);
 
         if($status == '1'){
@@ -162,6 +163,13 @@ class ContactController extends Controller
                 $query->orWhere($value, 'like', "%{$data_search}%");
             }
         }
+
+        if($request->mailchimp_expired == '1'){
+            $query->where('mailchimp_expired', true);
+        }else if($request->mailchimp_expired == '0'){
+            $query->where('mailchimp_expired', '<>', true);
+        }
+
         if($order){
             $query->orderBy($columns[$order['column']], $order['type']);
         } else {
@@ -248,6 +256,12 @@ class ContactController extends Controller
 
             $query->where('export_sale_date', '>=', $startDate);
             $query->where('export_sale_date', '<', $endDate);
+        }
+
+        if($request->mailchimp_expired == '1'){
+            $query->where('mailchimp_expired', true);
+        }else if($request->mailchimp_expired == '0'){
+            $query->where('mailchimp_expired', '<>', true);
         }
 
         $status = @$request->is_export;
@@ -346,6 +360,12 @@ class ContactController extends Controller
             $query->where('export_sale_date', '<', $endDate);
         }
 
+        if($request->mailchimp_expired == '1'){
+            $query->where('mailchimp_expired', true);
+        }else if($request->mailchimp_expired == '0'){
+            $query->where('mailchimp_expired', '<>', true);
+        }
+
         $query->where($data_where);
 
         if($data_search != ''){
@@ -431,6 +451,11 @@ class ContactController extends Controller
 
                     $query->where('export_sale_date', '>=', $startDate);
                     $query->where('export_sale_date', '<', $endDate);
+                }
+                if($request->mailchimp_expired == '1'){
+                    $query->where('mailchimp_expired', true);
+                }else if($request->mailchimp_expired == '0'){
+                    $query->where('mailchimp_expired', '<>', true);
                 }
 
                 $query->where($data_where);
@@ -619,6 +644,11 @@ class ContactController extends Controller
 
             $query->where('export_sale_date', '>=', $startDate);
             $query->where('export_sale_date', '<', $endDate);
+        }
+        if($request->mailchimp_expired == '1'){
+            $query->where('mailchimp_expired', true);
+        }else if($request->mailchimp_expired == '0'){
+            $query->where('mailchimp_expired', '<>', true);
         }
 
         $query->where('is_export', '<>', 1);
@@ -1059,6 +1089,12 @@ class ContactController extends Controller
         $query->whereNotIn('olm_status', [0, 1, '0', '1']);
         unset($data_where['olm_status']);
 
+        if($request->mailchimp_expired == '1'){
+            $query->where('mailchimp_expired', true);
+        }else if($request->mailchimp_expired == '0'){
+            $query->where('mailchimp_expired', '<>', true);
+        }
+
         $query->where($data_where);
 
         $result = array();
@@ -1435,8 +1471,22 @@ class ContactController extends Controller
         $page_size  = Config::getByKey('PAGE_SIZE');
         $query->limit((int)$page_size);
 
-        $query->orderBy('submit_time', 'desc');
+        if($request->tranfer_date) {
+            $date_place = str_replace('-', ' ', $request->tranfer_date);
+            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
+            $startDate  = strtotime($date_arr[0])*1000;
+            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
 
+            $query->where('export_sale_date', '>=', $startDate);
+            $query->where('export_sale_date', '<', $endDate);
+        }
+        if($request->mailchimp_expired == '1'){
+            $query->where('mailchimp_expired', true);
+        }else if($request->mailchimp_expired == '0'){
+            $query->where('mailchimp_expired', '<>', true);
+        }
+
+        $query->orderBy('submit_time', 'desc');
         $contacts = $query->get();
         foreach ($contacts as $contact)
         {
@@ -1523,7 +1573,6 @@ class ContactController extends Controller
         return $data_where;
     }
 
-
     // HoaTV handle ad_result when changes level from c3bg down to c3b and vice versa
     private function handleCountAdResult($isDown, $adID, $submitTime){
         $adResult = AdResult::where('ad_id', $adID)->where('date',date('Y-m-d',$submitTime/1000))->first();
@@ -1592,6 +1641,11 @@ class ContactController extends Controller
             $query->where('export_sale_date', '>=', $startDate);
             $query->where('export_sale_date', '<', $endDate);
         }
+        if($request->mailchimp_expired == '1'){
+            $query->where('mailchimp_expired', true);
+        }else if($request->mailchimp_expired == '0'){
+            $query->where('mailchimp_expired', '<>', true);
+        }
 
         $query->where('send_sms', '<>', '1');
 
@@ -1606,7 +1660,7 @@ class ContactController extends Controller
         $query->orderBy('submit_time', $request->export_sale_sort);
 
         $limit = (int)$request->limit;
-
+        
         $count = 0;
         $query->chunk( 1000, function ( $contacts ) use ( $url , &$result, $limit, &$count) {
 
