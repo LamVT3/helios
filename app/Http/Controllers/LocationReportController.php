@@ -73,7 +73,7 @@ class LocationReportController extends Controller
 	    $file_import->date = $date;
 	    $file_import->save();
 
-        $rs = $this->loadFile($filePath);
+        $rs = $this->loadFile($filePath, 'import');
 	    $contacts = $rs['contacts'];
 	    $location_key = $rs['location_key'];
 	    $location_value = $rs['location_value'];
@@ -98,11 +98,11 @@ class LocationReportController extends Controller
         return $api_result;
     }
 
-	private function loadFile($filePath){
+	private function loadFile($filePath, $type = ''){
 		$contacts = [];
 		$result = [];
 
-		Excel::load($filePath, function($reader) use (&$contacts, &$result) {
+		Excel::load($filePath, function($reader) use (&$contacts, &$result, $type) {
 
 			$results = $reader->get();
 
@@ -140,12 +140,17 @@ class LocationReportController extends Controller
 				$contact['email']       = @$item->email;
 				$contact['submit_time'] = @$item->submit_time;
 				$contact['ip']          = @$item->ip;
+				$contact['location']    = @$item->location;
 
-				$api_result = $this->get_location(@$item->ip);
-				if($api_result['city'] != ''){
-					$contact['location']    = $api_result['city'];
-				}else{
-					$contact['location']    = 'N/A';
+				if ($contact['location'] == null && $type == 'import'){
+					$api_result = $this->get_location(@$item->ip);
+					if($api_result['city'] != ''){
+						$contact['location']    = $api_result['city'];
+					}else{
+						$contact['location']    = 'N/A';
+					}
+					$item->location = $contact['location'];
+					$item->save();
 				}
 
 				@$result[$contact['location']] += 1;
