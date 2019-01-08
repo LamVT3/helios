@@ -266,6 +266,7 @@ class InventoryReportController extends Controller
 
         $result = array();
 
+        // sum for channels
         foreach ($ads as $ad){
 
             $source     = $ad->source_name;
@@ -296,6 +297,21 @@ class InventoryReportController extends Controller
                 @$result['grand_total']['inventory']  += @$result['data'][$source][$channel]['inventory'][$i];
             }
         }
+        // sum for sources
+        foreach(@$result['data'] as $source => $channel){
+            foreach ($channel as $item){
+                if(isset($result['day_source'][$source])){
+                    for($i = 1; $i <= $days; $i++){
+                        $result['day_source'][$source]['produce'][$i] += $item['produce'][$i];
+                        $result['day_source'][$source]['transfer'][$i] += $item['transfer'][$i];
+                        $result['day_source'][$source]['inventory'][$i] += $item['inventory'][$i];
+                    }
+                }else{
+                    $result['day_source'][$source] = $item;
+                }
+            }
+        }
+
         return $result;
     }
 }

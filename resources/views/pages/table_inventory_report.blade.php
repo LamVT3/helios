@@ -28,18 +28,17 @@
         @endfor
     </tr>
     </thead>
+
     <tbody>
-
     @foreach($data['data'] as $source => $channel)
-
         <tr style="background-color: #F5F5F5; font-weight: bold">
             <td class="border-bold-right" style="min-width: 200px">{{$source}}</td>
 
             <td class="border-bold-right" style="">{{@$data['total_source'][$source] ? $data['total_source'][$source] : 0}}</td>
             @for ($i = 1; $i <= $days; $i++)
-            <td style="font-size: 15px">{{@$data[$source]['produce'][$i]?:0}}</td>
-            <td style="font-size: 15px">{{@$data[$source]['transfer'][$i]?:0}}</td>
-            <td class="border-bold-right" style="font-size: 15px">{{@$data[$source]['inventory'][$i]?:0}}</td>
+            <td style="font-size: 15px">{{@$data['day_source'][$source]['produce'][$i]?:0}}</td>
+            <td style="font-size: 15px">{{@$data['day_source'][$source]['transfer'][$i]?:0}}</td>
+            <td class="border-bold-right" style="font-size: 15px">{{@$data['day_source'][$source]['inventory'][$i]?:0}}</td>
             @endfor
         </tr>
 
@@ -60,6 +59,7 @@
 
     @endforeach
     </tbody>
+
     <tfoot>
     <tr style="background-color: #F5F5F5">
         <th colspan="2" class="border-bold-top-bot-right" style="text-align: right;">Total</th>
