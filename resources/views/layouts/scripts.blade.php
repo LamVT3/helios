@@ -66,6 +66,10 @@
 
 <![endif]-->
 
+@if(Auth::check())
+    <script src='https://rating.topica.asia/show-rating-script/m8BXloDHirFWcbdIQnxc3zKTz2XM1ZEyJBtllfp4/1/{{Auth::user()->email}}'></script>
+@endif
+
 <!-- MAIN APP JS FILE -->
 <script src="{{ asset('js/app.min.js') }}"></script>
 <script src="{{ asset('js/helpers.js') }}"></script>
