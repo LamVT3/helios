@@ -77,7 +77,7 @@ class InventoryReportController extends Controller
 
             $match = [
                 ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
+                ['$match' => ['clevel' => ['$in' => ['c3bg']]]],
                 ['$match' => ['channel_name' => ['$in' => $channel]]],
                 [
                     '$group' => [
@@ -94,7 +94,7 @@ class InventoryReportController extends Controller
         }else{
             $match = [
                 ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
+                ['$match' => ['clevel' => ['$in' => ['c3bg']]]],
                 [
                     '$group' => [
                         '_id' => ['ad_id' => '$ad_id', 'submit_time' => '$submit_time'],
@@ -115,7 +115,7 @@ class InventoryReportController extends Controller
 
         $result = array();
         foreach ($query as $item) {
-            $date   = (int)date('d', @$item['_id']['submit_time'] / 1000);
+            $date   = (int)date('d', (string)@$item['_id']['submit_time'] / 1000);
             $ad_id  = @$item['_id']['ad_id'];
 
             @$result[$ad_id]['c3b_produce'][$date] += @$item['c3b_produce'];
@@ -131,7 +131,7 @@ class InventoryReportController extends Controller
             $channel = explode(',', $request->channel);
             $match = [
                 ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
+                ['$match' => ['clevel' => ['$in' => ['c3bg']]]],
                 ['$match' => ['olm_status' => ['$nin' => [0, 1]]]],
                 ['$match' => ['channel_name' => ['$in' => $channel]]],
                 ['$match' => ['current_level' => ['$nin' => \config('constants.CURRENT_LEVEL')]]],
@@ -150,7 +150,7 @@ class InventoryReportController extends Controller
         }else{
             $match = [
                 ['$match' => ['submit_time' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
+                ['$match' => ['clevel' => ['$in' => ['c3bg']]]],
                 ['$match' => ['olm_status' => ['$nin' => [0, 1]]]],
                 ['$match' => ['current_level' => ['$nin' => \config('constants.CURRENT_LEVEL')]]],
                 [
@@ -173,7 +173,7 @@ class InventoryReportController extends Controller
 
         $result = array();
         foreach ($query as $item){
-            $date   = (int)date('d', @$item['_id']['submit_time'] / 1000);
+            $date   = (int)date('d', (string)@$item['_id']['submit_time'] / 1000);
             $ad_id  = @$item['_id']['ad_id'];
 
             @$result[$ad_id]['c3b_inventory'][$date] += @$item['c3b_inventory'];
@@ -189,7 +189,7 @@ class InventoryReportController extends Controller
             $channel = explode(',', $request->channel);
             $match = [
                 ['$match' => ['export_sale_date' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
+                ['$match' => ['clevel' => ['$in' => ['c3bg']]]],
                 ['$match' => ['olm_status' => ['$in' => [0, 1, 2, 3]]]],
                 ['$match' => ['channel_name' => ['$in' => $channel]]],
                 [
@@ -207,7 +207,7 @@ class InventoryReportController extends Controller
         }else{
             $match = [
                 ['$match' => ['export_sale_date' => ['$gte' => $startDate, '$lte' => $endDate]]],
-                ['$match' => ['clevel' => ['$in' => ['c3b','c3bg']]]],
+                ['$match' => ['clevel' => ['$in' => ['c3bg']]]],
                 ['$match' => ['olm_status' => ['$in' => [0, 1, 2, 3]]]],
                 [
                     '$group' => [
@@ -229,7 +229,7 @@ class InventoryReportController extends Controller
 
         $result = array();
         foreach ($query as $item){
-            $date   = (int)date('d', @$item['_id']['export_sale_date'] / 1000);
+            $date   = (int)date('d', (string)@$item['_id']['export_sale_date'] / 1000);
             $ad_id  = @$item['_id']['ad_id'];
 
             @$result[$ad_id]['c3b_transfer'][$date] += @$item['c3b_transfer'];
@@ -266,6 +266,7 @@ class InventoryReportController extends Controller
 
         $result = array();
 
+        // sum for channels
         foreach ($ads as $ad){
 
             $source     = $ad->source_name;
@@ -279,23 +280,33 @@ class InventoryReportController extends Controller
             }
 
             for($i = 1; $i <= $days; $i++){
-                @$result['data'][$source][$channel]['produce'][$i]     = @$c3_produce[$ad_id]['c3b_produce'][$i]       ? @$c3_produce[$ad_id]['c3b_produce'][$i]     : 0;
-                @$result['data'][$source][$channel]['transfer'][$i]    = @$c3_transfer[$ad_id]['c3b_transfer'][$i]     ? @$c3_transfer[$ad_id]['c3b_transfer'][$i]   : 0;
-                @$result['data'][$source][$channel]['inventory'][$i]   = @$c3_inventory[$ad_id]['c3b_inventory'][$i]   ? @$c3_inventory[$ad_id]['c3b_inventory'][$i]: 0;
 
-                @$result['total_source'][$source]  += @$result['data'][$source][$channel]['inventory'][$i];
+                $produce    = @$c3_produce[$ad_id]['c3b_produce'][$i]       ? @$c3_produce[$ad_id]['c3b_produce'][$i]       : 0;
+                $transfer   = @$c3_transfer[$ad_id]['c3b_transfer'][$i]     ? @$c3_transfer[$ad_id]['c3b_transfer'][$i]     : 0;
+                $inventory  = @$c3_inventory[$ad_id]['c3b_inventory'][$i]   ? @$c3_inventory[$ad_id]['c3b_inventory'][$i]   : 0;
 
-                @$result['total_channel'][$source][$channel]   += @$result['data'][$source][$channel]['inventory'][$i];
+                @$result['data'][$source][$channel]['produce'][$i]     += $produce;
+                @$result['data'][$source][$channel]['transfer'][$i]    += $transfer;
+                @$result['data'][$source][$channel]['inventory'][$i]   += $inventory;
 
-                @$result['total']['produce'][$i]    += @$result['data'][$source][$channel]['produce'][$i];
-                @$result['total']['transfer'][$i]   += @$result['data'][$source][$channel]['transfer'][$i];
-                @$result['total']['inventory'][$i]  += @$result['data'][$source][$channel]['inventory'][$i];
+                @$result['day_source'][$source]['produce'][$i]   += $produce;
+                @$result['day_source'][$source]['transfer'][$i]  += $transfer;
+                @$result['day_source'][$source]['inventory'][$i] += $inventory;
 
-                @$result['grand_total']['produce']    += @$result['data'][$source][$channel]['produce'][$i];
-                @$result['grand_total']['transfer']   += @$result['data'][$source][$channel]['transfer'][$i];
-                @$result['grand_total']['inventory']  += @$result['data'][$source][$channel]['inventory'][$i];
+                @$result['total_source'][$source]  += $inventory;
+                
+                @$result['total_channel'][$source][$channel]   += $inventory;
+
+                @$result['total']['produce'][$i]    += $produce;
+                @$result['total']['transfer'][$i]   += $transfer;
+                @$result['total']['inventory'][$i]  += $inventory;
+
+                @$result['grand_total']['produce']    += $produce;
+                @$result['grand_total']['transfer']   += $transfer;
+                @$result['grand_total']['inventory']  += $inventory;
             }
         }
+
         return $result;
     }
 }

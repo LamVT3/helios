@@ -28,38 +28,39 @@
         @endfor
     </tr>
     </thead>
+
     <tbody>
-
-    @foreach($data['data'] as $source => $channel)
-
+    @foreach($data['data'] as $source => $channels)
         <tr style="background-color: #F5F5F5; font-weight: bold">
             <td class="border-bold-right" style="min-width: 200px">{{$source}}</td>
-
             <td class="border-bold-right" style="">{{@$data['total_source'][$source] ? $data['total_source'][$source] : 0}}</td>
+
             @for ($i = 1; $i <= $days; $i++)
-            <td style="font-size: 15px">{{@$data[$source]['produce'][$i]?:0}}</td>
-            <td style="font-size: 15px">{{@$data[$source]['transfer'][$i]?:0}}</td>
-            <td class="border-bold-right" style="font-size: 15px">{{@$data[$source]['inventory'][$i]?:0}}</td>
+            <td style="font-size: 15px">{{@$data['day_source'][$source]['produce'][$i]?:0}}</td>
+            <td style="font-size: 15px">{{@$data['day_source'][$source]['transfer'][$i]?:0}}</td>
+            <td class="border-bold-right" style="font-size: 15px">{{@$data['day_source'][$source]['inventory'][$i]?:0}}</td>
             @endfor
         </tr>
 
-        @foreach($channel as $label => $item)
-            @if($label != '')
+        @foreach($channels as $channel => $item)
+            @if($channel != '')
                 <tr>
-                    <td class="border-bold-right" style="min-width: 200px; text-align: right">{{$label}}</td>
+                    <td class="border-bold-right" style="min-width: 200px; text-align: right">{{$channel}}</td>
+                    <td class="border-bold-right" style="font-weight: bold">{{@$data['total_channel'][$source][$channel] ? $data['total_channel'][$source][$channel] : 0}}</td>
 
-                    <td class="border-bold-right" style="font-weight: bold">{{@$data['total_channel'][$source][$label] ? $data['total_channel'][$source][$label] : 0}}</td>
                     @for ($i = 1; $i <= $days; $i++)
-                    <td style="font-size: 15px">{{@$item['produce'][$i]?:0}}</td>
-                    <td style="font-size: 15px">{{@$item['transfer'][$i]?:0}}</td>
-                    <td class="border-bold-right" style="font-size: 15px">{{@$item['inventory'][$i]?:0}}</td>
+                    <td style="font-size: 15px">{{@$data['data'][$source][$channel]['produce'][$i]?:0}}</td>
+                    <td style="font-size: 15px">{{@$data['data'][$source][$channel]['transfer'][$i]?:0}}</td>
+                    <td class="border-bold-right" style="font-size: 15px">{{@$data['data'][$source][$channel]['inventory'][$i]?:0}}</td>
                     @endfor
+
                 </tr>
             @endif
         @endforeach
 
     @endforeach
     </tbody>
+
     <tfoot>
     <tr style="background-color: #F5F5F5">
         <th colspan="2" class="border-bold-top-bot-right" style="text-align: right;">Total</th>
