@@ -119,10 +119,12 @@
                 </li>
             @endif
 
-            <li class="{{ $active == 'contacts' ? 'active' : '' }}">
-                <a href="{{ route('contacts-c3') }}"><i class="fa fa-lg fa-fw fa-child"></i> <span
-                            class="menu-item-parent">Contacts</span></a>
-            </li>
+            @if(auth()->user()->role == "Manager" || auth()->user()->role == "Admin")
+                <li class="{{ $active == 'contacts' ? 'active' : '' }}">
+                    <a href="{{ route('contacts-c3') }}"><i class="fa fa-lg fa-fw fa-child"></i> <span
+                                class="menu-item-parent">Contacts</span></a>
+                </li>
+            @endif
 
             <li class="{{ $active == 'notification' ? 'active' : '' }}">
                 <a href="{{ route('notification') }}"><i class="fa fa-lg fa-fw fa-bell"></i> <span

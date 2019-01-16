@@ -1,7 +1,7 @@
 <div class="col-sm-12">
-    <article class="col-sm-12 col-md-12">
+    <article class="col-sm-12 col-md-12" style="overflow: auto; margin-bottom: 30px">
         <table class="table table-bordered table-hover"
-               width="100%">
+               width="100%" style="margin-bottom: 0px">
             <thead>
             <tr>
                 <th width="10px"></th>
