@@ -164,7 +164,9 @@ class ContactController extends Controller
         }
 
         if($data_search != ''){
-            foreach ($columns as $key => $value){
+            $columns_search = ['name', 'phone', 'email'];
+
+            foreach ($columns_search as $key => $value){
                 $query->orWhere($value, 'like', "%{$data_search}%");
             }
         }
@@ -291,9 +293,7 @@ class ContactController extends Controller
         $query->where($data_where);
 
         if($data_search != ''){
-            $columns_search = ['name', 'phone', 'email'];
-            
-            foreach ($columns_search as $key => $value){
+            foreach ($columns as $key => $value){
                 $query->orWhere($value, 'like', "%{$data_search}%");
             }
         }
