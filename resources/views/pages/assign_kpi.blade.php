@@ -176,36 +176,35 @@
 
             var serial = 1;
 
-            var isValid = true;
+            var isValid = false;
 
             $('input#day').each(function() {
                 var value = $(this).val();
                 if (serial === 1) {
-                    if (!value || value <= 0){
-                        isValid = false;
-                        return false;
-                    }
                     kpi[cnt] = parseInt(value);
+                    if (!isValid && kpi[cnt] > 0){
+                        isValid = true;
+                    }
                     serial++;
                 } else if (serial === 2) {
                     kpi_cost[cnt] = parseFloat(value);
+                    if (!isValid && kpi_cost[cnt] > 0){
+                        isValid = true;
+                    }
                     serial++;
                 } else {
-                    if (!value || value <= 0 || parseFloat(value) > 100){
-                        isValid = false;
-                        return false;
-                    }
                     kpi_l3_c3bg[cnt] = parseFloat(value);
+                    if (!isValid && kpi_l3_c3bg[cnt] > 0){
+                        isValid = true;
+                    }
                     serial = 1;
                     cnt++;
                 }
             });
 
             if (!isValid) {
-                alert("Please check issues below :\n\n" +
-                    "- C3B or L3/C3BG value less than or equal to 0 (%) !\n" +
-                    "or\n" +
-                    "- L3/C3BG value greater than 100% !");
+                alert("Please set KPI for one among these values below:\n" +
+                    "C3B, L3/C3BG or L3/C3BG");
                 return false;
             }
 
