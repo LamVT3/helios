@@ -31,6 +31,11 @@ class ContactController extends Controller
 
     public function index()
     {
+
+        if(auth()->user()->role != "Manager" && auth()->user()->role != "Admin"){
+            return redirect()->route('dashboard');
+        }
+
         $page_title     = "Contacts | Helios";
         // HoaTV multiple select
         // $page_css       = array();
@@ -286,7 +291,9 @@ class ContactController extends Controller
         $query->where($data_where);
 
         if($data_search != ''){
-            foreach ($columns as $key => $value){
+            $columns_search = ['name', 'phone', 'email'];
+            
+            foreach ($columns_search as $key => $value){
                 $query->orWhere($value, 'like', "%{$data_search}%");
             }
         }
