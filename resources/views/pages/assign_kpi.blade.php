@@ -180,32 +180,27 @@
 
             $('input#day').each(function() {
                 var value = $(this).val();
-                console.log(value);
                 if (serial === 1) {
                     kpi[cnt] = parseInt(value);
                     if (!isValid && kpi[cnt] > 0){
-                        console.log("tt");
                         isValid = true;
                     }
                     serial++;
                 } else if (serial === 2) {
                     kpi_cost[cnt] = parseFloat(value);
                     if (!isValid && kpi_cost[cnt] > 0){
-                        console.log("tt");
                         isValid = true;
                     }
                     serial++;
                 } else {
                     kpi_l3_c3bg[cnt] = parseFloat(value);
                     if (!isValid && kpi_l3_c3bg[cnt] > 0){
-                        console.log("tt");
                         isValid = true;
                     }
                     serial = 1;
                     cnt++;
                 }
             });
-            console.log(isValid);
 
             if (!isValid) {
                 alert("Please set KPI for one among these values below:\n" +
