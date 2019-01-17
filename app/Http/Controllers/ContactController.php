@@ -32,10 +32,6 @@ class ContactController extends Controller
     public function index()
     {
 
-        if(auth()->user()->role != "Manager" && auth()->user()->role != "Admin"){
-            return redirect()->route('dashboard');
-        }
-
         $page_title     = "Contacts | Helios";
         // HoaTV multiple select
         // $page_css       = array();
