@@ -449,8 +449,8 @@ $(document).ready(function () {
                 invalid_reason = "duplicated";
             }else if(invalid_reason_mode == "C3B_SMS_Error"){
                 invalid_reason = "SMS error";
-            }else if(invalid_reason_mode == "Manual_Change"){
-                invalid_reason = "Manual Change";
+            }else if(invalid_reason_mode == "fake_contact"){
+                invalid_reason = "fake contact";
             }else{
                 invalid_reason_mode= "";
             }
@@ -895,7 +895,7 @@ function addSelectInvalidReason(item){
         '<option value="C3B_SMS_Error">SMS Error</option>' +
         '<option value="C3B_Under18">Under 18</option>' +
         '<option value="C3B_Duplicated15Days">Duplicate in 15 days</option>' +
-        '<option value="Manual_Change">Manual Change</option>' +
+        '<option value="fake_contact">Fake Contact</option>' +
         '</select>' +
         '');
 
