@@ -450,7 +450,7 @@ $(document).ready(function () {
             }else if(invalid_reason_mode == "C3B_SMS_Error"){
                 invalid_reason = "SMS error";
             }else if(invalid_reason_mode == "fake_contact"){
-                invalid_reason = "Manual Change";
+                invalid_reason = "fake contact";
             }else{
                 invalid_reason_mode= "";
             }
