@@ -217,8 +217,8 @@
     <script src="{{ asset('js/plugin/flot/jquery.flot.cust.min.js') }}"></script>
     <script src="{{ asset('js/plugin/flot/jquery.flot.resize.min.js') }}"></script>
     <script src="{{ asset('js/plugin/flot/jquery.flot.time.min.js') }}"></script>
-    <script language="javascript" type="text/javascript" src="http://www.flotcharts.org/flot/jquery.flot.categories.js"></script>
-    <script language="javascript" type="text/javascript" src="http://www.flotcharts.org/flot/jquery.flot.pie.js"></script>
+    <script src="{{ asset('js/plugin/flot/jquery.flot.categories.min.js') }}"></script>
+    <script src="{{ asset('js/plugin/flot/jquery.flot.pie.min.js') }}"></script>
     <script src="{{ asset('js/plugin/flot/jquery.flot.tooltip.min.js') }}"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>

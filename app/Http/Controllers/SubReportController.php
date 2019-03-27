@@ -1512,6 +1512,7 @@ class SubReportController extends Controller
 							'l3'    => ['$sum' => '$l3'],
 							'l6'    => ['$sum' => '$l6'],
 							'l8'    => ['$sum' => '$l8'],
+                            'spent' => ['$sum' => '$spent'],
 						]
 					]
 				];
@@ -1540,6 +1541,7 @@ class SubReportController extends Controller
 							'l3'    => ['$sum' => '$l3'],
 							'l6'    => ['$sum' => '$l6'],
 							'l8'    => ['$sum' => '$l8'],
+                            'spent' => ['$sum' => '$spent'],
 						]
 					]
 				];
@@ -1581,6 +1583,7 @@ class SubReportController extends Controller
 				$table['l3'][ $channel ]   += $item_result->l3;
 				$table['l6'][ $channel ]   += $item_result->l6;
 				$table['l8'][ $channel ]   += $item_result->l8;
+                $table['spent'][ $channel ] += $item_result->spent;
 			}
 			foreach ( $query_chart_week as $item_result ) {
 				$channel_id = @$arr_ad[$item_result['_id']];
@@ -1889,6 +1892,7 @@ class SubReportController extends Controller
 		$array_sum['l3']   = 0;
 		$array_sum['l6']   = 0;
 		$array_sum['l8']   = 0;
+        $array_sum['spent']   = 0;
 
 		foreach ($array_channel as $i){
 			$array_sum['c3']   += $table['c3'][$i];
@@ -1898,6 +1902,7 @@ class SubReportController extends Controller
 			$array_sum['l3']   += $table['l3'][$i];
 			$array_sum['l6']   += $table['l6'][$i];
 			$array_sum['l8']   += $table['l8'][$i];
+            $array_sum['spent']   += $table['spent'][$i];
 		}
 
 		$data_reason = $this->getChannelReason($start_date, $end_date);
@@ -1936,6 +1941,7 @@ class SubReportController extends Controller
 			$table['l3'][$ad->name]   = 0;
 			$table['l6'][$ad->name]   = 0;
 			$table['l8'][$ad->name]   = 0;
+            $table['spent'][$ad->name]   = 0;
 		}
 
 		$table['c3']['Unknown'] = 0;
@@ -1945,6 +1951,7 @@ class SubReportController extends Controller
 		$table['l3']['Unknown']   = 0;
 		$table['l6']['Unknown']   = 0;
 		$table['l8']['Unknown']   = 0;
+        $table['spent']['Unknown']   = 0;
 
 		if ($type === 'TOA')
 		{
@@ -1961,6 +1968,7 @@ class SubReportController extends Controller
 						'l3'    => ['$sum' => '$l3'],
 						'l6'    => ['$sum' => '$l6'],
 						'l8'    => ['$sum' => '$l8'],
+                        'spent' => ['$sum' => '$spent'],
 					]
 				]
 			];
@@ -1984,6 +1992,7 @@ class SubReportController extends Controller
 				$table['l3'][ $ad_name ]   += $item_result->l3;
 				$table['l6'][ $ad_name ]   += $item_result->l6;
 				$table['l8'][ $ad_name ]   += $item_result->l8;
+                $table['spent'][ $ad_name ] += $item_result->spent;
 			}
 
 			arsort($table['c3']);

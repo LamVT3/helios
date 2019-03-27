@@ -68,6 +68,11 @@
 @if(Auth::check())
 <script src='https://rating.topica.asia/show-rating-script/m8BXloDHirFWcbdIQnxc3zKTz2XM1ZEyJBtllfp4/1/{{Auth::user()->email}}'></script>
 @endif
+
+@if(Auth::check())
+    <script src='https://rating.topica.asia/show-rating-script/m8BXloDHirFWcbdIQnxc3zKTz2XM1ZEyJBtllfp4/1/{{Auth::user()->email}}'></script>
+@endif
+
 <!-- MAIN APP JS FILE -->
 <script src="{{ asset('js/app.min.js') }}"></script>
 <script src="{{ asset('js/helpers.js') }}"></script>
@@ -101,4 +106,14 @@
     });
 
 
+</script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-132871744-19"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-132871744-19');
 </script>
