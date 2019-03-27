@@ -1908,7 +1908,7 @@ class SubReportController extends Controller
 
 		$data_reason = $this->getChannelReason($start_date, $end_date);
 
-		return ['table'=>$table,'array_channel' => $array_channel, 'array_sum' => $array_sum, 'data_reason' => $data_reason];
+		return ['table'=>$table,'array_channel' => $array_channel, 'array_sum' => $array_sum, 'data_reason' => $data_reason, 'tyep' => $type];
 
 	}
 
@@ -2161,7 +2161,7 @@ class SubReportController extends Controller
 
 		$array_ad = $array_ad_new;
 
-		return ['table'=>$table,'array_ad' => $array_ad];
+		return ['table'=>$table,'array_ad' => $array_ad, 'type' => $type];
 
 	}
 
