@@ -10,6 +10,7 @@
                 <th>C3B</th>
                 <th>C3BG</th>
                 <th>C3BG/C3B (%)</th>
+                <th>Spent</th>
                 <th>L1</th>
                 <th>L3</th>
                 <th>L6</th>
@@ -30,6 +31,7 @@
                         <td style="color:{{$table['c3b'][$i] >= $table['c3b_week'][$i] ? 'green' : 'red'}}">{{$table['c3b'][$i]}}</td>
                         <td style="color:{{$table['c3bg'][$i] >= $table['c3bg_week'][$i] ? 'green' : 'red'}}">{{$table['c3bg'][$i]}}</td>
                         <td>{{($table['c3b'][$i] != 0) ? round($table['c3bg'][$i] * 100 / $table['c3b'][$i] , 2) : 0}}</td>
+                        <td>{{$table['spent'][$i]}}</td>
                         <td>{{$table['l1'][$i]}}</td>
                         <td>{{$table['l3'][$i]}}</td>
                         <td>{{$table['l6'][$i]}}</td>
@@ -49,6 +51,7 @@
                 <th>{{$array_sum['c3b']}}</th>
                 <th>{{$array_sum['c3bg']}}</th>
                 <th>{{$array_sum['c3b'] != 0 ? round($array_sum['c3bg'] * 100 / $array_sum['c3b'] , 2) : 0}}</th>
+                <th>{{$array_sum['spent']}}</th>
                 <th>{{$array_sum['l1']}}</th>
                 <th>{{$array_sum['l3']}}</th>
                 <th>{{$array_sum['l6']}}</th>
