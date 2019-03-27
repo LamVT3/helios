@@ -1413,6 +1413,7 @@ class SubReportController extends Controller
 		$table = $data['table'];
 		$array_channel = $data['array_channel'];
 		$array_sum = $data['array_sum'];
+		$type = $data['type'];
 
 
 		return view('pages.channel-report', compact(
@@ -1433,7 +1434,8 @@ class SubReportController extends Controller
 			'date_time',
 			'array_channel',
 			'array_sum',
-			'data_reason'
+			'data_reason',
+            'type'
 		));
 	}
 
