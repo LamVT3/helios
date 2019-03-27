@@ -1479,6 +1479,7 @@ class SubReportController extends Controller
 			$table['l3'][$channel]   = 0;
 			$table['l6'][$channel]   = 0;
 			$table['l8'][$channel]   = 0;
+            $table['spent'][$channel]   = 0;
 
 			$table['c3_week'][$channel] = 0;
 			$table['c3b_week'][$channel] = 0;
@@ -1941,7 +1942,7 @@ class SubReportController extends Controller
 			$table['l3'][$ad->name]   = 0;
 			$table['l6'][$ad->name]   = 0;
 			$table['l8'][$ad->name]   = 0;
-            $table['spent'][$ad->name]   = 0;
+            $table['spent'][$ad->name]  = 0;
 		}
 
 		$table['c3']['Unknown'] = 0;
