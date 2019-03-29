@@ -1588,8 +1588,7 @@ class SubReportController extends Controller
 				$table['l6'][ $channel ]   += $item_result->l6;
 				$table['l8'][ $channel ]   += $item_result->l8;
                 $table['spent'][ $channel ] += $item_result->spent;
-                $c3b =  $item_result->c3b +  $item_result->c3bg;
-                $table['c3_cost'][ $channel ] += $c3b ? round($item_result->spent / $c3b, 2) : 0;
+                $table['c3_cost'][ $channel ] += $item_result->c3bg ? $item_result->spent / $item_result->c3bg : 0;
 			}
 			foreach ( $query_chart_week as $item_result ) {
 				$channel_id = @$arr_ad[$item_result['_id']];
@@ -2003,8 +2002,7 @@ class SubReportController extends Controller
 				$table['l6'][ $ad_name ]   += $item_result->l6;
 				$table['l8'][ $ad_name ]   += $item_result->l8;
                 $table['spent'][ $ad_name ] += $item_result->spent;
-                $c3b = $item_result->c3b + $item_result->c3bg;
-                $table['c3_cost'][ $ad_name ] += $c3b ? round($item_result->spent / $c3b, 2) : 0;
+                $table['c3_cost'][ $ad_name ] += $item_result->c3b ? $item_result->spent / $item_result->c3b : 0;
 			}
 
 			arsort($table['c3']);
