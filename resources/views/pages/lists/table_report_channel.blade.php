@@ -30,12 +30,15 @@
                     <tr class="tr_channel">
                         <td><a href="javascript:void(0)" title="Show detail" class="ads__show" data-channel_name='{{$i}}' data-api_channel='{{route('channel-ads-detail')}}'><i class="fa fa-plus-circle"></i></a></td>
                         <td>{{$i}}</td>
-                        <td style="color:{{($table['c3'][$i]) >= ($table['c3_week'][$i]) ? 'green' : 'red'}}">{{$table['c3'][$i]}}</td>
-                        <td style="color:{{$table['c3b'][$i] >= $table['c3b_week'][$i] ? 'green' : 'red'}}">{{$table['c3b'][$i]}}</td>
-                        <td style="color:{{$table['c3bg'][$i] >= $table['c3bg_week'][$i] ? 'green' : 'red'}}">{{$table['c3bg'][$i]}}</td>
+                        <td style="color:{{($table['c3'][$i]) >= (@$kpi['kpi'][$i]) ? 'green' : 'red'}}">{{$table['c3'][$i]}}</td>
+                        <td style="color:{{$table['c3b'][$i] >= @$kpi['kpi'][$i] ? 'green' : 'red'}}">{{$table['c3b'][$i]}}</td>
+                        <td style="color:{{$table['c3bg'][$i] >= @$kpi['kpi'][$i] ? 'green' : 'red'}}">{{$table['c3bg'][$i]}}</td>
                         <td>{{($table['c3b'][$i] != 0) ? round($table['c3bg'][$i] * 100 / $table['c3b'][$i] , 2) : 0}}</td>
                         @if ($type == 'TOA')
-                            <td>{{round($table['c3_cost'][$i], 2)}}</td>
+                            <?php $c3_cost = $table['c3b'][$i] ? round($table['spent'][$i] / $table['c3b'][$i], 2) : 0; ?>
+                            <td style="color:{{$table['spent'][$i] >= $c3_cost ? 'green' : 'red'}}">
+                                {{$c3_cost}}
+                            </td>
                             <td>{{round($table['spent'][$i], 2)}}</td>
                         @endif
                         <td>{{$table['l1'][$i]}}</td>
@@ -58,7 +61,7 @@
                 <th>{{$array_sum['c3bg']}}</th>
                 <th>{{$array_sum['c3b'] != 0 ? round($array_sum['c3bg'] * 100 / $array_sum['c3b'] , 2) : 0}}</th>
                 @if ($type == 'TOA')
-                    <th>{{round($array_sum['c3_cost'], 2)}}</th>
+                    <th>{{$array_sum['c3b'] ? round($array_sum['spent'] / $array_sum['c3b'] , 2) : 0}}</th>
                     <th>{{round($array_sum['spent'], 2)}}</th>
                 @endif
                 <th>{{$array_sum['l1']}}</th>
