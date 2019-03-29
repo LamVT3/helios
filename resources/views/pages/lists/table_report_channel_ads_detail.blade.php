@@ -7,6 +7,7 @@
             <td>{{$table['c3bg'][$i]}}</td>
             <td>{{($table['c3b'][$i] != 0) ? round($table['c3bg'][$i] * 100 / $table['c3b'][$i] , 2) : 0}}</td>
             @if ($type == 'TOA')
+                <td>{{round($table['c3_cost'][$i], 2)}}</td>
                 <td>{{round($table['spent'][$i], 2)}}</td>
             @endif
             <td>{{$table['l1'][$i]}}</td>

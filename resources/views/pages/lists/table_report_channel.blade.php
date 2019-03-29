@@ -11,6 +11,7 @@
                 <th>C3BG</th>
                 <th>C3BG/C3B (%)</th>
                 @if ($type == 'TOA')
+                    <th>C3 Cost (USD)</th>
                     <th>Spent (USD)</th>
                 @endif
                 <th>L1</th>
@@ -34,6 +35,7 @@
                         <td style="color:{{$table['c3bg'][$i] >= $table['c3bg_week'][$i] ? 'green' : 'red'}}">{{$table['c3bg'][$i]}}</td>
                         <td>{{($table['c3b'][$i] != 0) ? round($table['c3bg'][$i] * 100 / $table['c3b'][$i] , 2) : 0}}</td>
                         @if ($type == 'TOA')
+                            <td>{{round($table['c3_cost'][$i], 2)}}</td>
                             <td>{{round($table['spent'][$i], 2)}}</td>
                         @endif
                         <td>{{$table['l1'][$i]}}</td>
@@ -56,6 +58,7 @@
                 <th>{{$array_sum['c3bg']}}</th>
                 <th>{{$array_sum['c3b'] != 0 ? round($array_sum['c3bg'] * 100 / $array_sum['c3b'] , 2) : 0}}</th>
                 @if ($type == 'TOA')
+                    <th>{{round($array_sum['c3_cost'], 2)}}</th>
                     <th>{{round($array_sum['spent'], 2)}}</th>
                 @endif
                 <th>{{$array_sum['l1']}}</th>

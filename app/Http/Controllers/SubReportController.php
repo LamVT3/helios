@@ -1482,6 +1482,7 @@ class SubReportController extends Controller
 			$table['l6'][$channel]   = 0;
 			$table['l8'][$channel]   = 0;
             $table['spent'][$channel]   = 0;
+            $table['c3_cost'][$channel] = 0;
 
 			$table['c3_week'][$channel] = 0;
 			$table['c3b_week'][$channel] = 0;
@@ -1587,6 +1588,7 @@ class SubReportController extends Controller
 				$table['l6'][ $channel ]   += $item_result->l6;
 				$table['l8'][ $channel ]   += $item_result->l8;
                 $table['spent'][ $channel ] += $item_result->spent;
+                $table['c3_cost'][ $channel ] += $item_result->spent ? round($item_result->spent / $item_result->c3, 2) : 0;
 			}
 			foreach ( $query_chart_week as $item_result ) {
 				$channel_id = @$arr_ad[$item_result['_id']];
@@ -1896,6 +1898,7 @@ class SubReportController extends Controller
 		$array_sum['l6']   = 0;
 		$array_sum['l8']   = 0;
         $array_sum['spent']   = 0;
+        $array_sum['c3_cost'] = 0;
 
 		foreach ($array_channel as $i){
 			$array_sum['c3']   += $table['c3'][$i];
@@ -1906,6 +1909,7 @@ class SubReportController extends Controller
 			$array_sum['l6']   += $table['l6'][$i];
 			$array_sum['l8']   += $table['l8'][$i];
             $array_sum['spent']   += $table['spent'][$i];
+            $array_sum['c3_cost'] += $table['c3_cost'][$i];
 		}
 
 		$data_reason = $this->getChannelReason($start_date, $end_date);
