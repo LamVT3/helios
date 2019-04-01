@@ -1413,6 +1413,8 @@ class SubReportController extends Controller
 		$table = $data['table'];
 		$array_channel = $data['array_channel'];
 		$array_sum = $data['array_sum'];
+		$type = $data['type'];
+		$kpi = $data['kpi'];
 
 
 		return view('pages.channel-report', compact(
@@ -1433,7 +1435,9 @@ class SubReportController extends Controller
 			'date_time',
 			'array_channel',
 			'array_sum',
-			'data_reason'
+			'data_reason',
+            'type',
+            'kpi'
 		));
 	}
 
@@ -1441,6 +1445,7 @@ class SubReportController extends Controller
 		$array_channel = array();
 
 		$data_where = $this->getWhereDataByCreatorID();
+		$kpi = $this->get_kpi_channel($start_date, $end_date);
 
 		if (request()->channel_name){
 			$channels_arr       = explode(',',request()->channel_name);
@@ -1479,6 +1484,7 @@ class SubReportController extends Controller
 			$table['l3'][$channel]   = 0;
 			$table['l6'][$channel]   = 0;
 			$table['l8'][$channel]   = 0;
+            $table['spent'][$channel]   = 0;
 
 			$table['c3_week'][$channel] = 0;
 			$table['c3b_week'][$channel] = 0;
@@ -1512,6 +1518,7 @@ class SubReportController extends Controller
 							'l3'    => ['$sum' => '$l3'],
 							'l6'    => ['$sum' => '$l6'],
 							'l8'    => ['$sum' => '$l8'],
+                            'spent' => ['$sum' => '$spent'],
 						]
 					]
 				];
@@ -1540,6 +1547,7 @@ class SubReportController extends Controller
 							'l3'    => ['$sum' => '$l3'],
 							'l6'    => ['$sum' => '$l6'],
 							'l8'    => ['$sum' => '$l8'],
+                            'spent' => ['$sum' => '$spent'],
 						]
 					]
 				];
@@ -1581,6 +1589,7 @@ class SubReportController extends Controller
 				$table['l3'][ $channel ]   += $item_result->l3;
 				$table['l6'][ $channel ]   += $item_result->l6;
 				$table['l8'][ $channel ]   += $item_result->l8;
+                $table['spent'][ $channel ] += $item_result->spent;
 			}
 			foreach ( $query_chart_week as $item_result ) {
 				$channel_id = @$arr_ad[$item_result['_id']];
@@ -1889,6 +1898,7 @@ class SubReportController extends Controller
 		$array_sum['l3']   = 0;
 		$array_sum['l6']   = 0;
 		$array_sum['l8']   = 0;
+        $array_sum['spent']   = 0;
 
 		foreach ($array_channel as $i){
 			$array_sum['c3']   += $table['c3'][$i];
@@ -1898,11 +1908,12 @@ class SubReportController extends Controller
 			$array_sum['l3']   += $table['l3'][$i];
 			$array_sum['l6']   += $table['l6'][$i];
 			$array_sum['l8']   += $table['l8'][$i];
+            $array_sum['spent']   += $table['spent'][$i];
 		}
 
 		$data_reason = $this->getChannelReason($start_date, $end_date);
 
-		return ['table'=>$table,'array_channel' => $array_channel, 'array_sum' => $array_sum, 'data_reason' => $data_reason];
+		return ['table'=>$table,'array_channel' => $array_channel, 'array_sum' => $array_sum, 'data_reason' => $data_reason, 'type' => $type, 'kpi' => $kpi];
 
 	}
 
@@ -1936,6 +1947,7 @@ class SubReportController extends Controller
 			$table['l3'][$ad->name]   = 0;
 			$table['l6'][$ad->name]   = 0;
 			$table['l8'][$ad->name]   = 0;
+            $table['spent'][$ad->name]  = 0;
 		}
 
 		$table['c3']['Unknown'] = 0;
@@ -1945,6 +1957,7 @@ class SubReportController extends Controller
 		$table['l3']['Unknown']   = 0;
 		$table['l6']['Unknown']   = 0;
 		$table['l8']['Unknown']   = 0;
+        $table['spent']['Unknown']   = 0;
 
 		if ($type === 'TOA')
 		{
@@ -1961,6 +1974,7 @@ class SubReportController extends Controller
 						'l3'    => ['$sum' => '$l3'],
 						'l6'    => ['$sum' => '$l6'],
 						'l8'    => ['$sum' => '$l8'],
+                        'spent' => ['$sum' => '$spent'],
 					]
 				]
 			];
@@ -1984,6 +1998,7 @@ class SubReportController extends Controller
 				$table['l3'][ $ad_name ]   += $item_result->l3;
 				$table['l6'][ $ad_name ]   += $item_result->l6;
 				$table['l8'][ $ad_name ]   += $item_result->l8;
+                $table['spent'][ $ad_name ] += $item_result->spent;
 			}
 
 			arsort($table['c3']);
@@ -2151,7 +2166,7 @@ class SubReportController extends Controller
 
 		$array_ad = $array_ad_new;
 
-		return ['table'=>$table,'array_ad' => $array_ad];
+		return ['table'=>$table,'array_ad' => $array_ad, 'type' => $type];
 
 	}
 
@@ -3199,5 +3214,80 @@ class SubReportController extends Controller
         }
 
         return round($spent, 2);
+    }
+
+    private function get_kpi_channel($start, $end){
+        $request = request();
+        $rs = [];
+
+        $day_between = $this->get_array_day($start, $end);
+
+        if($request->marketer_id && !$request->channel_name){
+            $kpis    = UserKpi::where('user_id', $request->marketer_id)->get();
+            $channels    = UserKpi::where('user_id', $request->marketer_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
+        }else if(!$request->marketer_id && $request->channel_name){
+            $channels_arr   = explode(',',request()->channel_name);
+            $channels_id    = Channel::whereIn('name', $channels_arr)->get()->pluck('_id');
+            $channels       = UserKpi::whereIn('channel_id', $channels_id)->groupBy('channel_id')->pluck('channel_id')->toArray();
+            $kpis           = UserKpi::whereIn('channel_id', $channels_id)->get();
+        }else if($request->marketer_id && $request->channel_name){
+            $channels_arr   = explode(',',request()->channel_name);
+            $channels_id    = Channel::whereIn('name', $channels_arr)->get()->pluck('_id');
+            $channels       = UserKpi::where('user_id', $request->marketer_id)->whereIn('channel_id', $channels_id)->pluck('channel_id')->toArray();
+            $kpis           = UserKpi::whereIn('channel_id', $channels_id)->where('user_id', $request->marketer_id)->get();
+        }else{
+            $kpis    = UserKpi::all();
+            $channels   = UserKpi::groupBy('channel_id')->pluck('channel_id')->toArray();
+        }
+
+        $user_active = User::where('role', 'Marketer')->where('is_active', 1)->pluck('_id')->toArray();
+
+        foreach ($kpis as $channel){
+            $kpi            = @$channel->kpi;
+            $kpi_cost       = @$channel->kpi_cost;
+            $kpi_l3_c3bg    = @$channel->kpi_l3_c3bg;
+            $channel_id     = @$channel->channel_id;
+            $query   = Channel::where('_id', $channel_id)->first();
+
+            if(!in_array($channel->user_id, $user_active)){
+                continue;
+            }
+
+            foreach ($day_between as $date){
+                $date   = explode('-', $date);
+                $day    = (int)$date[2];
+                $month  = $date[1];
+                $year   = $date[0];
+
+                @$rs['kpi'][$query->name]          += @$kpi[$year][$month][$day];
+                @$rs['kpi_cost'][$query->name]     += @$kpi_cost[$year][$month][$day];
+                @$rs['kpi_l3_c3bg'][$query->name]  += @$kpi_l3_c3bg[$year][$month][$day];
+            }
+        }
+
+        if(count((array)$day_between) > 1){
+            $cnt = count($day_between);
+
+            foreach (@$rs['kpi_cost'] as $key => $value){
+                @$rs['kpi_cost'][$key]   = round($value / $cnt, 2);
+            }
+        }
+
+        @$rs['channel'] = $channels;
+        @$rs['total_channel'] = count($channels);
+
+        return $rs;
+    }
+
+    private function get_array_day($start, $end){
+        $date_from  = strtotime($start);
+        $date_to    = strtotime($end);
+        $rs = [];
+
+        for ($i=$date_from; $i<=$date_to; $i+=86400) {
+            $rs[] = date("Y-m-d", $i);
+        }
+
+        return $rs;
     }
 }

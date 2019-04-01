@@ -65,9 +65,8 @@
 <h1>Your browser is out of date, please update your browser by going to www.microsoft.com/download</h1>
 
 <![endif]-->
-
 @if(Auth::check())
-    <script src='https://rating.topica.asia/show-rating-script/m8BXloDHirFWcbdIQnxc3zKTz2XM1ZEyJBtllfp4/1/{{Auth::user()->email}}'></script>
+<script src='https://rating.topica.asia/show-rating-script/Y7fePGrSDPjij6Acf8kcqju5j8UoLTYZb8vvtPd1/{{Auth::user()->email}}'></script>
 @endif
 
 <!-- MAIN APP JS FILE -->
