@@ -128,7 +128,7 @@ class CampaignController extends Controller
 
         $ad_name = request('ad_name');
         $mol_link_tracking = request('mol_link_tracking', "");
-        $medium = request('medium', "");
+        $medium = request('medium', "helios");
         $landing_page = request('landing_page');
         $channel = request('channel');
 
