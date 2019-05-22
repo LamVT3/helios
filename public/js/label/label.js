@@ -653,92 +653,90 @@ function initDataTable() {
             },
             { "data" : 'email'},
             { "data" : 'phone'},
-
-            { "data" : 'c3_label1_origin',  'className' : "label1_origin",  "defaultContent": "1"},
-            { "data" : 'c3_label2_origin',  'className' : "label2_origin",  "defaultContent": "2" },
-            { "data" : 'c3_label3_origin',  'className' : "label3_origin",  "defaultContent": "3" },
-            { "data" : 'c3_label4_origin',  'className' : "label4_origin",  "defaultContent": "4" },
-            { "data" : 'c3_label5_origin',  'className' : "label5_origin",  "defaultContent": "5" },
-            { "data" : 'c3_label6_origin',  'className' : "label6_origin",  "defaultContent": "6" },
-            { "data" : 'c3_label7_origin',  'className' : "label7_origin",  "defaultContent": "7" },
-            { "data" : 'c3_label8_origin',  'className' : "label8_origin",  "defaultContent": "8" },
-            { "data" : 'c3_label9_origin',  'className' : "label9_origin",  "defaultContent": "9" },
-            { "data" : 'c3_label10_origin', 'className' : "label10_origin", "defaultContent": "0" },
-
-            { "data" : 'age'},
             { "data" : 'submit_time'},
-            { "data" : 'clevel'},
-            { "data" : 'current_level',     "defaultContent": "-"},
-            { "data" : 'ad_name', 'className' : "ads_long" },
-            {
-                "data"      : 'channel_name',
-                'className' : "channel",
-                "render"    : function ( data, type, row, meta ) {
-                    return '<span id="channel" >' + data + '</span><input type="hidden" id="old_channel" value="' + data + '">';
-
-                }
-            },
-            { "data" : 'source_name',       "defaultContent": "-"},
-            { "data" : 'team_name',         "defaultContent": "-"},
-            { "data" : 'marketer_name',     "defaultContent": "-"},
-            { "data" : 'campaign_name',     "className" : "ads_long" },
-            { "data" : 'subcampaign_name',  "className" : "ads_long" },
-            { "data" : 'landing_page',      "defaultContent": "-"},
-            {
-                "data" : 'invalid_reason',
-                'className' : "invalid_reason",
-                "render"    : function ( data, type, row, meta ) {
-                    if(data){
-                        return '<span id="invalid_reason" >' + data + '</span>';
-                    }else{
-                        return '<span id="invalid_reason" >-</span>';
-                    }
-                }
-            },
-            {
-                "data" : 'name',
-                "render": function ( data, type, row, meta ) {
-                    return '<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="' + data[0] + '">' +
-                        '<i class="fa fa-eye"></i><b style="margin-left: 5px;">' + data[2] + '</b></a>';
-                }
-            },
-            {
-                "data"      : 'is_export',
-                'className' : "status",
-                "render"    : function ( data, type, row, meta ) {
-                    if(data == 1){
-                        return '<span id="status">Exported</span><input type="hidden" id="old_status" value="1">';
-                    }
-                    return '<span id="status" >Not Exported</span><input type="hidden" id="old_status" value="0">';
-                }
-            },
-            {
-                "data"      : 'olm_status',
-                'className' : "olm_status",
-                "render"    : function ( data, type, row, meta ) {
-                    var status = '';
-
-                    if(data == 0){
-                        status = '<span id="olm_status">Success</span><input type="hidden" id="old_status_olm" value="0">';
-                    }
-                    else if(data == 1){
-                        status = '<span id="olm_status">Duplicated</span><input type="hidden" id="old_status_olm" value="1">';
-                    }
-                    else if(data == 2){
-                        status = '<span id="olm_status">Error</span><input type="hidden" id="old_status_olm" value="2">';
-                    }
-                    else if(data == 3){
-                        status = '<span id="olm_status">Error</span><input type="hidden" id="old_status_olm" value="3">';
-                    }
-                    else{
-                        status = '<span id="olm_status">Not Exported</span><input type="hidden" id="old_status_olm" value="-1">';
-                    }
-                    return status;
-                }
-            },
-            { "data" : 'export_sale_date',  "defaultContent": "-"},
-            { "data" : 'send_sms',          "defaultContent": "-"},
-            { "data" : 'mailchimp_expired', "defaultContent": "-"},
+            { "data" : 'c3_label1_origin',  'className' : "label1_origin",  "defaultContent": "-"},
+            { "data" : 'c3_label2_origin',  'className' : "label2_origin",  "defaultContent": "-" },
+            { "data" : 'c3_label3_origin',  'className' : "label3_origin",  "defaultContent": "-" },
+            { "data" : 'c3_label4_origin',  'className' : "label4_origin",  "defaultContent": "-" },
+            { "data" : 'c3_label5_origin',  'className' : "label5_origin",  "defaultContent": "-" },
+            { "data" : 'c3_label6_origin',  'className' : "label6_origin",  "defaultContent": "-" },
+            { "data" : 'c3_label7_origin',  'className' : "label7_origin",  "defaultContent": "-" },
+            { "data" : 'c3_label8_origin',  'className' : "label8_origin",  "defaultContent": "-" },
+            { "data" : 'c3_label9_origin',  'className' : "label9_origin",  "defaultContent": "-" },
+            { "data" : 'c3_label10_origin', 'className' : "label10_origin", "defaultContent": "-" },
+            // { "data" : 'age'},
+            // { "data" : 'clevel'},
+            // { "data" : 'current_level',     "defaultContent": "-"},
+            // { "data" : 'ad_name',           'className' : "ads_long" },
+            // {
+            //     "data"      : 'channel_name',
+            //     'className' : "channel",
+            //     "render"    : function ( data, type, row, meta ) {
+            //         return '<span id="channel" >' + data + '</span><input type="hidden" id="old_channel" value="' + data + '">';
+            //
+            //     }
+            // },
+            // { "data" : 'source_name',       "defaultContent": "-"},
+            // { "data" : 'team_name',         "defaultContent": "-"},
+            // { "data" : 'marketer_name',     "defaultContent": "-"},
+            // { "data" : 'campaign_name',     "className" : "ads_long" },
+            // { "data" : 'subcampaign_name',  "className" : "ads_long" },
+            // { "data" : 'landing_page',      "defaultContent": "-"},
+            // {
+            //     "data" : 'invalid_reason',
+            //     'className' : "invalid_reason",
+            //     "render"    : function ( data, type, row, meta ) {
+            //         if(data){
+            //             return '<span id="invalid_reason" >' + data + '</span>';
+            //         }else{
+            //             return '<span id="invalid_reason" >-</span>';
+            //         }
+            //     }
+            // },
+            // {
+            //     "data" : 'name',
+            //     "render": function ( data, type, row, meta ) {
+            //         return '<a href="javascript:void(0)" class="name btn btn-default btn-xs" data-id="' + data[0] + '">' +
+            //             '<i class="fa fa-eye"></i><b style="margin-left: 5px;">' + data[2] + '</b></a>';
+            //     }
+            // },
+            // {
+            //     "data"      : 'is_export',
+            //     'className' : "status",
+            //     "render"    : function ( data, type, row, meta ) {
+            //         if(data == 1){
+            //             return '<span id="status">Exported</span><input type="hidden" id="old_status" value="1">';
+            //         }
+            //         return '<span id="status" >Not Exported</span><input type="hidden" id="old_status" value="0">';
+            //     }
+            // },
+            // {
+            //     "data"      : 'olm_status',
+            //     'className' : "olm_status",
+            //     "render"    : function ( data, type, row, meta ) {
+            //         var status = '';
+            //
+            //         if(data == 0){
+            //             status = '<span id="olm_status">Success</span><input type="hidden" id="old_status_olm" value="0">';
+            //         }
+            //         else if(data == 1){
+            //             status = '<span id="olm_status">Duplicated</span><input type="hidden" id="old_status_olm" value="1">';
+            //         }
+            //         else if(data == 2){
+            //             status = '<span id="olm_status">Error</span><input type="hidden" id="old_status_olm" value="2">';
+            //         }
+            //         else if(data == 3){
+            //             status = '<span id="olm_status">Error</span><input type="hidden" id="old_status_olm" value="3">';
+            //         }
+            //         else{
+            //             status = '<span id="olm_status">Not Exported</span><input type="hidden" id="old_status_olm" value="-1">';
+            //         }
+            //         return status;
+            //     }
+            // },
+            // { "data" : 'export_sale_date',  "defaultContent": "-"},
+            // { "data" : 'send_sms',          "defaultContent": "-"},
+            // { "data" : 'mailchimp_expired', "defaultContent": "-"},
         ],
         'scrollY'       : '55vh',
         "scrollX"       : true,

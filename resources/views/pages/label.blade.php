@@ -268,6 +268,7 @@
                                                 <th class="long">Name</th>
                                                 <th>Email</th>
                                                 <th>Phone</th>
+                                                <th class="long">Registered at</th>
                                                 <th>c3_label1_origin</th>
                                                 <th>c3_label2_origin</th>
                                                 <th>c3_label3_origin</th>
@@ -278,25 +279,24 @@
                                                 <th>c3_label8_origin</th>
                                                 <th>c3_label9_origin</th>
                                                 <th>c3_label10_origin</th>
-                                                <th>Age</th>
-                                                <th class="long">Registered at</th>
-                                                <th class="long">C Level</th>
-                                                <th class="long">CRM level</th>
-                                                <th class="channel_long">Ads</th>
-                                                <th class="channel_long">Channel</th>
-                                                <th>Source</th>
-                                                <th>Team</th>
-                                                <th>Marketer</th>
-                                                <th>Campaign</th>
-                                                <th>Subcampaign</th>
-                                                <th class="long">Landing page</th>
-                                                <th class="long">Invalid reason</th>
-                                                <th>Action</th>
-                                                <th class="long">Status export</th>
-                                                <th class="long">Status Sale</th>
-                                                <th class="long">Tranfer Date</th>
-                                                <th class="long">Send SMS</th>
-                                                <th class="long">Status Mailchimp</th>
+                                                {{--<th>Age</th>--}}
+                                                {{--<th class="long">C Level</th>--}}
+                                                {{--<th class="long">CRM level</th>--}}
+                                                {{--<th class="channel_long">Ads</th>--}}
+                                                {{--<th class="channel_long">Channel</th>--}}
+                                                {{--<th>Source</th>--}}
+                                                {{--<th>Team</th>--}}
+                                                {{--<th>Marketer</th>--}}
+                                                {{--<th>Campaign</th>--}}
+                                                {{--<th>Subcampaign</th>--}}
+                                                {{--<th class="long">Landing page</th>--}}
+                                                {{--<th class="long">Invalid reason</th>--}}
+                                                {{--<th>Action</th>--}}
+                                                {{--<th class="long">Status export</th>--}}
+                                                {{--<th class="long">Status Sale</th>--}}
+                                                {{--<th class="long">Tranfer Date</th>--}}
+                                                {{--<th class="long">Send SMS</th>--}}
+                                                {{--<th class="long">Status Mailchimp</th>--}}
                                             </tr>
                                             </thead>
                                             <tbody>
