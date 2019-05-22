@@ -241,3 +241,8 @@ Route::group(['prefix' => 'location-report'], function () {
     Route::post('/import', 'LocationReportController@import')->name('location-report-import');
 });
 
+Route::group(['prefix' => 'label'], function () {
+    Route::get('/', 'LabelController@index')->name('label');
+    Route::post('/update-label', 'LabelController@updateLabel')->name('label.update');
+});
+

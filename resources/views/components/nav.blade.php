@@ -170,6 +170,11 @@
                             class="menu-item-parent">Phone Test</span></a>
             </li>
 
+            <li class="{{ $active == 'label' ? 'active' : '' }}">
+                <a href="{{ route('label') }}"><i class="fa fa-lg fa-fw fa-tags"></i> <span
+                            class="menu-item-parent">Label</span></a>
+            </li>
+
             {{-- end 2018-04-18 LamVT [HEL_9] Add more setting for VND/USD conversion--}}
             {{--@endpermission
             @permission('view-report')

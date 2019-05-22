@@ -22,7 +22,7 @@ use Illuminate\Http\Request;
 use Whoops\Util\TemplateHelper;
 use App\LogExportToSale;
 
-class ContactController extends Controller
+class LabelController extends Controller
 {
     public function __construct()
     {
@@ -32,13 +32,13 @@ class ContactController extends Controller
     public function index()
     {
 
-        $page_title     = "Contacts | Helios";
+        $page_title     = "Label | Helios";
         // HoaTV multiple select
         // $page_css       = array();
         $page_css       = array('selectize.default.css');
         $no_main_header = FALSE; //set true for lock.php and login.php
-        $active         = 'contacts';
-        $breadcrumbs    = "<i class=\"fa-fw fa fa-child\"></i> Contacts <span>> C3</span>";
+        $active         = 'label';
+        $breadcrumbs    = "<i class=\"fa-fw fa fa-tags\"></i> Label";
 
         $page_size      = Config::getByKey('PAGE_SIZE');
         $sources        = Source::orderBy('name')->get();
@@ -51,7 +51,7 @@ class ContactController extends Controller
         $landing_page   = LandingPage::where('is_active', 1)->orderBy('name')->get();
         $channel        = Channel::where('is_active', 1)->orderBy('name')->get();
 
-        return view('pages.contacts-c3', compact(
+        return view('pages.label', compact(
             'page_title',
             'page_css',
             'no_main_header',
@@ -1410,7 +1410,7 @@ class ContactController extends Controller
             $contact['phone']               = $contact['phone'] ? $contact['phone'] : "-";
             $contact['age']                 = $contact['age'] ? $contact['age'] : "-";
             $contact['submit_time']         = $contact['submit_time'] ?
-                date('d-m-Y H:i:s',$contact['submit_time']/1000) : "-";
+                date('d-m-Y H:i:s',@$contact['submit_time']/1000) : "-";
             $contact['clevel']              = $contact['clevel']? $contact['clevel'] : "-";
             $contact['current_level']       = $contact['current_level'] ? $contact['current_level'] : "-";
             $contact['source_name']         = $contact['source_name'] ? $contact['source_name'] : "-";
@@ -1423,126 +1423,34 @@ class ContactController extends Controller
             $contact['channel_name']        = $contact['channel_name'] ? $contact['channel_name'] : "-";
             $contact['export_sale_date']    = $contact['export_sale_date'] ? date("d-m-Y H:i:s", @$contact['export_sale_date'] / 1000) : "-";
             $contact['send_sms']            = $contact['send_sms'] ? 'Yes' : 'No';
-            $contact['mailchimp_expired']   = $contact['mailchimp_expired'] ? 'Yes' : 'No';
-            $contact['c3_label1_origin']    = @$contact['c3_label1_origin'];
-            $contact['c3_label2_origin']    = @$contact['c3_label2_origin'];
-            $contact['c3_label3_origin']    = @$contact['c3_label3_origin'];
-            $contact['c3_label4_origin']    = @$contact['c3_label4_origin'];
-            $contact['c3_label5_origin']    = @$contact['c3_label5_origin'];
-            $contact['c3_label6_origin']    = @$contact['c3_label6_origin'];
-            $contact['c3_label7_origin']    = @$contact['c3_label7_origin'];
-            $contact['c3_label8_origin']    = @$contact['c3_label8_origin'];
-            $contact['c3_label9_origin']    = @$contact['c3_label9_origin'];
-            $contact['c3_label10_origin']   = @$contact['c3_label10_origin'];
+            $contact['mailchimp_expired']            = $contact['mailchimp_expired'] ? 'Yes' : 'No';
         }
 
         return $contacts;
     }
 
-    public function updateContacts(){
+    public function updateLabel(){
 
-        $data_where = $this->getWhereDataUpdateExport();
+        $request    = request();
+        $data       = $request->id;
 
-        $request = request();
+        $id     = array_keys($data);
+        $query  = Contact::whereIn('_id', $id)->get();
 
-        $startDate = strtotime("midnight")*1000;
-        $endDate = strtotime("tomorrow")*1000;
-        if($request->registered_date){
-            $date_place = str_replace('-', ' ', $request->registered_date);
-            $date_arr = explode(' ', str_replace('/', '-', $date_place));
-            $startDate = strtotime($date_arr[0])*1000;
-            // $endDate = Date('Y-m-d 23:59:59', strtotime($date_arr[1]));
-            $endDate = strtotime("+1 day", strtotime($date_arr[1]))*1000;
-        }
-        $query = Contact::where('submit_time', '>=', $startDate);
-        $query->where('submit_time', '<', $endDate);
+        foreach ($query as $contact){
+            $contact_id = $contact->id;
+            @$contact->c3_label1_origin     = @$data[$contact_id]['c3_label1_origin'];
+            @$contact->c3_label2_origin     = @$data[$contact_id]['c3_label2_origin'];
+            @$contact->c3_label3_origin     = @$data[$contact_id]['c3_label3_origin'];
+            @$contact->c3_label4_origin     = @$data[$contact_id]['c3_label4_origin'];
+            @$contact->c3_label5_origin     = @$data[$contact_id]['c3_label5_origin'];
+            @$contact->c3_label6_origin     = @$data[$contact_id]['c3_label6_origin'];
+            @$contact->c3_label7_origin     = @$data[$contact_id]['c3_label7_origin'];
+            @$contact->c3_label8_origin     = @$data[$contact_id]['c3_label8_origin'];
+            @$contact->c3_label9_origin     = @$data[$contact_id]['c3_label9_origin'];
+            @$contact->c3_label10_origin    = @$data[$contact_id]['c3_label10_origin'];
 
-        // HoaTV fix multiple select channel
-        $arrChannelName = array();
-        if ($request->channel) {
-            $arrChannelName    = explode(',',$request->channel);
-            $query->whereIn('channel_name',$arrChannelName);
-        }
-
-        if(@$data_where['clevel'] == 'c3b'){
-            $query->where('clevel', 'like', '%c3b%');
-            unset($data_where['clevel']);
-        }
-        if(@$data_where['current_level'] == 'l0'){
-            $query->whereNotIn('current_level', \config('constants.CURRENT_LEVEL'));
-            unset($data_where['current_level']);
-        }
-        $query->where($data_where);
-
-        $id = [];
-
-        if($request->id){
-            $id = $request->id;
-            $query->whereIn('_id', array_keys($request->id));
-        }
-        // only current page
-        $page_size  = Config::getByKey('PAGE_SIZE');
-        $query->limit((int)$page_size);
-
-        if($request->tranfer_date) {
-            $date_place = str_replace('-', ' ', $request->tranfer_date);
-            $date_arr   = explode(' ', str_replace('/', '-', $date_place));
-            $startDate  = strtotime($date_arr[0])*1000;
-            $endDate    = strtotime("+1 day", strtotime($date_arr[1]))*1000;
-
-            $query->where('export_sale_date', '>=', $startDate);
-            $query->where('export_sale_date', '<', $endDate);
-        }
-        if($request->mailchimp_expired == '1'){
-            $query->where('mailchimp_expired', true);
-        }else if($request->mailchimp_expired == '0'){
-            $query->where('mailchimp_expired', '<>', true);
-        }
-
-        $query->orderBy('submit_time', 'desc');
-        $contacts = $query->get();
-        foreach ($contacts as $contact)
-        {
-            if(isset($id[$contact->_id])){
-                if(isset($id[$contact->_id]['status'])){
-                    $contact->is_export     = (int)$id[$contact->_id]['status'];
-                }
-                if(isset($id[$contact->_id]['olm_status'])){
-                    $contact->olm_status    = (int)$id[$contact->_id]['olm_status'];
-                }
-                if(isset($id[$contact->_id]['channel_name'])){
-                    $contact->channel_name  = $id[$contact->_id]['channel_name'];
-                }
-                if(isset($id[$contact->_id]['channel_id'])){
-                    $contact->channel_id    = $id[$contact->_id]['channel_id'];
-                }
-
-                // HoaTV for change level from c3bg to c3b
-                if(isset($id[$contact->_id]['invalid_reason']) && $contact->clevel == "c3bg"){
-                    $contact->invalid_reason    = $id[$contact->_id]['invalid_reason'];
-                    $contact->invalid_reason_mode    = $id[$contact->_id]['invalid_reason_mode'];
-                    $contact->is_update_manual    = true;
-                    $contact->clevel = "c3b";
-                    // handle count ad_result only from from c3bg down to c3b
-                    $this->handleCountAdResult(true,$contact->ad_id, $contact->submit_time);
-                }else if(!isset($id[$contact->_id]['invalid_reason']) && $contact->clevel == "c3b" && $contact->is_update_manual){
-                    // only contact is  already update is allow to update
-                    $contact->invalid_reason    = "";
-                    $contact->invalid_reason_mode    = "";
-                    $contact->is_update_manual    = true;
-                    $contact->clevel = "c3bg";
-                    // handle count ad_result only from from c3b down to c3bg
-                    $this->handleCountAdResult(false, $contact->ad_id, $contact->submit_time);
-                }
-
-                $contact->save();
-            }else{
-                if($request->new_status != '')
-                {
-                    $contact->is_export = (int)$request->new_status;
-                    $contact->save();
-                }
-            }
+            $contact->save();
         }
     }
 
