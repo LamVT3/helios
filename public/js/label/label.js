@@ -55,7 +55,7 @@ $(document).ready(function () {
         if(start == null && end == null){
             $('#tranfer_date span').html('');
         }else
-        $('#tranfer_date span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
+            $('#tranfer_date span').html(start.format('D/M/Y') + '-' + end.format('D/M/Y'));
     }
 
     tranfer_date_span(null, null);
@@ -112,7 +112,7 @@ $(document).ready(function () {
             $("#subcampaign_id").select2();
             $('#landing_page').html(response.content_landingpage);
             $("#landing_page").select2();
-            
+
             // $('#channel_id').html(response.content_channel);
             // $("#channel_id").select2();
         });
@@ -419,44 +419,32 @@ $(document).ready(function () {
     $('button#update_contact').click(function (e) {
         e.preventDefault();
         $('.loading').show();
-        var is_update_all   = $('input[id=update_all]').is(':checked');
-        var new_status      = $('input[name=status_update_all]').val();
-        // if(is_update_all){
-        //     updateStatusExport('', new_status);
-        // }else{
         var id      = {};
         $("input:checkbox[id=is_update]:checked").each(function () {
 
-            var statusCell      = $(this).parent().siblings('td.status');
-            var statusOLMCell   = $(this).parent().siblings('td.olm_status');
-            var channelCell     = $(this).parent().siblings('td.channel');
-            var invalidReasonCell     = $(this).parent().siblings('td.invalid_reason');
+            let label1_origin   = $(this).parent().siblings().find('input#label1_origin').val();
+            let label2_origin   = $(this).parent().siblings().find('input#label2_origin').val();
+            let label3_origin   = $(this).parent().siblings().find('input#label3_origin').val();
+            let label4_origin   = $(this).parent().siblings().find('input#label4_origin').val();
+            let label5_origin   = $(this).parent().siblings().find('input#label5_origin').val();
+            let label6_origin   = $(this).parent().siblings().find('input#label6_origin').val();
+            let label7_origin   = $(this).parent().siblings().find('input#label7_origin').val();
+            let label8_origin   = $(this).parent().siblings().find('input#label8_origin').val();
+            let label9_origin   = $(this).parent().siblings().find('input#label9_origin').val();
+            let label10_origin  = $(this).parent().siblings().find('input#label10_origin').val();
 
-            var status          = $(statusCell).find('select#status_update').val();
-            var olm_status      = $(statusOLMCell).find('select#olm_status_update').val();
-            var channel_name    = $(channelCell).find('select#channel_update :selected').text();
-            if(channel_name == '--Select Channel--'){
-                channel_name = '';
-            }
-
-            var channel_id      = $(channelCell).find('select#channel_update').val();
-
-            var invalid_reason_mode      = $(invalidReasonCell).find('select#invalid_reason').val();
-            var invalid_reason = "";
-            if(invalid_reason_mode == "C3B_Under18"){
-                invalid_reason = "invalid age";
-            }else if(invalid_reason_mode == "C3B_Duplicated15Days"){
-                invalid_reason = "duplicated";
-            }else if(invalid_reason_mode == "C3B_SMS_Error"){
-                invalid_reason = "SMS error";
-            }else if(invalid_reason_mode == "fake_contact"){
-                invalid_reason = "fake contact";
-            }else{
-                invalid_reason_mode= "";
-            }
-
-            id[$(this).val()] = {'status': status, 'olm_status': olm_status, 'channel_id': channel_id, 'channel_name': channel_name
-                                    ,'invalid_reason_mode':invalid_reason_mode,'invalid_reason':invalid_reason};
+            id[$(this).val()] = {
+                'c3_label1_origin':     label1_origin,
+                'c3_label2_origin':     label2_origin,
+                'c3_label3_origin':     label3_origin,
+                'c3_label4_origin':     label4_origin,
+                'c3_label5_origin':     label5_origin,
+                'c3_label6_origin':     label6_origin,
+                'c3_label7_origin':     label7_origin,
+                'c3_label8_origin':     label8_origin,
+                'c3_label9_origin':     label9_origin,
+                'c3_label10_origin':    label10_origin,
+            };
         });
 
         updateContacts(id);
@@ -581,8 +569,8 @@ function initDataTable() {
 
     $('#table_contacts').dataTable({
         "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-6'C>r>" +
-        "<'tb-only't>" +
-        "<'dt-toolbar-footer'<'col-sm-6 col-xs-12'i><'col-sm-6 col-xs-12'p>>",
+            "<'tb-only't>" +
+            "<'dt-toolbar-footer'<'col-sm-6 col-xs-12'i><'col-sm-6 col-xs-12'p>>",
         "autoWidth": true,
         "preDrawCallback": function () {
             $('.loading').show();
@@ -629,7 +617,7 @@ function initDataTable() {
             url: url,
             type: "GET",
             data: function (d) {
-                    d.source_id         = source_id,
+                d.source_id         = source_id,
                     d.team_id           = team_id,
                     d.marketer_id       = marketer_id,
                     d.campaign_id       = campaign_id,
@@ -665,6 +653,18 @@ function initDataTable() {
             },
             { "data" : 'email'},
             { "data" : 'phone'},
+
+            { "data" : 'c3_label1_origin',  'className' : "label1_origin",  "defaultContent": "1"},
+            { "data" : 'c3_label2_origin',  'className' : "label2_origin",  "defaultContent": "2" },
+            { "data" : 'c3_label3_origin',  'className' : "label3_origin",  "defaultContent": "3" },
+            { "data" : 'c3_label4_origin',  'className' : "label4_origin",  "defaultContent": "4" },
+            { "data" : 'c3_label5_origin',  'className' : "label5_origin",  "defaultContent": "5" },
+            { "data" : 'c3_label6_origin',  'className' : "label6_origin",  "defaultContent": "6" },
+            { "data" : 'c3_label7_origin',  'className' : "label7_origin",  "defaultContent": "7" },
+            { "data" : 'c3_label8_origin',  'className' : "label8_origin",  "defaultContent": "8" },
+            { "data" : 'c3_label9_origin',  'className' : "label9_origin",  "defaultContent": "9" },
+            { "data" : 'c3_label10_origin', 'className' : "label10_origin", "defaultContent": "0" },
+
             { "data" : 'age'},
             { "data" : 'submit_time'},
             { "data" : 'clevel'},
@@ -684,9 +684,9 @@ function initDataTable() {
             { "data" : 'campaign_name',     "className" : "ads_long" },
             { "data" : 'subcampaign_name',  "className" : "ads_long" },
             { "data" : 'landing_page',      "defaultContent": "-"},
-            { 
-                "data" : 'invalid_reason', 
-                'className' : "invalid_reason",   
+            {
+                "data" : 'invalid_reason',
+                'className' : "invalid_reason",
                 "render"    : function ( data, type, row, meta ) {
                     if(data){
                         return '<span id="invalid_reason" >' + data + '</span>';
@@ -788,7 +788,7 @@ function countExported() {
     var landing_page    = $('select[name="landing_page"]').val();
     var is_export       = $('select[name="is_export"]').val();
     var search          = $('input[type="search"]').val();
-     // HoaTV fix change to multiple select channel
+    // HoaTV fix change to multiple select channel
     // var channel         = $('select[name="channel_id"]').val();
     var channel         = $('input[name="channel_id"]').val();
     var olm_status      = $('select[name="olm_status"]').val();
@@ -842,34 +842,18 @@ function enable_update() {
 
 function edit(item, mode){
     var is_show         = $('button#update_contact').is(':visible');
-    var statusCell      = $(item).parents().siblings('td.status');
-    var statusOLMCell   = $(item).parents().siblings('td.olm_status');
-    var channelCell     = $(item).parents().siblings('td.channel');
+    // var statusCell      = $(item).parents().siblings('td.status');
+    // var statusOLMCell   = $(item).parents().siblings('td.olm_status');
+    // var channelCell     = $(item).parents().siblings('td.channel');
     // HoaTV change c3bg
-    var invalidReasonCell     = $(item).parents().siblings('td.invalid_reason');
+    // var invalidReasonCell     = $(item).parents().siblings('td.invalid_reason');
 
     if(is_show || mode == 'all'){
         var is_checked = $(item).is(':checked');
         if(is_checked){
-            addSelectStatus(item);
-            addSelectStatusOLM(item);
-            addSelectChannel(item);
-            addSelectInvalidReason(item);
+            addLabelOrigin(item);
         }else{
-            $(statusCell).find('span#status').show();
-            // $(statusCell).find('select#status_update').select2('destroy');
-            $(statusCell).find('select#status_update').remove();
-
-            $(statusOLMCell).find('span#olm_status').show();
-            // $(statusOLMCell).find('select#olm_status_update').select2('destroy');
-            $(statusOLMCell).find('select#olm_status_update').remove();
-
-            $(channelCell).find('span#channel').show();
-            $(channelCell).find('select#channel_update').select2('destroy');
-            $(channelCell).find('select#channel_update').remove();
-
-            $(invalidReasonCell).find('span#invalid_reason').show();
-            $(invalidReasonCell).find('select#invalid_reason').remove();
+            removeLabelOrigin(item)
         }
     }
 
@@ -882,117 +866,27 @@ function edit(item, mode){
     }
 }
 
-//HoaTV
-function addSelectInvalidReason(item){
-    var statusCell = $(item).parents().siblings('td.invalid_reason');
-    var invalidReasonCell = $(statusCell).parents().siblings('td.invalid_reason');
-    // console.log(statusCell);
-    $(statusCell).find('span#invalid_reason').hide();
-    // $(statusCell).text("");
-    $(statusCell).append('' +
-        '<select class="form-control" id="invalid_reason" onchange="setAllInvalidReason(this);" style="width:100px">' +
-        '<option value="all">All</option>' +
-        '<option value="C3B_SMS_Error">SMS Error</option>' +
-        '<option value="C3B_Under18">Under 18</option>' +
-        '<option value="C3B_Duplicated15Days">Duplicate in 15 days</option>' +
-        '<option value="fake_contact">Fake Contact</option>' +
-        '</select>' +
-        '');
-
-    $(invalidReasonCell).find('select#invalid_reason').val(statusCell);
+function addLabelOrigin(item){
+    for (var i = 1; i <= 10; i++) {
+        let id = 'label' + i + '_origin';
+        let td  = $(item).parents().siblings('td.' + id);
+        let td_value =  $(td).text();
+        $(td).find('input#' + id).remove();
+        $(td).find('input#old_' + id).remove();
+        $(td).text('');
+        $(td).append('<input id="' + id + '" class="form-control" style="max-width: 100px" type="text" value="' + td_value + '" onchange="setAllLabel(this);">');
+        $(td).append('<input id="old_' + id + '" class="form-control" type="hidden" value="' + td_value + '">');
+    }
 }
 
-function addSelectStatus(item){
-    var statusCell = $(item).parents().siblings('td.status');
-    var status     = $(statusCell).find('input#old_status').val();
-
-    // $(statusCell).find('select#status_update').select2('destroy');
-    $(statusCell).find('select#status_update').remove();
-    $(statusCell).find('span#status').hide();
-
-    $(statusCell).append('' +
-        '<select class="form-control" id="status_update" onchange="setAll(this);">' +
-        '<option value="1">Exported</option>' +
-        '<option value="0">Not Export</option>' +
-        '</select>' +
-        '');
-
-    $(statusCell).find('select#status_update').val(status);
-    // $(statusCell).find('select#status_update').select2();
-}
-
-function addSelectStatusOLM(item){
-    var statusCell = $(item).parents().siblings('td.olm_status');
-    var status     = $(statusCell).find('input#old_status_olm').val();
-    // $(statusCell).find('select#olm_status_update').select2('destroy');
-    $(statusCell).find('select#olm_status_update').remove();
-    $(statusCell).find('span#olm_status').hide();
-
-    $(statusCell).append('' +
-        '<select class="form-control" id="olm_status_update" onchange="setAllStatusOLM(this);">' +
-        '<option value="0" selected>Success</option>' +
-        '<option value="1">Duplicated</option>' +
-        '<option value="2">Error</option>' +
-        '<option value="-1">Not Export</option>' +
-        '</select>' +
-        '');
-
-    $(statusCell).find('select#olm_status_update').val(status);
-    // $(statusCell).find('select#olm_status_update').select2();
-}
-
-function addSelectChannel(item){
-    var channelCell = $(item).parents().siblings('td.channel');
-    var channel     = $(channelCell).find('input#old_channel').val();
-
-    var url = $('input[name=get_all_channel_url]').val();
-
-    $(channelCell).find('select#channel_update').select2('destroy');
-    $(channelCell).find('select#channel_update').remove();
-    $(channelCell).find('span#channel').hide();
-
-    $.get(url, function (data) {
-        var obj = $.parseJSON(data);
-
-        var select = '<select id="channel_update" onchange="setAllChannel(this);">';
-        select += '<option value="">--Select Channel--</option>';
-        $.each(obj, function( index, value ) {
-            select += '<option value="'+ value._id + '">' + value.name + '</option>';
-        });
-        select += '</select>';
-        $(channelCell).append(select);
-
-        if(channel != '-'){
-            $(channelCell).find("select#channel_update option:contains(" + channel + ")").attr('selected', 'selected');
-        }
-
-        var check_all = $('input[id=update_all]').is(':checked');
-        if(check_all){
-            $('select#channel_update').first().focus();
-        }else{
-            $(channelCell).find('select#channel_update').focus();
-        }
-
-        $(channelCell).find('select#channel_update').select2();
-
-    }).fail(
-        function (err) {
-            alert('Cannot connect to server. Please try again later.');
-        });
-}
-
-// HoaTV select invalid reason
-function setAllInvalidReason(item){
-    var update_all = $('input[name="update_all"]').val();
-    if(update_all == 1){
-        var value = $(item).val();
-        $("select#invalid_reason").each(function () {
-            $(this).val(value);
-        });
-        // $('input[name="status_update_all"]').val(value);
-    } else {
-        var value = $(item).val();
-        $("#invalid_reason").val(value);
+function removeLabelOrigin(item){
+    for (var i = 1; i <= 10; i++) {
+        let id = 'label' + i + '_origin';
+        let td  = $(item).parents().siblings('td.' + id);
+        let td_value =  $(td).find('input#old_' + id).val();
+        $(td).find('input#' + id).remove();
+        $(td).find('input#old' + id).remove();
+        $(td).text(td_value);
     }
 }
 
@@ -1029,43 +923,33 @@ function setAllChannel(item){
     }
 }
 
+function setAllLabel(item){
+    let update_all = $('input[name="update_all"]').val();
+    if(update_all == 1){
+        let value   = $(item).val();
+        let id      = $(item).attr('id');
+        $("input#" + id).each(function () {
+            $(this).val(value);
+        });
+        // $("input#old_" + id).val(value);
+    }
+}
+
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+
 function updateContacts(id) {
+    let url = $('input[name="update_label_origin"]').val();
+    console.log(url);
+    let data = {};
+    data.id = id;
 
-    var status          = $('input[name=status_update_all]').val();
-    var url             = $('input[name="update_status_export"]').val();
-    var source_id       = $('input[name="source_id"]').val();
-    var team_id         = $('input[name="team_id"]').val();
-    var marketer_id     = $('input[name="marketer_id"]').val();
-    var campaign_id     = $('input[name="campaign_id"]').val();
-    var clevel          = $('input[name="clevel"]').val();
-    var current_level   = $('input[name="current_level"]').val();
-    var registered_date = $('.registered_date').text();
-    var subcampaign_id  = $('input[name="subcampaign_id"]').val();
-    var old_status      = $('input[name="status"]').val();
-    var landing_page    = $('select[name="landing_page"]').val();
-    // HoaTV fix change to multiple select channel
-    // var channel         = $('select[name="channel_id"]').val();
-    var channel         = $('input[name="channel_id"]').val();
-    var mailchimp_expired = $('select[name="mailchimp_expired"]').val();
+    $.post(url, data, function (data) {
+        console.log(data);
 
-    var data = {};
-    data.id                = id;
-    data.source_id         = source_id;
-    data.team_id           = team_id;
-    data.marketer_id       = marketer_id;
-    data.campaign_id       = campaign_id;
-    data.clevel            = clevel;
-    data.current_level     = current_level;
-    data.subcampaign_id    = subcampaign_id;
-    data.registered_date   = registered_date;
-    data.old_status        = old_status;
-    data.new_status        = status;
-    data.landing_page      = landing_page;
-    data.channel           = channel;
-    data.mailchimp_expired = mailchimp_expired;
-
-    $.get(url, data, function (data) {
-        countExported();
         setTimeout(function(){
             // if(old_status == '0'){
             //     $('input[name="exported"]').val(0);
@@ -1074,7 +958,6 @@ function updateContacts(id) {
             $('input#update_all').prop('checked', false); // Unchecks checkbox all
 
             $('div#update_success').show();
-            $('div#export_success').hide();
         }, 1000);
     }).fail(
         function (err) {
@@ -1147,12 +1030,12 @@ function exportToOLM(id) {
 }
 
 function showSendSMSResultModal(data){
-        $('#total_send').html('<h2 style="font-weight:800">Total: ' + data.total +'</h2' );
-        $('#send_pass').html('- Contacts success: ' + data.send_pass);
-        $('#send_fail').html('- Contacts fail:' + data.send_fail);
-        $('#used_credit').html('- Used credit: ' + data.used_credit);
-        $('#mySendSMSModal').modal('hide');
-        $('#mySendSMSResultModal').modal('show');
+    $('#total_send').html('<h2 style="font-weight:800">Total: ' + data.total +'</h2' );
+    $('#send_pass').html('- Contacts success: ' + data.send_pass);
+    $('#send_fail').html('- Contacts fail:' + data.send_fail);
+    $('#used_credit').html('- Used credit: ' + data.used_credit);
+    $('#mySendSMSModal').modal('hide');
+    $('#mySendSMSResultModal').modal('show');
 }
 
 function showModalExportToOLM(data){
